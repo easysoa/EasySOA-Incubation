@@ -35,8 +35,15 @@ public abstract class QueryCountIndicator extends Indicator {
                 return new IndicatorValue((int) queryResult.size(), -1);
             }
             else {
-                IterableQueryResult totalQueryResult = session.queryAndFetch(totalQuery, NXQL.NXQL);
+                IterableQueryResult totalQueryResult = null;
+                try {
+                    totalQueryResult = session.queryAndFetch(totalQuery, NXQL.NXQL);
                 return new IndicatorValue((int) queryResult.size(), (int) totalQueryResult.size());
+                    } finally {
+                    if (totalQueryResult != null) {
+                        totalQueryResult.close();
+                    }
+                }
             }
         }
         finally {

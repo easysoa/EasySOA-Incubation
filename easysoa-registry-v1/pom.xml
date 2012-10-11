@@ -51,7 +51,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <easysoa.version>1.0-SNAPSHOT</easysoa.version>
-    <nuxeo.version>5.5</nuxeo.version>
+    <nuxeo.version>5.7-SNAPSHOT</nuxeo.version>
     <jung.version>2.0.1</jung.version>
   </properties>
 

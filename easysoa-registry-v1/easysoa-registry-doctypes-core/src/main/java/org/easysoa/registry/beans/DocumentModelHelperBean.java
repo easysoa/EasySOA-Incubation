@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.IntelligentSystem;
+import org.easysoa.registry.types.IntelligentSystemTreeRoot;
 import org.easysoa.registry.types.Repository;
 import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.utils.DocumentModelHelper;
@@ -50,7 +51,8 @@ public class DocumentModelHelperBean {
         	if (TaggingFolder.DOCTYPE.equals(parentModel.getType())) {
         		addParent(parentsByType, PARENT_TYPE_CLASSIFICATION, parentModel);
         	}
-        	else if (IntelligentSystem.DOCTYPE.equals(parentModel.getType())) {
+        	else if (IntelligentSystem.DOCTYPE.equals(parentModel.getType())
+        			|| IntelligentSystemTreeRoot.DOCTYPE.equals(parentModel.getType())) {
         		if (parentModel.getPathAsString().startsWith(Repository.REPOSITORY_PATH)) {
             		addParent(parentsByType, PARENT_TYPE_DOCTYPE, parentModel);
         		}

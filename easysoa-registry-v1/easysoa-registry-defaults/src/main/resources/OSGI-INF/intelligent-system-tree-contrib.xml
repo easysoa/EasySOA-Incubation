@@ -18,7 +18,7 @@
         <classifier>mavenHierarchy</classifier>
       </intelligentSystemTree>
       <intelligentSystemTree name="implementationsList">
-        <title>Service implementations</title>
+        <title>All service implementations</title>
         <classifier>implementationsList</classifier>
       </intelligentSystemTree>
       <intelligentSystemTree name="application">

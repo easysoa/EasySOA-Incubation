@@ -6,7 +6,7 @@ import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
 @JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class OperationResult {
-    
+
     private static final String ERROR = "error";
 
     private static final String SUCCESS = "success";

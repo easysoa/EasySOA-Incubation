@@ -18,26 +18,35 @@
       <h:outputText value="#{messages['label.easysoa.document.parents']}" />
     </h3>
     <div class="summaryLayout">
-      <c:forEach items="#{documentModelHelperBean.findAllParents(currentDocument)}" var="parentModel">
-        <span style="margin-right: 20px">
-         <nxu:graphicImage
-            value="#{nxd:iconPath(parentModel)}"
-            rendered="#{!empty nxd:iconPath(parentModel)}"
-            styleClass="smallIcon" />
-          <nxd:restDocumentLink document="#{parentModel}">
-            <nxh:outputText value=" #{nxd:titleOrId(parentModel)} " />
-          </nxd:restDocumentLink>
-          <nxd:restDocumentLink document="#{parentModel}"
-            newConversation="true" target="_blank"
-            tab="#{widgetProperty_tab}"
-            subTab="#{widgetProperty_subTab}">
-            <nxu:graphicImage value="/icons/external.gif"
-              style="vertical-align:middle"
-              alt="#{messages['permalink.newTab']}"
-              title="#{messages['permalink.newTab']}" />
-          </nxd:restDocumentLink>
-         </span>
-      </c:forEach>
+    <table><tr>
+	    <c:forEach items="#{documentModelHelperBean.findAllParentsByType(currentDocument)}" var="parentCategory">
+		  <td style="float: left; width: 200px; padding: 5px; vertical-align: top">
+		  <b><h:outputText value="#{parentCategory.key}" /></b><br />
+	      <ul>
+		      <c:forEach items="#{parentCategory.value}" var="parentModel">
+		        <li>
+		         <nxu:graphicImage
+		            value="#{nxd:iconPath(parentModel)}"
+		            rendered="#{!empty nxd:iconPath(parentModel)}"
+		            styleClass="smallIcon" />
+		          <nxd:restDocumentLink document="#{parentModel}">
+		            <nxh:outputText value=" #{nxd:titleOrId(parentModel)} " />
+		          </nxd:restDocumentLink>
+		          <nxd:restDocumentLink document="#{parentModel}"
+		            newConversation="true" target="_blank"
+		            tab="#{widgetProperty_tab}"
+		            subTab="#{widgetProperty_subTab}">
+		            <nxu:graphicImage value="/icons/external.gif"
+		              style="vertical-align:middle"
+		              alt="#{messages['permalink.newTab']}"
+		              title="#{messages['permalink.newTab']}" />
+		          </nxd:restDocumentLink>
+		        </li>
+		      </c:forEach>
+	      </ul>
+	      </td>
+		</c:forEach>
+    </tr></table>
     </div>
   </c:if>
   

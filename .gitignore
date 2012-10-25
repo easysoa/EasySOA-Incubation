@@ -4,4 +4,6 @@ bin/
 .settings
 .classpath
 *~
+*.log
+*.log.*
 buildAndRun.sh

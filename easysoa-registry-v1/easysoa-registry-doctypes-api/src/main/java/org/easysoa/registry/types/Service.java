@@ -8,6 +8,8 @@ package org.easysoa.registry.types;
  */
 public interface Service extends SoaNode {
 
+    public static final String XPATH_LINKED_COMPONENT = "serv:linkedComponent";
+    
     public static final String DOCTYPE = "Service";
     
 }

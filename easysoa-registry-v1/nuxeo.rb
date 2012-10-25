@@ -19,7 +19,7 @@ ARGV.each do |arg|
       exec('mvn clean install -DskipTests=true')
       
     when 'deploy'
-      oldJars = Dir[NUXEO_PATH + '/nxserver/plugins/*.jar']
+      oldJars = Dir[NUXEO_PATH + '/nxserver/plugins/easysoa-*.jar']
       puts "> Deleting", oldJars
       FileUtils.rm oldJars
       newJars = Dir['**/*.jar']

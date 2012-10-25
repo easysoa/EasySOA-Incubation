@@ -1,5 +1,7 @@
 package org.easysoa.registry;
 
+import org.easysoa.registry.types.Endpoint;
+
 
 public class SoaNodeId {
 
@@ -22,7 +24,10 @@ public class SoaNodeId {
     public void setName(String name) {
         // Remove eventual suffix added by Nuxeo when some proxies conflict
         // XXX Side effect is that no document should end its "real" name with a dot followed by numbers
-        this.name = name.replaceAll("\\.[0-9]+$", "").replace('/', '-');
+        this.name = name.replaceAll("\\.[0-9]+$", "");
+        if (Endpoint.DOCTYPE.equals(this.type)) {
+        	this.name = this.name.replace('/', '-');
+        }
     }
     
     public String getType() {

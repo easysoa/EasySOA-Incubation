@@ -17,6 +17,9 @@ import org.jboss.seam.annotations.Scope;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 
 @Name("documentModelHelperBean")
@@ -28,7 +31,7 @@ public class DocumentModelHelperBean {
 	
 	public static final String PARENT_TYPE_DOCTYPE = "Document types";
 	
-	public static final String PARENT_TYPE_MODEL = "Related documents";
+	public static final String PARENT_TYPE_MODEL = "Related SOA elements";
 	
     @In
     private CoreSession documentManager;
@@ -42,6 +45,15 @@ public class DocumentModelHelperBean {
     
     public DocumentModelList findAllParents(DocumentModel documentModel) throws Exception {
         return documentService.findAllParents(documentManager, documentModel);
+    }
+
+    public DocumentRef createRef(String pathOrId) throws Exception {
+    	if (pathOrId.contains("/")) {
+    		return new PathRef(pathOrId);
+    	}
+    	else {
+    		return new IdRef(pathOrId);
+    	}
     }
     
     public Map<String, DocumentModelList> findAllParentsByType(DocumentModel documentModel) throws Exception {

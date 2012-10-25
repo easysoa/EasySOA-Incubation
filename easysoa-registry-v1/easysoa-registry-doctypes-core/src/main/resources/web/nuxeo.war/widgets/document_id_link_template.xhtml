@@ -1,0 +1,40 @@
+<f:subview xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:a4j="https://ajax4jsf.dev.java.net/ajax"
+	xmlns:nxu="http://nuxeo.org/nxweb/util"
+	xmlns:nxd="http://nuxeo.org/nxweb/document"
+	xmlns:nxh="http://nuxeo.org/nxweb/html"
+	xmlns:c="http://java.sun.com/jstl/core" id="#{widget.id}">
+
+	<div>
+
+		<c:choose>
+			<c:when test="${field != null and field != ''}">
+				<nxu:methodResult name="targetDocument"
+					value="#{documentManager.getDocument(documentModelHelperBean.createRef(field))}">
+					<c:choose>
+						<c:when test="${targetDocument != null}">
+							<nxu:graphicImage value="#{nxd:iconPath(targetDocument)}" alt="" />
+							<nxd:restDocumentLink document="#{targetDocument}">
+								<nxh:outputText value="#{nxd:titleOrId(targetDocument)}" />
+							</nxd:restDocumentLink>
+							<nxd:restDocumentLink document="#{targetDocument}" newConversation="true" target="_tab">
+								<nxu:graphicImage value="/icons/external.gif" style="vertical-align:middle"
+								   alt="#{messages['permalink.newTab']}" title="#{messages['permalink.newTab']}" />
+							</nxd:restDocumentLink>
+						</c:when>
+						<c:otherwise>
+							<i>None</i>
+						</c:otherwise>
+					</c:choose>
+				</nxu:methodResult>
+
+			</c:when>
+			<c:otherwise>
+            -
+        </c:otherwise>
+		</c:choose>
+
+	</div>
+
+</f:subview>

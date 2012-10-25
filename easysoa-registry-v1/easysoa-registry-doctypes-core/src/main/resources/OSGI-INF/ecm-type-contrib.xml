@@ -186,6 +186,7 @@
       <layouts mode="any">
         <layout>heading</layout>
         <layout>soanode</layout>
+        <layout>service</layout>
         <layout>files</layout>
       </layouts>
       <layouts mode="listing">

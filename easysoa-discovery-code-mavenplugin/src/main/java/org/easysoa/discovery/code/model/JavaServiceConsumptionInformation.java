@@ -12,7 +12,8 @@ public class JavaServiceConsumptionInformation extends SoaNodeInformation implem
 
     public JavaServiceConsumptionInformation(SoaNodeId fromDeliverable, String fromClass,
             String toInterface, String interfaceLocation) {
-        super(new SoaNodeId(JavaServiceConsumption.DOCTYPE, fromDeliverable.getName() + ">" + toInterface), null, null);
+        super(new SoaNodeId(JavaServiceConsumption.DOCTYPE, 
+        		fromDeliverable.getName() + ":" + fromClass + ">" + toInterface), null, null);
         this.properties.put(XPATH_CONSUMERCLASS, fromClass);
         this.properties.put(XPATH_CONSUMEDINTERFACE, toInterface);
         this.properties.put(XPATH_CONSUMEDINTERFACELOCATION, interfaceLocation);

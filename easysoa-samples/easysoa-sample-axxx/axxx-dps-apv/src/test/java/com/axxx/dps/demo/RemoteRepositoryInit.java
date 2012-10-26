@@ -186,9 +186,6 @@ public class RemoteRepositoryInit {
 		return createdDocument.getPath();
 	}
 
-	
-	
-
 	private static String createSoaNode(SoaNodeId soaNodeId) throws Exception {
 		return createSoaNode(soaNodeId, (String) null);
 	}

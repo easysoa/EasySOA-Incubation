@@ -53,6 +53,7 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         discoveredEndpointId = new SoaNodeId(Endpoint.DOCTYPE, "http://www.services.com/endpoint");
         properties = new HashMap<String, Object>();
         properties.put(Endpoint.XPATH_TITLE, "My Endpoint");
+        properties.put(Endpoint.XPATH_URL, "http://www.services.com/endpoint");
         
         // Run discovery
         discoveryService.runDiscovery(documentManager, discoveredEndpointId, properties, null);
@@ -101,7 +102,6 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         Assert.assertTrue(serviceId + " must be linked to " + serviceImplId, 
                 documentService.hasChild(documentManager, foundService, serviceImplId));
         
-        
         DocumentModel foundDeliverable = documentService.find(documentManager, deliverableId);
         Assert.assertTrue(deliverableId + " must be linked to " + serviceImplId, 
                 documentService.hasChild(documentManager, foundDeliverable, serviceImplId));
@@ -111,5 +111,19 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
                 documentService.hasChild(documentManager, foundServiceImpl, discoveredEndpointId));
         
     }
-    
+
+    @Test
+    public void testMerge() throws Exception {
+        // Rediscover the same endpoint with new info
+        properties = new HashMap<String, Object>();
+        properties.put("dc:description", "Blahblah");
+        discoveryService.runDiscovery(documentManager, discoveredEndpointId, properties, null);
+        documentManager.save();
+        
+        // Check that the endpoint has properties from both discoveries
+        DocumentModel foundEndpoint = documentService.find(documentManager, discoveredEndpointId);
+        
+        Assert.assertEquals("http://www.services.com/endpoint", foundEndpoint.getPropertyValue(Endpoint.XPATH_URL));
+        Assert.assertEquals("Blahblah", foundEndpoint.getPropertyValue("dc:description"));
+    }
 }

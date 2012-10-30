@@ -3,6 +3,7 @@ package org.easysoa.registry.systems;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public interface IntelligentSystemTreeClassifier {
@@ -26,6 +27,6 @@ public interface IntelligentSystemTreeClassifier {
      * @throws ClientException 
      */
     // TODO Give more flexibility to allow for setting System title, possibly more properties
-    String classify(DocumentModel model) throws Exception;
+    String classify(CoreSession documentManager, DocumentModel model) throws Exception;
     
 }

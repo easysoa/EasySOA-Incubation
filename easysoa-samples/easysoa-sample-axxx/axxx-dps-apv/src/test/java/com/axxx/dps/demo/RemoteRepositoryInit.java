@@ -31,12 +31,12 @@ public class RemoteRepositoryInit {
 	public static final String SLA_DOCTYPE = "SLA";
 	public static final String INFORMATION_SERVICE_DOCTYPE = "InformationService";
 	public static final String INFORMATION_SERVICE_PROVIDER_ACTOR = "informationservice:providerActor";
-	public static final String INFORMATION_SERVICE_CONSUMER_ACTOR = "informationservice:consumerActor";
 	public static final String INFORMATION_SERVICE_BUSINESS_SERVICE = "informationservice:linkedBusinessService";
 	public static final String OLA_DOCTYPE = "OLA";
 	public static final String COMPONENT_DOCTYPE = "Component";
 	public static final String COMPONENT_TYPE = "component_schema:componentCategory";
 	public static final String COMPONENT_INFORMATION_SERVICE = "component_schema:linkedInformationService";
+	public static final String COMPONENT_PROVIDER_ACTOR = "component_schema:providerActor";
 	
 	private static RegistryApi registryApi;
 	private static Session session;

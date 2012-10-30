@@ -15,6 +15,11 @@
 
   <dependencies>
     <!-- EasySOA -->
+<!--     <dependency> -->
+<!--       <groupId>org.easysoa.registry</groupId> -->
+<!--       EasySOA Registry Business Doctypes (from Nuxeo Studio) -->
+<!--       <artifactId>easy-soa-open-wide</artifactId> -->
+<!--     </dependency> -->
     <dependency>
       <groupId>org.easysoa.registry</groupId>
       <artifactId>easysoa-registry-doctypes-api</artifactId>
@@ -24,7 +29,7 @@
       <artifactId>easysoa-registry-test</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <!-- Nuxeo -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
@@ -50,7 +55,7 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-relations-jena-plugin</artifactId>
     </dependency>
-    
+
     <!-- Beans/UI -->
     <dependency>
       <groupId>org.jboss.seam</groupId>
@@ -60,7 +65,7 @@
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
     </dependency>
-    
+
     <!-- Correlation graph -->
     <dependency>
       <groupId>net.sf.jung</groupId>
@@ -75,4 +80,34 @@
       <artifactId>jung-algorithms</artifactId>
     </dependency>
   </dependencies>
+
+<!--   <build> -->
+<!--     <plugins> -->
+<!--       <plugin> -->
+<!--         <groupId>org.apache.maven.plugins</groupId> -->
+<!--         <artifactId>maven-dependency-plugin</artifactId> -->
+<!--         <version>2.5.1</version> -->
+<!--         <executions> -->
+<!--           <execution> -->
+<!--             <goals> -->
+<!--               <goal>copy</goal> -->
+<!--             </goals> -->
+<!--             <id>fetch-nuxeo-studio-project</id> -->
+<!--             <phase>package</phase> -->
+<!--           </execution> -->
+<!--         </executions> -->
+<!--         <configuration> -->
+<!--           <artifactItems> -->
+<!--             <artifact> -->
+<!--               <groupId>org.easysoa.registry</groupId> -->
+<!--               <artifactId>easy-soa-open-wide</artifactId> -->
+<!--               <version>1.0.2</version> -->
+<!--             </artifact> -->
+<!--           </artifactItems> -->
+<!--           <destination>${project.basedir}/target</destination> -->
+<!--         </configuration> -->
+<!--       </plugin> -->
+<!--     </plugins> -->
+<!--   </build> -->
+
 </project>

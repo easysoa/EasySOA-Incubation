@@ -5,6 +5,7 @@ import java.util.Map;
 import org.easysoa.registry.types.DeployedDeliverable;
 import org.easysoa.registry.types.Endpoint;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -23,7 +24,7 @@ public class EnvironmentClassifier implements IntelligentSystemTreeClassifier {
     }
 
     @Override
-    public String classify(DocumentModel model) throws ClientException {
+    public String classify(CoreSession documentManager, DocumentModel model) throws ClientException {
         if (!Endpoint.DOCTYPE.equals(model.getType())
                 && !DeployedDeliverable.DOCTYPE.equals(model.getType())) {
             return null;

@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'fileutils'
+require 'net/http'
 
 NUXEO_PATH = '/data/home/mkalam-alami/bin/nuxeo-cap-5.5-tomcat';
 NUXEO_PLUGINS_PATH = NUXEO_PATH + '/nxserver/plugins';

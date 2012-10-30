@@ -58,9 +58,10 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                     }
                 }
                 if (pathMethods != null || ParsingUtils.hasAnnotation(c, ANN_PATH)) {
+            		  // TODO target wsName[space]
                       wsInjectableTypeSet.put(c.getFullyQualifiedName(), new JavaServiceInterfaceInformation(
                               mavenDeliverable.getGroupId(), mavenDeliverable.getArtifactId(),
-                              c.getFullyQualifiedName()));
+                              c.getFullyQualifiedName(), null, null));
                 }
             }
         }
@@ -79,9 +80,10 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
             }
         }
         if (hasPathMethods || ParsingUtils.hasAnnotation(candidateClass, ANN_PATH)) {
+        		// TODO target wsName[space]
              return new JavaServiceInterfaceInformation(
                       mavenDeliverable.getGroupId(), mavenDeliverable.getArtifactId(),
-                      candidateClass.getName());
+                      candidateClass.getName(), null, null);
         }
         else {
             return null;

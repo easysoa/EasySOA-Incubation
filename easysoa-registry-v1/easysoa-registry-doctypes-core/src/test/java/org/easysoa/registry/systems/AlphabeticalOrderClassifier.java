@@ -3,6 +3,7 @@ package org.easysoa.registry.systems;
 import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public class AlphabeticalOrderClassifier implements IntelligentSystemTreeClassifier {
@@ -19,7 +20,7 @@ public class AlphabeticalOrderClassifier implements IntelligentSystemTreeClassif
     }
 
     @Override
-    public String classify(DocumentModel model) throws ClientException {
+    public String classify(CoreSession documentManager, DocumentModel model) throws ClientException {
         String title = model.getTitle();
         
         // NOTE: Even paths with leading and trailing slashes must work

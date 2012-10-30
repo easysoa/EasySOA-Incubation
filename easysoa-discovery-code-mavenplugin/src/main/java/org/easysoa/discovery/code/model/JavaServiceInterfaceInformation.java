@@ -9,9 +9,16 @@ public class JavaServiceInterfaceInformation {
     
     private String interfaceName;
 
-    public JavaServiceInterfaceInformation(String mavenGroupId, String mavenArtifactId, String interfaceName) throws Exception {
-        this.interfaceName = interfaceName;
+	private String wsNamespace;
+
+	private String wsName;
+
+    public JavaServiceInterfaceInformation(String mavenGroupId, String mavenArtifactId, String interfaceName,
+    		String wsNamespace, String wsName) throws Exception {
         this.mavenDeliverableId = new MavenDeliverableInformation(mavenGroupId, mavenArtifactId).getSoaNodeId();
+        this.interfaceName = interfaceName;
+		this.wsNamespace = wsNamespace;
+		this.wsName = wsName;
     }
     
     public String getInterfaceName() {
@@ -21,6 +28,14 @@ public class JavaServiceInterfaceInformation {
     public SoaNodeId getMavenDeliverableId() {
         return mavenDeliverableId;
     }
+    
+    public String getWsName() {
+		return wsName;
+	}
+    
+    public String getWsNamespace() {
+		return wsNamespace;
+	}
     
     @Override
     public boolean equals(Object obj) {

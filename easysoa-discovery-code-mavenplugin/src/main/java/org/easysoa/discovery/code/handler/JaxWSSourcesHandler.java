@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.jws.WebService;
+import javax.xml.ws.WebServiceClient;
+import javax.xml.ws.WebServiceProvider;
+
 import org.apache.maven.plugin.logging.Log;
 import org.easysoa.discovery.code.CodeDiscoveryRegistryClient;
 import org.easysoa.discovery.code.ParsingUtils;
@@ -78,10 +82,27 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                     || ParsingUtils.hasAnnotation(c, ANN_XML_WSCLIENT)
                     || ParsingUtils.hasAnnotation(c, ANN_WSPROVIDER)
                     || ParsingUtils.hasAnnotation(c, ANN_XML_WSPROVIDER)) {
+            	
+            	String wsName = null, wsNamespace = null;
+            	if (isWs) {
+            		Annotation wsAnnotation = ParsingUtils.getAnnotation(c, ANN_WS);
+            		wsName = (String) wsAnnotation.getNamedParameter("name");
+            		wsNamespace = (String) wsAnnotation.getNamedParameter("targetNamespace");
+            	}
+            	else if (ParsingUtils.hasAnnotation(c, ANN_XML_WSCLIENT)) {
+            		Annotation wsAnnotation = ParsingUtils.getAnnotation(c, ANN_XML_WSCLIENT);
+            		wsName = (String) wsAnnotation.getNamedParameter("name");
+            		wsNamespace = (String) wsAnnotation.getNamedParameter("targetNamespace");
+            	}
+            	else if (ParsingUtils.hasAnnotation(c, ANN_XML_WSPROVIDER)) {
+            		Annotation wsAnnotation = ParsingUtils.getAnnotation(c, ANN_XML_WSPROVIDER);
+            		wsName = (String) wsAnnotation.getNamedParameter("serviceName");
+            		wsNamespace = (String) wsAnnotation.getNamedParameter("targetNamespace");
+            	}
                 wsInjectableTypeSet.put(c.getFullyQualifiedName(), 
                         new JavaServiceInterfaceInformation(mavenDeliverable.getGroupId(),
                                 mavenDeliverable.getArtifactId(),
-                                c.getFullyQualifiedName()));
+                                c.getFullyQualifiedName(), wsNamespace, wsName));
             }
         }
 
@@ -99,9 +120,27 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                 || ParsingUtils.hasAnnotation(candidateClass, ANN_XML_WSCLIENT)
                 || ParsingUtils.hasAnnotation(candidateClass, ANN_WSPROVIDER)
                 || ParsingUtils.hasAnnotation(candidateClass, ANN_XML_WSPROVIDER)) {
+        	
+        	String wsName = null, wsNamespace = null;
+        	if (isWs) {
+        		WebService wsAnnotation = (WebService) ParsingUtils.getAnnotation(candidateClass, ANN_WS);
+        		wsName = wsAnnotation.name();
+        		wsNamespace = wsAnnotation.targetNamespace();
+        	}
+        	else if (ParsingUtils.hasAnnotation(candidateClass, ANN_XML_WSCLIENT)) {
+        		WebServiceClient wsAnnotation = (WebServiceClient) ParsingUtils.getAnnotation(candidateClass, ANN_XML_WSCLIENT);
+        		wsName = wsAnnotation.name();
+        		wsNamespace = wsAnnotation.targetNamespace();
+        	}
+        	else if (ParsingUtils.hasAnnotation(candidateClass, ANN_XML_WSPROVIDER)) {
+        		WebServiceProvider wsAnnotation = (WebServiceProvider) ParsingUtils.getAnnotation(candidateClass, ANN_XML_WSPROVIDER);
+        		wsName = wsAnnotation.serviceName();
+        		wsNamespace = wsAnnotation.targetNamespace();
+        	}
+        	
             return new JavaServiceInterfaceInformation(mavenDeliverable.getGroupId(),
                             mavenDeliverable.getArtifactId(),
-                            candidateClass.getName());
+                            candidateClass.getName(), wsNamespace, wsName);
         }
         else {
             return null;
@@ -120,19 +159,32 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
             for (JavaClass c : classes) {
                 // Check JAX-WS annotation 
                 JavaClass itfClass = getWsItf(c, wsInterfaces); // TODO several interfaces ???
+                
                 if (!c.isInterface() && (ParsingUtils.hasAnnotation(c, ANN_WS) || itfClass != null)) { // TODO superclass ?
+                    JavaServiceInterfaceInformation interfaceInfo = null;
+                    String wsNamespace = null, wsName = null, serviceName = null;
+                    
                     // Extract interface info
                     //System.out.println("\ncp:\n" + System.getProperty("java.class.path"));
                     if (itfClass != null) {
                         implsToInterfaces.put(c.asType(), itfClass.asType().getFullyQualifiedName());
+                        interfaceInfo = wsInterfaces.get(itfClass.getFullyQualifiedName());
+                        wsNamespace = interfaceInfo.getWsNamespace();
+                        wsName = interfaceInfo.getWsName();
                     }
                     else {
                         log.warn("Couldn't find interface for class " + c.getFullyQualifiedName());
                     }
                     
                     // Extract WS info
+                	if (ParsingUtils.hasAnnotation(c, ANN_WS)) {
+                		Annotation wsAnnotation = ParsingUtils.getAnnotation(c, ANN_WS);
+                		wsName = (String) wsAnnotation.getNamedParameter("name");
+                		wsNamespace = (String) wsAnnotation.getNamedParameter("targetNamespace");
+                		serviceName = (String) wsAnnotation.getNamedParameter("serviceName");
+                	}
                     JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(
-                            c.getFullyQualifiedName());
+                    		wsNamespace + ":" + wsName + "=" + serviceName);
                     serviceImpl.setTitle(c.getName());
                     serviceImpl.setProperty(JavaServiceImplementation.XPATH_TECHNOLOGY, "JAX-WS");
                     serviceImpl.setProperty(JavaServiceImplementation.XPATH_ISMOCK,
@@ -140,7 +192,6 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                     serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTATIONCLASS, c.getFullyQualifiedName());
                     if (itfClass != null) {
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTEDINTERFACE, itfClass.getFullyQualifiedName());
-                        JavaServiceInterfaceInformation interfaceInfo = wsInterfaces.get(itfClass.getFullyQualifiedName());
                         if (interfaceInfo != null) {
                             serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTEDINTERFACELOCATION,
                                     interfaceInfo.getMavenDeliverableId().getName());
@@ -152,10 +203,10 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                     if (itfClass != null) {
                         // Extract service info
                         String itfClassName = itfClass.getName();
-                        ServiceInformation serviceDef = new ServiceInformation(
-                                itfClassName.substring(itfClassName.lastIndexOf(".") + 1));
+                        ServiceInformation serviceDef = new ServiceInformation(wsNamespace + ":" + wsName);
+                        serviceDef.setTitle(itfClassName.substring(itfClassName.lastIndexOf(".") + 1));
                         serviceImpl.addParentDocument(serviceDef.getSoaNodeId());
-                            serviceImpl.setProperty(JavaServiceImplementation.XPATH_DOCUMENTATION, itfClass.getComment());
+                        serviceImpl.setProperty(JavaServiceImplementation.XPATH_DOCUMENTATION, itfClass.getComment());
                         discoveredNodes.add(serviceDef);
                         
                         // Extract operations info

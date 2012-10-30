@@ -4,7 +4,7 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
-@WebService
+@WebService(name="PureAirFlowersService", targetNamespace="http://www.pureairflowers.com/services/")
 public interface PureAirFlowersService {
 
 	@WebResult(name = "ordersNumber")

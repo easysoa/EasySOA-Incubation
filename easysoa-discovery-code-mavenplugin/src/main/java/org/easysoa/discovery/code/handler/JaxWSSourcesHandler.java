@@ -99,6 +99,9 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
             		wsName = (String) wsAnnotation.getNamedParameter("serviceName");
             		wsNamespace = (String) wsAnnotation.getNamedParameter("targetNamespace");
             	}
+            	if (wsName == null) {
+            		wsName = c.getName();
+            	}
                 wsInjectableTypeSet.put(c.getFullyQualifiedName(), 
                         new JavaServiceInterfaceInformation(mavenDeliverable.getGroupId(),
                                 mavenDeliverable.getArtifactId(),
@@ -137,6 +140,9 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
         		wsName = wsAnnotation.serviceName();
         		wsNamespace = wsAnnotation.targetNamespace();
         	}
+        	if (wsName == null) {
+        		wsName = candidateClass.getName();
+        	}
         	
             return new JavaServiceInterfaceInformation(mavenDeliverable.getGroupId(),
                             mavenDeliverable.getArtifactId(),
@@ -171,6 +177,9 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                         interfaceInfo = wsInterfaces.get(itfClass.getFullyQualifiedName());
                         wsNamespace = interfaceInfo.getWsNamespace();
                         wsName = interfaceInfo.getWsName();
+                    	if (wsName == null) {
+                    		wsName = itfClass.getName();
+                    	}
                     }
                     else {
                         log.warn("Couldn't find interface for class " + c.getFullyQualifiedName());
@@ -179,9 +188,16 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                     // Extract WS info
                 	if (ParsingUtils.hasAnnotation(c, ANN_WS)) {
                 		Annotation wsAnnotation = ParsingUtils.getAnnotation(c, ANN_WS);
-                		wsName = (String) wsAnnotation.getNamedParameter("name");
-                		wsNamespace = (String) wsAnnotation.getNamedParameter("targetNamespace");
+                		if (wsAnnotation.getNamedParameter("name") != null) {
+                			wsName = (String) wsAnnotation.getNamedParameter("name");
+                		}
+                		if (wsAnnotation.getNamedParameter("targetNamespace") != null) {
+                			wsNamespace = (String) wsAnnotation.getNamedParameter("targetNamespace");
+                		}
                 		serviceName = (String) wsAnnotation.getNamedParameter("serviceName");
+                	}
+                	if (serviceName == null) {
+                		serviceName = c.getName();
                 	}
                     JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(
                     		wsNamespace + ":" + wsName + "=" + serviceName);

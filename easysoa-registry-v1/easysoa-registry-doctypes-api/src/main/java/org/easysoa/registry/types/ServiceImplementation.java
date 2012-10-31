@@ -4,12 +4,15 @@ import java.util.List;
 
 
 /**
+ * SoaName specs:
+ * Either "ws-TARGETNS:NAME=SERVICENAME"
+ * Or "itf-INTERFACE=NAME"
  * 
  * @author mkalam-alami
  *
  */
 public interface ServiceImplementation extends SoaNode {
-
+	
     static final String DOCTYPE = "ServiceImplementation";
     
     static final String XPATH_TECHNOLOGY = "impl:technology";
@@ -21,6 +24,8 @@ public interface ServiceImplementation extends SoaNode {
     static final String XPATH_ISMOCK = "impl:ismock";
 
     static final String XPATH_TESTS = "impl:tests";
+
+    static final String XPATH_LINKED_INFORMATION_SERVICE = "impl:linkedInformationService";
     
     static final String OPERATION_NAME = "operationName";
     

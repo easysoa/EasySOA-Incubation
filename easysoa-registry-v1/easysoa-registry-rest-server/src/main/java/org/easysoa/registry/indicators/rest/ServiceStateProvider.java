@@ -8,16 +8,17 @@ import java.util.Map;
 
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.Endpoint;
-import org.easysoa.registry.types.Service;
+import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.runtime.api.Framework;
 
+// XXX Outdated (Relied on the Service doctype)
 public class ServiceStateProvider implements IndicatorProvider {
 
-    private static final String SERVICE_DOCTYPE_INDICATOR = DoctypeCountIndicator.getName(Service.DOCTYPE);
+    private static final String SERVICE_DOCTYPE_INDICATOR = DoctypeCountIndicator.getName(InformationService.DOCTYPE);
 
     @Override
     public List<String> getRequiredIndicators() {

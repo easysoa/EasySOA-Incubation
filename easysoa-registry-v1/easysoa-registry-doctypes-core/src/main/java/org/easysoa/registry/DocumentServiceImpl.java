@@ -19,6 +19,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 
 public class DocumentServiceImpl implements DocumentService {
@@ -144,31 +146,28 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     public DocumentModel findDocument(CoreSession documentManager, String type, String name) throws ClientException {
-        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + NXQL.ECM_NAME + " = '?'"
-                + PROXIES_QUERY_FILTER + DELETED_DOCUMENTS_QUERY_FILTER + VERSIONS_QUERY_FILTER,
+        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + NXQL.ECM_NAME + " = '?'",
                 new Object[] { type, safeName(name) },
                 false, true);
-        DocumentModelList results = documentManager.query(query);
+        DocumentModelList results = query(documentManager, query, true, false);
         return results.size() > 0 ? results.get(0) : null;
     }
     
     public DocumentModel find(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
-        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'"
-                + PROXIES_QUERY_FILTER + DELETED_DOCUMENTS_QUERY_FILTER + VERSIONS_QUERY_FILTER,
+        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'",
                 new Object[] { identifier.getType(), safeName(identifier.getName()) },
                 false, true);
-        DocumentModelList results = documentManager.query(query);
+        DocumentModelList results = query(documentManager, query, true, false);
         return results.size() > 0 ? results.get(0) : null;
     }
 
     @Override
     public DocumentModelList findProxies(CoreSession documentManager, SoaNodeId identifier)
             throws ClientException {
-        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'"
-                + NON_PROXIES_QUERY_FILTER + DELETED_DOCUMENTS_QUERY_FILTER + VERSIONS_QUERY_FILTER,
+        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'",
                 new Object[] { identifier.getType(), safeName(identifier.getName()) },
                 false, true);
-        return documentManager.query(query);
+        return query(documentManager, query, false, true);
     }
 
     public DocumentModelList findProxies(CoreSession documentManager, DocumentModel model) throws ClientException {
@@ -204,11 +203,19 @@ public class DocumentServiceImpl implements DocumentService {
     	if (identifier == null) {
     		return new DocumentModelListImpl();
     	}
-        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'"
-                + DELETED_DOCUMENTS_QUERY_FILTER + VERSIONS_QUERY_FILTER,
+        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'",
                 new Object[] { identifier.getType(), safeName(identifier.getName()) },
                 false, true);
-        return documentManager.query(query);
+        return query(documentManager, query, false, false);
+    }
+    
+    public DocumentModelList query(CoreSession documentManager, String query,
+    		boolean filterProxies, boolean filterNonProxies) throws ClientException {
+        return documentManager.query(query +
+        		((filterProxies) ? PROXIES_QUERY_FILTER : "") + 
+                ((filterNonProxies) ? NON_PROXIES_QUERY_FILTER : "") + 
+        		DELETED_DOCUMENTS_QUERY_FILTER +
+        		VERSIONS_QUERY_FILTER);
     }
     
     public DocumentModelList findAllInstances(CoreSession documentManager, DocumentModel model) throws ClientException {
@@ -307,6 +314,25 @@ public class DocumentServiceImpl implements DocumentService {
     public boolean isSoaNode(CoreSession documentManager, String doctype) throws ClientException {
         return documentManager.getDocumentType(doctype).hasSchema(SoaNode.SCHEMA);
     }
+
+	@Override
+	public boolean isTypeOrSubtype(CoreSession documentManager,
+			String doctypeToTest, String expectedDoctype)
+			throws ClientException {
+		if (doctypeToTest == null || expectedDoctype == null) {
+			return false;
+		}
+		if (doctypeToTest.equals(expectedDoctype)) {
+			return true;
+		}
+		DocumentType documentType = documentManager.getDocumentType(doctypeToTest);
+		for (Type parentType : documentType.getTypeHierarchy()) {
+			if (parentType.getName().equals(expectedDoctype)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 
 }

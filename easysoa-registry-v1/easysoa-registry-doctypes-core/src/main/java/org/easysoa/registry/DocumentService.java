@@ -125,7 +125,11 @@ public interface DocumentService {
      */
     DocumentModelList findAllParents(CoreSession documentManager, DocumentModel documentModel)
             throws Exception;
-    
+
+	DocumentModelList query(CoreSession documentManager, String query,
+			boolean filterProxies, boolean filterNonProxies)
+			throws ClientException;
+	
     boolean hasChild(CoreSession documentManager, DocumentModel document, SoaNodeId childId)
             throws ClientException;
 
@@ -154,6 +158,9 @@ public interface DocumentService {
 
 
     boolean isSoaNode(CoreSession documentManager, String doctype) throws ClientException;
+    
+    boolean isTypeOrSubtype(CoreSession documentManager, String doctypeToTest, String expectedDoctype) throws ClientException;
+
 
     
 }

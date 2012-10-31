@@ -8,7 +8,7 @@
   <extension target="org.easysoa.registry.SoaMetamodelService" point="types">
     <soaNodeType name="TaggingFolder">
         <subtype>SoftwareComponent</subtype>
-        <subtype>Service</subtype>
+        <subtype>InformationService</subtype>
         <subtype>Deliverable</subtype>
         <subtype>ServiceImplementation</subtype>
         <subtype>DeployedDeliverable</subtype>
@@ -18,9 +18,6 @@
     <soaNodeType name="SoftwareComponent">
         <subtype>Deliverable</subtype>
     </soaNodeType>
-    <soaNodeType name="Service">
-        <subtype>ServiceImplementation</subtype>
-    </soaNodeType>
     
     <soaNodeType name="Deliverable">
         <subtype>ServiceImplementation</subtype>
@@ -28,7 +25,6 @@
         <subtype>EndpointConsumption</subtype>
     </soaNodeType>
     <soaNodeType name="ServiceImplementation">
-        <subtype>OperationImplementation</subtype>
         <subtype>Endpoint</subtype>
     </soaNodeType>
     

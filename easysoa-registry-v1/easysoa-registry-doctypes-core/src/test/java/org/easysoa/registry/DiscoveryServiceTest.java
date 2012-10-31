@@ -9,10 +9,9 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.test.AbstractRegistryTest;
 import org.easysoa.registry.types.Deliverable;
-import org.easysoa.registry.types.DeployedDeliverable;
 import org.easysoa.registry.types.Endpoint;
-import org.easysoa.registry.types.Service;
 import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.types.SoftwareComponent;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -74,12 +73,12 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         Assert.assertTrue("The default contributions must be loaded",
                 soaMetamodelService.getChildren(Deliverable.DOCTYPE).contains(ServiceImplementation.DOCTYPE));
         Assert.assertTrue("The default contributions must be loaded",
-                soaMetamodelService.getChildren(DeployedDeliverable.DOCTYPE).contains(Endpoint.DOCTYPE));
+                soaMetamodelService.getChildren(SoftwareComponent.DOCTYPE).contains(Deliverable.DOCTYPE));
 
         // Test a random path
         Assert.assertArrayEquals("Subtypes chain must be valid", 
-                new Object[]{ ServiceImplementation.DOCTYPE, Endpoint.DOCTYPE },
-                soaMetamodelService.getPath(Service.DOCTYPE, Endpoint.DOCTYPE).toArray());
+                new Object[]{ Deliverable.DOCTYPE, ServiceImplementation.DOCTYPE },
+                soaMetamodelService.getPath(SoftwareComponent.DOCTYPE, ServiceImplementation.DOCTYPE).toArray());
     }
     
     @Test
@@ -90,17 +89,17 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         parentDocuments.add(deliverableId);
         SoaNodeId serviceImplId = new SoaNodeId(ServiceImplementation.DOCTYPE, "myserviceimpl");
         parentDocuments.add(serviceImplId);
-        SoaNodeId serviceId = new SoaNodeId(Service.DOCTYPE, "myservice");
-        parentDocuments.add(serviceId);
+        SoaNodeId softwareCompId = new SoaNodeId(SoftwareComponent.DOCTYPE, "mysoftwarecomponent");
+        parentDocuments.add(softwareCompId);
         
         // Run discovery
         discoveryService.runDiscovery(documentManager, discoveredEndpointId, null, parentDocuments);
         documentManager.save();
         
         // Check results
-        DocumentModel foundService = documentService.find(documentManager, serviceId);
-        Assert.assertTrue(serviceId + " must be linked to " + serviceImplId, 
-                documentService.hasChild(documentManager, foundService, serviceImplId));
+        DocumentModel foundSoftComp = documentService.find(documentManager, softwareCompId);
+        Assert.assertTrue(softwareCompId + " must be linked to " + deliverableId, 
+                documentService.hasChild(documentManager, foundSoftComp, deliverableId));
         
         DocumentModel foundDeliverable = documentService.find(documentManager, deliverableId);
         Assert.assertTrue(deliverableId + " must be linked to " + serviceImplId, 
@@ -109,7 +108,9 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         DocumentModel foundServiceImpl = documentService.find(documentManager, serviceImplId);
         Assert.assertTrue(serviceImplId + " must be linked to " + discoveredEndpointId, 
                 documentService.hasChild(documentManager, foundServiceImpl, discoveredEndpointId));
-        
+
+        Assert.assertFalse(foundSoftComp + " must not be linked to " + discoveredEndpointId, 
+                documentService.hasChild(documentManager, foundSoftComp, discoveredEndpointId));
     }
 
     @Test

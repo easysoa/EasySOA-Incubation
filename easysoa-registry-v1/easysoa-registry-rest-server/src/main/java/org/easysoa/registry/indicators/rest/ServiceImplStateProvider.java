@@ -8,7 +8,7 @@ import java.util.Map;
 
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.OperationImplementation;
-import org.easysoa.registry.types.Service;
+import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -66,8 +66,8 @@ public class ServiceImplStateProvider implements IndicatorProvider {
                 String parentServiceId = null;
                 DocumentModelList implParents = documentService.findAllParents(session, serviceImplModel);
                 for (DocumentModel implParent : implParents) {
-                    if (Service.DOCTYPE.equals(implParent.getType())) {
-                        parentServiceId = (String) implParent.getPropertyValue(Service.XPATH_SOANAME);
+                    if (InformationService.DOCTYPE.equals(implParent.getType())) {
+                        parentServiceId = (String) implParent.getPropertyValue(InformationService.XPATH_SOANAME);
                         break;
                     }
                 }

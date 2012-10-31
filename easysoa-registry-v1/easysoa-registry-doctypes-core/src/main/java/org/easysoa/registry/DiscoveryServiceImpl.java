@@ -82,6 +82,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 	                            if (pathStepType.equals(placeholderReplacementCandidate.getType())) {
 	                                parentDocument = documentService.create(documentManager,
 	                                        placeholderReplacementCandidate, parentPathAsString);
+	        		                parentPathAsString = parentDocument.getPathAsString();
 	                                placeholderNeeded = false;
 	                                break;
 	                            }

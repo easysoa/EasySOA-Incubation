@@ -13,7 +13,7 @@
     <schema name="deliverable" src="schemas/deliverable.xsd" prefix="del" />
     <schema name="soanode" src="schemas/soanode.xsd" prefix="soan" />
     <schema name="soaversionable" src="schemas/soaversionable.xsd" prefix="soav" />
-    <schema name="service" src="schemas/service.xsd" prefix="serv" />
+    <schema name="informationservice" src="schemas/informationservice.xsd" prefix="iserv" />
     <schema name="serviceimpl" src="schemas/serviceimpl.xsd" prefix="impl" />
     <schema name="endpoint" src="schemas/endpoint.xsd" prefix="endp" />
   </extension>
@@ -39,6 +39,7 @@
       <facet name="Commentable" />
       <facet name="Versionable" />
       <facet name="Publishable" />
+      <facet name="Classifiable"/>
     </doctype>
     <doctype extends="SoaNode" name="EndpointConsumer">
       <facet name="Folderish" />
@@ -71,9 +72,8 @@
     <doctype extends="SoaNode" name="SoftwareComponent">
       <facet name="Folderish" />
     </doctype>
-    <doctype extends="SoaNode" name="Service">
-      <facet name="Folderish" />
-      <schema name="service" />
+    <doctype extends="SoaNode" name="InformationService">
+      <schema name="informationservice" />
     </doctype>
 
     <!-- Implementation level -->

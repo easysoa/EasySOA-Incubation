@@ -119,7 +119,7 @@
         <type>File</type>
         <type>TaggingFolder</type>
         <type>SoftwareComponent</type>
-        <type>Service</type>
+        <type>InformationService</type>
         <type>Deliverable</type>
         <type>ServiceImplementation</type>
         <type>DeployedDeliverable</type>
@@ -178,15 +178,15 @@
         <type>Deliverable</type>
       </subtypes>
     </type>
-    <type id="Service" coretype="Service">
-      <label>Service</label>
+    <type id="InformationService" coretype="InformationService">
+      <label>Information Service</label>
       <icon>/icons/file.gif</icon>
       <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
         <layout>soanode</layout>
-        <layout>service</layout>
+        <layout>informationservice</layout>
         <layout>files</layout>
       </layouts>
       <layouts mode="listing">
@@ -202,9 +202,6 @@
           document_trash_content
         </contentView>
       </contentViews>
-      <subtypes>
-        <type>ServiceImplementation</type>
-      </subtypes>
     </type>
 
     <!-- Implementation level -->

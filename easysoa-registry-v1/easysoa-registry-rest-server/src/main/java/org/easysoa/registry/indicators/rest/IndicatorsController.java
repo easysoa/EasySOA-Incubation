@@ -36,7 +36,7 @@ import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.DeployedDeliverable;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.EndpointConsumption;
-import org.easysoa.registry.types.Service;
+import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.SoftwareComponent;
@@ -52,6 +52,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
  * @author mdutoo
  * 
  */
+//XXX Slightly outdated after removal of Service doctype
 @WebObject(type = "EasySOA")
 @Path("easysoa")
 public class IndicatorsController extends ModuleRoot {
@@ -68,7 +69,7 @@ public class IndicatorsController extends ModuleRoot {
     public IndicatorsController() {
         // Document count by type
         addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(SoaNode.ABSTRACT_DOCTYPE));
-        addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(Service.DOCTYPE));
+        addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(InformationService.DOCTYPE));
         addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(SoftwareComponent.DOCTYPE));
         addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(ServiceImplementation.DOCTYPE));
         addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(Deliverable.DOCTYPE));
@@ -78,7 +79,7 @@ public class IndicatorsController extends ModuleRoot {
         addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(TaggingFolder.DOCTYPE));
         
         // Doctype-specific indicators
-        addIndicator(CATEGORY_DOCTYPE_SPECIFIC, new ServiceStateProvider());
+        //addIndicator(CATEGORY_DOCTYPE_SPECIFIC, new ServiceStateProvider());
         addIndicator(CATEGORY_DOCTYPE_SPECIFIC, new ServiceImplStateProvider());
         addIndicator(CATEGORY_DOCTYPE_SPECIFIC, new SoftwareComponentIndicatorProvider());
         addIndicator(CATEGORY_DOCTYPE_SPECIFIC, new TagsIndicatorProvider());

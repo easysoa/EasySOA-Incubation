@@ -4,8 +4,8 @@ import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.rest.RegistryApi;
 import org.easysoa.registry.rest.client.ClientBuilder;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.Repository;
-import org.easysoa.registry.types.Service;
 import org.easysoa.registry.types.SystemTreeRoot;
 import org.easysoa.registry.types.TaggingFolder;
 import org.nuxeo.ecm.automation.client.OperationRequest;
@@ -29,9 +29,6 @@ public class RemoteRepositoryInit {
 	public static final String BUSINESS_SERVICE_PROVIDER_ACTOR = "businessservice:providerActor";
 	public static final String BUSINESS_SERVICE_CONSUMER_ACTOR = "businessservice:consumerActor";
 	public static final String SLA_DOCTYPE = "SLA";
-	public static final String INFORMATION_SERVICE_DOCTYPE = "InformationService";
-	public static final String INFORMATION_SERVICE_PROVIDER_ACTOR = "informationservice:providerActor";
-	public static final String INFORMATION_SERVICE_BUSINESS_SERVICE = "informationservice:linkedBusinessService";
 	public static final String OLA_DOCTYPE = "OLA";
 	public static final String COMPONENT_DOCTYPE = "Component";
 	public static final String COMPONENT_TYPE = "component_schema:componentCategory";
@@ -56,7 +53,7 @@ public class RemoteRepositoryInit {
 		// Project and its folders
 		String projectPath = createSoaNode(new SoaNodeId(TaggingFolder.DOCTYPE, "Intégration APV Web - Pivotal"), rootPath);
 		String specificationsPath = createDocument("Folder", "1. Spécifications", projectPath);
-		String realizationPath = createDocument("Folder", "2. Réalisation", projectPath);
+		createDocument("Folder", "2. Réalisation", projectPath);
 		createDocument("Folder", "3. Déploiements", projectPath);
 		
 		// PHASE 1: Specs
@@ -89,19 +86,19 @@ public class RemoteRepositoryInit {
 		String slaPreCptPath = createSoaNode(slaDdePreCptId, bsPreCptPath);
  
 		// Information services
-		SoaNodeId isCheckAddressId = new SoaNodeId(INFORMATION_SERVICE_DOCTYPE, "checkAddress");
+		SoaNodeId isCheckAddressId = new SoaNodeId(InformationService.DOCTYPE, "checkAddress");
 		createSoaNode(isCheckAddressId,
-				infoArchitecturePath, INFORMATION_SERVICE_PROVIDER_ACTOR + "=" + getIdRef(actUniId));
+				infoArchitecturePath, InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actUniId));
 		
-		createSoaNode(new SoaNodeId(INFORMATION_SERVICE_DOCTYPE, "Cré_Précpte"), infoArchitecturePath,
-				INFORMATION_SERVICE_PROVIDER_ACTOR + "=" + actSIDCVId);
+		createSoaNode(new SoaNodeId(InformationService.DOCTYPE, "Cré_Précpte"), infoArchitecturePath,
+				InformationService.XPATH_PROVIDER_ACTOR + "=" + actSIDCVId);
 		
-		createSoaNode(new SoaNodeId(INFORMATION_SERVICE_DOCTYPE, "TdrWebService"), infoArchitecturePath);
+		createSoaNode(new SoaNodeId(InformationService.DOCTYPE, "TdrWebService"), infoArchitecturePath);
 		createSoaNode(new SoaNodeId(OLA_DOCTYPE, "OLA TdrWebService"), slaPreCptPath);
 		
-		createSoaNode(new SoaNodeId(INFORMATION_SERVICE_DOCTYPE, "Information_APV"), infoArchitecturePath);
+		createSoaNode(new SoaNodeId(InformationService.DOCTYPE, "Information_APV"), infoArchitecturePath);
 		
-		createSoaNode(new SoaNodeId(INFORMATION_SERVICE_DOCTYPE, "Cré_Maj_Dde_Fonds"), infoArchitecturePath);
+		createSoaNode(new SoaNodeId(InformationService.DOCTYPE, "Cré_Maj_Dde_Fonds"), infoArchitecturePath);
 
 		// Components
 		createSoaNode(new SoaNodeId(COMPONENT_DOCTYPE, "checkAddress"), compArchitecturePath,
@@ -127,14 +124,14 @@ public class RemoteRepositoryInit {
 		createSoaNode(new SoaNodeId(COMPONENT_DOCTYPE, "Embedded CXF or FraSCAti with Talend exts"), compArchitecturePath,
 				COMPONENT_TYPE + "=Technical");
 
-		// PHASE 1: Realization
+		// PHASE 2: Realization
 		//publish(specificationsPath, realizationPath);
-		createSoaNode(new SoaNodeId(Service.DOCTYPE, "checkAddress"), realizationPath);
-		createSoaNode(new SoaNodeId(Service.DOCTYPE, "TdrWebService"), realizationPath,
-				Service.XPATH_LINKED_COMPONENT + "=" + getIdRef(new SoaNodeId(COMPONENT_DOCTYPE, "TdrWebService")));
-		createSoaNode(new SoaNodeId(Service.DOCTYPE, "Information_APV"), realizationPath);
-		createSoaNode(new SoaNodeId(Service.DOCTYPE, "Orchestration_DCV"), realizationPath);
-		createSoaNode(new SoaNodeId(Service.DOCTYPE, "Orchestration_DPS"), realizationPath);
+//		createSoaNode(new SoaNodeId(???.DOCTYPE, "checkAddress"), realizationPath);
+//		createSoaNode(new SoaNodeId(???.DOCTYPE, "TdrWebService"), realizationPath,
+//				?????? + "=" + getIdRef(new SoaNodeId(COMPONENT_DOCTYPE, "TdrWebService")));
+//		createSoaNode(new SoaNodeId(???.DOCTYPE, "Information_APV"), realizationPath);
+//		createSoaNode(new SoaNodeId(???.DOCTYPE, "Orchestration_DCV"), realizationPath);
+//		createSoaNode(new SoaNodeId(???.DOCTYPE, "Orchestration_DPS"), realizationPath);
 		
 	}
 

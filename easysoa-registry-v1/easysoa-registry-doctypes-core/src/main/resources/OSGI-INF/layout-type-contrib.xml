@@ -66,23 +66,35 @@
       </widget>
     </layout>
     
-    <!-- Layout for service schema -->
-    <layout name="service">
+    <!-- Layout for information service schema -->
+    <layout name="informationservice">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
       </templates>
       <rows>
         <row>
-          <widget>service_linkedComponent</widget>
+          <widget>informationservice_providerActor</widget>
+        </row>
+        <row>
+          <widget>informationservice_linkedBusinessService</widget>
         </row>
       </rows>
-      <widget name="service_linkedComponent" type="template">
+      <widget name="informationservice_providerActor" type="text">
         <labels>
-          <label mode="any">label.easysoa.layout.service.linkedcomponent</label>
+          <label mode="any">label.easysoa.layout.informationservice.provideractor</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>serv:linkedComponent</field>
+          <field>iserv:providerActor</field>
+        </fields>
+      </widget>
+      <widget name="informationservice_linkedBusinessService" type="template">
+        <labels>
+          <label mode="any">label.easysoa.layout.informationservice.linkedbusinessservice</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>iserv:linkedBusinessService</field>
         </fields>
         <properties widgetMode="view">
           <property name="template">/widgets/document_id_link_template.xhtml</property>
@@ -203,6 +215,9 @@
       </templates>
       <rows>
         <row>
+          <widget>serviceimpl_linkedInformationService</widget>
+        </row>
+        <row>
           <widget>serviceimpl_technology</widget>
         </row>
         <row>
@@ -218,6 +233,18 @@
           <widget>serviceimpl_tests</widget>
         </row>
       </rows>
+      <widget name="serviceimpl_linkedInformationService" type="template">
+        <labels>
+          <label mode="any">label.easysoa.layout.serviceimpl.linkedinformationservice</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>impl:linkedInformationService</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
+      </widget>
       <widget name="serviceimpl_technology" type="text">
         <labels>
           <label mode="any">label.easysoa.layout.serviceimpl.technology</label>

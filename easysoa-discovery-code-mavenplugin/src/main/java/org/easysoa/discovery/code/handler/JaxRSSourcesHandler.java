@@ -12,7 +12,7 @@ import org.easysoa.discovery.code.CodeDiscoveryRegistryClient;
 import org.easysoa.discovery.code.ParsingUtils;
 import org.easysoa.discovery.code.model.JavaServiceImplementationInformation;
 import org.easysoa.discovery.code.model.JavaServiceInterfaceInformation;
-import org.easysoa.registry.rest.client.types.ServiceInformation;
+import org.easysoa.registry.rest.client.types.InformationServiceInformation;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.OperationImplementation;
@@ -134,7 +134,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                             if (interfaceInfo != null) {
                                 serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTEDINTERFACELOCATION, interfaceInfo.getMavenDeliverableId().getName());
                             }
-                            ServiceInformation serviceDef = new ServiceInformation(itf.getName());
+                            InformationServiceInformation serviceDef = new InformationServiceInformation(itf.getName());
                             serviceImpl.addParentDocument(serviceDef.getSoaNodeId());
                             discoveredNodes.add(serviceDef);
                         }

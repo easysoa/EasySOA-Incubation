@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.easysoa.registry.DocumentService;
-import org.easysoa.registry.types.Service;
+import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.TaggingFolder;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -31,7 +31,7 @@ public class TagsIndicatorProvider implements IndicatorProvider {
         
         // Count services without tagging folders
         int notTaggedServices = 0;
-        DocumentModelList serviceModels = session.query(NXQL_SELECT_FROM + Service.DOCTYPE + NXQL_WHERE_NO_PROXY);
+        DocumentModelList serviceModels = session.query(NXQL_SELECT_FROM + InformationService.DOCTYPE + NXQL_WHERE_NO_PROXY);
         for (DocumentModel serviceModel : serviceModels) {
             DocumentModelList serviceParents = documentService.findAllParents(session, serviceModel);
             notTaggedServices++;

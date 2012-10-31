@@ -18,7 +18,7 @@ import org.easysoa.discovery.code.handler.consumption.ImportedServicesConsumptio
 import org.easysoa.discovery.code.model.JavaServiceConsumptionInformation;
 import org.easysoa.discovery.code.model.JavaServiceImplementationInformation;
 import org.easysoa.discovery.code.model.JavaServiceInterfaceInformation;
-import org.easysoa.registry.rest.client.types.ServiceInformation;
+import org.easysoa.registry.rest.client.types.InformationServiceInformation;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.OperationImplementation;
@@ -219,11 +219,10 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                     if (itfClass != null) {
                         // Extract service info
                         String itfClassName = itfClass.getName();
-                        ServiceInformation serviceDef = new ServiceInformation(wsNamespace + ":" + wsName);
-                        serviceDef.setTitle(itfClassName.substring(itfClassName.lastIndexOf(".") + 1));
-                        serviceImpl.addParentDocument(serviceDef.getSoaNodeId());
+                        InformationServiceInformation informationService = new InformationServiceInformation(wsNamespace + ":" + wsName);
+                        informationService.setTitle(itfClassName.substring(itfClassName.lastIndexOf(".") + 1));
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_DOCUMENTATION, itfClass.getComment());
-                        discoveredNodes.add(serviceDef);
+                        discoveredNodes.add(informationService);
                         
                         // Extract operations info
                         List<OperationImplementation> operations = serviceImpl.getOperations();

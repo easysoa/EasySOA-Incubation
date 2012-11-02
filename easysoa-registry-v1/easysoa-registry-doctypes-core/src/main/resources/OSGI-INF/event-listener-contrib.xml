@@ -13,7 +13,7 @@
       <event>documentModified</event>
       <event>aboutToRemove</event>
     </listener>
-    <listener name="serviceMatchingListener" class="org.easysoa.registry.ServiceMatchingListener" order="120">
+    <listener name="serviceMatchingListener" class="org.easysoa.registry.ServiceMatchingListener" order="121">
       <event>documentCreated</event>
       <event>beforeDocumentModification</event>
     </listener>

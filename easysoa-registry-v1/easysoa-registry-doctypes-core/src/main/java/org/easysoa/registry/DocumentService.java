@@ -171,7 +171,7 @@ public interface DocumentService {
      */
 	DocumentModel findEndpoint(CoreSession documentManager,
 			SoaNodeId identifier, Map<String, Object> properties,
-			List<SoaNodeId> assumedParents, List<SoaNodeId> knownComponents)
+			List<SoaNodeId> suggestedParentIds /*NOT USED*/, List<SoaNodeId> knownComponentIds)
 					throws ClientException;
 
 }

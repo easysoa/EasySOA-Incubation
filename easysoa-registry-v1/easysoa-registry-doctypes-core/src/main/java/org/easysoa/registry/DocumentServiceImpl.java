@@ -338,7 +338,7 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	public DocumentModel findEndpoint(CoreSession documentManager,
 			SoaNodeId identifier, Map<String, Object> properties,
-			List<SoaNodeId> assumedParentIds, List<SoaNodeId> knownComponentIds)
+			List<SoaNodeId> suggestedParentIds /*NOT USED*/, List<SoaNodeId> knownComponentIds)
 					throws ClientException {
         
         ArrayList<Object> params = new ArrayList<Object>(5);
@@ -350,14 +350,14 @@ public class DocumentServiceImpl implements DocumentService {
         
         // query context restricted to known components :
         for (SoaNodeId knownComponentId : knownComponentIds) {
-        	querySbuf.append(" AND ? IN soa:parentIds");
+        	querySbuf.append(" AND ? IN soan:parentIds");
         	params.add(knownComponentId);
         }
         
         // match extracted metas to service'as :
-        querySbuf.append(" AND " + "service:wsdl_portType_name" + " = '?'");
+        querySbuf.append(" AND " + "iserv:wsdl_portType_name" + " = '?'");
         params.add(properties.get("endp:wsdl_portType_name"));
-        querySbuf.append(" AND " + "service:wsdl_service_name" + " = '?'");
+        querySbuf.append(" AND " + "iserv:wsdl_service_name" + " = '?'");
         params.add("endp:wsdl_service_name");
         
 		String query = NXQLQueryBuilder.getQuery(querySbuf.toString(), params.toArray(), false, true);

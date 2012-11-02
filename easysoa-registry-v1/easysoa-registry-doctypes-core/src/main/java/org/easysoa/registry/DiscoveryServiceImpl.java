@@ -126,18 +126,21 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         DocumentService documentService = Framework.getService(DocumentService.class);
 
 		// TODO differ between :
-        List<SoaNodeId> assumedParentIds = new ArrayList<SoaNodeId>(); // better : those that don't exist
+        List<SoaNodeId> suggestedParentIds = new ArrayList<SoaNodeId>(); // better : those that don't exist
         List<SoaNodeId> knownComponentIds = parentDocuments; // better : those that exist
         // TODO check that all component ids exist
         
         // Fetch or create document
         DocumentModel documentModel = documentService.findEndpoint(documentManager, identifier,
-        		properties, assumedParentIds, knownComponentIds);
+        		properties, suggestedParentIds, knownComponentIds);
 
         if (documentModel == null) {
             documentModel = documentService.create(documentManager, identifier);
-            // TODO create assumedParentIds if don't exist
-            // TODO link with knownComponentIds
+            // TODO create suggestedParentIds if don't exist
+            // TODO link with suggestedParentIds
+            
+        } else {
+        	// TODO create assumedParentIds if don't exist
         }
         
         return documentModel;

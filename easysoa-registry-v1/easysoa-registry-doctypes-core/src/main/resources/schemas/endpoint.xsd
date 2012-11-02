@@ -1,8 +1,19 @@
 <?xml version="1.0"?>
 <xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/soa/"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/soa/">
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/soa/"><!-- TODO was it not endp ??? -->
   
   <xs:element name="url" type="xs:string"/>
+  
+  <!-- xs:element name="wsdl_definitions_name" type="xs:string"/ --><!-- NOT MEANINGFUL -->
+  
+  <xs:element name="wsdl_portType_name" type="xs:string"/><!-- jaxws : {http://www.axxx.com/dps/apv}PrecomptePartenaireService -->
+  <!-- alternative for one soa model element (ex. endpoint) per service : -->
+  <!-- xs:element name="wsdl_service_port_binding_type_name" type="xs:string"/ --><!-- jaxws : {http://www.axxx.com/dps/apv}PrecomptePartenaireService -->
+  
+  <xs:element name="wsdl_service_name" type="xs:string"/><!-- jaxws : {http://www.axxx.com/dps/apv}PrecomptePartenaireServiceImpl -->
+  <!-- xs:element name="wsdl_service_port_address_location" type="xs:string"/ --><!-- http://localhost:8076/services/PrecomptePartenaireService -->
+  <!-- xs:element name="wsdl_service_port_name" type="xs:string"/ --><!-- jaxws : {http://www.axxx.com/dps/apv}PrecomptePartenairePort -->
+  <!-- xs:element name="wsdl_service_port_binding_name" type="xs:string"/ --><!-- jaxws : {http://www.axxx.com/dps/apv}PrecomptePartenaireServiceImplSoapBinding -->
     
 </xs:schema>

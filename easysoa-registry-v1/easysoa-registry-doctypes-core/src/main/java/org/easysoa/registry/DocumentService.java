@@ -1,6 +1,7 @@
 package org.easysoa.registry;
 
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -162,5 +163,15 @@ public interface DocumentService {
     boolean isTypeOrSubtype(CoreSession documentManager, String doctypeToTest, String expectedDoctype) throws ClientException;
 
 
-    
+    /**
+     * TODO MDU hack
+     * @param documentManager
+     * @param identifier
+     * @return
+     */
+	DocumentModel findEndpoint(CoreSession documentManager,
+			SoaNodeId identifier, Map<String, Object> properties,
+			List<SoaNodeId> assumedParents, List<SoaNodeId> knownComponents)
+					throws ClientException;
+
 }

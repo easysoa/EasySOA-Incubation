@@ -2,6 +2,7 @@ package org.easysoa.registry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.easysoa.registry.types.IntelligentSystem;
 import org.easysoa.registry.types.Repository;
@@ -332,6 +333,37 @@ public class DocumentServiceImpl implements DocumentService {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public DocumentModel findEndpoint(CoreSession documentManager,
+			SoaNodeId identifier, Map<String, Object> properties,
+			List<SoaNodeId> suggestedParentIds /*NOT USED*/, List<SoaNodeId> knownComponentIds)
+					throws ClientException {
+        
+        ArrayList<Object> params = new ArrayList<Object>(5);
+        params.add(identifier.getType());
+        params.add(this.safeName(identifier.getName()));
+        
+        StringBuffer querySbuf = new StringBuffer("SELECT * FROM Endpoint WHERE "
+        		+ SoaNode.XPATH_SOANAME + " = '?'"); // environment:url);
+        
+        // query context restricted to known components :
+        for (SoaNodeId knownComponentId : knownComponentIds) {
+        	querySbuf.append(" AND ? IN soan:parentIds");
+        	params.add(knownComponentId);
+        }
+        
+        // match extracted metas to service'as :
+        querySbuf.append(" AND " + "iserv:wsdl_portType_name" + " = '?'");
+        params.add(properties.get("endp:wsdl_portType_name"));
+        querySbuf.append(" AND " + "iserv:wsdl_service_name" + " = '?'");
+        params.add("endp:wsdl_service_name");
+        
+		String query = NXQLQueryBuilder.getQuery(querySbuf.toString(), params.toArray(), false, true);
+        DocumentModelList results = this.query(documentManager, query, true, false);
+        DocumentModel documentModel = results.size() > 0 ? results.get(0) : null;
+		return documentModel;
 	}
 
 

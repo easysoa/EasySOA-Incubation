@@ -6,4 +6,5 @@ bin/
 *~
 *.log
 *.log.*
+*.jar
 buildAndRun.sh

@@ -73,9 +73,12 @@
     <module>easysoa-registry-doctypes-java-api</module>
     <module>easysoa-registry-doctypes-java-core</module>
 
-    <!-- Packaging -->
+    <!-- Config -->
     <module>easysoa-registry-jsf-branding</module>
     <module>easysoa-registry-defaults</module>
+    
+    <!-- Deployment -->
+    <module>easysoa-registry-packaging</module>
   </modules>
 
   <!-- ============ -->
@@ -263,6 +266,38 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
+    </repository>
+    
+    <!-- Petals repositories (EasyWSDL lib) -->
+    <repository>
+     <id>ebmws-public.release</id>
+     <url>http://maven.petalslink.com/public</url>
+     <releases>
+      <enabled>true</enabled>
+     </releases>
+     <snapshots>
+      <enabled>false</enabled>
+     </snapshots>
+    </repository>
+    <repository>
+     <id>ebmws-public-research.release</id>
+     <url>http://maven.petalslink.com/public-research</url>
+     <releases>
+      <enabled>true</enabled>
+     </releases>
+     <snapshots>
+      <enabled>false</enabled>
+     </snapshots>
+    </repository>
+    <repository>
+     <id>ebmws-public.others</id>
+     <url>http://maven.petalslink.com/others</url>
+     <releases>
+      <enabled>true</enabled>
+     </releases>
+     <snapshots>
+      <enabled>false</enabled>
+     </snapshots>
     </repository>
   </repositories>
   <pluginRepositories>

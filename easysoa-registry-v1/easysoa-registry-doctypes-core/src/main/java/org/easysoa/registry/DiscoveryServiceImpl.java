@@ -6,13 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.SoaNode;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -29,9 +26,10 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 
     public DocumentModel runDiscovery(CoreSession documentManager, SoaNodeId identifier,
             Map<String, Object> properties, List<SoaNodeId> parentDocuments) throws Exception {
-        if (Endpoint.DOCTYPE.equals(identifier.getType())) { // TODO MDU hack
-        	return discoverEndpoint(documentManager, identifier, properties, parentDocuments);
-        }
+    	// FIXME
+//        if (Endpoint.DOCTYPE.equals(identifier.getType())) { // TODO MDU hack
+//        	return discoverEndpoint(documentManager, identifier, properties, parentDocuments);
+//        }
         
         DocumentService documentService = Framework.getService(DocumentService.class);
         
@@ -120,6 +118,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         return documentModel;
     }
 
+	@SuppressWarnings("unused")
 	private DocumentModel discoverEndpoint(CoreSession documentManager,
 			SoaNodeId identifier, Map<String, Object> properties,
 			List<SoaNodeId> parentDocuments) throws Exception {

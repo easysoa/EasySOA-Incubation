@@ -2,11 +2,13 @@ package org.easysoa.registry.types;
 
 import java.util.List;
 
+import org.easysoa.registry.types.names.ServiceImplementationName;
+
 
 /**
  * SoaName specs:
- * Either "ws-TARGETNS:NAME=SERVICENAME"
- * Or "itf-INTERFACE=NAME"
+ * Either "ws:TARGETNS:NAME=SERVICENAME"
+ * Or "itf:PROJECT:INTERFACE=NAME"
  * 
  * @author mkalam-alami
  *
@@ -26,6 +28,10 @@ public interface ServiceImplementation extends SoaNode {
     static final String XPATH_TESTS = "impl:tests";
 
     static final String XPATH_LINKED_INFORMATION_SERVICE = "impl:linkedInformationService";
+
+    static final String XPATH_WSDL_PORTTYPE_NAME = "impl:wsdlPortTypeName";
+
+    static final String XPATH_WSDL_SERVICE_NAME = "impl:wsdlServiceName";
     
     static final String OPERATION_NAME = "operationName";
     
@@ -33,6 +39,8 @@ public interface ServiceImplementation extends SoaNode {
     
     static final String OPERATION_DOCUMENTATION = "operationDocumentation";
     
+    ServiceImplementationName getParsedSoaName() throws Exception;
+
     List<OperationImplementation> getOperations() throws Exception;
     
     void setOperations(List<OperationImplementation> operations) throws Exception;

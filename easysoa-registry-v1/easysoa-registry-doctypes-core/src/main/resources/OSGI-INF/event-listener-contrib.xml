@@ -20,6 +20,11 @@
       <event>documentCreated</event>
       <event>beforeDocumentModification</event>
     </listener>
+    <listener name="wsdlParsingListener" class="org.easysoa.registry.WSDLParsingListener"
+      priority="150">
+      <event>documentCreated</event>
+      <event>beforeDocumentModification</event>
+    </listener>
   </extension>
 
 </component>

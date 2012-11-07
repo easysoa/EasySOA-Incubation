@@ -16,6 +16,7 @@
     <schema name="informationservice" src="schemas/informationservice.xsd" prefix="iserv" />
     <schema name="serviceimpl" src="schemas/serviceimpl.xsd" prefix="impl" />
     <schema name="endpoint" src="schemas/endpoint.xsd" prefix="endp" />
+    <schema name="wsdlinfo" src="schemas/wsdlinfo.xsd" prefix="wsdl" />
   </extension>
 
   <!-- ============= -->
@@ -74,6 +75,7 @@
     </doctype>
     <doctype extends="SoaNode" name="InformationService">
       <schema name="informationservice" />
+      <schema name="wsdlinfo" />
     </doctype>
 
     <!-- Implementation level -->
@@ -85,6 +87,7 @@
       <schema name="serviceimpl" />
     </facet>
     <doctype extends="SoaNode" name="ServiceImplementation">
+      <schema name="wsdlinfo" />
       <facet name="ServiceImplementationData" />
       <facet name="Folderish" />
     </doctype>
@@ -100,6 +103,7 @@
     <doctype extends="SoaNode" name="Endpoint">
       <schema name="environment" />
       <schema name="endpoint" />
+      <schema name="wsdlinfo" />
       <facet name="ServiceImplementationData" />
     </doctype>
 

@@ -78,6 +78,9 @@
         <row>
           <widget>informationservice_linkedBusinessService</widget>
         </row>
+        <row>
+          <widget>informationservice_wsdlPortTypeName</widget>
+        </row>
       </rows>
       <widget name="informationservice_providerActor" type="text">
         <labels>
@@ -99,6 +102,15 @@
         <properties widgetMode="view">
           <property name="template">/widgets/document_id_link_template.xhtml</property>
         </properties>
+      </widget>
+      <widget name="informationservice_wsdlPortTypeName" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.informationservice.wsdlporttypename</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>iserv:wsdlPortTypeName</field>
+        </fields>
       </widget>
     </layout>
     
@@ -196,6 +208,12 @@
         <row>
           <widget>endpoint_url</widget>
         </row>
+        <row>
+          <widget>endpoint_wsdlPortTypeName</widget>
+        </row>
+        <row>
+          <widget>endpoint_wsdlServiceName</widget>
+        </row>
       </rows>
       <widget name="endpoint_url" type="text">
         <labels>
@@ -204,6 +222,24 @@
         <translated>true</translated>
         <fields>
           <field>endp:url</field>
+        </fields>
+      </widget>
+      <widget name="endpoint_wsdlPortTypeName" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpoint.wsdlporttypename</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>endp:url</field>
+        </fields>
+      </widget>
+      <widget name="endpoint_wsdlServiceName" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpoint.servicename</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>endp:wsdlServiceName</field>
         </fields>
       </widget>
     </layout>
@@ -216,6 +252,12 @@
       <rows>
         <row>
           <widget>serviceimpl_linkedInformationService</widget>
+        </row>
+        <row>
+          <widget>serviceimpl_wsdlPortTypeName</widget>
+        </row>
+        <row>
+          <widget>serviceimpl_wsdlServiceName</widget>
         </row>
         <row>
           <widget>serviceimpl_technology</widget>
@@ -244,6 +286,24 @@
         <properties widgetMode="view">
           <property name="template">/widgets/document_id_link_template.xhtml</property>
         </properties>
+      </widget>
+      <widget name="serviceimpl_wsdlPortTypeName" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.serviceimpl.wsdlporttypename</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>impl:url</field>
+        </fields>
+      </widget>
+      <widget name="serviceimpl_wsdlServiceName" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.serviceimpl.servicename</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>impl:wsdlServiceName</field>
+        </fields>
       </widget>
       <widget name="serviceimpl_technology" type="text">
         <labels>
@@ -303,6 +363,39 @@
         <properties widgetMode="view">
           <property name="template">/widgets/easysoa_list_template.xhtml</property>
         </properties>
+      </widget>
+    </layout>
+    
+    <!-- Layout for wsdlinfo schema -->
+    <layout name="wsdlinfo">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>wsdlinfo_wsdlPortTypeName</widget>
+        </row>
+        <row>
+          <widget>wsdlinfo_wsdlServiceName</widget>
+        </row>
+      </rows>
+      <widget name="wsdlinfo_wsdlPortTypeName" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.wsdlinfo.wsdlporttypename</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>wsdl:url</field>
+        </fields>
+      </widget>
+      <widget name="wsdlinfo_wsdlServiceName" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.wsdlinfo.servicename</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>wsdl:wsdlServiceName</field>
+        </fields>
       </widget>
     </layout>
     

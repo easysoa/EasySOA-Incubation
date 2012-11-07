@@ -9,6 +9,7 @@ import java.util.Map;
 import org.easysoa.registry.InvalidDoctypeException;
 import org.easysoa.registry.types.OperationImplementation;
 import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.types.names.ServiceImplementationName;
 import org.easysoa.registry.utils.ListUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -29,6 +30,11 @@ public class ServiceImplementationAdapter extends SoaNodeAdapter implements Serv
     
     public String getDoctype() {
         return ServiceImplementation.DOCTYPE;
+    }
+    
+    @Override
+    public ServiceImplementationName getParsedSoaName() throws Exception {
+    	return new ServiceImplementationName(this.getSoaName());
     }
 
     @Override

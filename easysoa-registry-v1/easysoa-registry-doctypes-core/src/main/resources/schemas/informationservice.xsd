@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
-<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/impl/"
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/iserv/"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/impl/">
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/iserv/">
 
-  <xs:element name="linkedComponent" type="xs:string" />
+  <xs:element name="linkedBusinessService" type="xs:string" />
+  <xs:element name="providerActor" type="xs:string" />
   
 </xs:schema>

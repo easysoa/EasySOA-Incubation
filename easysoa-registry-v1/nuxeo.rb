@@ -3,8 +3,11 @@
 require 'fileutils'
 require 'net/http'
 
-NUXEO_PATH = '/data/home/mkalam-alami/bin/nuxeo-cap-5.5-tomcat';
-NUXEO_PLUGINS_PATH = NUXEO_PATH + '/nxserver/plugins';
+# CONFIGURATION
+
+NUXEO_PATH = '/data/home/mkalam-alami/nuxeo-cap-5.5-tomcat';
+
+# SCRIPT
 
 ARGV.each do |arg|
 
@@ -23,9 +26,9 @@ ARGV.each do |arg|
       oldJars = Dir[NUXEO_PATH + '/nxserver/plugins/easysoa-*.jar']
       puts "> Deleting", oldJars
       FileUtils.rm oldJars
-      newJars = Dir['**/*.jar']
-      puts "> Copying", newJars
-      FileUtils.cp newJars, NUXEO_PLUGINS_PATH
+      newFiles = Dir['easysoa-registry-packaging/target/nxserver']
+      puts "> Copying", newFiles
+      FileUtils.cp_r newFiles, NUXEO_PATH
       
     when 'run'
       exec(NUXEO_PATH + '/bin/nuxeoctl console')

@@ -18,7 +18,7 @@ public class InformationServiceName {
 		case WEB_SERVICE: this.fullName = "wsdl";
 		default: this.fullName = "???";
 		}
-		this.fullName += namespace + ":" + interfaceName;
+		this.fullName += ":" + namespace + ":" + interfaceName;
 		this.type = type;
 		this.namespace = namespace;
 		this.interfaceName = interfaceName;

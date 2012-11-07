@@ -21,6 +21,7 @@
       factory="org.easysoa.registry.types.adapters.CoreDoctypesAdapterFactory" />
     <adapter class="org.easysoa.registry.types.Endpoint"
       factory="org.easysoa.registry.types.adapters.CoreDoctypesAdapterFactory" />
+      
   </extension>
 
 </component>

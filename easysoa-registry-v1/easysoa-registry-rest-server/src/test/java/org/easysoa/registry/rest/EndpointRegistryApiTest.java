@@ -2,7 +2,6 @@ package org.easysoa.registry.rest;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,11 +14,9 @@ import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.rest.marshalling.OperationResult;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
-import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
-import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -27,7 +24,6 @@ import org.nuxeo.runtime.test.runner.Deploy;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
 
 @Deploy("org.easysoa.registry.rest.server")
@@ -44,9 +40,9 @@ public class EndpointRegistryApiTest extends AbstractRestApiTest {
     @Inject
     DocumentService documentService;
 
-    private final int SERVICE_COUNT = 5;
+//    private final int SERVICE_COUNT = 5;
 
-    private SoaNodeId deliverableId = new SoaNodeId(Deliverable.DOCTYPE, "org.easysoa:deliverable");
+//    private SoaNodeId deliverableId = new SoaNodeId(Deliverable.DOCTYPE, "org.easysoa:deliverable");
 
 
     @Test
@@ -96,7 +92,7 @@ public class EndpointRegistryApiTest extends AbstractRestApiTest {
         // Run request
         Client client = createAuthenticatedHTTPClient();
         Builder discoveryRequest = client.resource(discoveryApi.getRootURL()).type(MediaType.APPLICATION_JSON);
-        OperationResult result = discoveryRequest.post(OperationResult.class, soaNodeInfo);
+        /*OperationResult result = */discoveryRequest.post(OperationResult.class, soaNodeInfo);
 
         // on server side, before creating DiscoveryService first attempts to match existing Endpoint
         // or other model elements referred to, while restricting its queries to the context of

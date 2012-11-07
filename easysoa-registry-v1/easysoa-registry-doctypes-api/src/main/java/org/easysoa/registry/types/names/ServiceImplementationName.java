@@ -17,10 +17,10 @@ public class ServiceImplementationName {
 			String interfaceName, String implementationName) {
 		switch (type) {
 		case JAVA_INTERFACE: this.fullName = "itf";
-		case WEB_SERVICE: this.fullName = "wsdl";
+		case WEB_SERVICE: this.fullName = "ws";
 		default: this.fullName = "???";
 		}
-		this.fullName += namespace + ":" + interfaceName + "=" + implementationName;
+		this.fullName += ":" + namespace + ":" + interfaceName + "=" + implementationName;
 		this.type = type;
 		this.namespace = namespace;
 		this.interfaceName = interfaceName;

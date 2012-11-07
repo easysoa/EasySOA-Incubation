@@ -214,11 +214,15 @@ public class DocumentServiceImpl implements DocumentService {
     
     public DocumentModelList query(CoreSession documentManager, String query,
     		boolean filterProxies, boolean filterNonProxies) throws ClientException {
-        return documentManager.query(query +
+    	String filteredQuery = query +
         		((filterProxies) ? PROXIES_QUERY_FILTER : "") + 
                 ((filterNonProxies) ? NON_PROXIES_QUERY_FILTER : "") + 
         		DELETED_DOCUMENTS_QUERY_FILTER +
-        		VERSIONS_QUERY_FILTER);
+        		VERSIONS_QUERY_FILTER;
+    	if (!filteredQuery.contains("WHERE")) {
+    		filteredQuery = filteredQuery.replaceFirst("AND", "WHERE");
+    	}
+        return documentManager.query(filteredQuery);
     }
     
     public DocumentModelList findAllInstances(CoreSession documentManager, DocumentModel model) throws ClientException {

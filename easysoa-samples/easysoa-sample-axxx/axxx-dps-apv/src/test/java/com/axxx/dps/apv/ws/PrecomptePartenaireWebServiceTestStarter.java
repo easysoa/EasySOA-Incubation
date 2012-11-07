@@ -4,7 +4,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class PrecomptePartenaireWebServiceTestStarter {
     
-    private ClassPathXmlApplicationContext context;
+    @SuppressWarnings("unused")
+	private ClassPathXmlApplicationContext context;
 
     protected PrecomptePartenaireWebServiceTestStarter() {
         System.out.println("Starting Server");

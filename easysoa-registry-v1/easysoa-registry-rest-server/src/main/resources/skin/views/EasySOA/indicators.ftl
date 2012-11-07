@@ -131,7 +131,7 @@ td:first-child {
 <body>
 
 	<div id="header">
-		<img id="headerLogo" src="/nuxeo/site/easysoa/skin/EasySOA-50px.png" />
+		<img id="headerLogo" src="/nuxeo/site/easysoa/skin/img/logo50px.png" />
 	</div>
 	<div id="container">
 

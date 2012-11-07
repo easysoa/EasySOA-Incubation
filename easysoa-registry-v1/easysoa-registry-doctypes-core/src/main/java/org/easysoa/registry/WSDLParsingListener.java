@@ -31,7 +31,7 @@ public class WSDLParsingListener implements EventListener {
     
 	@Override
 	public void handleEvent(Event event) throws ClientException {
-		  // Ensure event nature
+		// Ensure event nature
         EventContext context = event.getContext();
         if (!(context instanceof DocumentEventContext)) {
             return;
@@ -42,14 +42,24 @@ public class WSDLParsingListener implements EventListener {
         		&& !Endpoint.DOCTYPE.equals(sourceDocument.getType())) {
         	return;
         }
+        CoreSession documentManager = documentContext.getCoreSession();
+        
+        // Extract metadata from soaname
+        if (InformationService.DOCTYPE.equals(sourceDocument.getType())) {
+        	
+        	if (sourceDocument.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME) == null) {
+        		InformationServiceName parsedSoaName = new InformationServiceName(
+        				(String) sourceDocument.getPropertyValue(InformationService.XPATH_SOANAME));
+        		String portTypeName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getInterfaceName();
+        		sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
+        	}
+        }
         
         // Extract metadata from WSDL
         Object filesInfoValue = sourceDocument.getPropertyValue("files:files");
 		if (filesInfoValue != null) {
 
 			try {
-		        CoreSession documentManager = documentContext.getCoreSession();
-				
 				// Look for first WSDL
 				Description wsdl = null;
 				List<?> filesInfoList = (List<?>) filesInfoValue;
@@ -88,10 +98,6 @@ public class WSDLParsingListener implements EventListener {
 						sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString());
 						sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_SERVICE_NAME, serviceName.toString());
 					}
-					if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())) {
-						documentManager.saveDocument(sourceDocument);
-						documentManager.save();
-					}
 				}
 				
 			
@@ -100,6 +106,12 @@ public class WSDLParsingListener implements EventListener {
 				return;
 			}
         }
+		
+		// Save according to event type
+		if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())) {
+			documentManager.saveDocument(sourceDocument);
+			documentManager.save();
+		}
 	}
 
 }

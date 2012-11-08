@@ -1,6 +1,7 @@
 package org.easysoa.registry;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,6 +9,20 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.easysoa.registry.inheritance.ChildrenModelSelector;
+import org.easysoa.registry.inheritance.InheritedFacetDescriptor;
+import org.easysoa.registry.inheritance.InheritedFacetDescriptor.TransferLogic;
+import org.easysoa.registry.inheritance.InheritedFacetModelSelector;
+import org.easysoa.registry.inheritance.UuidInSourceSelector;
+import org.easysoa.registry.inheritance.UuidInTargetSelector;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.schema.SchemaManager;
+import org.nuxeo.ecm.core.schema.types.CompositeType;
+import org.nuxeo.ecm.core.schema.types.Field;
+import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -27,16 +42,23 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 
     private static Logger logger = Logger.getLogger(SoaMetamodelServiceImpl.class);
     
-    public static final String EXTENSIONPOINT_TYPES = "types";
-
-    public static final String EXTENSIONPOINT_INHERITEDFACETS = "inheritedFacets";
-    
     private Graph<String, String> graph = new DirectedSparseGraph<String, String>();
    
-    private UnweightedShortestPath<String, String> shortestPath = new UnweightedShortestPath<String, String>(graph);
+    private UnweightedShortestPath<String, String> shortestPath
+    	= new UnweightedShortestPath<String, String>(graph);
     
-    private Set<String> inheritedFacets = new HashSet<String>();
+    private Map<String, InheritedFacetDescriptor> inheritedFacets
+    	= new HashMap<String, InheritedFacetDescriptor>();
+
+	private Map<String, InheritedFacetModelSelector> facetTransferSelectors
+		= new HashMap<String, InheritedFacetModelSelector>();
     
+	public SoaMetamodelServiceImpl() {
+		facetTransferSelectors.put(ChildrenModelSelector.NAME, new ChildrenModelSelector());
+		facetTransferSelectors.put(UuidInSourceSelector.NAME, new UuidInSourceSelector());
+		facetTransferSelectors.put(UuidInTargetSelector.NAME, new UuidInTargetSelector());
+	}
+	
     @Override
     public void registerContribution(Object contribution, String extensionPoint,
             ComponentInstance contributor) throws Exception {
@@ -50,11 +72,11 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
         }
         else if (EXTENSIONPOINT_INHERITEDFACETS.equals(extensionPoint)) {
         	InheritedFacetDescriptor descriptor = (InheritedFacetDescriptor) contribution;
-        	if (descriptor.name != null) {
-        		inheritedFacets.add(descriptor.name);
+        	if (descriptor.facetName != null && !descriptor.transferLogicList.isEmpty()) {
+        		inheritedFacets.put(descriptor.facetName, descriptor);
         	}
         	else {
-        		logger.error("Invalid " + EXTENSIONPOINT_INHERITEDFACETS + " contribution, @name is null");
+        		logger.error("Invalid " + EXTENSIONPOINT_INHERITEDFACETS + " contribution");
         	}
         }
     }
@@ -89,15 +111,63 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 
         return path;
     }
-
-    public Set<String> getInheritedFacets() {
-		return inheritedFacets;
-	}
     
     public Set<String> getInheritedFacets(Set<String> facetsToTest) {
-    	Set<String> facetsSubset = new HashSet<String>(inheritedFacets);
+    	Set<String> facetsSubset = new HashSet<String>(inheritedFacets.keySet());
     	facetsSubset.retainAll(facetsToTest);
     	return facetsSubset;
     }
-    
+
+	@Override
+	public void applyFacetInheritance(CoreSession documentManager,
+			DocumentModel model, boolean isFacetSource) throws Exception {
+		SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+		for (String facet : getInheritedFacets(model.getFacets())) {
+			InheritedFacetDescriptor inheritance = inheritedFacets.get(facet);
+			for (TransferLogic transferLogic : inheritance.transferLogicList) {
+				if (isFacetSource && model.getType().equals(transferLogic.from)) {
+					DocumentModelList modelsToWriteOn = facetTransferSelectors 
+							.get(transferLogic.selectorType)
+							.findTargets(documentManager, model, transferLogic.to, transferLogic.parameters);
+					
+					if (modelsToWriteOn != null) {
+						for (DocumentModel modelToWriteOn : modelsToWriteOn) {
+							CompositeType facetToCopy = schemaManager.getFacet(facet);
+							for (String schemaToCopy : facetToCopy.getSchemaNames()) {
+								modelToWriteOn.setProperties(schemaToCopy,
+										model.getProperties(schemaToCopy));
+								documentManager.saveDocument(modelToWriteOn);
+							}
+						}
+					}
+				}
+				if (!isFacetSource && model.getType().equals(transferLogic.to)) {
+					DocumentModel modelToReadFrom = facetTransferSelectors 
+							.get(transferLogic.selectorType)
+							.findSource(documentManager, model, transferLogic.from, transferLogic.parameters);
+
+					if (modelToReadFrom != null) {
+						CompositeType facetToCopy = schemaManager.getFacet(facet);
+						for (String schemaToCopy : facetToCopy.getSchemaNames()) {
+							model.setProperties(schemaToCopy,
+									modelToReadFrom.getProperties(schemaToCopy));
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public void resetInheritedFacets(DocumentModel model) throws Exception {
+		SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+		for (String inheritedFacet : getInheritedFacets(model.getFacets())) {
+			CompositeType facetToReset = schemaManager.getFacet(inheritedFacet);
+			for (Schema schemaToReset : facetToReset.getSchemas()) {
+				for (Field fieldToReset : schemaToReset.getFields()) {
+					model.setPropertyValue(fieldToReset.getName().toString(), null);
+				}
+			}
+		}
+	}
+
 }

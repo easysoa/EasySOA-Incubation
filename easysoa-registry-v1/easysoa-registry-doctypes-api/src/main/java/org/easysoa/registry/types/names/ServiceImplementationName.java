@@ -31,20 +31,28 @@ public class ServiceImplementationName {
 		this.fullName = name;
 		String[] splitName = name.split("[:=]");
 		
-		// Namespace
-		if (InformationServiceName.WS.equals(splitName[0])) {
-			this.type = ServiceIdentifierType.WEB_SERVICE;
-		}
-		else if (InformationServiceName.JAVA.equals(splitName[0])) {
-			this.type = ServiceIdentifierType.JAVA_INTERFACE;
+		if (splitName.length == 4) {
+			// Namespace
+			if (InformationServiceName.WS.equals(splitName[0])) {
+				this.type = ServiceIdentifierType.WEB_SERVICE;
+			}
+			else if (InformationServiceName.JAVA.equals(splitName[0])) {
+				this.type = ServiceIdentifierType.JAVA_INTERFACE;
+			}
+			else {
+				this.type = ServiceIdentifierType.UNKNOWN;
+			}
+			
+			this.namespace = splitName[1];
+			this.interfaceName = splitName[2];
+			this.implementationName = splitName[3];
 		}
 		else {
 			this.type = ServiceIdentifierType.UNKNOWN;
+			this.namespace = null;
+			this.interfaceName = null;
+			this.implementationName = name;
 		}
-		
-		this.namespace = splitName[1];
-		this.interfaceName = splitName[2];
-		this.implementationName = splitName[3];
 	}
 	
 	public ServiceIdentifierType getType() {

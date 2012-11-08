@@ -1,40 +1,5 @@
 <?xml version="1.0"?>
 <component name="org.easysoa.registry.doctypes.core.soametamodel.contrib" version="1.0">
-
-  <extension target="org.easysoa.registry.SoaMetamodelService" point="inheritedFacets">
-  	<inheritedFacet name="ServiceImplementationData" />
-    
-    <!-- TODO Support more complex facet inheritance, configured as below: -->
-<!--     <inheritedFacet name="ServiceImplementationData"> -->
-<!--       <transfer> -->
-<!--         <from>ServiceImplementation</from> -->
-<!--         <to>Endpoint</to> -->
-<!--         <selector type="children" /> -->
-<!--       </transfer> -->
-<!--     </inheritedFacet> -->
-    
-<!--     <inheritedFacet name="ComponentData"> -->
-<!--       <transfer> -->
-<!--         <from>Component</from> -->
-<!--         <to>InformationService</to> -->
-<!--         <selector type="uuidInSource"> -->
-<!--           <parameter name="metadata">component_schema:linkedInformationService</parameter> -->
-<!--         </selector> -->
-<!--       </transfer> -->
-<!--       <transfer> -->
-<!--         <from>InformationService</from> -->
-<!--         <to>ServiceImplementation</to> -->
-<!--         <selector type="uuidInTarget"> -->
-<!--           <parameter name="metadata">impl:linkedInformationService</parameter> -->
-<!--         </selector> -->
-<!--       </transfer> -->
-<!--       <transfer> -->
-<!--         <from>ServiceImplementation</from> -->
-<!--         <to>Endpoint</to> -->
-<!--         <selector type="children" /> -->
-<!--       </transfer> -->
-<!--     </inheritedFacet> -->
-  </extension>
   
   <extension target="org.easysoa.registry.SoaMetamodelService" point="types">
     <soaNodeType name="TaggingFolder">
@@ -62,6 +27,39 @@
     <soaNodeType name="DeployedDeliverable">
         <subtype>Endpoint</subtype>
     </soaNodeType>
+  </extension>
+  
+  <extension target="org.easysoa.registry.SoaMetamodelService" point="inheritedFacets">
+    <inheritedFacet facetName="ServiceImplementationData">
+      <transfer>
+        <from>ServiceImplementation</from>
+        <to>Endpoint</to>
+        <selector type="children" />
+      </transfer>
+    </inheritedFacet>
+    
+    <!-- TODO Implement facet ComponentData and attach it to all doctypes below -->
+<!--     <inheritedFacet facetName="ComponentData"> -->
+<!--       <transfer> -->
+<!--         <from>Component</from> -->
+<!--         <to>InformationService</to> -->
+<!--         <selector type="uuidInSource"> -->
+<!--           <parameter name="metadata">component_schema:linkedInformationService</parameter> -->
+<!--         </selector> -->
+<!--       </transfer> -->
+<!--       <transfer> -->
+<!--         <from>InformationService</from> -->
+<!--         <to>ServiceImplementation</to> -->
+<!--         <selector type="uuidInTarget"> -->
+<!--           <parameter name="metadata">impl:linkedInformationService</parameter> -->
+<!--         </selector> -->
+<!--       </transfer> -->
+<!--       <transfer> -->
+<!--         <from>ServiceImplementation</from> -->
+<!--         <to>Endpoint</to> -->
+<!--         <selector type="children" /> -->
+<!--       </transfer> -->
+<!--     </inheritedFacet> -->
   </extension>
 
 </component>

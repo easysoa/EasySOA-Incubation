@@ -18,10 +18,6 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.schema.SchemaManager;
-import org.nuxeo.ecm.core.schema.types.CompositeType;
-import org.nuxeo.ecm.core.schema.types.Field;
-import org.nuxeo.ecm.core.schema.types.Schema;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -51,11 +47,9 @@ public class RepositoryManagementListener implements EventListener {
         CoreSession documentManager = documentContext.getCoreSession();
         DocumentService documentService;
         SoaMetamodelService soaMetamodel;
-        SchemaManager schemaManager;
         try {
 			documentService = Framework.getService(DocumentService.class);
 			soaMetamodel = Framework.getService(SoaMetamodelService.class);
-			schemaManager = Framework.getService(SchemaManager.class);
 		} catch (Exception e) {
 			logger.error("A required service is missing, aborting SoaNode repository management: " + e.getMessage());
 			return;
@@ -94,35 +88,30 @@ public class RepositoryManagementListener implements EventListener {
 
 	    	Set<String> inheritedFacets = soaMetamodel.getInheritedFacets(sourceDocument.getFacets());
 	    	if (!inheritedFacets.isEmpty()) {
-		        // Copy metadata from inherited facets to children
-	    		if (DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
-			        try {
-			        	copyInheritedFacetsToChildren(documentManager, documentService,
-								schemaManager, sourceDocument, inheritedFacets);
-			        }
-			        catch (Exception e) {
-			        	logger.error("Failed to clone metadata from a SoaNode to its children", e);
-			        }
-	    		}
-	    		
-	    		else {
-	    	        // Reset metadata after move/deletion
-	    			if (!DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())
-	    					&& !DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(event.getName())) {
-	    				resetInheritedFacets(sourceDocument, documentManager,
-								schemaManager, inheritedFacets);
-			        }
-	    	        // Copy metadata from inherited facets from parents
-	    			if (!DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
-	    				try {
-				        	copyInheritedFacetsFromParents(documentManager, documentService,
-				        			schemaManager, sourceDocument, inheritedFacets);
+	    		try {
+			        // Copy metadata from inherited facets to children
+		    		if (DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
+				    	soaMetamodel.applyFacetInheritance(documentManager, sourceDocument, true);
+		    		}
+		    		else {
+		    	        // Reset metadata after move/deletion
+		    			if (!DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())
+		    					&& !DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(event.getName())) {
+		    				soaMetamodel.resetInheritedFacets(sourceDocument);
+		    				documentManager.saveDocument(sourceDocument);
 				        }
-				        catch (Exception e) {
-				        	logger.error("Failed to clone metadata from a SoaNode to its children", e);
-				        }
-	    			}
+		    	        // Copy metadata from inherited facets from parents
+		    			if (!DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
+					    	soaMetamodel.applyFacetInheritance(documentManager, sourceDocument, false);
+					    	if (DocumentEventTypes.DOCUMENT_MOVED.equals(event.getName())) {
+			    				documentManager.saveDocument(sourceDocument);
+					    	}
+		    			}
+		    		}
 	    		}
+		        catch (Exception e) {
+		        	logger.error("Failed to manage inherited facets of an SoaNode", e);
+		        }
 	    	}
 
     	}
@@ -185,56 +174,6 @@ public class RepositoryManagementListener implements EventListener {
 			}
 		}
 		sourceSoaNode.setParentIds(documentService.createSoaNodeIds(soaNodeParentModels.toArray(new DocumentModel[]{})));
-	}
-
-	private void resetInheritedFacets(DocumentModel sourceDocument,
-			CoreSession documentManager, SchemaManager schemaManager,
-			Set<String> inheritedFacets) throws PropertyException,
-			ClientException {
-		for (String inheritedFacet : inheritedFacets) {
-			CompositeType facetToReset = schemaManager.getFacet(inheritedFacet);
-			for (Schema schemaToReset : facetToReset.getSchemas()) {
-				for (Field fieldToReset : schemaToReset.getFields()) {
-					sourceDocument.setPropertyValue(fieldToReset.getName().toString(), null);
-				}
-			}
-		}
-		documentManager.saveDocument(sourceDocument);
-	}
-
-	private void copyInheritedFacetsFromParents(CoreSession documentManager, DocumentService documentService,
-			SchemaManager schemaManager, DocumentModel sourceDocument, Set<String> inheritedFacets)
-			throws Exception, ClientException {
-		DocumentModelList sourceDocumentParents = documentService.findAllParents(documentManager, sourceDocument);
-		for (String inheritedFacet : inheritedFacets) {
-			for (DocumentModel sourceDocumentParent : sourceDocumentParents) {
-				if (sourceDocumentParent.hasFacet(inheritedFacet)) {
-					// XXX What if several parents have the same inherited facet?
-					CompositeType facetToCopy = schemaManager.getFacet(inheritedFacet);
-					for (String schemaToCopy : facetToCopy.getSchemaNames()) {
-						sourceDocument.setProperties(schemaToCopy, sourceDocumentParent.getProperties(schemaToCopy));
-					}
-				}
-			}
-		}
-		documentManager.saveDocument(sourceDocument);
-	}
-
-	private void copyInheritedFacetsToChildren(CoreSession documentManager, DocumentService documentService,
-			SchemaManager schemaManager, DocumentModel sourceDocument, Set<String> inheritedFacets)
-			throws ClientException {
-		DocumentModelList sourceDocumentChildren = documentService.getChildren(documentManager, sourceDocument.getRef(), null);
-		for (String inheritedFacet : inheritedFacets) {
-			for (DocumentModel sourceDocumentChild : sourceDocumentChildren) {
-				if (sourceDocumentChild.hasFacet(inheritedFacet)) {
-					CompositeType facetToCopy = schemaManager.getFacet(inheritedFacet);
-					for (String schemaToCopy : facetToCopy.getSchemaNames()) {
-						sourceDocumentChild.setProperties(schemaToCopy, sourceDocument.getProperties(schemaToCopy));
-					}
-				}
-			}
-		}
-		documentManager.saveDocuments(sourceDocumentChildren.toArray(new DocumentModel[]{}));
 	}
 
 }

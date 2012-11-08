@@ -32,19 +32,26 @@ public class InformationServiceName {
 		this.fullName = name;
 		String[] splitName = name.split(":");
 		
-		// Namespace
-		if (WS.equals(splitName[0])) {
-			this.type = ServiceIdentifierType.WEB_SERVICE;
-		}
-		else if (JAVA.equals(splitName[0])) {
-			this.type = ServiceIdentifierType.JAVA_INTERFACE;
+		if (splitName.length == 3) {
+			// Namespace
+			if (WS.equals(splitName[0])) {
+				this.type = ServiceIdentifierType.WEB_SERVICE;
+			}
+			else if (JAVA.equals(splitName[0])) {
+				this.type = ServiceIdentifierType.JAVA_INTERFACE;
+			}
+			else {
+				this.type = ServiceIdentifierType.UNKNOWN;
+			}
+			
+			this.namespace = splitName[1];
+			this.interfaceName = splitName[2];
 		}
 		else {
 			this.type = ServiceIdentifierType.UNKNOWN;
+			this.namespace = null;
+			this.interfaceName = name;
 		}
-		
-		this.namespace = splitName[1];
-		this.interfaceName = splitName[2];
 	}
 	
 	public ServiceIdentifierType getType() {

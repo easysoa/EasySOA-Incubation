@@ -12,7 +12,7 @@
   </extension-point>
   
   <extension-point name="inheritedFacets">
-    <object class="org.easysoa.registry.InheritedFacetDescriptor" />
+    <object class="org.easysoa.registry.inheritance.InheritedFacetDescriptor" />
   </extension-point>
 
 </component>

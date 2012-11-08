@@ -9,8 +9,10 @@ import javax.xml.namespace.QName;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
+import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.names.InformationServiceName;
 import org.easysoa.registry.types.names.ServiceIdentifierType;
+import org.easysoa.registry.types.names.ServiceImplementationName;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -38,77 +40,92 @@ public class WSDLParsingListener implements EventListener {
         }
         DocumentEventContext documentContext = (DocumentEventContext) context;
         DocumentModel sourceDocument = documentContext.getSourceDocument();
-        if (!InformationService.DOCTYPE.equals(sourceDocument.getType())
-        		&& !Endpoint.DOCTYPE.equals(sourceDocument.getType())) {
-        	return;
-        }
         CoreSession documentManager = documentContext.getCoreSession();
+        boolean documentModified = false;
         
         // Extract metadata from soaname
         if (InformationService.DOCTYPE.equals(sourceDocument.getType())) {
-        	
         	if (sourceDocument.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME) == null) {
         		InformationServiceName parsedSoaName = new InformationServiceName(
         				(String) sourceDocument.getPropertyValue(InformationService.XPATH_SOANAME));
         		String portTypeName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getInterfaceName();
         		sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
+        		documentModified = true;
         	}
         }
-        
-        // Extract metadata from WSDL
-        Object filesInfoValue = sourceDocument.getPropertyValue("files:files");
-		if (filesInfoValue != null) {
+        else if (ServiceImplementation.DOCTYPE.equals(sourceDocument.getType())) {
+        	ServiceImplementationName parsedSoaName = new ServiceImplementationName(
+    				(String) sourceDocument.getPropertyValue(ServiceImplementation.XPATH_SOANAME));
+        	if (sourceDocument.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME) == null) {
+        		String portTypeName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getInterfaceName();
+        		sourceDocument.setPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
+        		documentModified = true;
+        	}
+        	if (sourceDocument.getPropertyValue(ServiceImplementation.XPATH_WSDL_SERVICE_NAME) == null) {
+        		String serviceName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getImplementationName();
+        		sourceDocument.setPropertyValue(ServiceImplementation.XPATH_WSDL_SERVICE_NAME, serviceName);
+        		documentModified = true;
+        	}
+        }
 
-			try {
-				// Look for first WSDL
-				Description wsdl = null;
-				List<?> filesInfoList = (List<?>) filesInfoValue;
-				for (Object fileInfoObject : filesInfoList) {
-					Map<?, ?> fileInfoMap = (Map<?, ?>) fileInfoObject;
-					Blob fileBlob = (Blob) fileInfoMap.get("file");
-					try {
-						File file = File.createTempFile("wsdlCandidate", null);
-						fileBlob.transferTo(file);
-						WSDLReader wsdlReader = WSDLFactory.newInstance().newWSDLReader();
-						
+        if (InformationService.DOCTYPE.equals(sourceDocument.getType())
+        		|| Endpoint.DOCTYPE.equals(sourceDocument.getType())) {
+	        // Extract metadata from WSDL
+	        Object filesInfoValue = sourceDocument.getPropertyValue("files:files");
+			if (filesInfoValue != null) {
+	
+				try {
+					// Look for first WSDL
+					Description wsdl = null;
+					List<?> filesInfoList = (List<?>) filesInfoValue;
+					for (Object fileInfoObject : filesInfoList) {
+						Map<?, ?> fileInfoMap = (Map<?, ?>) fileInfoObject;
+						Blob fileBlob = (Blob) fileInfoMap.get("file");
 						try {
-							wsdl = wsdlReader.read(file.toURI().toURL());
-							break;
+							File file = File.createTempFile("wsdlCandidate", null);
+							fileBlob.transferTo(file);
+							WSDLReader wsdlReader = WSDLFactory.newInstance().newWSDLReader();
+							
+							try {
+								wsdl = wsdlReader.read(file.toURI().toURL());
+								break;
+							}
+							catch (WSDLException e) {
+								// Not a WSDL, continue to next file
+							}
+						} catch (Exception e) {
+							logger.error("Failed to extract or parse potential WSDL", e);
 						}
-						catch (WSDLException e) {
-							// Not a WSDL, continue to next file
+					}
+					
+					// Extract relevant metadata
+					if (wsdl != null) {
+						QName portTypeName = wsdl.getInterfaces().get(0).getQName();
+						QName serviceName = wsdl.getServices().get(0).getQName();
+						if (InformationService.DOCTYPE.equals(sourceDocument.getType())) {
+							sourceDocument.setPropertyValue(InformationService.XPATH_SOANAME,
+									new InformationServiceName(ServiceIdentifierType.WEB_SERVICE,
+											portTypeName.getNamespaceURI(), portTypeName.getLocalPart()).toString());
+							sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString());
+							sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_SERVICE_NAME, serviceName.toString());
 						}
-					} catch (Exception e) {
-						logger.error("Failed to extract or parse potential WSDL", e);
+						else {
+							sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString());
+							sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_SERVICE_NAME, serviceName.toString());
+						}
+						documentModified = true;
 					}
-				}
+					
 				
-				// Extract relevant metadata
-				if (wsdl != null) {
-					QName portTypeName = wsdl.getInterfaces().get(0).getQName();
-					QName serviceName = wsdl.getServices().get(0).getQName();
-					if (InformationService.DOCTYPE.equals(sourceDocument.getType())) {
-						sourceDocument.setPropertyValue(InformationService.XPATH_SOANAME,
-								new InformationServiceName(ServiceIdentifierType.WEB_SERVICE,
-										portTypeName.getNamespaceURI(), portTypeName.getLocalPart()).toString());
-						sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString());
-						sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_SERVICE_NAME, serviceName.toString());
-					}
-					else {
-						sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString());
-						sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_SERVICE_NAME, serviceName.toString());
-					}
+				} catch (Exception e) {
+					logger.error("Failed to parse WSDL", e);
+					return;
 				}
-				
-			
-			} catch (Exception e) {
-				logger.error("Failed to parse WSDL", e);
-				return;
-			}
+	        }
         }
 		
 		// Save according to event type
-		if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())) {
+		if (documentModified && DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())) {
 			documentManager.saveDocument(sourceDocument);
 			documentManager.save();
 		}

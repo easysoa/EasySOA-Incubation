@@ -42,6 +42,10 @@
 	    	</td>
 	    	<td><b>&gt;</b></td>
 	    	<td>
+      	  <form style="float: right" method="post">
+      	  	<input type="submit" value="X" style="width: 30px" />
+      	  	<input type="hidden" name="serviceImplId" value="${matchedImpl.id}" />
+      	  </form>
 	    	  <#assign document = matchedImpl>
 	    	  <#include "/views/dashboard/document.ftl">
 	    	</td>
@@ -76,10 +80,6 @@
 	        <tr>
 	        	<td class="clickable serviceImpl">
 	        	  <#assign document = servWithoutSpec>
-	        	  <form style="float: right">
-	        	  	<input type="button" value="X" />
-	        	  	<input type="hidden" name="serviceImplId" value="${document.id}" />
-	        	  </form>
 	        	  <#include "/views/dashboard/document.ftl">
 	        	</td>
 	        </tr>

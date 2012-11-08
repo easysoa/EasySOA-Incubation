@@ -29,9 +29,9 @@ public interface ServiceImplementation extends SoaNode {
 
     static final String XPATH_LINKED_INFORMATION_SERVICE = "impl:linkedInformationService";
 
-    static final String XPATH_WSDL_PORTTYPE_NAME = "impl:wsdlPortTypeName";
+    static final String XPATH_WSDL_PORTTYPE_NAME = "wsdl:wsdlPortTypeName";
 
-    static final String XPATH_WSDL_SERVICE_NAME = "impl:wsdlServiceName";
+    static final String XPATH_WSDL_SERVICE_NAME = "wsdl:wsdlServiceName";
     
     static final String OPERATION_NAME = "operationName";
     

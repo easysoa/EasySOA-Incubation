@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.Logger;
 import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.rest.AbstractRestApiTest;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
@@ -27,6 +28,8 @@ import com.sun.jersey.api.client.WebResource;
  */
 public class DashboardMatchingSamples extends AbstractRestApiTest {
 
+	private static final Logger logger = Logger.getLogger(DashboardMatchingSamples.class);
+	
 	public static void main(String[] args) {
 		new DashboardMatchingSamples("http://localhost:8080").run();
 	}
@@ -46,6 +49,7 @@ public class DashboardMatchingSamples extends AbstractRestApiTest {
 			registryApi.type(MediaType.APPLICATION_JSON_TYPE).post(new SoaNodeInformation(new SoaNodeId(InformationService.DOCTYPE, 
 					new InformationServiceName(ServiceIdentifierType.WEB_SERVICE, "namespace", "itf" + i).toString()),
 					properties, null));
+			logger.info("Information service " + i);
 			properties.clear();
 		}
 		
@@ -55,6 +59,7 @@ public class DashboardMatchingSamples extends AbstractRestApiTest {
 			registryApi.type(MediaType.APPLICATION_JSON_TYPE).post(new SoaNodeInformation(new SoaNodeId(ServiceImplementation.DOCTYPE, 
 					new ServiceImplementationName(ServiceIdentifierType.WEB_SERVICE, "namespace", "itf" + i, "impl" + i).toString()),
 					properties, null)); // The informationService will be set automatically
+			logger.info("Service impl. " + i);
 			properties.clear();
 		}
 	}

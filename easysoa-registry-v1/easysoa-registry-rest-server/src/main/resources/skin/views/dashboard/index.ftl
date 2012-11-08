@@ -25,77 +25,74 @@
 </div>
 
 <div id="container">
-    
-    <h1>Matched services</h1>
-    
-    <table>
-	    <tr>
-		    <th>Information service</th>
-		    <th></th>
-		    <th>Service implementation</th>
-	    </tr>
-    <#list matchedImpls as matchedImpl>
-	    <tr>
-	    	<td>
-	    	  <#assign document = infoServicesById[matchedImpl['impl:linkedInformationService']]>
-	    	  <#include "/views/dashboard/document.ftl">
-	    	</td>
-	    	<td><b>&gt;</b></td>
-	    	<td>
-      	  <form style="float: right" method="post">
-      	  	<input type="submit" value="X" style="width: 30px" />
-      	  	<input type="hidden" name="serviceImplId" value="${matchedImpl.id}" />
-      	  </form>
-	    	  <#assign document = matchedImpl>
-	    	  <#include "/views/dashboard/document.ftl">
-	    	</td>
-	    </tr>
+
+  <#if servWithoutSpecs?has_content>
+  <h1 style="color: red; border-color: red">Service implementations to classify</h1>
+  
+  <table style="width: 500px">
+    <tr>
+      <th style="background-color: #FDC">Service implementation</th>
+    </tr>
+    <#list servWithoutSpecs as servWithoutSpec>
+      <tr>
+      	<td class="clickable serviceImpl">
+      	  <#assign document = servWithoutSpec>
+      	  <#include "/views/dashboard/document.ftl">
+      	</td>
+      </tr>
     </#list>
-    </table>
-    
-    <div style="float: left; width: 520px">
-	    <h1>Unimplemented information services</h1>
-	    <table style="width: 500px">
-	      <tr>
-		      <th>Information service</th>
-	      </tr>
-        <#list unimplementedServs as unimplementedServ>
-	        <tr>
-	        	<td class="clickable infoService">
-	        	  <#assign document = unimplementedServ>
-	        	  <#include "/views/dashboard/document.ftl">
-	        	</td>
-	        </tr>
-        </#list>
-		</table>
-	</div>
+	</table>
 	
-    <div style="float: left; width: 500px">
-	    <h1>Service implementations without specifications</h1>
-	    <table style="width: 500px">
-	      <tr>
-		      <th>Service implementation</th>
-	      </tr>
-        <#list servWithoutSpecs as servWithoutSpec>
-	        <tr>
-	        	<td class="clickable serviceImpl">
-	        	  <#assign document = servWithoutSpec>
-	        	  <#include "/views/dashboard/document.ftl">
-	        	</td>
-	        </tr>
-        </#list>
-		</table>
-	</div>
-    
   <form method="post" style="float: left; width: 100%; margin-top: 10px">
   <fieldset style="width: 400px; padding: 10px;">
-	  Click on an information service and a service implementation, then click:<br />
+	  Click on an a service implementation and an information service without impl, then click:<br />
 	  <input type="submit" value="Create a link" />
 	  <input id="infoServiceId" name="infoServiceId" type="hidden" />
 	  <input id="serviceImplId" name="serviceImplId" type="hidden" />
   </fieldset>    
   </form>
   
+	</#if>
+		
+  <h1>My services</h1>
+  
+  <table>
+    <tr>
+	    <th>Information service</th>
+	    <th></th>
+	    <th>Service implementation</th>
+    </tr>
+  <#list matchedImpls as matchedImpl>
+    <tr>
+    	<td>
+    	  <#assign document = infoServicesById[matchedImpl['impl:linkedInformationService']]>
+    	  <#include "/views/dashboard/document.ftl">
+    	</td>
+    	<td><b>&gt;</b></td>
+    	<td>
+    	  <#if document['wsdl:wsdlPortTypeName'] != matchedImpl['wsdl:wsdlPortTypeName']>
+      	  <form style="float: right" method="post">
+      	  	<input type="submit" value="X" style="width: 30px" />
+      	  	<input type="hidden" name="serviceImplId" value="${matchedImpl.id}" />
+      	  </form>
+    	  </#if>
+    	  <#assign document = matchedImpl>
+    	  <#include "/views/dashboard/document.ftl">
+    	</td>
+    </tr>
+  </#list>
+  <#list unimplementedServs as unimplementedServ>
+    <tr>
+    	<td class="clickable infoService">
+    	  <#assign document = unimplementedServ>
+    	  <#include "/views/dashboard/document.ftl">
+    	</td>
+    	<td>x</td>
+    	<td></td>
+    </tr>
+  </#list>
+  </table>
+    
   <script>
   $(document).ready(function() {
   

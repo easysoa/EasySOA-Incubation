@@ -3,6 +3,37 @@
 
   <extension target="org.easysoa.registry.SoaMetamodelService" point="inheritedFacets">
   	<inheritedFacet name="ServiceImplementationData" />
+    
+    <!-- TODO Support more complex facet inheritance, configured as below: -->
+<!--     <inheritedFacet name="ServiceImplementationData"> -->
+<!--       <transfer> -->
+<!--         <from>ServiceImplementation</from> -->
+<!--         <to>Endpoint</to> -->
+<!--         <selector type="children" /> -->
+<!--       </transfer> -->
+<!--     </inheritedFacet> -->
+    
+<!--     <inheritedFacet name="ComponentData"> -->
+<!--       <transfer> -->
+<!--         <from>Component</from> -->
+<!--         <to>InformationService</to> -->
+<!--         <selector type="uuidInSource"> -->
+<!--           <parameter name="metadata">component_schema:linkedInformationService</parameter> -->
+<!--         </selector> -->
+<!--       </transfer> -->
+<!--       <transfer> -->
+<!--         <from>InformationService</from> -->
+<!--         <to>ServiceImplementation</to> -->
+<!--         <selector type="uuidInTarget"> -->
+<!--           <parameter name="metadata">impl:linkedInformationService</parameter> -->
+<!--         </selector> -->
+<!--       </transfer> -->
+<!--       <transfer> -->
+<!--         <from>ServiceImplementation</from> -->
+<!--         <to>Endpoint</to> -->
+<!--         <selector type="children" /> -->
+<!--       </transfer> -->
+<!--     </inheritedFacet> -->
   </extension>
   
   <extension target="org.easysoa.registry.SoaMetamodelService" point="types">

@@ -3,6 +3,10 @@ package org.easysoa.registry.types.names;
 
 public class InformationServiceName {
 
+	protected static final String JAVA = "java";
+	
+	protected static final String WS = "ws";
+
 	private String fullName;
 	
 	private ServiceIdentifierType type;
@@ -14,8 +18,8 @@ public class InformationServiceName {
 	public InformationServiceName(ServiceIdentifierType type, String namespace,
 			String interfaceName) {
 		switch (type) {
-		case JAVA_INTERFACE: this.fullName = "itf";
-		case WEB_SERVICE: this.fullName = "wsdl";
+		case WEB_SERVICE: this.fullName = WS; break;
+		case JAVA_INTERFACE: this.fullName = JAVA; break;
 		default: this.fullName = "???";
 		}
 		this.fullName += ":" + namespace + ":" + interfaceName;
@@ -29,10 +33,10 @@ public class InformationServiceName {
 		String[] splitName = name.split(":");
 		
 		// Namespace
-		if ("ws".equals(splitName[0])) {
+		if (WS.equals(splitName[0])) {
 			this.type = ServiceIdentifierType.WEB_SERVICE;
 		}
-		else if ("itf".equals(splitName[0])) {
+		else if (JAVA.equals(splitName[0])) {
 			this.type = ServiceIdentifierType.JAVA_INTERFACE;
 		}
 		else {

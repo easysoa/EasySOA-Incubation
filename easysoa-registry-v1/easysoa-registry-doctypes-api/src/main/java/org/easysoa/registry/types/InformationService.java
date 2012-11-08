@@ -3,8 +3,8 @@ package org.easysoa.registry.types;
 
 /**
  * SoaName specs:
- * Either "ws:TARGETNS:NAME=SERVICENAME"
- * Or "itf:PROJECT:INTERFACE=NAME"
+ * Either "ws:TARGETNS:NAME"
+ * Or "java:PROJECT:INTERFACE"
  * 
  * @author mkalam-alami
  *

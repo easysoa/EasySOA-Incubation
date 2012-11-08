@@ -257,18 +257,7 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
-    <repository>
-      <id>nuxeo-studio</id>
-      <url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    
-    <!-- Petals repositories (EasyWSDL lib) -->
+    <!-- Petals repository (EasyWSDL lib) -->
     <repository>
      <id>ebmws-public.release</id>
      <url>http://maven.petalslink.com/public</url>
@@ -279,26 +268,16 @@
       <enabled>false</enabled>
      </snapshots>
     </repository>
-    <repository>
-     <id>ebmws-public-research.release</id>
-     <url>http://maven.petalslink.com/public-research</url>
-     <releases>
-      <enabled>true</enabled>
-     </releases>
-     <snapshots>
-      <enabled>false</enabled>
-     </snapshots>
-    </repository>
-    <repository>
-     <id>ebmws-public.others</id>
-     <url>http://maven.petalslink.com/others</url>
-     <releases>
-      <enabled>true</enabled>
-     </releases>
-     <snapshots>
-      <enabled>false</enabled>
-     </snapshots>
-    </repository>
+<!--     <repository> -->
+<!--       <id>nuxeo-studio</id> -->
+<!--       <url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url> -->
+<!--       <releases> -->
+<!--         <enabled>true</enabled> -->
+<!--       </releases> -->
+<!--       <snapshots> -->
+<!--         <enabled>true</enabled> -->
+<!--       </snapshots> -->
+<!--     </repository> -->
   </repositories>
   <pluginRepositories>
     <pluginRepository>

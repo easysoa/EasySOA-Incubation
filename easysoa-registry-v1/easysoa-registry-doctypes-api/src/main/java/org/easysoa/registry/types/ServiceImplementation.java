@@ -8,7 +8,7 @@ import org.easysoa.registry.types.names.ServiceImplementationName;
 /**
  * SoaName specs:
  * Either "ws:TARGETNS:NAME=SERVICENAME"
- * Or "itf:PROJECT:INTERFACE=NAME"
+ * Or "java:PROJECT:INTERFACE=NAME"
  * 
  * @author mkalam-alami
  *

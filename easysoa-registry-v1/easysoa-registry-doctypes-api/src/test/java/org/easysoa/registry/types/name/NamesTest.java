@@ -19,12 +19,12 @@ public class NamesTest {
 		Assert.assertEquals("servicename", wsTypeName.getImplementationName());
 		Assert.assertEquals("ws:namespace:porttypename", wsTypeName.getInformationServiceSoaName());
 
-		ServiceImplementationName itfTypeName = new ServiceImplementationName("itf:project:interfaceclass=implementationclass");
+		ServiceImplementationName itfTypeName = new ServiceImplementationName("java:project:interfaceclass=implementationclass");
 		Assert.assertEquals(ServiceIdentifierType.JAVA_INTERFACE, itfTypeName.getType());
 		Assert.assertEquals("project", itfTypeName.getNamespace());
 		Assert.assertEquals("interfaceclass", itfTypeName.getInterfaceName());
 		Assert.assertEquals("implementationclass", itfTypeName.getImplementationName());
-		Assert.assertEquals("itf:project:interfaceclass", itfTypeName.getInformationServiceSoaName());
+		Assert.assertEquals("java:project:interfaceclass", itfTypeName.getInformationServiceSoaName());
 		
 	}
 	

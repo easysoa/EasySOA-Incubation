@@ -268,6 +268,7 @@
       <enabled>false</enabled>
      </snapshots>
     </repository>
+<!-- TODO patch nuxeo studio integration, until then uncommented -->
 <!--     <repository> -->
 <!--       <id>nuxeo-studio</id> -->
 <!--       <url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url> -->

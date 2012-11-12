@@ -15,11 +15,11 @@
 
   <dependencies>
     <!-- EasySOA -->
-<!--     <dependency> -->
-<!--       <groupId>org.easysoa.registry</groupId> -->
-<!--       EasySOA Registry Business Doctypes (from Nuxeo Studio) -->
-<!--       <artifactId>easy-soa-open-wide</artifactId> -->
-<!--     </dependency> -->
+    <dependency>
+      <groupId>easysoa</groupId>
+      <!-- EasySOA Registry Business Doctypes (from Nuxeo Studio) -->
+      <artifactId>easy-soa-open-wide</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.easysoa.registry</groupId>
       <artifactId>easysoa-registry-doctypes-api</artifactId>

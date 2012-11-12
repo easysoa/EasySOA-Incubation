@@ -39,27 +39,27 @@
     </inheritedFacet>
     
     <!-- TODO Implement facet ComponentData and attach it to all doctypes below -->
-<!--     <inheritedFacet facetName="ComponentData"> -->
-<!--       <transfer> -->
-<!--         <from>Component</from> -->
-<!--         <to>InformationService</to> -->
-<!--         <selector type="uuidInSource"> -->
-<!--           <parameter name="metadata">component_schema:linkedInformationService</parameter> -->
-<!--         </selector> -->
-<!--       </transfer> -->
-<!--       <transfer> -->
-<!--         <from>InformationService</from> -->
-<!--         <to>ServiceImplementation</to> -->
-<!--         <selector type="uuidInTarget"> -->
-<!--           <parameter name="metadata">impl:linkedInformationService</parameter> -->
-<!--         </selector> -->
-<!--       </transfer> -->
-<!--       <transfer> -->
-<!--         <from>ServiceImplementation</from> -->
-<!--         <to>Endpoint</to> -->
-<!--         <selector type="children" /> -->
-<!--       </transfer> -->
-<!--     </inheritedFacet> -->
+    <inheritedFacet facetName="ComponentData">
+      <transfer>
+        <from>Component</from>
+        <to>InformationService</to>
+        <selector type="uuidInSource">
+          <parameter name="metadata">acomp:linkedInformationService</parameter>
+        </selector>
+      </transfer>
+      <transfer>
+        <from>InformationService</from>
+        <to>ServiceImplementation</to>
+        <selector type="uuidInTarget">
+          <parameter name="metadata">impl:linkedInformationService</parameter>
+        </selector>
+      </transfer>
+      <transfer>
+        <from>ServiceImplementation</from>
+        <to>Endpoint</to>
+        <selector type="children" />
+      </transfer>
+    </inheritedFacet>
   </extension>
 
 </component>

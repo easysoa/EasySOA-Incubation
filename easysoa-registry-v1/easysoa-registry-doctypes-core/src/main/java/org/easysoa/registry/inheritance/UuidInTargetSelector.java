@@ -22,7 +22,7 @@ public class UuidInTargetSelector implements InheritedFacetModelSelector {
 		DocumentService documentService = Framework.getService(DocumentService.class);
 		DocumentModel workingCopy = documentManager.getWorkingCopy(model.getRef());
 		String modelId = (workingCopy != null) ? workingCopy.getId() : model.getId();
-		String sourceQuery = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE AND ? = '?'",
+		String sourceQuery = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE ? = '?'",
 				new Object[]{
 					targetDoctype,
 					parameters.get(PARAMETER_METADATA),
@@ -35,7 +35,12 @@ public class UuidInTargetSelector implements InheritedFacetModelSelector {
 			DocumentModel model, String sourceDoctype, Map<String, String> parameters)
 			throws Exception {
 		String sourceUuid = (String) model.getPropertyValue(parameters.get(PARAMETER_METADATA));
-		return documentManager.getDocument(new IdRef(sourceUuid));
+		if (sourceUuid != null) {
+			return documentManager.getDocument(new IdRef(sourceUuid));
+		}
+		else {
+			return null;
+		}
 	}
 	
 }

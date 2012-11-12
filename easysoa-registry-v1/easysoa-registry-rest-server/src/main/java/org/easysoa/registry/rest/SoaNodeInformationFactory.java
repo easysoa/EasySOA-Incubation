@@ -14,6 +14,7 @@ import org.easysoa.registry.types.SoaNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
 
 public class SoaNodeInformationFactory {
@@ -40,6 +41,7 @@ public class SoaNodeInformationFactory {
                 }
             }
         }
+        properties.put(NXQL.ECM_UUID, model.getId());
         
         // Parent SoaNodes
         List<SoaNodeId> parentDocuments = new LinkedList<SoaNodeId>();

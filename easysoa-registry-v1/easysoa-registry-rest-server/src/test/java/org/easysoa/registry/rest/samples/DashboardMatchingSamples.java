@@ -29,7 +29,7 @@ import com.sun.jersey.api.client.WebResource;
 public class DashboardMatchingSamples extends AbstractRestApiTest {
 
 	private static final Logger logger = Logger.getLogger(DashboardMatchingSamples.class);
-	
+    
 	public static void main(String[] args) {
 		new DashboardMatchingSamples("http://localhost:8080").run();
 	}
@@ -62,6 +62,15 @@ public class DashboardMatchingSamples extends AbstractRestApiTest {
 			logger.info("Service impl. " + i);
 			properties.clear();
 		}
+		
+		// Create component
+		properties.put("dc:title", "My component");
+		properties.put("acomp:linkedInformationService", "25f3854a-3153-4982-8d46-3613de1f1e05");
+		registryApi.type(MediaType.APPLICATION_JSON_TYPE).post(
+				new SoaNodeInformation(new SoaNodeId("Component", "My component"),
+				properties, null));
+		logger.info("My component");
+		properties.clear();
 	}
 	
 }

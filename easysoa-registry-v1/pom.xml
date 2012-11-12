@@ -143,10 +143,10 @@
         <version>${easysoa.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.easysoa.registry</groupId>
+        <groupId>easysoa</groupId>
         <!-- EasySOA Registry Business Doctypes (from Nuxeo Studio) -->
         <artifactId>easy-soa-open-wide</artifactId>
-        <version>1.0.2</version>
+        <version>0.0.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.easysoa.registry</groupId>
@@ -268,17 +268,16 @@
       <enabled>false</enabled>
      </snapshots>
     </repository>
-<!-- TODO patch nuxeo studio integration, until then uncommented -->
-<!--     <repository> -->
-<!--       <id>nuxeo-studio</id> -->
-<!--       <url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url> -->
-<!--       <releases> -->
-<!--         <enabled>true</enabled> -->
-<!--       </releases> -->
-<!--       <snapshots> -->
-<!--         <enabled>true</enabled> -->
-<!--       </snapshots> -->
-<!--     </repository> -->
+    <repository>
+      <id>nuxeo-studio</id>
+      <url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>

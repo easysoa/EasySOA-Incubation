@@ -21,9 +21,11 @@ public class UuidInSourceSelector implements InheritedFacetModelSelector {
 			DocumentModel model, String targetDoctype, Map<String, String> parameters)
 			throws Exception {
 		String targetUuid = (String) model.getPropertyValue(parameters.get(PARAMETER_METADATA));
-		DocumentModel targetDocument = documentManager.getDocument(new IdRef(targetUuid));
 		DocumentModelListImpl targetDocuments = new DocumentModelListImpl();
-		targetDocuments.add(targetDocument);
+		if (targetUuid != null) {
+			DocumentModel targetDocument = documentManager.getDocument(new IdRef(targetUuid));
+			targetDocuments.add(targetDocument);
+		}
 		return targetDocuments;
 	}
 

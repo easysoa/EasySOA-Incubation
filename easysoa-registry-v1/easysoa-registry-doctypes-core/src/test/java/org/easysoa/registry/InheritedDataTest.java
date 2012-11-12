@@ -6,9 +6,12 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.easysoa.registry.test.AbstractRegistryTest;
+import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Endpoint;
+import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -17,7 +20,9 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.runtime.test.runner.Deploy;
 
+@Deploy("studio.extensions.easy-soa-open-wide")
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.CLASS)
 public class InheritedDataTest extends AbstractRegistryTest {
 
@@ -128,6 +133,23 @@ public class InheritedDataTest extends AbstractRegistryTest {
 		myEndpointServiceImpl = myEndpointModel.getAdapter(ServiceImplementation.class);
 		Assert.assertEquals("Inherited facets' metadata must be reset when child is deleted",
 				0, myEndpointServiceImpl.getTests().size());
+	}
+	
+	@Test
+	@Ignore // FIXME Studio project's extension ignored due to unresolved dependency (see early test logs)
+	public void testUuidSelectors() throws Exception {
+		// Link comp > infoservice < serviceimpl by UUIDs
+		DocumentModel infoServModel = documentService.create(documentManager,
+				new SoaNodeId(InformationService.DOCTYPE, "myinfoserv"));
+		myServiceImplModel.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE, infoServModel.getId());
+		documentManager.saveDocument(myServiceImplModel);
+		DocumentModel componentModel = documentService.create(documentManager, new SoaNodeId(Component.DOCTYPE, "mycomp"));
+		componentModel.setPropertyValue(Component.XPATH_LINKED_INFORMATION_SERVICE, infoServModel.getId());
 		
+		// Make sure that comp's metadata has been transfered to infoservice then to serviceimpl
+		myServiceImplModel = documentService.find(documentManager, MYIMPL_ID);
+		Assert.assertEquals("Facet inheritance through UUID metadata must work",
+				myServiceImplModel.getPropertyValue(Component.XPATH_PROVIDER_ACTOR),
+				infoServModel.getId());
 	}
 }

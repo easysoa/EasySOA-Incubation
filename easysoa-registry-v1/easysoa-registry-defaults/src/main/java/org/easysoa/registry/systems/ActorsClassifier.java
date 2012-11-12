@@ -3,6 +3,9 @@ package org.easysoa.registry.systems;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.easysoa.registry.types.BusinessService;
+import org.easysoa.registry.types.Component;
+import org.easysoa.registry.types.InformationService;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
@@ -32,14 +35,14 @@ public class ActorsClassifier implements IntelligentSystemTreeClassifier {
         
         try {
         	String actorMetadata = null;
-        	if ("BusinessService".equals(model.getType())) {
-        		actorMetadata = "businessservice:providerActor";
+        	if (BusinessService.DOCTYPE.equals(model.getType())) {
+        		actorMetadata = BusinessService.XPATH_PROVIDER_ACTOR;
         	}
-        	else if ("InformationService".equals(model.getType())) {
-        		actorMetadata = "informationservice:providerActor";
+        	else if (InformationService.DOCTYPE.equals(model.getType())) {
+        		actorMetadata = InformationService.XPATH_PROVIDER_ACTOR;
         	}
         	else {
-        		actorMetadata = "component_schema:providerActor";
+        		actorMetadata = Component.XPATH_PROVIDER_ACTOR;
         	}
         	String id = (String) model.getPropertyValue(actorMetadata);
         	return documentManager.getDocument(new IdRef(id)).getTitle();

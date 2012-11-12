@@ -12,11 +12,12 @@
     <schema name="environment" src="schemas/environment.xsd" prefix="env" />
     <schema name="deliverable" src="schemas/deliverable.xsd" prefix="del" />
     <schema name="soanode" src="schemas/soanode.xsd" prefix="soan" />
-    <schema name="soaversionable" src="schemas/soaversionable.xsd" prefix="soav" />
-    <schema name="informationservice" src="schemas/informationservice.xsd" prefix="iserv" />
+    <schema name="soaversionable" src="schemas/soa-versionable.xsd" prefix="soav" />
+    <schema name="informationservice" src="schemas/information-service.xsd" prefix="iserv" />
     <schema name="serviceimpl" src="schemas/serviceimpl.xsd" prefix="impl" />
     <schema name="endpoint" src="schemas/endpoint.xsd" prefix="endp" />
     <schema name="wsdlinfo" src="schemas/wsdlinfo.xsd" prefix="wsdl" />
+    <schema name="architecturecomponent" src="schemas/architecture-component.xsd" prefix="acomp" />
   </extension>
 
   <!-- ============= -->
@@ -73,9 +74,13 @@
     <doctype extends="SoaNode" name="SoftwareComponent">
       <facet name="Folderish" />
     </doctype>
+    <facet name="ComponentData">
+      <schema name="architecturecomponent" />
+    </facet>
     <doctype extends="SoaNode" name="InformationService">
       <schema name="informationservice" />
       <schema name="wsdlinfo" />
+      <facet name="ComponentData" />
     </doctype>
 
     <!-- Implementation level -->
@@ -90,6 +95,7 @@
       <schema name="wsdlinfo" />
       <facet name="ServiceImplementationData" />
       <facet name="Folderish" />
+      <facet name="ComponentData" />
     </doctype>
     <doctype extends="SoaNode" name="ServiceConsumption">
     </doctype>
@@ -105,6 +111,7 @@
       <schema name="endpoint" />
       <schema name="wsdlinfo" />
       <facet name="ServiceImplementationData" />
+      <facet name="ComponentData" />
     </doctype>
 
   </extension>

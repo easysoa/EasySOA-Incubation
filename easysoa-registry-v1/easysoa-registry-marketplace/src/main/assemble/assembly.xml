@@ -1,0 +1,70 @@
+<project name="nuxeo-assembly"
+         default="build"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+
+  <property name="outdir" value="${maven.project.build.directory}" />
+
+  <target name="build" description="Build EasySOA Regsitry Marketplace package">
+    <tstamp />
+    <delete failonerror="false" dir="${outdir}/marketplace" />
+    <mkdir dir="${outdir}/marketplace" />
+    <copy todir="${outdir}/marketplace">
+      <fileset dir="src/main/resources" />
+      <filterset>
+        <filter token="VERSION" value="${easysoa.registry.marketplace.version}" />
+        <filter token="DISTRIB_VERSION" value="${nuxeo.distribution.version}" />
+      </filterset>
+    </copy>
+
+    <copy todir="${outdir}/marketplace/install/bundles">
+      <!-- Core -->
+      <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-doctypes-api::jar" />
+      <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-doctypes-core::jar" />
+      <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-rest-core::jar" />
+      <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-rest-server::jar" />
+      <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-rest-client::jar" />
+
+      <!-- Java -->
+      <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-doctypes-java-api::jar" />
+      <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-doctypes-java-core::jar" />
+
+      <!-- Config -->
+      <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-jsf-branding::jar" />
+      <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-defaults::jar" />
+
+      <!-- Deployment -->
+      <!--
+      <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-packaging::jar" />
+      -->
+
+      <!-- Studio -->
+      <artifact:resolveFile key="easysoa:easy-soa-open-wide::jar" />
+    </copy>
+    <!-- Whereas the marketplace build using an EAR is automatically downloading the
+    required libraries, that simpler solution requires you explicitly list them -->
+    <copy todir="${outdir}/marketplace/install/lib">
+      <artifact:resolveFile key="net.sf.jung:jung-api::jar" />
+      <artifact:resolveFile key="net.sf.jung:jung-graph-impl::jar" />
+      <artifact:resolveFile key="net.sf.jung:jung-algorithms::jar" />
+      <artifact:resolveFile key="net.sourceforge.collections:collections-generic::jar" />
+      <artifact:resolveFile key="org.ow2.easywsdl:easywsdl-wsdl::jar" />
+      <artifact:resolveFile key="org.ow2.easywsdl:easywsdl-schema::jar" />
+      <artifact:resolveFile key="com.ebmwebsourcing.easycommons:easycommons.uri::jar" />
+    </copy>
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${easysoa.registry.marketplace.version}.zip"
+         basedir="${outdir}/marketplace" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${easysoa.registry.marketplace.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
+    <!-- Add tomcat distribution -->
+    <copy todir="${outdir}">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-tomcat::zip:nuxeo-cap" />
+    </copy>
+  </target>
+
+</project>

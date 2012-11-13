@@ -44,7 +44,7 @@ public class IntelligentSystemTreeComponent extends DefaultComponent implements 
     public void registerContribution(Object contribution, String extensionPoint,
             ComponentInstance contributor) throws Exception {
         if (EXTENSION_POINT_CLASSIFIERS.equals(extensionPoint)) {
-            IntelligentSystemTreeClassifierDescriptor descriptor = null;
+        	IntelligentSystemTreeClassifierDescriptor descriptor = null;
             try {
                 // Validate descriptor
                 descriptor = (IntelligentSystemTreeClassifierDescriptor) contribution;
@@ -140,7 +140,7 @@ public class IntelligentSystemTreeComponent extends DefaultComponent implements 
                 }
                 
                 // Run classifier!
-                String classification = istEntry.getValue().classify(model);
+                String classification = istEntry.getValue().classify(documentManager, model);
                 
                 // Handling when model is accepted
                 if (classification != null) {

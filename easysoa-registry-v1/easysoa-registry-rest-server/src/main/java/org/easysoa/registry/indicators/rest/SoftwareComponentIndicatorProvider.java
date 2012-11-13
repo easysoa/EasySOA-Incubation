@@ -10,7 +10,7 @@ import java.util.Map;
 
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.Deliverable;
-import org.easysoa.registry.types.Service;
+import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoftwareComponent;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -28,7 +28,7 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
         return Arrays.asList(
                 DoctypeCountIndicator.getName(Deliverable.DOCTYPE),
                 DoctypeCountIndicator.getName(ServiceImplementation.DOCTYPE),
-                DoctypeCountIndicator.getName(Service.DOCTYPE),
+                DoctypeCountIndicator.getName(InformationService.DOCTYPE),
                 DoctypeCountIndicator.getName(SoftwareComponent.DOCTYPE)
                 );
     }
@@ -86,7 +86,7 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                         (serviceCount > 0) ? 100 * implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentServiceIdSet.size() / serviceCount : -1));
        
         HashSet<String> serviceWhithoutImplementationIdSet = new HashSet<String>(serviceCount);
-        DocumentModelList serviceList = session.query(NXQL_SELECT_FROM + Service.DOCTYPE + NXQL_WHERE_NO_PROXY);
+        DocumentModelList serviceList = session.query(NXQL_SELECT_FROM + InformationService.DOCTYPE + NXQL_WHERE_NO_PROXY);
         DocumentService documentService = Framework.getService(DocumentService.class);
         for (DocumentModel service : serviceList) {
             DocumentModelList serviceImpls = documentService.getChildren(session, service.getRef(), ServiceImplementation.DOCTYPE);

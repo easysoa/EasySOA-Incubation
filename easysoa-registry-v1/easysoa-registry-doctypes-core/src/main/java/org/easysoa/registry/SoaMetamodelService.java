@@ -2,6 +2,10 @@ package org.easysoa.registry;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * 
@@ -10,6 +14,10 @@ import java.util.List;
  */
 public interface SoaMetamodelService {
 
+    public static final String EXTENSIONPOINT_TYPES = "types";
+
+    public static final String EXTENSIONPOINT_INHERITEDFACETS = "inheritedFacets";
+    
     Collection<String> getChildren(String type);
     
     /**
@@ -23,4 +31,11 @@ public interface SoaMetamodelService {
      */
     List<String> getPath(String fromType, String toType);
     
+	Set<String> getInheritedFacets(Set<String> filter);
+
+	void applyFacetInheritance(CoreSession documentManager, DocumentModel model,
+			boolean isFacetSource) throws Exception;
+
+	void resetInheritedFacets(DocumentModel model) throws Exception;
+	
 }

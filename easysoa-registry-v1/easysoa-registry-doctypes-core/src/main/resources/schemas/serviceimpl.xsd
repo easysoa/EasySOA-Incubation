@@ -6,6 +6,7 @@
   <xs:element name="technology" type="xs:string" />
   <xs:element name="documentation" type="xs:string" />
   <xs:element name="ismock" type="xs:string" />
+  <xs:element name="linkedInformationService" type="xs:string" />
 
   <xs:complexType name="operation">
     <xs:sequence>

@@ -45,7 +45,7 @@
       </widget>
     </layout>
     
-    <!-- Layout for soanode schema -->
+    <!-- Layout for soaversion schema -->
     <layout name="soaversion">
       <templates>
         <template mode="any">/layouts/layout_default_template.xhtml</template>
@@ -63,6 +63,78 @@
         <fields>
           <field>soav:version</field>
         </fields>
+      </widget>
+    </layout>
+    
+    <!-- Layout for component schema -->
+    <layout name="component">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>component_componentCategory</widget>
+        </row>
+        <row>
+          <widget>component_linkedInformationService</widget>
+        </row>
+      </rows>
+      <widget name="component_componentCategory" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.component.componentCategory</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>acomp:componentCategory</field>
+        </fields>
+      </widget>
+      <widget name="component_linkedInformationService" type="template">
+        <labels>
+          <label mode="any">label.easysoa.layout.component.linkedInformationService</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>acomp:linkedInformationService</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
+      </widget>
+    </layout>
+    
+    <!-- Layout for information service schema -->
+    <layout name="informationservice">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>informationservice_providerActor</widget>
+        </row>
+        <row>
+          <widget>informationservice_linkedBusinessService</widget>
+        </row>
+      </rows>
+      <widget name="informationservice_providerActor" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.informationservice.provideractor</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>iserv:providerActor</field>
+        </fields>
+      </widget>
+      <widget name="informationservice_linkedBusinessService" type="template">
+        <labels>
+          <label mode="any">label.easysoa.layout.informationservice.linkedbusinessservice</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>iserv:linkedBusinessService</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
       </widget>
     </layout>
     
@@ -179,6 +251,9 @@
       </templates>
       <rows>
         <row>
+          <widget>serviceimpl_linkedInformationService</widget>
+        </row>
+        <row>
           <widget>serviceimpl_technology</widget>
         </row>
         <row>
@@ -194,6 +269,18 @@
           <widget>serviceimpl_tests</widget>
         </row>
       </rows>
+      <widget name="serviceimpl_linkedInformationService" type="template">
+        <labels>
+          <label mode="any">label.easysoa.layout.serviceimpl.linkedinformationservice</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>impl:linkedInformationService</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
+      </widget>
       <widget name="serviceimpl_technology" type="text">
         <labels>
           <label mode="any">label.easysoa.layout.serviceimpl.technology</label>
@@ -252,6 +339,39 @@
         <properties widgetMode="view">
           <property name="template">/widgets/easysoa_list_template.xhtml</property>
         </properties>
+      </widget>
+    </layout>
+    
+    <!-- Layout for wsdlinfo schema -->
+    <layout name="wsdlinfo">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>wsdlinfo_wsdlPortTypeName</widget>
+        </row>
+        <row>
+          <widget>wsdlinfo_wsdlServiceName</widget>
+        </row>
+      </rows>
+      <widget name="wsdlinfo_wsdlPortTypeName" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.wsdlinfo.wsdlporttypename</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>wsdl:wsdlPortTypeName</field>
+        </fields>
+      </widget>
+      <widget name="wsdlinfo_wsdlServiceName" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.wsdlinfo.servicename</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>wsdl:wsdlServiceName</field>
+        </fields>
       </widget>
     </layout>
     

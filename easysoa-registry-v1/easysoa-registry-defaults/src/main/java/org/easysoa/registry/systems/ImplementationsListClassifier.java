@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.easysoa.registry.types.ServiceImplementation;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.schema.types.Type;
 
@@ -23,7 +24,7 @@ public class ImplementationsListClassifier implements IntelligentSystemTreeClass
     }
 
     @Override
-    public String classify(DocumentModel model) throws ClientException {
+    public String classify(CoreSession documentManager, DocumentModel model) throws ClientException {
         if (!isInTypeArray(ServiceImplementation.DOCTYPE, model.getDocumentType().getTypeHierarchy())) {
             return null;
         }

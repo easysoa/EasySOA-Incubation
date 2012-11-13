@@ -74,6 +74,24 @@ var server = http.createServer(function(req, res) {
   
     res.write('<h1>I can now delete all your Nuxeo documents.</h1>');
     
+    // EasySOA V1 API
+   /* var request = oa.get('http://localhost:8080/nuxeo/site/easysoa/services',
+	    oa_session.access_token,
+	    oa_session.access_token_secret,
+	    function(error, data) {
+		    if (error) {
+		      res.write('<h3>Or not...</h3>');
+			    res.write(error.data);
+          res.end();
+		    } else {
+		      res.write('<h3>Proof below</h3>');
+		      res.write(JSON.stringify(data));
+		      res.end();
+		    }
+		  }
+		);*/
+		
+		// Nuxeo Automation
 		var request = oa.post('http://localhost:8080/nuxeo/site/automation/Document.Fetch',
 		  oa_session.access_token,
 		  oa_session.access_token_secret,

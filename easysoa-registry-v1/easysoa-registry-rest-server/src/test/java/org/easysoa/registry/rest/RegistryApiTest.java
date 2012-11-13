@@ -15,7 +15,7 @@ import org.easysoa.registry.rest.marshalling.OperationResult;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.Endpoint;
-import org.easysoa.registry.types.Service;
+import org.easysoa.registry.types.InformationService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -51,7 +51,7 @@ public class RegistryApiTest extends AbstractRestApiTest {
 
         // Fill repository for all tests
         for (int i = 0; i < SERVICE_COUNT; i++) {
-            discoveryService.runDiscovery(documentManager, new SoaNodeId(Service.DOCTYPE,
+            discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE,
                     "MyService" + i), null, null);
         }
         documentManager.save();
@@ -59,11 +59,12 @@ public class RegistryApiTest extends AbstractRestApiTest {
         // Fetch one service
         Client client = createAuthenticatedHTTPClient();
         WebResource discoveryRequest = client.resource(discoveryApi.getRootURL())
-                .path(Service.DOCTYPE).path("MyService0");
+                .path(InformationService.DOCTYPE).path("MyService0");
         SoaNodeInformation soaNodeInformation = discoveryRequest.get(SoaNodeInformation.class);
 
         // Check result
-        Assert.assertEquals("Returned SoaNode must have the expected ID", "Service:MyService0",
+        Assert.assertEquals("Returned SoaNode must have the expected ID", 
+        		new SoaNodeId(InformationService.DOCTYPE, "MyService0").toString(),
                 soaNodeInformation.getSoaNodeId().toString());
         Map<String, Serializable> properties = soaNodeInformation.getProperties();
         Assert.assertTrue("Properties must be provided for the document", properties != null
@@ -78,13 +79,13 @@ public class RegistryApiTest extends AbstractRestApiTest {
 
         // Run request
         Client client = createAuthenticatedHTTPClient();
-        WebResource discoveryRequest = client.resource(discoveryApi.getRootURL()).path(Service.DOCTYPE);
+        WebResource discoveryRequest = client.resource(discoveryApi.getRootURL()).path(InformationService.DOCTYPE);
         SoaNodeInformation[] soaNodes = discoveryRequest.get(SoaNodeInformation[].class);
 
         // Check result
         Assert.assertEquals("All registered services must be found", SERVICE_COUNT, soaNodes.length);
         SoaNodeId firstSoaNodeId = soaNodes[0].getSoaNodeId();
-        Assert.assertEquals("'type' property must be provided for each document", "Service",
+        Assert.assertEquals("'type' property must be provided for each document", InformationService.DOCTYPE,
                 firstSoaNodeId.getType());
         Assert.assertEquals("'name' property must be provided for each document", "MyService0",
                 firstSoaNodeId.getName());

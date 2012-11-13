@@ -1,6 +1,7 @@
 package org.easysoa.registry;
 
 import java.util.List;
+import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -19,6 +20,8 @@ public interface DocumentService {
     
     static final String DELETED_DOCUMENTS_QUERY_FILTER = " AND " + NXQL.ECM_LIFECYCLESTATE + " != 'deleted'";
 
+    static final String VERSIONS_QUERY_FILTER = " AND " + NXQL.ECM_ISVERSION + " = 0";
+    
     static final String PROXIES_QUERY_FILTER = " AND " + NXQL.ECM_ISPROXY + " = 0";
     
     static final String NON_PROXIES_QUERY_FILTER = " AND " + NXQL.ECM_ISPROXY + " = 1";
@@ -123,7 +126,11 @@ public interface DocumentService {
      */
     DocumentModelList findAllParents(CoreSession documentManager, DocumentModel documentModel)
             throws Exception;
-    
+
+	DocumentModelList query(CoreSession documentManager, String query,
+			boolean filterProxies, boolean filterNonProxies)
+			throws ClientException;
+	
     boolean hasChild(CoreSession documentManager, DocumentModel document, SoaNodeId childId)
             throws ClientException;
 
@@ -139,16 +146,32 @@ public interface DocumentService {
     List<SoaNodeId> createSoaNodeIds(DocumentModel... models) throws PropertyException, ClientException;
 
     /**
-     * proxy-compliant getChildren()).
-     * If ref is a proxy first gets its actual target.
-     * @return 
-     * @throws ClientException 
+     * Proxy-compliant alternative to CoreSession.getChildren():
+     * If ref is a proxy, gets the children of its actual target.
+     * @param session
+     * @param ref
+     * @param doctype Can be null
+     * @return
+     * @throws ClientException
      */
     DocumentModelList getChildren(CoreSession session, DocumentRef ref,
             String doctype) throws ClientException;
 
 
     boolean isSoaNode(CoreSession documentManager, String doctype) throws ClientException;
-
     
+    boolean isTypeOrSubtype(CoreSession documentManager, String doctypeToTest, String expectedDoctype) throws ClientException;
+
+
+    /**
+     * TODO MDU hack
+     * @param documentManager
+     * @param identifier
+     * @return
+     */
+	DocumentModel findEndpoint(CoreSession documentManager,
+			SoaNodeId identifier, Map<String, Object> properties,
+			List<SoaNodeId> suggestedParentIds /*NOT USED*/, List<SoaNodeId> knownComponentIds)
+					throws ClientException;
+
 }

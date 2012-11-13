@@ -13,7 +13,7 @@ import org.easysoa.registry.types.IntelligentSystem;
 import org.easysoa.registry.types.IntelligentSystemTreeRoot;
 import org.easysoa.registry.types.OperationImplementation;
 import org.easysoa.registry.types.Repository;
-import org.easysoa.registry.types.Service;
+import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoftwareComponent;
 import org.easysoa.registry.types.SystemTreeRoot;
@@ -52,7 +52,7 @@ public class DoctypesTest extends AbstractRegistryTest {
                 IntelligentSystem.DOCTYPE,
                 IntelligentSystemTreeRoot.DOCTYPE,
                 Repository.DOCTYPE,
-                Service.DOCTYPE,
+                InformationService.DOCTYPE,
                 ServiceImplementation.DOCTYPE,
                 SoftwareComponent.DOCTYPE,
                 SystemTreeRoot.DOCTYPE,

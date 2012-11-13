@@ -5,7 +5,7 @@ import org.easysoa.registry.rest.RegistryApi;
 import org.easysoa.registry.rest.marshalling.OperationResult;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.test.AbstractWebEngineTest;
-import org.easysoa.registry.types.Service;
+import org.easysoa.registry.types.InformationService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -29,7 +29,7 @@ public class RestClientTest extends AbstractWebEngineTest {
         Assert.assertNotNull("RegistryApi instanciation must be successful", registryApi);
         
         // Create some document
-        SoaNodeId myServiceId = new SoaNodeId(Service.DOCTYPE, "MyService");
+        SoaNodeId myServiceId = new SoaNodeId(InformationService.DOCTYPE, "MyService");
         OperationResult result = registryApi.post(new SoaNodeInformation(myServiceId, null, null));
         Assert.assertTrue("Creation must be successful", result.isSuccessful());
         

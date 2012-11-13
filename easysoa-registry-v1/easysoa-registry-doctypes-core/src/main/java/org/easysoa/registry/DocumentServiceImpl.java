@@ -2,7 +2,10 @@ package org.easysoa.registry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.easysoa.registry.types.Endpoint;
+import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.IntelligentSystem;
 import org.easysoa.registry.types.Repository;
 import org.easysoa.registry.types.SoaNode;
@@ -19,6 +22,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
+import org.nuxeo.ecm.core.schema.DocumentType;
+import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 
 public class DocumentServiceImpl implements DocumentService {
@@ -26,7 +31,7 @@ public class DocumentServiceImpl implements DocumentService {
     public DocumentModel createDocument(CoreSession documentManager, String doctype, String name, String parentPath, String title) throws ClientException {
         // TODO if doctype belongs to SoaNode subtypes, throw new Exception("createDocument() doesn't work for SoaNode types, rather use create()")
         DocumentModel documentModel = documentManager.createDocumentModel(doctype);
-        documentModel.setPathInfo(parentPath, name);
+        documentModel.setPathInfo(parentPath, safeName(name));
         documentModel.setProperty("dublincore", "title", title);
         documentModel = documentManager.createDocument(documentModel);
         return documentModel;
@@ -36,6 +41,7 @@ public class DocumentServiceImpl implements DocumentService {
         String doctype = identifier.getType(), name = identifier.getName();
  
         if (isSoaNode(documentManager, doctype)) {
+        	// XXX Redundant with RepositoryManagementListener?
             boolean createProxy = false;
             if (!parentPath.equals(getSourceFolderPath(doctype))) {
                 createProxy = true;
@@ -46,9 +52,11 @@ public class DocumentServiceImpl implements DocumentService {
             PathRef sourceRef = new PathRef(getSourcePath(identifier));
             DocumentModel documentModel;
             if (!documentManager.exists(sourceRef)) {
-                documentModel = createDocument(documentManager, doctype, name, getSourceFolderPath(doctype), name);
+            	documentModel = documentManager.createDocumentModel(doctype);
+                documentModel.setPathInfo(getSourceFolderPath(doctype), safeName(name));
+                documentModel.setPropertyValue(SoaNode.XPATH_TITLE, name);
                 documentModel.setPropertyValue(SoaNode.XPATH_SOANAME, name);
-                documentManager.saveDocument(documentModel);
+                documentModel = documentManager.createDocument(documentModel);
             }
             else {
                 documentModel = documentManager.getDocument(sourceRef);
@@ -87,7 +95,7 @@ public class DocumentServiceImpl implements DocumentService {
             DocumentModel documentModel;
             if (!documentManager.exists(sourceRef)) {
                 documentModel = documentManager.createDocumentModel(doctype);
-                documentModel.setPathInfo(getSourceFolderPath(doctype), name);
+                documentModel.setPathInfo(getSourceFolderPath(doctype), safeName(name));
                 documentModel.setPropertyValue("dc:title", name);
                 documentModel.setPropertyValue(SoaNode.XPATH_SOANAME, name);
                 return documentManager.createDocument(documentModel);
@@ -100,7 +108,12 @@ public class DocumentServiceImpl implements DocumentService {
             return null;
         }
     }
-    @Override
+    
+    private String safeName(String name) {
+		return name.replace('/', '|');
+	}
+
+	@Override
     public DocumentModel copy(CoreSession documentManager, DocumentModel sourceModel, DocumentRef ref) throws ClientException {
         if (sourceModel.isProxy()) {
             return documentManager.copy(sourceModel.getRef(), ref, sourceModel.getName());
@@ -136,26 +149,28 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     public DocumentModel findDocument(CoreSession documentManager, String type, String name) throws ClientException {
-        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + NXQL.ECM_NAME + " = '?'"
-                + PROXIES_QUERY_FILTER + DELETED_DOCUMENTS_QUERY_FILTER,
-                new Object[] { type, name },
+        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + NXQL.ECM_NAME + " = '?'",
+                new Object[] { type, safeName(name) },
                 false, true);
-        DocumentModelList results = documentManager.query(query);
+        DocumentModelList results = query(documentManager, query, true, false);
         return results.size() > 0 ? results.get(0) : null;
     }
     
     public DocumentModel find(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
-        return findDocument(documentManager, identifier.getType(), identifier.getName());
+        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'",
+                new Object[] { identifier.getType(), safeName(identifier.getName()) },
+                false, true);
+        DocumentModelList results = query(documentManager, query, true, false);
+        return results.size() > 0 ? results.get(0) : null;
     }
 
     @Override
     public DocumentModelList findProxies(CoreSession documentManager, SoaNodeId identifier)
             throws ClientException {
-        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + NXQL.ECM_NAME + " = '?'"
-                + NON_PROXIES_QUERY_FILTER + DELETED_DOCUMENTS_QUERY_FILTER,
-                new Object[] { identifier.getType(), identifier.getName() },
+        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'",
+                new Object[] { identifier.getType(), safeName(identifier.getName()) },
                 false, true);
-        return documentManager.query(query);
+        return query(documentManager, query, false, true);
     }
 
     public DocumentModelList findProxies(CoreSession documentManager, DocumentModel model) throws ClientException {
@@ -188,15 +203,30 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     public DocumentModelList findAllInstances(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
-        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + NXQL.ECM_NAME + " = '?'"
-                + DELETED_DOCUMENTS_QUERY_FILTER,
-                new Object[] { identifier.getType(), identifier.getName() },
+    	if (identifier == null) {
+    		return new DocumentModelListImpl();
+    	}
+        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'",
+                new Object[] { identifier.getType(), safeName(identifier.getName()) },
                 false, true);
-        return documentManager.query(query);
+        return query(documentManager, query, false, false);
+    }
+    
+    public DocumentModelList query(CoreSession documentManager, String query,
+    		boolean filterProxies, boolean filterNonProxies) throws ClientException {
+    	String filteredQuery = query +
+        		((filterProxies) ? PROXIES_QUERY_FILTER : "") + 
+                ((filterNonProxies) ? NON_PROXIES_QUERY_FILTER : "") + 
+        		DELETED_DOCUMENTS_QUERY_FILTER +
+        		VERSIONS_QUERY_FILTER;
+    	if (!filteredQuery.contains("WHERE")) {
+    		filteredQuery = filteredQuery.replaceFirst("AND", "WHERE");
+    	}
+        return documentManager.query(filteredQuery);
     }
     
     public DocumentModelList findAllInstances(CoreSession documentManager, DocumentModel model) throws ClientException {
-        return findAllInstances(documentManager, createSoaNodeId(model));
+		return findAllInstances(documentManager, createSoaNodeId(model));
     }
     
     public DocumentModelList findAllParents(CoreSession documentManager, DocumentModel documentModel) throws Exception {
@@ -243,7 +273,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
     
     public String getSourcePath(SoaNodeId identifier) {
-        return getSourceFolderPath(identifier.getType()) + '/' + identifier.getName();
+        return getSourceFolderPath(identifier.getType()) + '/' + safeName(identifier.getName());
     }
     
     public void ensureSourceFolderExists(CoreSession documentManager, String doctype) throws ClientException {
@@ -253,7 +283,6 @@ public class DocumentServiceImpl implements DocumentService {
     
     public DocumentModelList getChildren(CoreSession session, DocumentRef parentRef, String type) throws ClientException {
         parentRef = session.getWorkingCopy(parentRef).getRef(); // making sure it's not a proxy
-        ///DocumentModelList serviceProxyList = session.getProxies(parentRef, null);
         return session.getChildren(parentRef, type);
     }
 
@@ -290,8 +319,61 @@ public class DocumentServiceImpl implements DocumentService {
     }
     
     public boolean isSoaNode(CoreSession documentManager, String doctype) throws ClientException {
-        return documentManager.getDocumentType(doctype).getFacets().contains("SoaNode");
+        return documentManager.getDocumentType(doctype).hasSchema(SoaNode.SCHEMA);
     }
+
+	@Override
+	public boolean isTypeOrSubtype(CoreSession documentManager,
+			String doctypeToTest, String expectedDoctype)
+			throws ClientException {
+		if (doctypeToTest == null || expectedDoctype == null) {
+			return false;
+		}
+		if (doctypeToTest.equals(expectedDoctype)) {
+			return true;
+		}
+		DocumentType documentType = documentManager.getDocumentType(doctypeToTest);
+		for (Type parentType : documentType.getTypeHierarchy()) {
+			if (parentType.getName().equals(expectedDoctype)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public DocumentModel findEndpoint(CoreSession documentManager,
+			SoaNodeId identifier, Map<String, Object> properties,
+			List<SoaNodeId> suggestedParentIds /*NOT USED*/, List<SoaNodeId> knownComponentIds)
+					throws ClientException {
+        
+        ArrayList<Object> params = new ArrayList<Object>(5);
+        params.add(identifier.getType());
+        params.add(this.safeName(identifier.getName()));
+        StringBuffer querySbuf = new StringBuffer("SELECT * FROM ? WHERE "
+        		+ SoaNode.XPATH_SOANAME + " = '?'"); // environment:url);
+        
+        // query context restricted to known components :
+        if (knownComponentIds != null) {
+	        for (SoaNodeId knownComponentId : knownComponentIds) {
+	        	querySbuf.append(" AND ? IN soan:parentIds");
+	        	params.add(knownComponentId);
+	        }
+        }
+        
+        // match extracted metas to service'as :
+        Object portTypeName = properties.get(Endpoint.XPATH_WSDL_PORTTYPE_NAME);
+        Object serviceName = properties.get(Endpoint.XPATH_WSDL_SERVICE_NAME);
+        querySbuf.append(" AND " + InformationService.XPATH_WSDL_PORTTYPE_NAME + " = '?'");
+		params.add(portTypeName != null ? portTypeName : "");
+        querySbuf.append(" AND " + InformationService.XPATH_WSDL_SERVICE_NAME + " = '?'");
+        params.add(serviceName != null ? serviceName : "");
+        
+		String query = NXQLQueryBuilder.getQuery(querySbuf.toString(), params.toArray(), false, true);
+        DocumentModelList results = this.query(documentManager, query, true, false);
+        DocumentModel documentModel = results.size() > 0 ? results.get(0) : null;
+		return documentModel;
+	}
 
 
 }

@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.indicators.rest.IndicatorProvider;
 import org.easysoa.registry.indicators.rest.SoftwareComponentIndicatorProvider;
-import org.easysoa.registry.types.Service;
+import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.types.adapters.SoaNodeAdapter;
@@ -74,9 +74,9 @@ public class ServiceDocumentationController extends ModuleRoot {
     public Object doGetHTML() throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         
-        DocumentModelList services = session.query("SELECT " + SERVICE_LIST_PROPS + " FROM " + Service.DOCTYPE + IndicatorProvider.NXQL_WHERE_NO_PROXY);
+        DocumentModelList services = session.query("SELECT " + SERVICE_LIST_PROPS + " FROM " + InformationService.DOCTYPE + IndicatorProvider.NXQL_WHERE_NO_PROXY);
         DocumentModelList tags = session.query("SELECT " + "*" + " FROM " + TaggingFolder.DOCTYPE + IndicatorProvider.NXQL_WHERE_NO_PROXY);
-        DocumentModelList serviceProxies = session.query("SELECT " + "*" + " FROM " + Service.DOCTYPE + IndicatorProvider.NXQL_WHERE_PROXY
+        DocumentModelList serviceProxies = session.query("SELECT " + "*" + " FROM " + InformationService.DOCTYPE + IndicatorProvider.NXQL_WHERE_PROXY
                 + IndicatorProvider.NXQL_AND + IndicatorProvider.NXQL_PATH_STARTSWITH + "/default-domain/repository/TaggingFolder" + "'");
         //DocumentModelList serviceProxyIds = session.query("SELECT " + "ecm:uuid, ecm:parentid" + " FROM " + Service.DOCTYPE + IndicatorProvider.NXQL_WHERE_PROXY
         //        + IndicatorProvider.NXQL_AND + IndicatorProvider.NXQL_PATH_STARTSWITH + "/default-domain/repository/TaggingFolder" + "'");
@@ -117,7 +117,7 @@ public class ServiceDocumentationController extends ModuleRoot {
             }
             tagId2ServiceNbs.put(serviceProxyParentId, serviceProxyNb);
         }*/
-        DocumentModelList untaggedServices = session.query("SELECT " + SERVICE_LIST_PROPS + " FROM " + Service.DOCTYPE + IndicatorProvider.NXQL_WHERE_NO_PROXY
+        DocumentModelList untaggedServices = session.query("SELECT " + SERVICE_LIST_PROPS + " FROM " + InformationService.DOCTYPE + IndicatorProvider.NXQL_WHERE_NO_PROXY
                 + IndicatorProvider.NXQL_AND + " NOT ecm:uuid IN " + SoftwareComponentIndicatorProvider.getProxiedIdLiteralList(session, serviceProxies));
         
         return getView("services")
@@ -136,7 +136,7 @@ public class ServiceDocumentationController extends ModuleRoot {
     public Object doGetByPathHTML(@PathParam("servicePath") String servicePath) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         
-        DocumentModelList services = session.query(IndicatorProvider.NXQL_SELECT_FROM + Service.DOCTYPE
+        DocumentModelList services = session.query(IndicatorProvider.NXQL_SELECT_FROM + InformationService.DOCTYPE
                 + IndicatorProvider.NXQL_WHERE_NO_PROXY + IndicatorProvider.NXQL_AND
                 + "ecm:path='/" + servicePath + "'");
         
@@ -182,10 +182,10 @@ public class ServiceDocumentationController extends ModuleRoot {
  
         DocumentModel tag = session.getWorkingCopy(new PathRef("/" + tagPath)); // unwrapping
         
-        DocumentModelList tagServices = session.query(IndicatorProvider.NXQL_SELECT_FROM + Service.DOCTYPE
+        DocumentModelList tagServices = session.query(IndicatorProvider.NXQL_SELECT_FROM + InformationService.DOCTYPE
                 + IndicatorProvider.NXQL_WHERE_NO_PROXY + IndicatorProvider.NXQL_AND + "ecm:uuid IN "
                 + SoftwareComponentIndicatorProvider.getProxiedIdLiteralList(session,
-                        session.query(IndicatorProvider.NXQL_SELECT_FROM + Service.DOCTYPE
+                        session.query(IndicatorProvider.NXQL_SELECT_FROM + InformationService.DOCTYPE
                 /*+ IndicatorProvider.NXQL_WHERE_PROXY + " AND "*/ + IndicatorProvider.NXQL_WHERE
                 + IndicatorProvider.NXQL_PATH_STARTSWITH + tag.getPathAsString() + IndicatorProvider.NXQL_QUOTE)));
         
@@ -203,7 +203,7 @@ public class ServiceDocumentationController extends ModuleRoot {
 
         DocumentModelList tags = session.query("SELECT " + "*" + " FROM " + TaggingFolder.DOCTYPE + IndicatorProvider.NXQL_WHERE_NO_PROXY);
         
-        DocumentModelList services = session.query(IndicatorProvider.NXQL_SELECT_FROM + Service.DOCTYPE
+        DocumentModelList services = session.query(IndicatorProvider.NXQL_SELECT_FROM + InformationService.DOCTYPE
                 + IndicatorProvider.NXQL_WHERE_NO_PROXY + IndicatorProvider.NXQL_AND
                 + "ecm:path='/" + servicePath + "'");
         
@@ -223,7 +223,7 @@ public class ServiceDocumentationController extends ModuleRoot {
     public Object doPostTagsHTML(@PathParam("servicePath") String servicePath, @FormParam("tagPath") String tagPath) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         
-        DocumentModelList services = session.query(IndicatorProvider.NXQL_SELECT_FROM + Service.DOCTYPE
+        DocumentModelList services = session.query(IndicatorProvider.NXQL_SELECT_FROM + InformationService.DOCTYPE
                 + IndicatorProvider.NXQL_WHERE_NO_PROXY + IndicatorProvider.NXQL_AND
                 + "ecm:path='/" + servicePath + "'");
         DocumentModelList tags = session.query(IndicatorProvider.NXQL_SELECT_FROM + TaggingFolder.DOCTYPE
@@ -247,7 +247,7 @@ public class ServiceDocumentationController extends ModuleRoot {
     public Object doDeleteProxyHTML(@PathParam("serviceProxyPath") String serviceProxyPath, @FormParam("delete") String delete) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         
-        DocumentModelList services = session.query(IndicatorProvider.NXQL_SELECT_FROM + Service.DOCTYPE
+        DocumentModelList services = session.query(IndicatorProvider.NXQL_SELECT_FROM + InformationService.DOCTYPE
                 + IndicatorProvider.NXQL_WHERE_PROXY + IndicatorProvider.NXQL_AND
                 + "ecm:path='/" + serviceProxyPath + "'");
         

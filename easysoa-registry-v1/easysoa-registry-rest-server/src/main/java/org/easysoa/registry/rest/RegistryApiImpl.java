@@ -136,6 +136,7 @@ public class RegistryApiImpl implements RegistryApi {
             }
         }
         catch (Exception e) {
+        	// TODO 500
             throw new Exception("Failed to fetch document " + id.toString(), e);
         }
     }

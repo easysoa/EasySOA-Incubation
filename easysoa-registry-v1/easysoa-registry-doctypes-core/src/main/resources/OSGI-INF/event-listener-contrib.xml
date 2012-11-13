@@ -4,13 +4,26 @@
   <!-- =============== -->
   <!-- Event listeners -->
   <!-- =============== -->
-  
+
+  <!-- Prority set to 150 to run after dcListener, which inits "created" -->
+
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-    <listener name="repositoryManagementListener" class="org.easysoa.registry.RepositoryManagementListener" order="120">
+    <listener name="repositoryManagementListener" class="org.easysoa.registry.RepositoryManagementListener" order="150">
       <event>documentCreated</event>
       <event>documentCreatedByCopy</event>
       <event>documentMoved</event>
       <event>documentModified</event>
+      <event>aboutToRemove</event>
+    </listener>
+    <listener name="serviceMatchingListener" class="org.easysoa.registry.ServiceMatchingListener"
+    	priority="151">
+      <event>documentCreated</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+    <listener name="wsdlParsingListener" class="org.easysoa.registry.WSDLParsingListener"
+      priority="150">
+      <event>documentCreated</event>
+      <event>beforeDocumentModification</event>
     </listener>
   </extension>
 

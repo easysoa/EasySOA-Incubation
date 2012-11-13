@@ -25,7 +25,6 @@ import javax.jws.WebService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 @WebService(endpointInterface = "org.easysoa.samples.paf.PureAirFlowersService", serviceName = "PureAirFlowers")
 public class PureAirFlowersServiceImpl implements PureAirFlowersService {
     

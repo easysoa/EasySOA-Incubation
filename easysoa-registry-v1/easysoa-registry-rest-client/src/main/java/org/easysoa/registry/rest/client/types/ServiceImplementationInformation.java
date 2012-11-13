@@ -11,12 +11,22 @@ import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.OperationImplementation;
 import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.types.names.ServiceImplementationName;
 import org.easysoa.registry.utils.ListUtils;
 
 public class ServiceImplementationInformation extends SoaNodeInformation implements ServiceImplementation {
     
     public ServiceImplementationInformation(String name) {
         super(new SoaNodeId(ServiceImplementation.DOCTYPE, name), null, null);
+    }
+
+    protected ServiceImplementationInformation(String doctype, String name) {
+        super(new SoaNodeId(doctype, name), null, null);
+    }
+    
+    @Override
+    public ServiceImplementationName getParsedSoaName() throws Exception {
+    	return new ServiceImplementationName(this.getSoaName());
     }
     
     public List<OperationImplementation> getOperations() {

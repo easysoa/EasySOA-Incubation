@@ -3,6 +3,7 @@ package org.easysoa.registry.systems;
 import java.util.Map;
 
 import org.easysoa.registry.types.Deliverable;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -19,7 +20,7 @@ public class ApplicationClassifier implements IntelligentSystemTreeClassifier {
     }
 
     @Override
-    public String classify(DocumentModel model) throws Exception {
+    public String classify(CoreSession documentManager, DocumentModel model) throws Exception {
         // Filter non-Maven documents
         if (!Deliverable.DOCTYPE.equals(model.getType())) {
             return null;

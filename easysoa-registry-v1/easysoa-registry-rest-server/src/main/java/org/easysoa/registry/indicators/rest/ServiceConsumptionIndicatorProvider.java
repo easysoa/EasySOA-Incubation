@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SoaNodeId;
-import org.easysoa.registry.types.Service;
+import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceConsumption;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -27,7 +27,7 @@ public class ServiceConsumptionIndicatorProvider implements IndicatorProvider {
         DocumentService documentService = Framework.getService(DocumentService.class);
         
         List<SoaNodeId> servicesIds = documentService.createSoaNodeIds(
-                    session.query(NXQL_SELECT_FROM + Service.DOCTYPE + NXQL_WHERE_NO_PROXY)
+                    session.query(NXQL_SELECT_FROM + InformationService.DOCTYPE + NXQL_WHERE_NO_PROXY)
                     .toArray(new DocumentModel[]{}));
         List<SoaNodeId> unconsumedServiceIds = new ArrayList<SoaNodeId>(servicesIds);
         DocumentModelList serviceConsumptionModels = session.query(NXQL_SELECT_FROM + ServiceConsumption.DOCTYPE + NXQL_WHERE_NO_PROXY);
@@ -37,7 +37,7 @@ public class ServiceConsumptionIndicatorProvider implements IndicatorProvider {
             for (SoaNodeId consumableServiceImpl : consumableServiceImpls) {
                 DocumentModelList consumableParents = documentService.findAllParents(session, documentService.find(session, consumableServiceImpl));
                 for (DocumentModel consumableParent : consumableParents) {
-                    if (Service.DOCTYPE.equals(consumableParent.getType())) {
+                    if (InformationService.DOCTYPE.equals(consumableParent.getType())) {
                         unconsumedServiceIds.remove(documentService.createSoaNodeId(consumableParent));
                     }
                 }

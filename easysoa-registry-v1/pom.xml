@@ -55,6 +55,8 @@
     <nuxeo.version>5.7-SNAPSHOT</nuxeo.version>
     <jung.version>2.0.1</jung.version>
     <collections.generic.version>4.01</collections.generic.version>
+    <easywsdl.version>2.3</easywsdl.version>
+    <easycommons.version>1.1</easycommons.version>
   </properties>
 
   <!-- ======= -->
@@ -226,6 +228,21 @@
         <groupId>net.sourceforge.collections</groupId>
         <artifactId>collections-generic</artifactId>
         <version>${collections.generic.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.easywsdl</groupId>
+        <artifactId>easywsdl-schema</artifactId>
+        <version>${easywsdl.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.easywsdl</groupId>
+        <artifactId>easywsdl-wsdl</artifactId>
+        <version>${easywsdl.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.ebmwebsourcing.easycommons</groupId>
+        <artifactId>easycommons.uri</artifactId>
+        <version>${easycommons.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

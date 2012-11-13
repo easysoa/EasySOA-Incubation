@@ -51,6 +51,9 @@
       <artifact:resolveFile key="net.sf.jung:jung-graph-impl::jar" />
       <artifact:resolveFile key="net.sf.jung:jung-algorithms::jar" />
       <artifact:resolveFile key="net.sourceforge.collections:collections-generic::jar" />
+      <artifact:resolveFile key="org.ow2.easywsdl:easywsdl-wsdl::jar" />
+      <artifact:resolveFile key="org.ow2.easywsdl:easywsdl-schema::jar" />
+      <artifact:resolveFile key="com.ebmwebsourcing.easycommons:easycommons.uri::jar" />
     </copy>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${easysoa.registry.marketplace.version}.zip"

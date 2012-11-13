@@ -5,4 +5,5 @@ Bundle-Name: easysoa-registry-doctypes-preview
 Bundle-ManifestVersion: 1
 Bundle-SymbolicName: org.easysoa.registry.doctypes.preview;singleton:=true
 Nuxeo-Component: OSGI-INF/preview-adapter-contrib.xml,
- OSGI-INF/converter-contrib.xml
+ OSGI-INF/converter-contrib.xml,
+ OSGI-INF/actions-contrib.xml,

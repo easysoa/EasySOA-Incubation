@@ -3,13 +3,15 @@
   <extension target="org.nuxeo.ecm.platform.actions.ActionService"
              point="actions">
 
-    <action id="showFancyBoxPreview" delete="true" />
-
-    <action id="showFancyBoxPreview" order="50" type="fancybox"
+    <action id="showEasySOAFancyBoxPreview" order="10" type="fancybox"
             label="label.document.preview" icon="/icons/contextual_menu/preview.png">
       <category>DOCUMENT_UPPER_ACTION</category>
       <filter-id>view_preview</filter-id>
-      <filter-id>not_anonymous</filter-id>
+      <filter name="easy_soa_preview_filter">
+        <rule grant="true">
+          <facet>SoaNode</facet>
+        </rule>
+      </filter>
       <properties>
         <property name="iframe">
           #{previewActions.getCurrentDocumentPreviewPopupURL()}

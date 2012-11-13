@@ -79,6 +79,9 @@
     
     <!-- Deployment -->
     <module>easysoa-registry-packaging</module>
+
+    <!-- Preview -->
+    <module>easysoa-registry-doctypes-preview</module>
   </modules>
 
   <!-- ============ -->

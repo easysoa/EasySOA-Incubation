@@ -1,0 +1,53 @@
+NUXEO_PATH = ENV['NUXEO_PATH'] || '/data/home/mkalam-alami/bin/nuxeo-cap-5.5-tomcat';
+NUXEO_PLUGINS_PATH = NUXEO_PATH + '/nxserver/plugins';
+
+task :default => [:help]
+
+task :help do
+  puts "Available parameters:"
+  puts " - NUXEO_PATH: specify the path where nuxeo distribution is."
+  puts ""
+  puts "Help commands: "
+  system("rake -T")
+end
+
+desc "Start a server in console output mode"
+task :run do
+  system(NUXEO_PATH + '/bin/nuxeoctl console')
+end
+
+desc "Clean plugins folder on server"
+task :clean do
+  oldJars = Dir[NUXEO_PATH + '/nxserver/plugins/*.jar']
+  puts "> Cleaning", oldJars
+  FileUtils.rm oldJars
+end
+
+desc "Reset data folder on the server"
+task :reset do
+  dataFolder = NUXEO_PATH + '/nxserver/data';
+  puts "> Resetting", dataFolder
+  FileUtils.rm_r dataFolder, :force => true
+end
+
+desc "Build the whole module"
+task :build do
+  system('mvn clean install -DskipTests=true')
+end
+
+desc "Execute test suite"
+task :test do
+  system('mvn clean test')
+end
+
+desc "Execute test suite in debug mode"
+task :test_debug do
+  system('mvn -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8787 -Xnoagent -Djava.compiler=NONE" clean test')
+end
+
+desc "Build and deploy the whole module"
+task :deploy => [:clean, :build] do 
+  newJars = Dir['**/*.jar']
+  puts "> Copying", newJars
+  FileUtils.cp newJars, NUXEO_PLUGINS_PATH
+end

@@ -51,8 +51,10 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <easysoa.version>1.0-SNAPSHOT</easysoa.version>
+    <easysoa.studio.version>0.0.0-SNAPSHOT</easysoa.studio.version>
     <nuxeo.version>5.7-SNAPSHOT</nuxeo.version>
     <jung.version>2.0.1</jung.version>
+    <collections.generic.version>4.01</collections.generic.version>
   </properties>
 
   <!-- ======= -->
@@ -80,6 +82,18 @@
     <!-- Deployment -->
     <module>easysoa-registry-packaging</module>
   </modules>
+
+  <!-- ============ -->
+  <!--  Profiles   -->
+  <!-- ============ -->
+  <profiles>
+      <profile>
+          <id>marketplace</id>
+          <modules>
+              <module>easysoa-registry-marketplace/</module>
+          </modules>
+      </profile>
+  </profiles>
 
   <!-- ============ -->
   <!-- Dependencies -->
@@ -146,7 +160,7 @@
         <groupId>easysoa</groupId>
         <!-- EasySOA Registry Business Doctypes (from Nuxeo Studio) -->
         <artifactId>easy-soa-open-wide</artifactId>
-        <version>0.0.0-SNAPSHOT</version>
+        <version>${easysoa.studio.version}</version>
       </dependency>
       <dependency>
         <groupId>org.easysoa.registry</groupId>
@@ -184,6 +198,16 @@
         <version>${easysoa.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.easysoa.registry</groupId>
+        <artifactId>easysoa-registry-jsf-branding</artifactId>
+        <version>${easysoa.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.easysoa.registry</groupId>
+        <artifactId>easysoa-registry-defaults</artifactId>
+        <version>${easysoa.version}</version>
+      </dependency>
+      <dependency>
         <groupId>net.sf.jung</groupId>
         <artifactId>jung-api</artifactId>
         <version>${jung.version}</version>
@@ -197,6 +221,11 @@
         <groupId>net.sf.jung</groupId>
         <artifactId>jung-algorithms</artifactId>
         <version>${jung.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sourceforge.collections</groupId>
+        <artifactId>collections-generic</artifactId>
+        <version>${collections.generic.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

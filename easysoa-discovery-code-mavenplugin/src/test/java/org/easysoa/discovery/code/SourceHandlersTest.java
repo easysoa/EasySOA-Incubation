@@ -19,6 +19,7 @@ import org.easysoa.registry.rest.client.ClientBuilder;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.test.AbstractWebEngineTest;
+import org.easysoa.registry.test.EasySOAWebEngineFeature;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -55,7 +56,7 @@ public class SourceHandlersTest extends AbstractWebEngineTest {
     public void testSourceHandlers() throws Exception {
         // Init registry client
         ClientBuilder clientBuilder = new ClientBuilder();
-        clientBuilder.setNuxeoSitesUrl(NUXEO_URL);
+        clientBuilder.setNuxeoSitesUrl(EasySOAWebEngineFeature.NUXEO_URL);
         RegistryApi registryApi = clientBuilder.constructRegistryApi();
         
         // Set sources to explore

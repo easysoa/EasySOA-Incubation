@@ -83,6 +83,7 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
     
     @Test
     public void testCorrelationDiscovery() throws Exception {
+        
         // Add correlation information
         List<SoaNodeId> parentDocuments = new LinkedList<SoaNodeId>();
         SoaNodeId deliverableId = new SoaNodeId(Deliverable.DOCTYPE, "org.easysoa.services:myservices");

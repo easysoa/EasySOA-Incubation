@@ -46,11 +46,10 @@ public class ServiceMatchingListener implements EventListener {
         // Service impl: Link to information service
         if (documentService.isTypeOrSubtype(documentManager, sourceDocument.getType(), ServiceImplementation.DOCTYPE)) {
             if (sourceDocument.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE) == null) {
-            	SoaNodeId serviceImplId = documentService.createSoaNodeId(sourceDocument);
-            	String[] splitName = serviceImplId.getName().split("\\=");
+            	String portTypeName = (String) sourceDocument.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME);
             	String infoServiceQuery = NXQLQueryBuilder.getQuery("SELECT * FROM " + InformationService.DOCTYPE + 
-            			" WHERE " + InformationService.XPATH_SOANAME + " = ?",
-            			new Object[] { splitName[0] },
+            			" WHERE " + InformationService.XPATH_WSDL_PORTTYPE_NAME + " = ?",
+            			new Object[] { portTypeName },
             			true, true);
             	DocumentModelList foundInfoServices = documentService.query(documentManager,
             			infoServiceQuery, true, false);
@@ -68,9 +67,9 @@ public class ServiceMatchingListener implements EventListener {
         // Information service: Find matching serviceimpls
         if (documentService.isTypeOrSubtype(documentManager, sourceDocument.getType(), InformationService.DOCTYPE)) {
         	String serviceImplQuery = NXQLQueryBuilder.getQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE + 
-        			" WHERE " + ServiceImplementation.XPATH_SOANAME + " LIKE ?",
-        			new Object[] { documentService.createSoaNodeId(sourceDocument).getName() + '%' },
-        			true, true);
+        			" WHERE " + ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME + " = '?'",
+        			new Object[] { sourceDocument.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME) },
+        			false, true);
         	DocumentModelList foundServiceImpls = documentService.query(documentManager,
         			serviceImplQuery, true, false);
         	if (foundServiceImpls.size() > 0) {

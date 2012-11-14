@@ -23,6 +23,7 @@ package org.easysoa.preview;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
 import org.nuxeo.ecm.core.api.impl.blob.StreamingBlob;
@@ -32,10 +33,7 @@ import org.nuxeo.ecm.core.convert.extension.Converter;
 import org.nuxeo.ecm.core.convert.extension.ConverterDescriptor;
 import org.nuxeo.runtime.services.streaming.InputStreamSource;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -53,29 +51,58 @@ public class WSDLToHtmlConverter implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> params) throws ConversionException {
-
-        File out = null;
+        List<Blob> blobHolderBlobs = null;
         try {
-            out = File.createTempFile("wdslToHtml", ".html");
-            WSDLTransformer.generateHtmlView(blobHolder.getBlob().getStream(),
+            blobHolderBlobs = blobHolder.getBlobs();
+
+            if (blobHolderBlobs == null || blobHolderBlobs.isEmpty()) {
+                return null;
+            }
+
+            List<Blob> blobs = new ArrayList<Blob>();
+            for (Blob blob : blobHolderBlobs) {
+                Blob e = generateHtml(blob);
+                if (e == null) {
+                    continue;
+                }
+
+                blobs.add(e);
+            }
+
+            if (blobs.isEmpty()) {
+                throw new ClientException("Any successful wsdl conversion.");
+            }
+
+            // Put JS file
+            Blob jsBlob = new StreamingBlob(new InputStreamSource(
+                    WSDLToHtmlConverter.class
+                            .getResourceAsStream("/XSLT/wsdl-viewer.js")));
+            jsBlob.setFilename("wsdl-viewer.js");
+            blobs.add(jsBlob);
+            return new SimpleCachableBlobHolder(blobs);
+        } catch (ClientException e) {
+            throw new ConversionException("Unable to generate HTML preview", e);
+        }
+    }
+
+    protected Blob generateHtml(Blob blob) {
+        File out = null;
+
+        try {
+            out = File.createTempFile("wsdlToHtml", ".html");
+            WSDLTransformer.generateHtmlView(blob.getStream(),
                     new FileOutputStream(out));
 
             Blob mainBlob = new FileBlob(new FileInputStream(out), "text/html",
                     "UTF-8");
-            Blob jsBlob = new StreamingBlob(new InputStreamSource(
-                    WSDLToHtmlConverter.class
-                            .getResourceAsStream("/XSLT/wsdl-viewer.js")));
+            mainBlob.setFilename("index-" + blob.getDigest() + ".html");
 
-            mainBlob.setFilename("index.html");
-            jsBlob.setFilename("wsdl-viewer.js");
-
-            List<Blob> blobs = new ArrayList<Blob>();
-            blobs.add(mainBlob);
-            blobs.add(jsBlob);
-            return new SimpleCachableBlobHolder(blobs);
-
+            return mainBlob;
         } catch (Exception e) {
-            throw new ConversionException("Error during html generation", e);
+            log.info("Unable to generato HTML preview for blob: " + blob.getFilename());
+            log.debug(e, e);
+
+            return null;
         } finally {
             if (out != null) {
                 boolean delete = out.delete();

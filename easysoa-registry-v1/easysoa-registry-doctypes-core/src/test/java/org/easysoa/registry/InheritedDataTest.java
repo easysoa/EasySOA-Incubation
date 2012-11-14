@@ -11,7 +11,6 @@ import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -20,11 +19,11 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.runtime.test.runner.Deploy;
 
-@Deploy("studio.extensions.easy-soa-open-wide")
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.CLASS)
 public class InheritedDataTest extends AbstractRegistryTest {
+
+	private static final SoaNodeId MYIS_ID = new SoaNodeId(InformationService.DOCTYPE, "myinfoserv");
 
 	private static final SoaNodeId MYIMPL_ID = new SoaNodeId(ServiceImplementation.DOCTYPE, "MyServiceImpl");
 	
@@ -136,20 +135,24 @@ public class InheritedDataTest extends AbstractRegistryTest {
 	}
 	
 	@Test
-	@Ignore // FIXME Studio project's extension ignored due to unresolved dependency (see early test logs)
 	public void testUuidSelectors() throws Exception {
 		// Link comp > infoservice < serviceimpl by UUIDs
-		DocumentModel infoServModel = documentService.create(documentManager,
-				new SoaNodeId(InformationService.DOCTYPE, "myinfoserv"));
+		DocumentModel infoServModel = documentService.create(documentManager, MYIS_ID);
 		myServiceImplModel.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE, infoServModel.getId());
 		documentManager.saveDocument(myServiceImplModel);
 		DocumentModel componentModel = documentService.create(documentManager, new SoaNodeId(Component.DOCTYPE, "mycomp"));
 		componentModel.setPropertyValue(Component.XPATH_LINKED_INFORMATION_SERVICE, infoServModel.getId());
+		documentManager.saveDocument(componentModel);
+		documentManager.save();
 		
 		// Make sure that comp's metadata has been transfered to infoservice then to serviceimpl
+		DocumentModel myInfoServiceModel = documentService.find(documentManager, MYIS_ID);
+		Assert.assertEquals("Facet inheritance through UUID metadata must work",
+				infoServModel.getId(),
+				myInfoServiceModel.getPropertyValue(Component.XPATH_LINKED_INFORMATION_SERVICE));
 		myServiceImplModel = documentService.find(documentManager, MYIMPL_ID);
 		Assert.assertEquals("Facet inheritance through UUID metadata must work",
-				myServiceImplModel.getPropertyValue(Component.XPATH_PROVIDER_ACTOR),
-				infoServModel.getId());
+				infoServModel.getId(),
+				myServiceImplModel.getPropertyValue(Component.XPATH_LINKED_INFORMATION_SERVICE));
 	}
 }

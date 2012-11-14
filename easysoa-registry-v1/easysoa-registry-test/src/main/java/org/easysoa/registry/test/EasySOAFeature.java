@@ -22,6 +22,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
     
     // Minimal EasySOA requirements
     "org.easysoa.registry.doctypes.api",
+    "studio.extensions.easy-soa-open-wide",
     "org.easysoa.registry.doctypes.core"
 })
 public class EasySOAFeature extends SimpleFeature {

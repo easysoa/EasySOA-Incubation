@@ -37,6 +37,11 @@ public class InheritedFacetDescriptor {
 		@XNodeMap(value = "selector/parameter", key = "@name",
 				componentType = String.class, type = HashMap.class)
 		public Map<String, String> parameters;
+		
+		@Override
+		public String toString() {
+			return "Transfer from " + from + " to " + to + " using selector " + selectorType + parameters;
+		}
 	}
 	
 }

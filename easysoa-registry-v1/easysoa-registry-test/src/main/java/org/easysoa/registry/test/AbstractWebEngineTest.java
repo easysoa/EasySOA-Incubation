@@ -6,21 +6,28 @@ import java.net.URLConnection;
 import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
+import org.junit.runner.RunWith;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.Jetty;
 
 import com.google.inject.Inject;
 
-@Features(WebEngineFeature.class)
+@RunWith(FeaturesRunner.class)
 @Jetty(port=AbstractWebEngineTest.PORT)
+@Features({EasySOAFeature.class, WebEngineFeature.class})
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
-public abstract class AbstractWebEngineTest extends AbstractRegistryTest {
+public abstract class AbstractWebEngineTest {
     
     public static final int PORT = 8082;
 
@@ -30,9 +37,30 @@ public abstract class AbstractWebEngineTest extends AbstractRegistryTest {
 
     @Inject
     protected CoreSession documentManager;
+
+    protected RepositoryLogger repositoryLogger;
     
-    public AbstractWebEngineTest() {
-        setLogRepositoryAfterEachTest(false);
+    protected boolean logRepositoryAfterEachTest = false;
+
+    @Rule
+    public TestName name = new TestName();
+
+    @Before
+    public void setUp() {
+        repositoryLogger = new RepositoryLogger(documentManager);
+    }
+    
+    @After
+    public void logRepository() throws ClientException {
+        if (logRepositoryAfterEachTest) {
+        	documentManager.save();
+            repositoryLogger.setTitle(name.getMethodName());
+            repositoryLogger.logAllRepository();
+        }
+    }
+    
+    public void setLogRepositoryAfterEachTest(boolean logRepositoryAfterEachTest) {
+        this.logRepositoryAfterEachTest = logRepositoryAfterEachTest;
     }
 
     @Before

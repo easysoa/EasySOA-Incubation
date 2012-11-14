@@ -1,10 +1,6 @@
-<project name="nuxeo-assembly"
-         default="build"
-         xmlns:nx="urn:nuxeo-build"
-         xmlns:artifact="urn:nuxeo-artifact">
+<project name="nuxeo-assembly" default="build" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
-  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
-           uri="urn:nuxeo-artifact" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
 
   <property name="outdir" value="${maven.project.build.directory}" />
 
@@ -21,6 +17,11 @@
     </copy>
 
     <copy todir="${outdir}/marketplace/install/bundles">
+      <!-- Nuxeo Classification -->
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-classification-api::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-classification-core::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-classification-web::jar" />
+
       <!-- Core -->
       <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-doctypes-api::jar" />
       <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-doctypes-core::jar" />
@@ -40,6 +41,7 @@
       <!-- Studio -->
       <artifact:resolveFile key="easysoa:easy-soa-open-wide::jar" />
     </copy>
+    
     <!-- Whereas the marketplace build using an EAR is automatically downloading the
     required libraries, that simpler solution requires you explicitly list them -->
     <copy todir="${outdir}/marketplace/install/lib">
@@ -54,11 +56,8 @@
       <artifact:resolveFile key="com.sun.jersey:jersey-client:1.11:jar" />
     </copy>
 
-    <zip destfile="${outdir}/${maven.project.artifactId}-${easysoa.registry.marketplace.version}.zip"
-         basedir="${outdir}/marketplace" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${easysoa.registry.marketplace.version}.zip"
-                     target="${maven.project.groupId}:${maven.project.artifactId}"
-                     type="zip" />
+    <zip destfile="${outdir}/${maven.project.artifactId}-${easysoa.registry.marketplace.version}.zip" basedir="${outdir}/marketplace" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${easysoa.registry.marketplace.version}.zip" target="${maven.project.groupId}:${maven.project.artifactId}" type="zip" />
     <!-- Add tomcat distribution -->
     <copy todir="${outdir}">
       <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-tomcat::zip:nuxeo-cap" />

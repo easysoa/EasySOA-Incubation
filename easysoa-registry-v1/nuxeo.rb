@@ -10,7 +10,23 @@ MARKETPLACE_BUILD_OUTPUT = './easysoa-registry-marketplace/target/'
       
 def nuxeoctl()
   Dir[MARKETPLACE_BUILD_OUTPUT + 'nuxeo-cap-*-tomcat/bin/nuxeoctl'][0]
+end 
+
+def displayHelp()
+  puts '', '> HELP'
+  puts 'build: Build with Maven'
+  puts 'fastbuild: Build with Maven, skip the tests to go faster'
+  puts 'test: Run the Maven tests only'
+  puts 'deploy: Unzip the Nuxeo distribution if necessary, installs the built EasySOA package'
+  puts 'reset: Deletes the unzipped Nuxeo distribution'
+  puts 'run: Runs Nuxeo'
+  puts ''
+  puts '> EXAMPLES'
+  puts './nuxeo.rb test'
+  puts './nuxeo.rb fastbuild deploy run'
+  puts './nuxeo.rb reset deploy run', ''
 end
+
 
 ARGV.each do |arg|
 
@@ -20,6 +36,9 @@ ARGV.each do |arg|
       system('mvn test')
       
     when 'build'
+      system('mvn clean install -DskipTests=true -Pmarketplace')
+    
+    when 'fastbuild'
       system('mvn clean install -DskipTests=true -Pmarketplace')
     
     when 'deploy'
@@ -53,8 +72,12 @@ ARGV.each do |arg|
       FileUtils.rm_r nuxeoPath, :force => true
     
     else
-      puts '> HELP', '> Available commands : test, build, deploy, run, reset'
-
+      displayHelp()
+      
   end
   
+end
+
+if ARGV.empty?
+  displayHelp()
 end

@@ -1,45 +1,59 @@
 #!/usr/bin/env ruby
 
+# WARNING: Linux/Cygwin-dependant
+
 require 'fileutils'
 require 'net/http'
 
-# CONFIGURATION
-
-NUXEO_PATH = '/data/home/mkalam-alami/nuxeo-cap-5.5-tomcat';
-
-# SCRIPT
+EASYSOA_VERSION = '1.0.0-SNAPSHOT' # TODO Extract value from filename
+MARKETPLACE_BUILD_OUTPUT = './easysoa-registry-marketplace/target/'
+      
+def nuxeoctl()
+  Dir[MARKETPLACE_BUILD_OUTPUT + 'nuxeo-cap-*-tomcat/bin/nuxeoctl'][0]
+end
 
 ARGV.each do |arg|
 
   case arg
     
     when 'test'
-      exec('mvn test')
-      
-    when 'debug'
-      exec('mvn -Dmaven.surefire.debug="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8787 -Xnoagent -Djava.compiler=NONE" test')
+      system('mvn test')
       
     when 'build'
-      exec('mvn clean install -DskipTests=true')
-      
+      system('mvn clean install -DskipTests=true -Pmarketplace')
+    
     when 'deploy'
-      oldJars = Dir[NUXEO_PATH + '/nxserver/plugins/easysoa-*.jar']
-      puts "> Deleting", oldJars
-      FileUtils.rm oldJars
-      newFiles = Dir['easysoa-registry-packaging/target/nxserver']
-      puts "> Copying", newFiles
-      FileUtils.cp_r newFiles, NUXEO_PATH
+      nuxeoPath = Dir[MARKETPLACE_BUILD_OUTPUT + 'nuxeo-cap-*-tomcat'][0]
       
+      if nuxeoPath.nil?
+        capDistribPath = Dir[MARKETPLACE_BUILD_OUTPUT + 'nuxeo-distribution-*.zip'][0]
+        puts '> Unzipping ' + capDistribPath + '...'
+        system('unzip -q ' + capDistribPath + ' -d ' + MARKETPLACE_BUILD_OUTPUT)
+        
+        puts '', '> Initializing Nuxeo distribution...'
+        nuxeoctlPath = nuxeoctl()
+        system('chmod +x ' + nuxeoctlPath)
+        system(nuxeoctlPath + ' mp-init')
+        puts
+      end
+      
+      nuxeoctlPath = nuxeoctl()
+      puts '> Uninstalling package "easy-soa-' + EASYSOA_VERSION  + '"...'
+      system(nuxeoctlPath + ' --accept=true mp-remove easy-soa-' + EASYSOA_VERSION)
+      
+      puts '', '> Installing new EasySOA package...'
+      system(nuxeoctlPath + ' --accept=true mp-install ' + Dir[MARKETPLACE_BUILD_OUTPUT + 'easysoa-registry-marketplace-*.zip'][0])
+     
     when 'run'
-      exec(NUXEO_PATH + '/bin/nuxeoctl console')
+      system(nuxeoctl() + ' console')
     
     when 'reset'
-      dataFolder = NUXEO_PATH + '/nxserver/data';
-      puts "> Deleting", dataFolder
-      FileUtils.rm_r dataFolder, :force => true
+      nuxeoPath = Dir[MARKETPLACE_BUILD_OUTPUT + 'nuxeo-cap-*-tomcat'][0]
+      puts '> Deleting', nuxeoPath
+      FileUtils.rm_r nuxeoPath, :force => true
     
     else
-      puts 'Available commands: test, debug, build, deploy, run, reset'
+      puts '> HELP', '> Available commands : test, build, deploy, run, reset'
 
   end
   

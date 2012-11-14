@@ -16,6 +16,8 @@ public interface SoaNode extends Document {
     public static final String XPATH_ISPLACEHOLDER = "soan:isplaceholder";
 
     public static final String XPATH_PARENTSIDS = "soan:parentIds";
+
+    public static final String FACET = "SoaNode";
     
     SoaNodeId getSoaNodeId() throws Exception;
 

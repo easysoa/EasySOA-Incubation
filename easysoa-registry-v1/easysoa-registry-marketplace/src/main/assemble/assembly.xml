@@ -27,6 +27,7 @@
       <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-rest-core::jar" />
       <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-rest-server::jar" />
       <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-rest-client::jar" />
+      <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-doctypes-preview::jar" />
 
       <!-- Java -->
       <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-doctypes-java-api::jar" />
@@ -35,11 +36,6 @@
       <!-- Config -->
       <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-jsf-branding::jar" />
       <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-defaults::jar" />
-
-      <!-- Deployment -->
-      <!--
-      <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-packaging::jar" />
-      -->
 
       <!-- Studio -->
       <artifact:resolveFile key="easysoa:easy-soa-open-wide::jar" />

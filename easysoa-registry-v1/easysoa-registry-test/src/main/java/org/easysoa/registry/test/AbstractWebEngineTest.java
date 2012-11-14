@@ -30,7 +30,7 @@ import com.google.inject.Inject;
 @RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
 public abstract class AbstractWebEngineTest {
     
-    public static final int PORT = 8082;
+    public static final int PORT = 8080;
 
     public static final String NUXEO_URL = "http://localhost:" + PORT + "/";
 

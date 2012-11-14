@@ -5,6 +5,7 @@ import org.easysoa.registry.rest.RegistryApi;
 import org.easysoa.registry.rest.marshalling.OperationResult;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.test.AbstractWebEngineTest;
+import org.easysoa.registry.test.EasySOAWebEngineFeature;
 import org.easysoa.registry.types.InformationService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -20,7 +21,7 @@ public class RestClientTest extends AbstractWebEngineTest {
     
     public RestClientTest() {
         ClientBuilder clientBuilder = new ClientBuilder();
-        clientBuilder.setNuxeoSitesUrl(NUXEO_URL);
+        clientBuilder.setNuxeoSitesUrl(EasySOAWebEngineFeature.NUXEO_URL);
         registryApi = clientBuilder.constructRegistryApi();
     }
     

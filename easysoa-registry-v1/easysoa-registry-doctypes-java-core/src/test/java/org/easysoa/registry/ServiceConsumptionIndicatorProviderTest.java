@@ -9,6 +9,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.rest.client.ClientBuilder;
 import org.easysoa.registry.test.AbstractWebEngineTest;
+import org.easysoa.registry.test.EasySOAWebEngineFeature;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.java.JavaServiceConsumption;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
@@ -75,7 +76,7 @@ public class ServiceConsumptionIndicatorProviderTest extends AbstractWebEngineTe
         // Compute indicators
         
         ClientBuilder clientBuilder = new ClientBuilder();
-        clientBuilder.setNuxeoSitesUrl(NUXEO_URL);
+        clientBuilder.setNuxeoSitesUrl(EasySOAWebEngineFeature.NUXEO_URL);
         WebResource easySOAClient = clientBuilder.constructEasySOAClient();
         
         String indicatorsString = easySOAClient.accept(MediaType.APPLICATION_JSON).get(String.class);

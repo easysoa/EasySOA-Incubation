@@ -1,6 +1,9 @@
 package org.easysoa.registry.test;
 
+import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.LocalDeploy;
 import org.nuxeo.runtime.test.runner.SimpleFeature;
 
 /**
@@ -25,6 +28,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
     "studio.extensions.easy-soa-open-wide",
     "org.easysoa.registry.doctypes.core"
 })
+@LocalDeploy({"org.easysoa.registry.test:directory-config.xml"})
 public class EasySOAFeature extends SimpleFeature {
 
 //    private static Logger logger = Logger.getLogger(EasySOAFeature.class);

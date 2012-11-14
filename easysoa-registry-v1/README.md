@@ -1,6 +1,6 @@
 <img src="https://github.com/easysoa/EasySOA/wiki/logo.png" height="80" />
 
-***NOTE***: *This is the incubation project for EasySOA 1.0. It's code is a full rewrite of the registry from [the main repository](https://github.com/easysoa/EasySOA).*
+***NOTE***: *This is the incubation project for EasySOA 1.0. Its code is a full rewrite of the registry from [the main repository](https://github.com/easysoa/EasySOA).*
 
 ## Introduction
 

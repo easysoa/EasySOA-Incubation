@@ -64,7 +64,6 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         foundImpl = documentService.find(documentManager, SECOND_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must be linked to existing matching information service", foundInfoServ.getId(),
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
-        
     }
     
 }

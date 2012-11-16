@@ -45,23 +45,8 @@ public class ServiceMatchingListener implements EventListener {
 
         // Service impl: Link to information service
         if (documentService.isTypeOrSubtype(documentManager, sourceDocument.getType(), ServiceImplementation.DOCTYPE)) {
-            if (sourceDocument.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE) == null) {
-            	String portTypeName = (String) sourceDocument.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME);
-            	String infoServiceQuery = NXQLQueryBuilder.getQuery("SELECT * FROM " + InformationService.DOCTYPE + 
-            			" WHERE " + InformationService.XPATH_WSDL_PORTTYPE_NAME + " = ?",
-            			new Object[] { portTypeName },
-            			true, true);
-            	DocumentModelList foundInfoServices = documentService.query(documentManager,
-            			infoServiceQuery, true, false);
-            	if (foundInfoServices.size() > 0) {
-            		sourceDocument.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE,
-            				foundInfoServices.get(0).getId());
-            		if (!event.getName().equals(DocumentEventTypes.BEFORE_DOC_UPDATE)) {
-            			documentManager.saveDocument(sourceDocument);
-            			documentManager.save();
-            		}
-            	}
-            }
+        	lookForAnInformationServiceToMatch(documentManager, documentService, sourceDocument, 
+        			!event.getName().equals(DocumentEventTypes.BEFORE_DOC_UPDATE));
         }
 
         // Information service: Find matching serviceimpls
@@ -73,14 +58,37 @@ public class ServiceMatchingListener implements EventListener {
         	DocumentModelList foundServiceImpls = documentService.query(documentManager,
         			serviceImplQuery, true, false);
         	if (foundServiceImpls.size() > 0) {
+        		if (event.getName().equals(DocumentEventTypes.BEFORE_DOC_UPDATE)) {
+	        		documentManager.saveDocument(sourceDocument);
+	        		documentManager.save();
+        		}
             	for (DocumentModel serviceImpl : foundServiceImpls) {
-            		serviceImpl.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE, sourceDocument.getId());
-            		documentManager.saveDocument(serviceImpl);
+            		lookForAnInformationServiceToMatch(documentManager, documentService, serviceImpl, true);
             	}
-    			documentManager.save();
         	}
         }
         
+	}
+
+	private void lookForAnInformationServiceToMatch(CoreSession documentManager,
+			DocumentService documentService, DocumentModel serviceImplModel, boolean save) throws ClientException {
+    	if (serviceImplModel.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE) == null) {
+        	String portTypeName = (String) serviceImplModel.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME);
+        	String infoServiceQuery = NXQLQueryBuilder.getQuery("SELECT * FROM " + InformationService.DOCTYPE + 
+        			" WHERE " + InformationService.XPATH_WSDL_PORTTYPE_NAME + " = ?",
+        			new Object[] { portTypeName },
+        			true, true);
+        	DocumentModelList foundInfoServices = documentService.query(documentManager,
+        			infoServiceQuery, true, false);
+        	if (foundInfoServices.size() > 0) {
+        		serviceImplModel.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE,
+        				foundInfoServices.get(0).getId());
+        		if (save) {
+        			documentManager.saveDocument(serviceImplModel);
+        			documentManager.save();
+        		}
+        	}
+        }
 	}
 
 }

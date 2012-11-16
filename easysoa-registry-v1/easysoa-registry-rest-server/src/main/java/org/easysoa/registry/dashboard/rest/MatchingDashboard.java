@@ -1,12 +1,15 @@
 package org.easysoa.registry.dashboard.rest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.InformationService;
@@ -71,6 +74,34 @@ public class MatchingDashboard extends ModuleRoot {
 			return view;
 		} catch (Exception e) {
 			return getView("error").arg("error", e);
+		}
+	}
+	
+	@GET
+	@Path("suggest/{serviceImplUuid}")
+	public List<DocumentModel> getSuggestions(@PathParam("serviceImplUuid") String serviceImplUuid) throws Exception {
+		return getSuggestions(serviceImplUuid, null);
+	}
+
+	@GET
+	@Path("suggest/{serviceImplUuid}/{componentUuid}")
+	public List<DocumentModel> getSuggestions(@PathParam("serviceImplUuid") String serviceImplUuid,
+			@PathParam("componentUuid") String componentUuid) throws Exception {
+		if (serviceImplUuid != null) {
+	        CoreSession session = SessionFactory.getSession(request);
+			DocumentService docService = Framework.getService(DocumentService.class);
+			//DocumentModel serviceImpl = session.getDocument(new IdRef(serviceImplUuid));
+			
+			// TODO Find matching information services only
+			String informationServiceQuery = "SELECT * FROM " + InformationService.DOCTYPE;
+			if (componentUuid != null) {
+				// TODO Add filter to query
+				informationServiceQuery += "";
+			}
+			return docService.query(session, informationServiceQuery, true, false);
+		}
+		else {
+			return new ArrayList<DocumentModel>();
 		}
 	}
 

@@ -36,6 +36,10 @@
     <#list servWithoutSpecs as servWithoutSpec>
       <tr>
       	<td class="clickable serviceImpl">
+      	  <div style="float: right">
+      	  	<input class="suggestions" type="button" value="Get suggestions" />
+      	  	<input class="components" type="hidden" value="Select component" />
+      	  </div>
       	  <#assign document = servWithoutSpec>
       	  <#include "/views/dashboard/document.ftl">
       	</td>
@@ -101,16 +105,15 @@
     if ($el.hasClass('infoService')) {
       $('.infoService').removeClass('selected');
       $el.addClass('selected');
-      $('#infoServiceId').attr('value', $('.id', $el).html());
+      $('#infoServiceId').attr('value', getId($el));
     }
     else {
       $('.serviceImpl').removeClass('selected');
       $el.addClass('selected');
-      $('#serviceImplId').attr('value', $('.id', $el).html());
+      $('#serviceImplId').attr('value', getId($el));
     }
   });
   
-  });
   </script>
     
 </div>

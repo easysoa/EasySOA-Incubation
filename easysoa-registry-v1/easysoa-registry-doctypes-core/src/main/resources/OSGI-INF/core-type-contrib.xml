@@ -77,10 +77,13 @@
     <facet name="ComponentData">
       <schema name="architecturecomponent" />
     </facet>
+    <facet name="WsdlInfo">
+      <schema name="wsdlinfo" />
+    </facet>
     <doctype extends="SoaNode" name="InformationService">
       <schema name="informationservice" />
-      <schema name="wsdlinfo" />
       <facet name="ComponentData" />
+      <facet name="WsdlInfo" />
     </doctype>
 
     <!-- Implementation level -->
@@ -92,7 +95,7 @@
       <schema name="serviceimpl" />
     </facet>
     <doctype extends="SoaNode" name="ServiceImplementation">
-      <schema name="wsdlinfo" />
+      <facet name="WsdlInfo" />
       <facet name="ServiceImplementationData" />
       <facet name="Folderish" />
       <facet name="ComponentData" />
@@ -109,7 +112,7 @@
     <doctype extends="SoaNode" name="Endpoint">
       <schema name="environment" />
       <schema name="endpoint" />
-      <schema name="wsdlinfo" />
+      <facet name="WsdlInfo" />
       <facet name="ServiceImplementationData" />
       <facet name="ComponentData" />
     </doctype>

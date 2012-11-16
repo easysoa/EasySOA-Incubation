@@ -157,7 +157,7 @@
           <widget>deliverable_dependencies</widget>
         </row>
       </rows>
-      <widget name="deliverable_nature" type="text">
+      <widget name="deliverable_nature" type="selectOneDirectory">
         <labels>
           <label mode="any">label.easysoa.layout.deliverable.nature</label>
         </labels>
@@ -165,6 +165,13 @@
         <fields>
           <field>del:nature</field>
         </fields>
+        <properties mode="any">
+          <property name="directoryName">deliverable_nature</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
       </widget>
       <widget name="deliverable_application" type="text">
         <labels>

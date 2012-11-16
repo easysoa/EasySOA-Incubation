@@ -14,10 +14,10 @@ end
 
 def displayHelp()
   puts '', '> HELP'
-  puts 'build: Build with Maven'
-  puts 'fastbuild: Build with Maven, skip the tests to go faster'
+  puts 'build: Build with Maven. WARNING: Will delete your Nuxeo data/setup'
+  puts 'fastbuild: Build with Maven, skip the tests to go faster. WARNING: Will delete your Nuxeo data/setup'
   puts 'test: Run the Maven tests only'
-  puts 'deploy: Unzip the Nuxeo distribution if necessary, installs the built EasySOA package'
+  puts 'deploy: Unzip the Nuxeo distribution if necessary, deploys the EasySOA marketplace package'
   puts 'reset: Deletes the unzipped Nuxeo distribution'
   puts 'run: Runs Nuxeo'
   puts ''

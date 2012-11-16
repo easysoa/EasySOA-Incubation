@@ -21,6 +21,7 @@ import org.easysoa.discovery.code.model.JavaServiceInterfaceInformation;
 import org.easysoa.registry.rest.client.types.InformationServiceInformation;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.OperationImplementation;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
 
@@ -202,6 +203,11 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                     JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(
                     		wsNamespace + ":" + wsName + "=" + serviceName);
                     serviceImpl.setTitle(c.getName());
+                	// TODO Cleaner porttype/servicename discovery + revert soanodeid
+                    serviceImpl.setProperty(JavaServiceImplementation.XPATH_WSDL_PORTTYPE_NAME,
+                    		"{" + wsNamespace + "}" + wsName);
+                    serviceImpl.setProperty(JavaServiceImplementation.XPATH_WSDL_SERVICE_NAME,
+                    		"{" + wsNamespace + "}" + serviceName);
                     serviceImpl.setProperty(JavaServiceImplementation.XPATH_TECHNOLOGY, "JAX-WS");
                     serviceImpl.setProperty(JavaServiceImplementation.XPATH_ISMOCK,
                             c.getSource().getURL().getPath().contains("src/test/"));
@@ -218,8 +224,10 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                     
                     if (itfClass != null) {
                         // Extract service info
+                    	// TODO Cleaner porttype discovery
                         String itfClassName = itfClass.getName();
                         InformationServiceInformation informationService = new InformationServiceInformation(wsNamespace + ":" + wsName);
+                        informationService.setProperty(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{" + wsNamespace + "}" + wsName);
                         informationService.setTitle(itfClassName.substring(itfClassName.lastIndexOf(".") + 1));
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_DOCUMENTATION, itfClass.getComment());
                         discoveredNodes.add(informationService);

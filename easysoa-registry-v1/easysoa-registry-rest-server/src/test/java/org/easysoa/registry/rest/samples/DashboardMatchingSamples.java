@@ -15,6 +15,7 @@ import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.names.InformationServiceName;
 import org.easysoa.registry.types.names.ServiceIdentifierType;
 import org.easysoa.registry.types.names.ServiceImplementationName;
+import org.junit.Ignore;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -26,6 +27,7 @@ import com.sun.jersey.api.client.WebResource;
  * @author mkalam-alami
  *
  */
+@Ignore
 public class DashboardMatchingSamples extends AbstractRestApiTest {
 
 	private static final Logger logger = Logger.getLogger(DashboardMatchingSamples.class);

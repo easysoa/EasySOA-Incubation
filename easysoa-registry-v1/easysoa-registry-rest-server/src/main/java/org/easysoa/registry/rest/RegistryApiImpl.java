@@ -7,15 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 
 import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
@@ -42,13 +35,10 @@ import org.nuxeo.runtime.api.Framework;
  * 
  */
 @Path("easysoa/registry")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
 public class RegistryApiImpl implements RegistryApi {
     
     @Context HttpServletRequest request;
 
-    @POST
     public OperationResult post(SoaNodeInformation soaNodeInfo) throws Exception {
         try {
             // Initialization
@@ -65,9 +55,6 @@ public class RegistryApiImpl implements RegistryApi {
         }
     }
     
-    @POST
-    @Path("query")
-    @Consumes(MediaType.TEXT_PLAIN)
     public SoaNodeInformation[] query(String query) throws Exception {
         try {
             CoreSession documentManager = SessionFactory.getSession(request);
@@ -83,17 +70,13 @@ public class RegistryApiImpl implements RegistryApi {
         }
     }
     
-    @GET
     public SoaNodeInformation get() throws Exception {
         CoreSession documentManager = SessionFactory.getSession(request);
         DocumentModel document = documentManager.getDocument(new PathRef("/default-domain/workspaces"));
         return SoaNodeInformationFactory.create(documentManager, document); // FIXME WorkspaceRoot is not a SoaNode
     }
 
-    @GET
-    @Path("{doctype}")
-    public SoaNodeInformation[] get(
-            @PathParam("doctype") String doctype) throws Exception {
+    public SoaNodeInformation[] get(String doctype) throws Exception {
         // Initialization
         CoreSession documentManager = SessionFactory.getSession(request);
         DocumentService documentService = Framework.getService(DocumentService.class);
@@ -116,10 +99,7 @@ public class RegistryApiImpl implements RegistryApi {
         return modelsToMarshall.toArray(new SoaNodeInformation[]{});
     }
 
-    @GET
-    @Path("{doctype}/{name}")
-    public SoaNodeInformation get(
-            @PathParam("doctype") String doctype, @PathParam("name") String name) throws Exception {
+    public SoaNodeInformation get(String doctype, String name) throws Exception {
         SoaNodeId id = new SoaNodeId(doctype, name);
         try {
             // Initialization
@@ -141,10 +121,7 @@ public class RegistryApiImpl implements RegistryApi {
         }
     }
 
-    @DELETE
-    @Path("{doctype}/{name}")
-    public OperationResult delete(
-            @PathParam("doctype") String doctype, @PathParam("name") String name) throws ClientException {
+    public OperationResult delete(String doctype, String name) throws ClientException {
         SoaNodeId soaNodeId = new SoaNodeId(doctype, name);
         try {
             // Initialization
@@ -160,12 +137,8 @@ public class RegistryApiImpl implements RegistryApi {
         }
     }
     
-    @DELETE
-    @Path("{doctype}/{name}/{correlatedDoctype}/{correlatedName}")
-    public OperationResult delete(
-            @PathParam("doctype") String doctype, @PathParam("name") String name,
-            @PathParam("correlatedDoctype") String correlatedDoctype,
-            @PathParam("correlatedName") String correlatedName) throws ClientException {
+    public OperationResult delete(String doctype, String name, String correlatedDoctype,
+    		String correlatedName) throws ClientException {
         SoaNodeId soaNodeId = new SoaNodeId(doctype, name),
                 correlatedSoaNodeId = new SoaNodeId(correlatedDoctype, correlatedName);
         try {

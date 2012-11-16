@@ -8,6 +8,7 @@ import org.easysoa.registry.rest.marshalling.JsonMessageWriter;
 import org.easysoa.registry.dashboard.rest.MatchingDashboard;
 import org.easysoa.registry.documentation.rest.ServiceDocumentationController;
 import org.easysoa.registry.indicators.rest.IndicatorsController;
+import org.easysoa.registry.integration.SimpleRegistryServiceImpl;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
 /**
@@ -29,6 +30,7 @@ public class EasySOAModule extends WebEngineModule {
     public Class<?>[] getWebTypes() {
         return new Class<?>[] {
                 RegistryApiImpl.class,
+                SimpleRegistryServiceImpl.class,
                 IndicatorsController.class,
                 ServiceDocumentationController.class,
                 MatchingDashboard.class

@@ -102,17 +102,21 @@ public class WSDLParsingListener implements EventListener {
 					if (wsdl != null) {
 						QName portTypeName = wsdl.getInterfaces().get(0).getQName();
 						QName serviceName = wsdl.getServices().get(0).getQName();
+						String wsdlVersion = wsdl.getVersion().name();
 						if (InformationService.DOCTYPE.equals(sourceDocument.getType())) {
 							sourceDocument.setPropertyValue(InformationService.XPATH_SOANAME,
 									new InformationServiceName(ServiceIdentifierType.WEB_SERVICE,
 											portTypeName.getNamespaceURI(), portTypeName.getLocalPart()).toString());
 							sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString());
 							sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_SERVICE_NAME, serviceName.toString());
+							sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_VERSION, wsdlVersion);
 						}
 						else {
 							sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString());
 							sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_SERVICE_NAME, serviceName.toString());
+							sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_VERSION, wsdlVersion);
 						}
+
 						documentModified = true;
 					}
 					

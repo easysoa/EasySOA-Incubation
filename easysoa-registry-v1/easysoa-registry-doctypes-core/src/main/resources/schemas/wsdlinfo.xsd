@@ -16,4 +16,6 @@
   <!-- xs:element name="wsdl_service_port_name" type="xs:string"/ --><!-- jaxws : {http://www.axxx.com/dps/apv}PrecomptePartenairePort -->
   <!-- xs:element name="wsdl_service_port_binding_name" type="xs:string"/ --><!-- jaxws : {http://www.axxx.com/dps/apv}PrecomptePartenaireServiceImplSoapBinding -->
     
+  <xs:element name="wsdlVersion" type="xs:string" />
+  
 </xs:schema>

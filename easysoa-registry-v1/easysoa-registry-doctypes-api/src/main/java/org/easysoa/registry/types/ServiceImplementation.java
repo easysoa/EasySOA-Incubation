@@ -13,7 +13,7 @@ import org.easysoa.registry.types.names.ServiceImplementationName;
  * @author mkalam-alami
  *
  */
-public interface ServiceImplementation extends SoaNode, RestInfo {
+public interface ServiceImplementation extends SoaNode, RestInfo, WsdlInfo {
 	
     static final String DOCTYPE = "ServiceImplementation";
 
@@ -31,10 +31,6 @@ public interface ServiceImplementation extends SoaNode, RestInfo {
 
     static final String XPATH_LINKED_INFORMATION_SERVICE = "impl:linkedInformationService";
 
-    static final String XPATH_WSDL_PORTTYPE_NAME = "wsdl:wsdlPortTypeName";
-
-    static final String XPATH_WSDL_SERVICE_NAME = "wsdl:wsdlServiceName";
-    
     static final String OPERATION_NAME = "operationName";
     
     static final String OPERATION_PARAMETERS = "operationParameters";

@@ -8,7 +8,7 @@ package org.easysoa.registry.types;
  */
 public interface RestInfo {
 	
-	static final String DOCTYPE = "RestInfo";
+	static final String FACET_RESTINFO = "RestInfo";
 
     //static final String XPATH_REST_PATH = "rest:enginePathRoot"; // OPT copied from platform if any
     //static final String XPATH_REST_PATH = "rest:absolutePath"; // OPT computed

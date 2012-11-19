@@ -361,6 +361,9 @@
         <row>
           <widget>wsdlinfo_wsdlServiceName</widget>
         </row>
+        <row>
+          <widget>wsdlinfo_wsdlVersion</widget>
+        </row>
       </rows>
       <widget name="wsdlinfo_wsdlPortTypeName" type="text">
         <labels>
@@ -378,6 +381,15 @@
         <translated>true</translated>
         <fields>
           <field>wsdl:wsdlServiceName</field>
+        </fields>
+      </widget>
+      <widget name="wsdlinfo_wsdlVersion" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.wsdlinfo.version</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>wsdl:wsdlVersion</field>
         </fields>
       </widget>
     </layout>

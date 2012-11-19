@@ -28,9 +28,14 @@ public class WSDLParsingTest {
 			Assert.assertEquals("Unexpected binding name",
 					"PureAirFlowersServiceITFNAME",
 					wsdl.getInterfaces().get(0).getQName().getLocalPart());
+			Assert.assertEquals("Unexpected WSDL version",
+					"WSDL11",
+					wsdl.getVersion().name());
 		} catch (Exception e) {
 			Assert.fail("Failed to parse WSDL");
 		}
 	}
+	
+	// TODO Actually test the parsing listener
 
 }

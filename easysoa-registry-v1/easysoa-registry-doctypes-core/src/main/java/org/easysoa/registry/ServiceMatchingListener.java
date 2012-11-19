@@ -80,11 +80,14 @@ public class ServiceMatchingListener implements EventListener {
             			//OPT " AND " InformationService.XPATH_REST_MEDIA_TYPE + "='" + implMediaType + "'" +
             			
         	}
+
+        	// TODO handle the case of IS-impl links that are now wrong i.e. SOA validation
         	
-        	String serviceImplQuery = NXQLQueryBuilder.getQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE + 
+        	/*String serviceImplQuery = NXQLQueryBuilder.getQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE + 
         			" WHERE " + ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME + " = '?'",
         			new Object[] { serviceModel.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME) },
-        			false, true);
+        			false, true);*/
+        	String serviceImplQuery = query.build();
         	DocumentModelList foundServiceImpls = documentService.query(documentManager,
         			serviceImplQuery, true, false);
         	if (foundServiceImpls.size() > 0) {

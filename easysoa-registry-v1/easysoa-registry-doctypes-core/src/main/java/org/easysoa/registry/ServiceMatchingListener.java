@@ -46,9 +46,8 @@ public class ServiceMatchingListener implements EventListener {
 			logger.error("Document service unavailable, aborting");
 			return;
 		}
-        if (sourceDocument.hasSchema("soanode") && sourceDocument.getPropertyValue("soan:name") == null) { // TODO pb !!!!!!!!!!!!
-        	System.out.println("PB matching Null soaname for " + sourceDocument.getPathAsString());
-        	return;
+        if (sourceDocument.hasSchema("soanode")) {
+        	documentService.checkSoaName(sourceDocument);
         }
 
         // Service impl: Link to information service

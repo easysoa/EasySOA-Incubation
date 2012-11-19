@@ -25,7 +25,16 @@ public interface DocumentService {
     static final String PROXIES_QUERY_FILTER = " AND " + NXQL.ECM_ISPROXY + " = 0";
     
     static final String NON_PROXIES_QUERY_FILTER = " AND " + NXQL.ECM_ISPROXY + " = 1";
-    
+
+    /**
+     * Explodes if soan:name is null.
+     * Use it (in event listeners...) to helps maintaining consistency
+     * across events & lookup methods.
+     * @param soaNodeDoc
+     * @throws ClientException
+     */
+	public void checkSoaName(DocumentModel soaNodeDoc) throws ClientException;
+	
     /**
      * Helper for general document creation.
      * Direct use is not recommended for SoaNode types (whose auto reclassification requires soaId).
@@ -64,7 +73,10 @@ public interface DocumentService {
      * @param documentManager
      * @param identifier
      * @return
-     * @throws ClientException
+     * @throws ClientException nuxeo error, or if already exists - check it before using :
+     * coreSession.exists(new PathRef(getSourcePath(identifier)))
+     * or
+     * documentService.find(documentManager, identifier)
      */
     DocumentModel newDocument(CoreSession documentManager, SoaNodeId identifier)
             throws ClientException;

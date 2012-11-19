@@ -42,10 +42,6 @@ public class RepositoryManagementListener implements EventListener {
         if (!sourceDocument.hasSchema(SoaNode.SCHEMA)) {
             return;
         }
-        if (sourceDocument.getPropertyValue("soan:name") == null) { // TODO pb !!!!!!!!!!!!
-        	System.out.println("PB Null soaname for " + sourceDocument.getPathAsString());
-        	return;
-        }
         
         // Initialize
         CoreSession documentManager = documentContext.getCoreSession();
@@ -58,6 +54,7 @@ public class RepositoryManagementListener implements EventListener {
 			logger.error("A required service is missing, aborting SoaNode repository management: " + e.getMessage());
 			return;
 		}
+        documentService.checkSoaName(sourceDocument);
         
         boolean isCreationOnCheckinMode = "ProjetWebServiceImpl".equals(sourceDocument.getPropertyValue("dc:title")); // isJwt(OrCmis)
         boolean isCreationOnCheckin = isCreationOnCheckinMode && DocumentEventTypes.DOCUMENT_CHECKEDIN.equals(event.getName());

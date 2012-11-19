@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.names.InformationServiceName;
 import org.easysoa.registry.types.names.ServiceIdentifierType;
 import org.easysoa.registry.types.names.ServiceImplementationName;
@@ -22,6 +23,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.runtime.api.Framework;
 import org.ow2.easywsdl.wsdl.WSDLFactory;
 import org.ow2.easywsdl.wsdl.api.Description;
 import org.ow2.easywsdl.wsdl.api.WSDLException;
@@ -43,9 +45,14 @@ public class WSDLParsingListener implements EventListener {
         CoreSession documentManager = documentContext.getCoreSession();
         boolean documentModified = false;
         
-        if (sourceDocument.hasSchema("soanode") && sourceDocument.getPropertyValue("soan:name") == null) { // TODO pb !!!!!!!!!!!!
-        	System.out.println("PB wsdl Null soaname for " + sourceDocument.getPathAsString());
-        	return;
+        if (sourceDocument.hasSchema(SoaNode.SCHEMA)) {
+        	try {
+        		DocumentService documentService = Framework.getService(DocumentService.class);
+        		documentService.checkSoaName(sourceDocument);
+			} catch (Exception e) {
+				logger.error("A required service is missing, aborting SoaNode repository management: " + e.getMessage());
+				return;
+			}
         }
         
         // Extract metadata from soaname

@@ -38,7 +38,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         DocumentModel documentModel = documentService.find(documentManager, identifier);
         if (documentModel == null) {
             shouldCreate = true;
-            //documentModel = documentService.create(documentManager, identifier);
+            //documentModel = documentService.create(documentManager, identifier); // TODO MDU ?!
             documentModel = documentService.newDocument(documentManager, identifier);
         }
         
@@ -52,7 +52,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
             	}
                 documentModel.setPropertyValue(property.getKey(), (Serializable) propertyValue);
             }
-            //documentManager.saveDocument(documentModel);
+            //documentManager.saveDocument(documentModel); // TODO mdu ?!
         }
         
         // Link to parent documents

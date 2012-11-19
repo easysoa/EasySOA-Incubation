@@ -28,6 +28,15 @@ import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 
 public class DocumentServiceImpl implements DocumentService {
 
+	public void checkSoaName(DocumentModel soaNodeDoc) throws ClientException {
+        if (soaNodeDoc.getPropertyValue(SoaNode.SCHEMA) == null) {
+        	throw new ClientException("Null soaname for " + soaNodeDoc.getPathAsString()
+        			+ " - did happen when : doc was created when it already existed "
+        			+ "because it was queried for using erroneously safeName(), "
+        			+ "doc was created before setting soaname");
+        }
+	}
+	
     public DocumentModel createDocument(CoreSession documentManager, String doctype, String name, String parentPath, String title) throws ClientException {
         // TODO if doctype belongs to SoaNode subtypes, throw new Exception("createDocument() doesn't work for SoaNode types, rather use create()")
         DocumentModel documentModel = documentManager.createDocumentModel(doctype);
@@ -113,8 +122,13 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     /**
+     * 
      * Doesn't create (have to save afterwards), to be preferred to createDocument
      * because doesn't trigger documentCreated event
+     * @throws ClientException nuxeo error, or if already exists - check it before using :
+     * coreSession.exists(new PathRef(getSourcePath(identifier)))
+     * or
+     * documentService.find(documentManager, identifier)
      */
     public DocumentModel newDocument(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
         String doctype = identifier.getType(), name = identifier.getName();
@@ -189,7 +203,7 @@ public class DocumentServiceImpl implements DocumentService {
     
     public DocumentModel find(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
         String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'",
-                new Object[] { identifier.getType(), safeName(identifier.getName()) },
+                new Object[] { identifier.getType(), identifier.getName() }, // TODO MDU and not safeName(identifier.getName()) !?
                 false, true);
         DocumentModelList results = query(documentManager, query, true, false);
         return results.size() > 0 ? results.get(0) : null;
@@ -199,7 +213,7 @@ public class DocumentServiceImpl implements DocumentService {
     public DocumentModelList findProxies(CoreSession documentManager, SoaNodeId identifier)
             throws ClientException {
         String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'",
-                new Object[] { identifier.getType(), safeName(identifier.getName()) },
+                new Object[] { identifier.getType(), identifier.getName() }, // TODO MDU and not safeName(identifier.getName()) !?
                 false, true);
         return query(documentManager, query, false, true);
     }
@@ -238,7 +252,7 @@ public class DocumentServiceImpl implements DocumentService {
     		return new DocumentModelListImpl();
     	}
         String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'",
-                new Object[] { identifier.getType(), safeName(identifier.getName()) },
+                new Object[] { identifier.getType(), identifier.getName() }, // TODO MDU and not safeName(identifier.getName()) !?
                 false, true);
         return query(documentManager, query, false, false);
     }
@@ -380,7 +394,7 @@ public class DocumentServiceImpl implements DocumentService {
         
         ArrayList<Object> params = new ArrayList<Object>(5);
         params.add(identifier.getType());
-        params.add(this.safeName(identifier.getName()));
+        params.add(identifier.getName()); // TODO MDU and not safeName(identifier.getName()) !?
         StringBuffer querySbuf = new StringBuffer("SELECT * FROM ? WHERE "
         		+ SoaNode.XPATH_SOANAME + " = '?'"); // environment:url);
         

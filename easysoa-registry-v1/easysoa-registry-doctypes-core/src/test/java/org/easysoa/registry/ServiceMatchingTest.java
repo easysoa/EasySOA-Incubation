@@ -41,24 +41,74 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     
     @Test
     public void testSimpleDiscovery() throws Exception {
-    	HashMap<String, Object> properties = new HashMap<String, Object>();
-    	properties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
+    	HashMap<String, Object> implProperties = new HashMap<String, Object>();
+    	implProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
     	
     	// Discover service impl
-        discoveryService.runDiscovery(documentManager, FIRST_SERVICEIMPL_ID, properties, null);
+        discoveryService.runDiscovery(documentManager, FIRST_SERVICEIMPL_ID, implProperties, null);
         documentManager.save();
+        
+    	HashMap<String, Object> isProperties = new HashMap<String, Object>();
+    	isProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
     	
     	// Discover information service
-        discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_ID, properties, null);
-        documentManager.save();
+    	DocumentModel foundInfoServ = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_ID, isProperties, null);
 
-        DocumentModel foundInfoServ = documentService.find(documentManager, INFORMATIONSERVICE_ID);
+        foundInfoServ = documentService.find(documentManager, INFORMATIONSERVICE_ID);
         DocumentModel foundImpl = documentService.find(documentManager, FIRST_SERVICEIMPL_ID);
         Assert.assertEquals("Created information service must be linked to existing matching impls", foundInfoServ.getId(),
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
     	
     	// Discover another impl
-        discoveryService.runDiscovery(documentManager, SECOND_SERVICEIMPL_ID, properties, null);
+        discoveryService.runDiscovery(documentManager, SECOND_SERVICEIMPL_ID, implProperties, null);
+        documentManager.save();
+
+        foundImpl = documentService.find(documentManager, SECOND_SERVICEIMPL_ID);
+        Assert.assertEquals("Created impl must be linked to existing matching information service", foundInfoServ.getId(),
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+    }
+    
+    @Test
+    public void testSimpleDiscoveryWithCriteria() throws Exception {
+    	HashMap<String, Object> implProperties = new HashMap<String, Object>();
+    	implProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
+    	implProperties.put("impl:language", "Java");
+    	//implProperties.put("impl:build", "Maven");
+    	implProperties.put("impl:technology", "JAXWS");
+    	implProperties.put("deltype:nature", "Maven");
+    	implProperties.put("deltype:repositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
+    	
+    	// Discover service impl
+        discoveryService.runDiscovery(documentManager, FIRST_SERVICEIMPL_ID, implProperties, null);
+        documentManager.save();
+        
+    	HashMap<String, Object> isProperties = new HashMap<String, Object>();
+    	isProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
+    	isProperties.put("platform:language", "Java");
+    	isProperties.put("platform:build", "Maven");
+    	isProperties.put("platform:serviceLanguage", "JAXWS");
+    	isProperties.put("platform:deliverableNature", "Maven");
+    	isProperties.put("platform:deliverableRepositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
+    	
+    	// Discover information service
+    	DocumentModel foundInfoServ = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_ID, isProperties, null);
+        /*
+    	foundInfoServ.addFacet("PlatformData");
+        foundInfoServ.setPropertyValue("platform:language", "Java");
+        foundInfoServ.setPropertyValue("platform:build", "Maven");
+        foundInfoServ.setPropertyValue("platform:serviceLanguage", "JAXWS");
+        foundInfoServ.setPropertyValue("platform:deliverableNature", "Maven");
+        foundInfoServ.setPropertyValue("platform:deliverableRepositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
+        //documentManager.save();
+        documentManager.saveDocument(foundInfoServ);*/
+
+        foundInfoServ = documentService.find(documentManager, INFORMATIONSERVICE_ID);
+        DocumentModel foundImpl = documentService.find(documentManager, FIRST_SERVICEIMPL_ID);
+        Assert.assertEquals("Created information service must be linked to existing matching impls", foundInfoServ.getId(),
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+    	
+    	// Discover another impl
+        discoveryService.runDiscovery(documentManager, SECOND_SERVICEIMPL_ID, implProperties, null);
         documentManager.save();
 
         foundImpl = documentService.find(documentManager, SECOND_SERVICEIMPL_ID);

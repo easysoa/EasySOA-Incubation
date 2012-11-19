@@ -34,9 +34,12 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         DocumentService documentService = Framework.getService(DocumentService.class);
         
         // Fetch or create document
+        boolean shouldCreate = false;
         DocumentModel documentModel = documentService.find(documentManager, identifier);
         if (documentModel == null) {
-            documentModel = documentService.create(documentManager, identifier);
+            shouldCreate = true;
+            //documentModel = documentService.create(documentManager, identifier);
+            documentModel = documentService.newDocument(documentManager, identifier);
         }
         
         // Set properties
@@ -49,7 +52,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
             	}
                 documentModel.setPropertyValue(property.getKey(), (Serializable) propertyValue);
             }
-            documentManager.saveDocument(documentModel);
+            //documentManager.saveDocument(documentModel);
         }
         
         // Link to parent documents
@@ -112,7 +115,12 @@ public class DiscoveryServiceImpl implements DiscoveryService {
                 if (documentService.findProxy(documentManager, identifier, parentPathAsString) == null) {
                     documentService.create(documentManager, identifier, parentPathAsString);
                 }
-            } 
+            }
+        }
+        if (shouldCreate) {
+        	documentManager.createDocument(documentModel);
+        } else {
+        	documentManager.saveDocument(documentModel);
         }
         
         return documentModel;

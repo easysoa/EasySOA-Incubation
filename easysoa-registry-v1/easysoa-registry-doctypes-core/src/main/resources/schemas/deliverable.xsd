@@ -7,7 +7,7 @@
     <xs:list itemType="xs:string" />
   </xs:simpleType>
   
-  <xs:element name="nature" type="xs:string" />
+  <!-- xs:element name="nature" type="xs:string" / --><!-- moved to deltype -->
   <xs:element name="application" type="xs:string" />
   <xs:element name="location" type="xs:string" />
   <xs:element name="dependencies" type="nxs:stringArray" />

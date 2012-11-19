@@ -13,10 +13,12 @@ import org.easysoa.registry.types.names.ServiceImplementationName;
  * @author mkalam-alami
  *
  */
-public interface ServiceImplementation extends SoaNode {
+public interface ServiceImplementation extends SoaNode, RestInfo {
 	
     static final String DOCTYPE = "ServiceImplementation";
-    
+
+	static final String XPATH_LANGUAGE = "impl:language";
+	
     static final String XPATH_TECHNOLOGY = "impl:technology";
     
     static final String XPATH_OPERATIONS = "impl:operations";

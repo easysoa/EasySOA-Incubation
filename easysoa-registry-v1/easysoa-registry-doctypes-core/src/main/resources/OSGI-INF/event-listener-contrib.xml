@@ -18,7 +18,7 @@
     <listener name="serviceMatchingListener" class="org.easysoa.registry.ServiceMatchingListener"
     	priority="151">
       <event>documentCreated</event>
-      <event>beforeDocumentModification</event>
+      <event>documentModified</event><!-- rather than beforeDocumentModification otherwise loops ! -->
     </listener>
     <listener name="wsdlParsingListener" class="org.easysoa.registry.WSDLParsingListener"
       priority="150">

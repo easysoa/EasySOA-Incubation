@@ -37,8 +37,9 @@ public interface DocumentService {
     DocumentModel createDocument(CoreSession documentManager, String doctype, String name,
             String parentPath, String title) throws ClientException;
     
-    
+
     /**
+     * TODO NO triggers documentCreate event but properties have not yet been set !
      * Creates a SoaNode document. If a document of the same identifier
      * exists, returns it instead. If the target path is not the expected path within the repository,
      * a document will be stored in the repository, and proxied at the wanted destination.
@@ -48,6 +49,7 @@ public interface DocumentService {
     DocumentModel create(CoreSession documentManager, SoaNodeId identifier, String parentPath) throws ClientException;
 
     /**
+     * TODO NO triggers documentCreate event but properties have not yet been set !
      * Creates a document and puts it in the repository. If a document of the same identifier
      * exists, returns it instead.
      * Works only with SoaNode types (returns null otherwise).
@@ -55,6 +57,16 @@ public interface DocumentService {
      * @throws ClientException
      */
     DocumentModel create(CoreSession documentManager, SoaNodeId identifier)
+            throws ClientException;
+    /**
+     * Doesn't create (have to save afterwards), to be preferred to createDocument
+     * because doesn't trigger documentCreated event
+     * @param documentManager
+     * @param identifier
+     * @return
+     * @throws ClientException
+     */
+    DocumentModel newDocument(CoreSession documentManager, SoaNodeId identifier)
             throws ClientException;
     
     /**

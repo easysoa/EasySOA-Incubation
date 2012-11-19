@@ -86,6 +86,9 @@ public class DocumentServiceImpl implements DocumentService {
         }
     }
 
+    /**
+     * TODO NO triggers documentCreate event but properties have not yet been set !
+     */
     public DocumentModel create(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
         String doctype = identifier.getType(), name = identifier.getName();
         
@@ -99,6 +102,34 @@ public class DocumentServiceImpl implements DocumentService {
                 documentModel.setPropertyValue("dc:title", name);
                 documentModel.setPropertyValue(SoaNode.XPATH_SOANAME, name);
                 return documentManager.createDocument(documentModel);
+            }
+            else {
+                return documentManager.getDocument(sourceRef);
+            }
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * Doesn't create (have to save afterwards), to be preferred to createDocument
+     * because doesn't trigger documentCreated event
+     */
+    public DocumentModel newDocument(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
+        String doctype = identifier.getType(), name = identifier.getName();
+        
+        if (isSoaNode(documentManager, doctype)) {
+            ensureSourceFolderExists(documentManager, doctype);
+            PathRef sourceRef = new PathRef(getSourcePath(identifier));
+            DocumentModel documentModel;
+            if (!documentManager.exists(sourceRef)) {
+                documentModel = documentManager.createDocumentModel(doctype);
+                documentModel.setPathInfo(getSourceFolderPath(doctype), safeName(name));
+                documentModel.setPropertyValue("dc:title", name);
+                documentModel.setPropertyValue(SoaNode.XPATH_SOANAME, name);
+                //return documentManager.createDocument(documentModel);
+                return documentModel;
             }
             else {
                 return documentManager.getDocument(sourceRef);

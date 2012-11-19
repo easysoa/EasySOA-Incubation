@@ -37,6 +37,13 @@
         <selector type="children" />
       </transfer>
     </inheritedFacet>
+    <inheritedFacet facetName="DeliverableType">
+      <transfer>
+        <from>Deliverable</from>
+        <to>ServiceImplementation</to>
+        <selector type="children" />
+      </transfer>
+    </inheritedFacet>
     
     <!-- TODO Implement facet ComponentData and attach it to all doctypes below -->
     <inheritedFacet facetName="ComponentData">

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/rest/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/rest/">
+  
+  <!-- xs:element name="enginePathRoot" type="xs:string"/ --><!-- OPT on engine, copied from platform if any -->
+  <!-- xs:element name="absolutePath" type="xs:string"/ --><!-- OPT computed -->
+  
+  <xs:element name="path" type="xs:string"/><!-- JAXRS : from class @Path or name -->
+  <xs:element name="accepts" type="xs:string"/><!-- JAXRS : from class @Consumes or ?? -->
+  <xs:element name="contentType" type="xs:string"/><!-- JAXRS : from class @Produces or ?? -->
+  
+  <!-- OPT add REST infos about operation (name & method) and params (name & kind, return),
+  either as new columns in serviceimpl.xsd or in another table here ?? -->
+    
+</xs:schema>

@@ -11,12 +11,15 @@
     <schema name="istr" src="schemas/intelligent-system-tree-root.xsd" prefix="istr" />
     <schema name="environment" src="schemas/environment.xsd" prefix="env" />
     <schema name="deliverable" src="schemas/deliverable.xsd" prefix="del" />
+    <schema name="deliverabletype" src="schemas/deliverable-type.xsd" prefix="deltype" />
     <schema name="soanode" src="schemas/soanode.xsd" prefix="soan" />
     <schema name="soaversionable" src="schemas/soa-versionable.xsd" prefix="soav" />
     <schema name="informationservice" src="schemas/information-service.xsd" prefix="iserv" />
     <schema name="serviceimpl" src="schemas/serviceimpl.xsd" prefix="impl" />
     <schema name="endpoint" src="schemas/endpoint.xsd" prefix="endp" />
     <schema name="wsdlinfo" src="schemas/wsdlinfo.xsd" prefix="wsdl" />
+    <schema name="restinfo" src="schemas/restinfo.xsd" prefix="rest" />
+    <schema name="platform" src="schemas/platform.xsd" prefix="platform" />
     <schema name="architecturecomponent" src="schemas/architecture-component.xsd" prefix="acomp" />
   </extension>
 
@@ -29,6 +32,21 @@
     <!-- SoaNode tagging facet, allowing for queries such as #{document.hasFacet("SoaNode")} -->
     <facet name="SoaNode" />
     <facet name="System" />
+    
+    <!-- TODO in Studio ? -->
+    <facet name="PlatformData" >
+      <schema name="platform" />
+    </facet>
+    <doctype extends="SoaNode" name="Platform">
+      <facet name="PlatformData" />
+    </doctype>
+    
+    <facet name="WsdlInfo" >
+      <schema name="wsdlinfo" />
+    </facet>
+    <facet name="RestInfo" >
+      <schema name="restinfo" />
+    </facet>
 
     <!-- Abstract doctypes -->
     <doctype extends="Document" name="SoaNode">
@@ -38,6 +56,7 @@
       <schema name="files" />
       <schema name="file" /><!-- TODO to allow upload using CMIS in JWT export -->
       <facet name="SoaNode" />
+      <!-- facet name="SubProjectId" / --><!-- TODO ; also projectId, referredSubProjectIds ? -->
       <facet name="Commentable" />
       <facet name="Versionable" />
       <facet name="Publishable" />
@@ -45,6 +64,15 @@
     </doctype>
     <doctype extends="SoaNode" name="EndpointConsumer">
       <facet name="Folderish" />
+    </doctype>
+    
+    <doctype extends="SoaNode" name="ServiceImplementation">
+      <facet name="WsdlInfo" /><!-- schema name="wsdlinfo" / --><!-- TODO dynamic -->
+      <facet name="ServiceImplementationData" />
+      <facet name="Folderish" />
+      <facet name="ComponentData" />
+      <facet name="DeliverableType" />
+      <!-- dynamic : wsdlinfo, restinfo -->
     </doctype>
 
     <!-- Systems hierarchies -->
@@ -82,12 +110,17 @@
     </facet>
     <doctype extends="SoaNode" name="InformationService">
       <schema name="informationservice" />
-      <facet name="ComponentData" />
-      <facet name="WsdlInfo" />
+      <facet name="PlatformData" />
+      <facet name="ComponentData" /><!-- TODO MDU not necessary if PlatformData ?! does not comprise Component id where impl has been successfully classified which is required-->
+      <facet name="WsdlInfo" /><!-- schema name="wsdlinfo" / --><!-- TODO dynamic -->
     </doctype>
 
     <!-- Implementation level -->
+    <facet name="DeliverableType" >
+      <schema name="deliverabletype" />
+    </facet>
     <doctype extends="EndpointConsumer" name="Deliverable">
+      <facet name="DeliverableType" />
       <schema name="deliverable" />
       <schema name="soaversionable" />
     </doctype>
@@ -95,10 +128,12 @@
       <schema name="serviceimpl" />
     </facet>
     <doctype extends="SoaNode" name="ServiceImplementation">
-      <facet name="WsdlInfo" />
+      <facet name="WsdlInfo" /><!-- schema name="wsdlinfo" / --><!-- TODO dynamic -->
       <facet name="ServiceImplementationData" />
       <facet name="Folderish" />
-      <facet name="ComponentData" />
+      <facet name="ComponentData" /><!-- TODO MDU not necessary ?! does not comprise Component id where impl has been successfully classified which is required-->
+      <facet name="DeliverableType" />
+      <!-- dynamic : wsdlinfo, restinfo -->
     </doctype>
     <doctype extends="SoaNode" name="ServiceConsumption">
     </doctype>
@@ -112,9 +147,9 @@
     <doctype extends="SoaNode" name="Endpoint">
       <schema name="environment" />
       <schema name="endpoint" />
-      <facet name="WsdlInfo" />
+      <facet name="WsdlInfo" /><!-- schema name="wsdlinfo" / --><!-- TODO dynamic -->
       <facet name="ServiceImplementationData" />
-      <facet name="ComponentData" />
+      <facet name="ComponentData" /><!-- TODO MDU not necessary ?! does not comprise Component id where impl has been successfully classified which is required-->
     </doctype>
 
   </extension>

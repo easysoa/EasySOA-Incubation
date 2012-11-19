@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/platform/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/platform/">
+  
+  <!-- or shared facets ?? not if OPT multiple options -->
+  <xs:element name="language" type="xs:string"/><!-- OPT multiple options (consistency handled in logic) -->
+  <xs:element name="build" type="xs:string"/>
+  <xs:element name="serviceLanguage" type="xs:string"/><!-- OPT multiple options (consistency handled in logic) -->
+  <xs:element name="deliverableNature" type="xs:string"/>
+  <xs:element name="deliverableRepositoryUrl" type="xs:string"/><!-- acts as id if any -->
+  
+</xs:schema>

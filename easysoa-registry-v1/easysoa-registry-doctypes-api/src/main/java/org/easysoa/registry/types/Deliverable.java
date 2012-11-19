@@ -7,9 +7,11 @@ public interface Deliverable extends SoaNode {
 
     public static final String DOCTYPE = "Deliverable";
 
+    public static final String XPATH_NATURE = "deltype:nature";
+    
+    public static final String XPATH_REPOSITORY_URL = "deltype:repositoryUrl"; // acts as id
+    
     public static final String XPATH_SOAVERSION = "soav:version";
-
-    public static final String XPATH_NATURE = "del:nature";
 
     public static final String XPATH_APPLICATION = "del:application";
 

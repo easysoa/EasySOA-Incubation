@@ -26,6 +26,9 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     
     public static final SoaNodeId SECOND_SERVICEIMPL_ID = 
     		new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenameyyy");
+    
+    public static final SoaNodeId THIRD_SERVICEIMPL_ID = 
+    		new SoaNodeId(ServiceImplementation.DOCTYPE, "nszzz:namezzz=servicenamezzz");
 
     public static final SoaNodeId INFORMATIONSERVICE_ID = 
     		new SoaNodeId(InformationService.DOCTYPE, "nsxxx:namexxx");
@@ -65,6 +68,15 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
 
         foundImpl = documentService.find(documentManager, SECOND_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must be linked to existing matching information service", foundInfoServ.getId(),
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+    	
+    	// Discover a non matching impl
+    	HashMap<String, Object> impl3Properties = new HashMap<String, Object>();
+    	impl3Properties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace2}name2");
+        discoveryService.runDiscovery(documentManager, THIRD_SERVICEIMPL_ID, impl3Properties, null);
+        documentManager.save();
+        foundImpl = documentService.find(documentManager, THIRD_SERVICEIMPL_ID);
+        Assert.assertEquals("Created impl must not be linked to existing matching information service", null,
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
     }
     
@@ -113,6 +125,18 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
 
         foundImpl = documentService.find(documentManager, SECOND_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must be linked to existing matching information service", foundInfoServ.getId(),
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+    	
+    	// Discover a non matching impl
+    	HashMap<String, Object> impl3Properties = new HashMap<String, Object>();
+    	impl3Properties.put("impl:technology", "JAXWS"); // differs
+    	impl3Properties.put("deltype:nature", "Maven");
+    	impl3Properties.put("deltype:repositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
+    	impl3Properties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace2}name2");
+        discoveryService.runDiscovery(documentManager, THIRD_SERVICEIMPL_ID, impl3Properties, null);
+        documentManager.save();
+        foundImpl = documentService.find(documentManager, THIRD_SERVICEIMPL_ID);
+        Assert.assertEquals("Created impl must not be linked to existing matching information service", null,
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
     }
     

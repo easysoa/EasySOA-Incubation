@@ -42,6 +42,10 @@ public class RepositoryManagementListener implements EventListener {
         if (!sourceDocument.hasSchema(SoaNode.SCHEMA)) {
             return;
         }
+        if (sourceDocument.getPropertyValue("soan:name") == null) { // TODO pb !!!!!!!!!!!!
+        	System.out.println("PB Null soaname for " + sourceDocument.getPathAsString());
+        	return;
+        }
         
         // Initialize
         CoreSession documentManager = documentContext.getCoreSession();
@@ -55,7 +59,21 @@ public class RepositoryManagementListener implements EventListener {
 			return;
 		}
         
-        if (!DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
+        boolean isCreationOnCheckinMode = "ProjetWebServiceImpl".equals(sourceDocument.getPropertyValue("dc:title")); // isJwt(OrCmis)
+        boolean isCreationOnCheckin = isCreationOnCheckinMode && DocumentEventTypes.DOCUMENT_CHECKEDIN.equals(event.getName());
+        boolean isCreation = isCreationOnCheckin
+        		|| !isCreationOnCheckinMode && DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName());
+        
+        if (isCreationOnCheckinMode && DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())) {
+        	sourceDocument.setPropertyValue("dc:description", "jwtJustCreated");
+        } else
+        
+        if (!DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName()) // not a remove
+        		&& (!isCreationOnCheckinMode || isCreationOnCheckin && "jwtJustCreated".equals(sourceDocument.getPropertyValue("dc:description")))) { // not a cmis creation (event handling reported at cmis checkin that will come next)
+        	if (isCreationOnCheckinMode && "jwtJustCreated".equals(sourceDocument.getPropertyValue("dc:description"))) {
+        		sourceDocument.setPropertyValue("dc:description", "done"); // cleaning
+        	}
+        	
 	        try {
 	            // Working copy/proxies management
 	            sourceDocument = manageRepositoryStructure(documentManager, documentService, sourceDocument);
@@ -64,7 +82,7 @@ public class RepositoryManagementListener implements EventListener {
 	    		IntelligentSystemTreeService intelligentSystemTreeServiceCache =
 	    		        Framework.getService(IntelligentSystemTreeService.class);
 	    		intelligentSystemTreeServiceCache.handleDocumentModel(documentManager, sourceDocument,
-	    		        !DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName()));
+	    		        !isCreation);
 	    		documentManager.save();
 	        } catch (Exception e) {
 	            logger.error("Failed to check document after creation", e);
@@ -131,22 +149,26 @@ public class RepositoryManagementListener implements EventListener {
 		    documentService.ensureSourceFolderExists(documentManager, sourceDocument.getType());
 		    String soaName = (String) sourceDocument.getPropertyValue(SoaNode.XPATH_SOANAME);
 		    if (soaName == null || soaName.isEmpty()) {
-		        sourceDocument.setPropertyValue(SoaNode.XPATH_SOANAME, sourceDocument.getName());
+		        //sourceDocument.setPropertyValue(SoaNode.XPATH_SOANAME, sourceDocument.getName());
+		    	soaName = sourceDocument.getName();
 		    }
 		    
-		    PathRef sourcePathRef = new PathRef(documentService.getSourcePath(
-		            documentService.createSoaNodeId(sourceDocument)));
+		    //PathRef sourcePathRef = new PathRef(documentService.getSourcePath(
+		    //        documentService.createSoaNodeId(sourceDocument)));
+		    PathRef sourcePathRef = new PathRef(documentService.getSourcePath(new SoaNodeId(sourceDocument.getType(), soaName)));
 		    if (documentManager.exists(sourcePathRef)) {
 		        // If the source document already exists, only keep one
 		    	DocumentModel repositoryDocument = documentManager.getDocument(sourcePathRef);
-		        repositoryDocument.copyContent(sourceDocument); // Merge
-		        documentManager.saveDocument(repositoryDocument);
-		        documentManager.save();
+		        repositoryDocument.copyContent(sourceDocument); // Merge //
+		        documentManager.saveDocument(repositoryDocument);//
+		        documentManager.save();//
 		        documentManager.removeDocument(sourceDocument.getRef());
+		        //documentManager.save();
 		        sourceDocument = repositoryDocument;
 		    }
 		    else {
 		        // Move to repository otherwise
+		        sourceDocument.setPropertyValue(SoaNode.XPATH_SOANAME, soaName);
 		    	sourceDocument = documentManager.move(sourceDocument.getRef(),
 		            new PathRef(sourceFolderPath),
 		            sourceDocument.getName());

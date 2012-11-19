@@ -8,7 +8,7 @@ import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 public class Query {
 
 	private ArrayList<Object> params = new ArrayList<Object>();
-	private boolean firstCriteria = false;
+	private boolean firstCriteria = true;
 	private StringBuffer querySbuf = new StringBuffer();
 	
 	public Query(String queryString) {
@@ -17,18 +17,18 @@ public class Query {
 
 	public void addCriteria(String criteria) {
 		if (firstCriteria) {
+			firstCriteria = false;
 			querySbuf.append(" WHERE ");
 		} else {
-			firstCriteria = false;
 			querySbuf.append(" AND ");
 		}
 		querySbuf.append(criteria);
 	}
 	public void addCriteria(String xpath, String value) {
 		if (firstCriteria) {
+			firstCriteria = false;
 			querySbuf.append(" WHERE ");
 		} else {
-			firstCriteria = false;
 			querySbuf.append(" AND ");
 		}
 		querySbuf.append("(");

@@ -32,9 +32,9 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "dashboard")
 @Path("easysoa/dashboard")
 public class MatchingDashboard extends ModuleRoot {
-
+	
 	@GET
-	public Object get() {
+	public Template viewDashboard() {
         CoreSession session = SessionFactory.getSession(request);
 		try {
 			DocumentService service = Framework.getService(DocumentService.class);
@@ -76,17 +76,78 @@ public class MatchingDashboard extends ModuleRoot {
 			return getView("error").arg("error", e);
 		}
 	}
-	
+
 	@GET
-	@Path("suggest/{serviceImplUuid}")
-	public List<DocumentModel> getSuggestions(@PathParam("serviceImplUuid") String serviceImplUuid) throws Exception {
-		return getSuggestions(serviceImplUuid, null);
+	@Path("components/{serviceImplUuid}")
+	public Template suggestComponents(@PathParam("serviceImplUuid") String serviceImplUuid) throws Exception {
+		Template view = viewDashboard();
+		view.arg("components", fetchComponents());
+		view.arg("selectedServiceImpl", serviceImplUuid);
+		return view;
 	}
 
 	@GET
+	@Path("suggest/{serviceImplUuid}")
+	public Template suggestServices(@PathParam("serviceImplUuid") String serviceImplUuid) throws Exception {
+		Template view = viewDashboard();
+		view.arg("suggestions", fetchSuggestions(serviceImplUuid, null));
+		view.arg("selectedServiceImpl", serviceImplUuid);
+		return view;
+	}
+	
+	@GET
 	@Path("suggest/{serviceImplUuid}/{componentUuid}")
-	public List<DocumentModel> getSuggestions(@PathParam("serviceImplUuid") String serviceImplUuid,
+	public Template suggestServicesFromComponent(@PathParam("serviceImplUuid") String serviceImplUuid,
 			@PathParam("componentUuid") String componentUuid) throws Exception {
+		Template view = viewDashboard();
+		List<DocumentModel> components = fetchComponents();
+		view.arg("components", fetchComponents());
+		view.arg("suggestions", fetchSuggestions(serviceImplUuid, componentUuid));
+		view.arg("selectedServiceImpl", serviceImplUuid);
+		for (DocumentModel component : components) {
+			if (component.getId().equals(componentUuid)) {
+				view.arg("selectedComponentTitle", component.getTitle());
+				break;
+			}
+		}
+		return view;
+	}
+	@POST
+	public Object submit(@FormParam("infoServiceId") String infoServiceId,
+			@FormParam("serviceImplId") String serviceImplId) {
+	    try {
+	    	if (serviceImplId != null && !serviceImplId.isEmpty()) {
+	            String newInfoServiceId; 
+	    		if (infoServiceId != null && !infoServiceId.isEmpty()) {
+	    			newInfoServiceId = infoServiceId; // Create link
+	    		}
+	    		else {
+	    			newInfoServiceId = null; // Destroy link
+	    		}
+	    		
+	    		// Apply on document
+	            CoreSession session = SessionFactory.getSession(request);
+				DocumentModel serviceImpl = session.getDocument(new IdRef(serviceImplId));
+				serviceImpl.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE, newInfoServiceId);
+				session.saveDocument(serviceImpl);
+				session.save();
+				return viewDashboard();
+	    	}
+	    	else {
+	    		throw new Exception("InfoService and/or ServiceImpl is not selected");
+	    	}
+		} catch (Exception e) {
+			return getView("error").arg("error", e);
+		}
+	}
+
+	private List<DocumentModel> fetchComponents() throws Exception {
+        CoreSession session = SessionFactory.getSession(request);
+		DocumentService docService = Framework.getService(DocumentService.class);
+		return docService.query(session, "SELECT * FROM Component", true, false);
+	}
+	
+	private List<DocumentModel> fetchSuggestions(String serviceImplUuid, String componentUuid) throws Exception {
 		if (serviceImplUuid != null) {
 	        CoreSession session = SessionFactory.getSession(request);
 			DocumentService docService = Framework.getService(DocumentService.class);
@@ -102,35 +163,6 @@ public class MatchingDashboard extends ModuleRoot {
 		}
 		else {
 			return new ArrayList<DocumentModel>();
-		}
-	}
-
-	@POST
-	public Object post(@FormParam("infoServiceId") String infoServiceId,
-			@FormParam("serviceImplId") String serviceImplId) {
-        try {
-        	if (serviceImplId != null && !serviceImplId.isEmpty()) {
-	            String newInfoServiceId; 
-        		if (infoServiceId != null && !infoServiceId.isEmpty()) {
-        			newInfoServiceId = infoServiceId; // Create link
-        		}
-        		else {
-        			newInfoServiceId = null; // Destroy link
-        		}
-        		
-        		// Apply on document
-	            CoreSession session = SessionFactory.getSession(request);
-				DocumentModel serviceImpl = session.getDocument(new IdRef(serviceImplId));
-				serviceImpl.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE, newInfoServiceId);
-				session.saveDocument(serviceImpl);
-				session.save();
-				return get();
-        	}
-        	else {
-        		throw new Exception("InfoService and/or ServiceImpl is not selected");
-        	}
-		} catch (Exception e) {
-			return getView("error").arg("error", e);
 		}
 	}
 }

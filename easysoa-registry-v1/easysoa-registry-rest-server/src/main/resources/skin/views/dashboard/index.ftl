@@ -4,9 +4,9 @@
 <head>
 	<title>EasySOA Matching dashboard</title>
 	<meta charset="utf-8" />
-	<link rel="stylesheet" type="text/css" href="skin/css/base.css" media="all" />
+	<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />
 	<link rel="shortcut icon" type="image/png" href="skin/favicon.ico" /> 
-	<script type="text/javascript" src="skin/js/jquery.js"></script>
+	<script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery.js"></script>
 	<style type="text/css">
 	  .clickable:hover { cursor: pointer; background-color: #FFC; }
 	  .id { display: none }
@@ -25,6 +25,7 @@
 </div>
 
 <div id="container">
+  <div id="selectedServiceImpl" style="display: none">${selectedServiceImpl}</div>
 
   <#if servWithoutSpecs?has_content>
   <h1 style="color: red; border-color: red">Service implementations to classify</h1>
@@ -35,19 +36,46 @@
     </tr>
     <#list servWithoutSpecs as servWithoutSpec>
       <tr>
-      	<td class="clickable serviceImpl">
+      	<td class="clickable serviceImpl" id="${servWithoutSpec.id}">
       	  <div style="float: right">
-      	  	<input class="suggestions" type="button" value="Get suggestions" />
-      	  	<input class="components" type="hidden" value="Select component" />
+      	  	<input class="components" type="button" value="Select component" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/components/${servWithoutSpec.id}'" />
+      	  	<input class="suggestions" type="button" value="Get suggestions" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/suggest/${servWithoutSpec.id}'" />
       	  </div>
       	  <#assign document = servWithoutSpec>
       	  <#include "/views/dashboard/document.ftl">
+      	  	
+          <#if suggestions?has_content && selectedServiceImpl == servWithoutSpec.id>
+            <table style="width: 500px">
+              <th style="background-color: #FFA">Suggested services <#if selectedComponentTitle??>from <i>${selectedComponentTitle}</i></#if></th>
+              <#list suggestions as suggestion>
+                <tr>
+                	<td class="clickable infoService">
+                	  <#assign document = suggestion>
+                	  <#include "/views/dashboard/document.ftl">
+                	</td>
+                </tr>
+              </#list>
+            </table>
+          </#if>
+          <#if components?has_content && selectedServiceImpl == servWithoutSpec.id>
+            <table style="width: 500px">
+              <th style="background-color: #DDD">Components list</th>
+              <#list components as component>
+                <tr>
+                	<td class="clickable component" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/suggest/${selectedServiceImpl}/${component.id}'">
+                	  <#assign document = component>
+                	  <#include "/views/dashboard/document.ftl">
+                	</td>
+                </tr>
+              </#list>
+            </table>
+          </#if>
       	</td>
       </tr>
     </#list>
 	</table>
 	
-  <form method="post" style="float: left; width: 100%; margin-top: 10px">
+  <form action="/nuxeo/site/easysoa/dashboard" method="post" style="float: left; width: 100%; margin-top: 10px">
   <fieldset style="width: 400px; padding: 10px;">
 	  Click on an a service implementation and an information service without impl, then click:<br />
 	  <input type="submit" value="Create a link" />
@@ -100,6 +128,10 @@
   <script>
   $(document).ready(function() {
   
+  function getId($el) {
+    return $('.id', $el).html();
+  }
+  
   $('.clickable').click(function() {
     var $el = $(this);
     if ($el.hasClass('infoService')) {
@@ -114,6 +146,13 @@
     }
   });
   
+  });
+  
+  // FIXME
+  /*var selectedServiceImpl = $('#selectedServiceImpl').html();
+  if (selectedServiceImpl != '') {
+    $('#' + selectedServiceImpl).click();
+  }*/
   </script>
     
 </div>

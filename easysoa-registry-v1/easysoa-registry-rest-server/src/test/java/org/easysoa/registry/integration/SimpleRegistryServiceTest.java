@@ -8,7 +8,6 @@ import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.rest.AbstractRestApiTest;
-import org.easysoa.registry.rest.RegistryApiHelper;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.InformationService;
 import org.junit.Assert;

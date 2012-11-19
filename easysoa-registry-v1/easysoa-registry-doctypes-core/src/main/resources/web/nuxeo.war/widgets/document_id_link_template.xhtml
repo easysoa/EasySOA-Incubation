@@ -10,8 +10,7 @@
 
 		<c:choose>
 			<c:when test="${field != null and field != ''}">
-				<nxu:methodResult name="targetDocument"
-					value="#{documentModelHelperBean.safeGetDocument(field))}">
+				<nxu:methodResult name="targetDocument" value="#{documentModelHelperBean.safeGetDocument(field)}">
 					<c:choose>
 						<c:when test="${targetDocument != null}">
 							<nxu:graphicImage value="#{nxd:iconPath(targetDocument)}" alt="" />
@@ -31,8 +30,8 @@
 
 			</c:when>
 			<c:otherwise>
-            -
-        </c:otherwise>
+        -
+      </c:otherwise>
 		</c:choose>
 
 	</div>

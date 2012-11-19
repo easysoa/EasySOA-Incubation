@@ -49,8 +49,7 @@ public class ServiceMatchingListener implements EventListener {
 
         // Service impl: Link to information service
         if (documentService.isTypeOrSubtype(documentManager, sourceDocument.getType(), ServiceImplementation.DOCTYPE)) {
-        	lookForAnInformationServiceToMatch(documentManager, documentService, sourceDocument, 
-        			!event.getName().equals(DocumentEventTypes.BEFORE_DOC_UPDATE));
+        	findAndMatchInformationService(documentManager, documentService, sourceDocument);
         }
 
         // Information service: Find matching serviceimpls
@@ -67,24 +66,22 @@ public class ServiceMatchingListener implements EventListener {
 	        		documentManager.save();
         		}
             	for (DocumentModel serviceImpl : foundServiceImpls) {
-            		lookForAnInformationServiceToMatch(documentManager, documentService, serviceImpl, true);
+            		findAndMatchInformationService(documentManager, documentService, serviceImpl);
             	}
         	}
         }
         
 	}
 
-	private void lookForAnInformationServiceToMatch(CoreSession documentManager,
-			DocumentService documentService, DocumentModel serviceImplModel, boolean save) throws ClientException {
+	private void findAndMatchInformationService(CoreSession documentManager,
+			DocumentService documentService, DocumentModel serviceImplModel) throws ClientException {
     	if (serviceImplModel.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE) == null) {
         	DocumentModelList foundInfoServices = findIServicesForImpl(documentManager, serviceImplModel);
         	if (foundInfoServices != null && foundInfoServices.size() > 0) {
         		serviceImplModel.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE,
         				foundInfoServices.get(0).getId());
-        		if (save) {
-        			documentManager.saveDocument(serviceImplModel);
-        			documentManager.save();
-        		}
+    			documentManager.saveDocument(serviceImplModel);
+    			documentManager.save();
         	} // else none, or too much (go to matching dashboard)
         }
 	}

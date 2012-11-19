@@ -43,7 +43,6 @@ ARGV.each do |arg|
     
     when 'deploy'
       nuxeoPath = Dir[MARKETPLACE_BUILD_OUTPUT + 'nuxeo-cap-*-tomcat'][0]
-      
       if nuxeoPath.nil?
         capDistribPath = Dir[MARKETPLACE_BUILD_OUTPUT + 'nuxeo-distribution-*.zip'][0]
         puts '> Unzipping ' + capDistribPath + '...'
@@ -58,11 +57,11 @@ ARGV.each do |arg|
         system('chmod +x ' + nuxeoctlPath)
         system(nuxeoctlPath + ' mp-init')
         puts
+      else
+        nuxeoctlPath = nuxeoctl()
+        puts '> Uninstalling package "easy-soa-' + EASYSOA_VERSION  + '"...'
+        system(nuxeoctlPath + ' --accept=true mp-remove easy-soa-' + EASYSOA_VERSION)
       end
-      
-      nuxeoctlPath = nuxeoctl()
-      puts '> Uninstalling package "easy-soa-' + EASYSOA_VERSION  + '"...'
-      system(nuxeoctlPath + ' --accept=true mp-remove easy-soa-' + EASYSOA_VERSION)
       
       puts '', '> Installing new EasySOA package...'
       system(nuxeoctlPath + ' --accept=true mp-install ' + Dir[MARKETPLACE_BUILD_OUTPUT + 'easysoa-registry-marketplace-*.zip'][0])

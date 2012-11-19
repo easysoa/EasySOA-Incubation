@@ -19,7 +19,7 @@ import org.nuxeo.runtime.api.Framework;
  * if needed soaMetamodel performances
  * special cases (see FIXMEs)
  * 
- * @author mkalam-alami
+ * @author mkalam-alami, mdutoo
  *
  */
 public class DiscoveryServiceImpl implements DiscoveryService {

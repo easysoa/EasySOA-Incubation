@@ -156,8 +156,8 @@ public class ServiceMatchingListener implements EventListener {
     			" AND platform:serviceLanguage='" + implServiceLanguage + "'"; // if any ; OPT multiple options (consistency handled in logic)
     	*/
     	
-    	boolean isWsdl = impl.hasFacet("WsdlInfo"); // TODO impl.hasFacet("WsdlInfo");
-    	boolean isRest = impl.hasFacet("RestInfo");// OPT dynamic
+    	boolean isWsdl = impl.hasFacet("WsdlInfo") && impl.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME) != null;// OPT dynamic if possible when setting props in DiscoveryService ??
+    	boolean isRest = impl.hasFacet("RestInfo") && impl.getPropertyValue(RestInfo.XPATH_REST_PATH) != null;// OPT dynamic if possible when setting props in DiscoveryService ??
     	// or platform:serviceDefinition=WSDL|JAXRS ?
     	
     	if (isWsdl) { // consistency logic

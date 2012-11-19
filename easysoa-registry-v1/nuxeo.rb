@@ -31,7 +31,7 @@ end
 ARGV.each do |arg|
 
   case arg
-    
+ 
     when 'test'
       system('mvn test')
       
@@ -49,6 +49,10 @@ ARGV.each do |arg|
         puts '> Unzipping ' + capDistribPath + '...'
         system('unzip -q ' + capDistribPath + ' -d ' + MARKETPLACE_BUILD_OUTPUT)
         
+        puts '', '> Overriding Nuxeo configuration...'
+        nuxeoBinPath = Dir[MARKETPLACE_BUILD_OUTPUT + 'nuxeo-cap-*-tomcat/bin'][0]
+        FileUtils.cp './easysoa-registry-marketplace/src/main/resources/nuxeo.conf', nuxeoBinPath
+      
         puts '', '> Initializing Nuxeo distribution...'
         nuxeoctlPath = nuxeoctl()
         system('chmod +x ' + nuxeoctlPath)

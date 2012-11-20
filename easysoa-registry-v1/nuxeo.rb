@@ -15,7 +15,7 @@ end
 def displayHelp()
   puts '', '> HELP'
   puts 'build: Build with Maven. WARNING: Will delete your Nuxeo data/setup'
-  puts 'fastbuild: Build with Maven, skip the tests to go faster. WARNING: Will delete your Nuxeo data/setup'
+  puts 'fastbuild: Build with Maven, skip the tests and run offline to go faster. WARNING: Will delete your Nuxeo data/setup'
   puts 'test: Run the Maven tests only'
   puts 'deploy: Unzip the Nuxeo distribution if necessary, deploys the EasySOA marketplace package'
   puts 'reset: Deletes the unzipped Nuxeo distribution'
@@ -36,10 +36,10 @@ ARGV.each do |arg|
       system('mvn test')
       
     when 'build'
-      system('mvn clean install -DskipTests=true -Pmarketplace')
+      system('mvn clean install -Pmarketplace')
     
     when 'fastbuild'
-      system('mvn clean install -DskipTests=true -Pmarketplace')
+      system('mvn clean install -DskipTests=true -o -Pmarketplace')
     
     when 'deploy'
       nuxeoPath = Dir[MARKETPLACE_BUILD_OUTPUT + 'nuxeo-cap-*-tomcat'][0]

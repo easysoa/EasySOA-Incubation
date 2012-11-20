@@ -160,8 +160,6 @@ public interface DocumentService {
 
     String getSourceFolderPath(String doctype);
 
-    String getSourcePath(SoaNodeId identifier);
-
     void ensureSourceFolderExists(CoreSession documentManager, String doctype)
             throws ClientException;
 

@@ -144,18 +144,18 @@ public class RepositoryManagementListener implements EventListener {
 		        || sourceDocument.isProxy() && parentModel.hasSchema(SoaNode.SCHEMA)
 		            && !sourceDocument.getPathAsString().startsWith(Repository.REPOSITORY_PATH)) {
 		    documentService.ensureSourceFolderExists(documentManager, sourceDocument.getType());
+		    
+		    // Build SoaNodeId
 		    String soaName = (String) sourceDocument.getPropertyValue(SoaNode.XPATH_SOANAME);
 		    if (soaName == null || soaName.isEmpty()) {
 		        //sourceDocument.setPropertyValue(SoaNode.XPATH_SOANAME, sourceDocument.getName());
 		    	soaName = sourceDocument.getName();
 		    }
+		    SoaNodeId soaNodeId = new SoaNodeId(sourceDocument.getType(), soaName);
 		    
-		    //PathRef sourcePathRef = new PathRef(documentService.getSourcePath(
-		    //        documentService.createSoaNodeId(sourceDocument)));
-		    PathRef sourcePathRef = new PathRef(documentService.getSourcePath(new SoaNodeId(sourceDocument.getType(), soaName)));
-		    if (documentManager.exists(sourcePathRef)) {
+		    DocumentModel repositoryDocument = documentService.find(documentManager, soaNodeId);
+		    if (repositoryDocument != null) {
 		        // If the source document already exists, only keep one
-		    	DocumentModel repositoryDocument = documentManager.getDocument(sourcePathRef);
 		        repositoryDocument.copyContent(sourceDocument); // Merge //
 		        documentManager.saveDocument(repositoryDocument);//
 		        documentManager.save();//
@@ -167,8 +167,7 @@ public class RepositoryManagementListener implements EventListener {
 		        // Move to repository otherwise
 		        sourceDocument.setPropertyValue(SoaNode.XPATH_SOANAME, soaName);
 		    	sourceDocument = documentManager.move(sourceDocument.getRef(),
-		            new PathRef(sourceFolderPath),
-		            sourceDocument.getName());
+		            new PathRef(sourceFolderPath), sourceDocument.getName());
 		    }
 		    
 		    // Create a proxy at the expected location

@@ -29,7 +29,7 @@ import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 public class DocumentServiceImpl implements DocumentService {
 
 	public void checkSoaName(DocumentModel soaNodeDoc) throws ClientException {
-        if (soaNodeDoc.getPropertyValue(SoaNode.SCHEMA) == null) {
+        if (soaNodeDoc.getPropertyValue(SoaNode.XPATH_SOANAME) == null) {
         	throw new ClientException("Null soaname for " + soaNodeDoc.getPathAsString()
         			+ " - did happen when : doc was created when it already existed "
         			+ "because it was queried for using erroneously safeName(), "

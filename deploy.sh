@@ -1,8 +1,11 @@
 #!/bin/sh
 
 # CHANGE THE FOLLOWING
-export NUXEO_HOME=/cygdrive/c/dev/easysoa/nuxeo-cap-5.5-tomcat
-export M2_REPO=/cygdrive/c/Documents\ and\ Settings/mdutoo/.m2/repository
+#export NUXEO_HOME=/cygdrive/c/dev/easysoa/nuxeo-cap-5.5-tomcat
+#export M2_REPO=/cygdrive/c/Documents\ and\ Settings/mdutoo/.m2/repository
+
+export NUXEO_HOME=/home/jguillemotte/Java-tools/nuxeo-cap-5.5-tomcat
+export M2_REPO=/home/jguillemotte/.m2/repository
 
 # deploying built & dep jars
 cp easysoa-registry-v1/*/target/*jar $NUXEO_HOME/nxserver/plugins/

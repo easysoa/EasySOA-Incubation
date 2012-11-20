@@ -36,7 +36,12 @@ public class JsonMessageReader implements MessageBodyReader<Object> {
             InputStream entityStream) throws IOException, WebApplicationException {
         JsonNode jsonNode = mapper.readValue(entityStream, JsonNode.class);
         if (jsonNode.isArray()) {
-            return mapper.readValue(jsonNode, SoaNodeInformation[].class);
+            // TODO : find a better way to determine what type of object in the array
+            if(jsonNode.get(0)!=null && jsonNode.get(0).has("projectID")){
+                return mapper.readValue(jsonNode, WSDLInformation[].class);
+            } else {
+                return mapper.readValue(jsonNode, SoaNodeInformation[].class);
+            }
         }
         else {
             JsonNode idNode = jsonNode.get("id");

@@ -17,9 +17,9 @@ import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.WsdlInfo;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -100,6 +100,10 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
             infoService.setPropertyValue(SoaNode.XPATH_SOANAME, anotherName);
             infoService.setPropertyValue("dc:title", anotherTitle);
             infoService.setPropertyValue("dc:description", anotherDescription);
+            // Add a associated wsdl file
+            StringBlob blob = new StringBlob("test blob content");
+            blob.setFilename("testFile.wsdl");
+            infoService.setPropertyValue("file:content", blob);
             documentManager.saveDocument(infoService);
             
             // Add endpoint

@@ -82,7 +82,6 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
         
         // LATER other platform parameters (see ServiceMatchingListener.findIServicesForImpl()) ?
 
-        
         // Execute query
         String nxqlQuery = NXQLQueryBuilder.getQuery(query.toString(), parameters.toArray(), false, true);
         DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);        
@@ -91,14 +90,6 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
         WSDLInformation[] wsdlInformations = new WSDLInformation[soaNodeModelList.size()];
         int index = 0;
         for (DocumentModel soaNodeModel : soaNodeModelList) {
-
-            // Get associated files            
-            /*parameters = new ArrayList<String>();
-            parameters.add(soaNodeModel.getId());
-            nxqlQuery = NXQLQueryBuilder.getQuery("SELECT * FROM File WHERE ecm:parentId = '?'", parameters.toArray(), false, true);
-            DocumentModelList fileList = documentManager.query(nxqlQuery);
-            //name*/
-            
             wsdlInformations[index] = SoaNodeInformationToWSDLInformationMapper.mapToWSDLInformation(soaNodeModel, NUXEO_BASE_URL);
             index++;
         }

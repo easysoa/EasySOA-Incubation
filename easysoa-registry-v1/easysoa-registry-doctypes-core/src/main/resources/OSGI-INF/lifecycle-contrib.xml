@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<component name="org.easysoa.registry.doctypes.core.lifecycle.contrib">
+
+  <extension point="types" target="org.nuxeo.ecm.core.lifecycle.LifeCycleService">
+    <types>
+      <!-- Transversal -->
+      <type name="TaggingFolder">default</type>
+      
+      <!-- Design -->
+      <type name="SoftwareComponent">default</type>
+      <type name="InformationService">default</type>
+      
+      <!-- Implementation -->
+      <type name="Deliverable">default</type>
+      <type name="ServiceImplementation">default</type>
+      <type name="ServiceConsumption">default</type>
+      
+      <!-- Deployment -->
+      <type name="DeployedDeliverable">default</type>
+      <type name="Endpoint">default</type>
+    </types>
+  </extension>
+
+</component>

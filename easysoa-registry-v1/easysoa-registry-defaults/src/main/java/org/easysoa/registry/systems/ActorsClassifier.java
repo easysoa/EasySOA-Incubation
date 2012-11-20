@@ -46,7 +46,7 @@ public class ActorsClassifier implements IntelligentSystemTreeClassifier {
         	}
         	String id = (String) model.getPropertyValue(actorMetadata);
         	if (id == null) {
-        		return null; // TODO MDU else npex below ?!
+        		return null; // if not yet meta, don't try to classify
         	}
         	return documentManager.getDocument(new IdRef(id)).getTitle();
         }

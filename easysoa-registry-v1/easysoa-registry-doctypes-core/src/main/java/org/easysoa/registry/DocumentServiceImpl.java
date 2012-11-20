@@ -47,7 +47,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
     
     public DocumentModel create(CoreSession documentManager, SoaNodeId identifier, String parentPath) throws ClientException {
-        String doctype = identifier.getType(), name = identifier.getName();
+        String doctype = identifier.getType();
  
         if (isSoaNode(documentManager, doctype)) {
         	// XXX Redundant with RepositoryManagementListener?
@@ -59,11 +59,7 @@ public class DocumentServiceImpl implements DocumentService {
             // Create or fetch source document
             DocumentModel documentModel = find(documentManager, identifier);
         	if (documentModel == null) {
-        		ensureSourceFolderExists(documentManager, doctype);
-                documentModel = documentManager.createDocumentModel(doctype);
-                documentModel.setPathInfo(getSourceFolderPath(doctype), safeName(name));
-                documentModel.setPropertyValue(SoaNode.XPATH_TITLE, name);
-                documentModel.setPropertyValue(SoaNode.XPATH_SOANAME, name);
+                documentModel = newSoaNodeDocument(documentManager, identifier);
                 documentModel = documentManager.createDocument(documentModel);
         	}
             
@@ -95,17 +91,12 @@ public class DocumentServiceImpl implements DocumentService {
      * TODO NO triggers documentCreate event but properties have not yet been set !
      */
     public DocumentModel create(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
-        String doctype = identifier.getType(), name = identifier.getName();
         DocumentModel documentModel = null;
         
-        if (isSoaNode(documentManager, doctype)) {
+        if (isSoaNode(documentManager, identifier.getType())) {
         	documentModel = find(documentManager, identifier);
         	if (documentModel == null) {
-                ensureSourceFolderExists(documentManager, doctype);
-                documentModel = documentManager.createDocumentModel(doctype);
-                documentModel.setPathInfo(getSourceFolderPath(doctype), safeName(name));
-                documentModel.setPropertyValue(SoaNode.XPATH_TITLE, name);
-                documentModel.setPropertyValue(SoaNode.XPATH_SOANAME, name);
+                documentModel = newSoaNodeDocument(documentManager, identifier);
                 documentModel = documentManager.createDocument(documentModel);
         	}
         }
@@ -113,29 +104,16 @@ public class DocumentServiceImpl implements DocumentService {
         return documentModel;
     }
 
-    /**
-     * 
-     * Doesn't create (have to save afterwards), to be preferred to createDocument
-     * because doesn't trigger documentCreated event
-     * @throws ClientException nuxeo error, or if already exists - check it before using :
-     * coreSession.exists(new PathRef(getSourcePath(identifier)))
-     * or
-     * documentService.find(documentManager, identifier)
+    /* (non-Javadoc)
+     * @see org.easysoa.registry.DocumentService#newSoaNodeDocument(org.nuxeo.ecm.core.api.CoreSession, org.easysoa.registry.SoaNodeId)
      */
-    public DocumentModel newDocument(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
+    public DocumentModel newSoaNodeDocument(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
         String doctype = identifier.getType(), name = identifier.getName();
-        DocumentModel documentModel = null;
-        
-        if (isSoaNode(documentManager, doctype)) {
-        	documentModel = find(documentManager, identifier);
-        	if (documentModel == null) {
-                ensureSourceFolderExists(documentManager, doctype);
-                documentModel = documentManager.createDocumentModel(doctype);
-                documentModel.setPathInfo(getSourceFolderPath(doctype), safeName(name));
-                documentModel.setPropertyValue(SoaNode.XPATH_TITLE, name);
-                documentModel.setPropertyValue(SoaNode.XPATH_SOANAME, name);
-        	}
-        }
+        ensureSourceFolderExists(documentManager, doctype);
+        DocumentModel documentModel = documentManager.createDocumentModel(doctype);
+        documentModel.setPathInfo(getSourceFolderPath(doctype), safeName(name));
+        documentModel.setPropertyValue(SoaNode.XPATH_TITLE, name);
+        documentModel.setPropertyValue(SoaNode.XPATH_SOANAME, name);
         return documentModel;
     }
 

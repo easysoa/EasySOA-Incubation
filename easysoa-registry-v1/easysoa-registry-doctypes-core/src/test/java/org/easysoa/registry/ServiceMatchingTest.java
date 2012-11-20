@@ -8,9 +8,12 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.test.AbstractRegistryTest;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.types.SoaNode;
 import org.junit.Assert;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -78,6 +81,13 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         foundImpl = documentService.find(documentManager, THIRD_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must not be linked to existing matching information service", null,
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+
+    	// Rediscover known is
+        foundInfoServ  = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_ID, isProperties, null);
+    	// Rediscover known impl
+        foundImpl = discoveryService.runDiscovery(documentManager, SECOND_SERVICEIMPL_ID, implProperties, null);
+        Assert.assertEquals("Created impl must still be linked to existing matching information service", foundInfoServ.getId(),
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
     }
     
     @Test
@@ -138,6 +148,19 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         foundImpl = documentService.find(documentManager, THIRD_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must not be linked to existing matching information service", null,
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+    }
+    
+    @Test
+    public void testCheckSoaNode() throws PropertyException, ClientException {
+    	DocumentModel soaNodeDoc = documentService.newSoaNodeDocument(documentManager,
+    			new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:testCheckSoaNode=testCheckSoaNodeImpl"));
+    	soaNodeDoc.setPropertyValue(SoaNode.XPATH_SOANAME, null);
+        try {
+			documentService.checkSoaName(soaNodeDoc);
+			Assert.fail("checkSoaName should fail on null soan:name");
+		} catch (ClientException e) {
+			Assert.assertTrue("testCheckSoaNode successful",  true);
+		}
     }
     
 }

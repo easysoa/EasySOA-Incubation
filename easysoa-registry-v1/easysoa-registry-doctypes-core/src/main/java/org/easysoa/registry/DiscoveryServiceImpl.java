@@ -61,6 +61,14 @@ public class DiscoveryServiceImpl implements DiscoveryService {
             //documentManager.saveDocument(documentModel); // TODO mdu ?!
         }
         
+        // only now that props are OK, create or save document
+        // (required below for handling parents by creating proxies to it)
+        if (shouldCreate) {
+        	documentManager.createDocument(documentModel);
+        } else {
+        	documentManager.saveDocument(documentModel);
+        }
+        
         // Link to parent documents
         // FIXME cache / build model of soaMetamodelService responses to speed it up
         if (parentDocuments != null && !parentDocuments.isEmpty()) {
@@ -122,11 +130,6 @@ public class DiscoveryServiceImpl implements DiscoveryService {
                     documentService.create(documentManager, identifier, parentPathAsString);
                 }
             }
-        }
-        if (shouldCreate) {
-        	documentManager.createDocument(documentModel);
-        } else {
-        	documentManager.saveDocument(documentModel);
         }
         
         return documentModel;

@@ -26,12 +26,18 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 
     public DocumentModel runDiscovery(CoreSession documentManager, SoaNodeId identifier,
             Map<String, Object> properties, List<SoaNodeId> parentDocuments) throws Exception {
+
     	// FIXME
 //        if (Endpoint.DOCTYPE.equals(identifier.getType())) { // TODO MDU hack
 //        	return discoverEndpoint(documentManager, identifier, properties, parentDocuments);
 //        }
         
         DocumentService documentService = Framework.getService(DocumentService.class);
+
+        if (!documentService.isSoaNode(documentManager, identifier.getType())) {
+        	throw new Exception("Can only discover a SoaNode but is " + identifier
+        			+ " - " + properties + " - " + parentDocuments);
+        }
         
         // Fetch or create document
         boolean shouldCreate = false;
@@ -39,7 +45,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         if (documentModel == null) {
             shouldCreate = true;
             //documentModel = documentService.create(documentManager, identifier); // TODO MDU ?!
-            documentModel = documentService.newDocument(documentManager, identifier);
+            documentModel = documentService.newSoaNodeDocument(documentManager, identifier);
         }
         
         // Set properties

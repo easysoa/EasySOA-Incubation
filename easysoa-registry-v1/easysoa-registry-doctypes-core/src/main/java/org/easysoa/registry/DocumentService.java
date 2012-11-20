@@ -68,17 +68,15 @@ public interface DocumentService {
     DocumentModel create(CoreSession documentManager, SoaNodeId identifier)
             throws ClientException;
     /**
-     * Doesn't create (have to save afterwards), to be preferred to createDocument
-     * because doesn't trigger documentCreated event
-     * @param documentManager
-     * @param identifier
-     * @return
-     * @throws ClientException nuxeo error, or if already exists - check it before using :
-     * coreSession.exists(new PathRef(getSourcePath(identifier)))
-     * or
+     * Creates a new SoaNode document but doesn't save it (therefore have to save
+     * afterwards using ex. coreSession.saveDocument()). To be preferred to createDocument
+     * because doesn't trigger documentCreated event.
+     * @param documentManager nuxeo core session
+     * @param identifier must be a valid SoaNodeId (check it with isSoaNode())
+     * @throws ClientException nuxeo error, or if already exists - check it before using
      * documentService.find(documentManager, identifier)
      */
-    DocumentModel newDocument(CoreSession documentManager, SoaNodeId identifier)
+    DocumentModel newSoaNodeDocument(CoreSession documentManager, SoaNodeId identifier)
             throws ClientException;
     
     /**

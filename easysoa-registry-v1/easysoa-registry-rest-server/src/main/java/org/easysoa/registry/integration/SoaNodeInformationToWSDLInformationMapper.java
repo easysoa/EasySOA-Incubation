@@ -36,14 +36,19 @@ public class SoaNodeInformationToWSDLInformationMapper {
         
         // WSDL download URL : To be builded by hand
         // http://localhost:8080/nuxeo/nxfile/default/d5bd2a85-a936-4319-8cf9-6e4cd5fd0381/files:files/0/file/WeatherService.wsdl
-        //(String)nodeModel.getPropertyValue("file:filename")
-        Blob blob = (Blob) nodeModel.getPropertyValue("file:content");
-        if (blob != null) {
-            wsdlInformation.setWsdlDownloadUrl(buildWsdlDownloadUrl(nuxeoBaseUrl, nodeModel.getId(), blob.getFilename()));
-        } else {
-            wsdlInformation.setWsdlDownloadUrl("");
+        try {
+            Blob blob = (Blob)nodeModel.getPropertyValue("files/0/file/");
+            if (blob != null) {
+                wsdlInformation.setWsdlDownloadUrl(buildWsdlDownloadUrl(nuxeoBaseUrl, nodeModel.getId(), blob.getFilename()));
+            } else {
+                wsdlInformation.setWsdlDownloadUrl("");
+            }
         }
-        return wsdlInformation;
+        catch(Exception ex){
+            wsdlInformation.setWsdlDownloadUrl("");
+            //ex.printStackTrace();
+        }
+        return wsdlInformation;        
     }
     
     /**

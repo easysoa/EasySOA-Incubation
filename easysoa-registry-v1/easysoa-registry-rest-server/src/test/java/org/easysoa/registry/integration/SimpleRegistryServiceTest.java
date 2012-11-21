@@ -101,9 +101,9 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
             infoService.setPropertyValue("dc:title", anotherTitle);
             infoService.setPropertyValue("dc:description", anotherDescription);
             // Add a associated wsdl file
-            StringBlob blob = new StringBlob("test blob content");
+            /*StringBlob blob = new StringBlob("test blob content");
             blob.setFilename("testFile.wsdl");
-            infoService.setPropertyValue("file:content", blob);
+            infoService.setPropertyValue("file", blob);*/
             documentManager.saveDocument(infoService);
             
             // Add endpoint
@@ -147,6 +147,14 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         firstWSDLInformation = wsdlInformations[0];
         Assert.assertEquals("anotherName", firstWSDLInformation.getSoaName());
         Assert.assertEquals("anotherDescription", firstWSDLInformation.getDescription());
+        //Assert.assertTrue(firstWSDLInformation.getWsdlDownloadUrl() != null && firstWSDLInformation.getWsdlDownloadUrl().contains("testFile.wsdl"));
+        
+        // Run third test request
+        discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryWSDLInterfaces");
+        wsdlInformations = discoveryRequest.get(WSDLInformation[].class);
+        
+        Assert.assertNotNull(wsdlInformations);
+        Assert.assertEquals(3, wsdlInformations.length); // 3 Informations services should be returned
     }
     
     /**

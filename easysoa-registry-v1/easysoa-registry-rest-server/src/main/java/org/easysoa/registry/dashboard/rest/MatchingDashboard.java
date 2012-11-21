@@ -99,7 +99,7 @@ public class MatchingDashboard extends ModuleRoot {
 			view.arg("anyPlatformSuggestions", anyPlatformSuggestions);
 		}
 		else {
-			view.arg("anyPlatformSuggestionsCount", anyPlatformSuggestions.size());
+			view.arg("anyPlatformSuggestionsCount", anyPlatformSuggestions.size() - suggestions.size());
 		}
 		view.arg("selectedServiceImpl", serviceImplUuid);
 		return view;

@@ -59,7 +59,7 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
     	
     	if (filterComponent != null) {
     		DocumentModel trueComponent = documentManager.getWorkingCopy(filterComponent.getRef());
-    		query.addConstraintMatchCriteriaIfSet(Component.XPATH_COMPONENT_ID, trueComponent.getId());
+    		query.addCriteria(Component.XPATH_COMPONENT_ID + " = '" + trueComponent.getId() + "'");
     	}
     	
     	/*

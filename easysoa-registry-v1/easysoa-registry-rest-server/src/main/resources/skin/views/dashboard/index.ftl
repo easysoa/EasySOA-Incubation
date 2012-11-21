@@ -27,6 +27,10 @@
 <div id="container">
   <div id="selectedServiceImpl" style="display: none">${selectedServiceImpl}</div>
 
+  <form action="/nuxeo/site/easysoa/dashboard/samples" method="post" style="position: absolute; right: 20px; top: 20px">
+  	<input type="submit" value="Fill with samples" />
+  </form>
+
   <#if servWithoutSpecs?has_content>
   <h1 style="color: red; border-color: red">Service implementations to classify</h1>
   
@@ -44,28 +48,49 @@
       	  <#assign document = servWithoutSpec>
       	  <#include "/views/dashboard/document.ftl">
       	  	
-          <#if suggestions?has_content && selectedServiceImpl == servWithoutSpec.id>
-            <table style="width: 500px">
-              <th style="background-color: #FFA">Suggested services <#if selectedComponentTitle??>from <i>${selectedComponentTitle}</i></#if></th>
-              <#list suggestions as suggestion>
+          <#if selectedServiceImpl == servWithoutSpec.id>
+          <table style="width: 500px">
+           <tr>
+  	         <th style="background-color: #FFA">Suggested services <#if selectedComponentTitle??>from <i>${selectedComponentTitle}</i></#if></th>
+	         </tr>
+           <#if suggestions?has_content>
+           <#list suggestions as suggestion>
+              <tr>
+              	<td class="clickable infoService">
+              	  <#assign document = suggestion>
+              	  <#include "/views/dashboard/document.ftl">
+              	</td>
+              </tr>
+           </#list>
+           <#else>
+          	<td style="text-align: center; font-style: italic">
+          	  No matches
+          	</td>
+           </#if>
+           <tr>
+	          <th style="background-color: #FFA">Suggested services <#if selectedComponentTitle??>from <i>${selectedComponentTitle}</i></#if> (any platform)</th>
+	         </tr>
+           <#if anyPlatformSuggestions?has_content>
+             <#list anyPlatformSuggestions as suggestion>
                 <tr>
                 	<td class="clickable infoService">
                 	  <#assign document = suggestion>
                 	  <#include "/views/dashboard/document.ftl">
                 	</td>
                 </tr>
-              </#list>
-            </table>
-          <#elseif suggestions??>
-            <table style="width: 500px">
-              <th style="background-color: #FFA">Suggested services <#if selectedComponentTitle??>from <i>${selectedComponentTitle}</i></#if></th>
-              <tr>
-              	<td style="text-align: center; font-style: italic">
-              	  No matches
-              	</td>
-              </tr>
-            </table>
+             </#list>
+           <#elseif anyPlatformSuggestionsCount??>
+          	<td style="text-align: center">
+          	  ${anyPlatformSuggestionsCount} additional matches
+          	</td>
+           <#else>
+          	<td style="text-align: center; font-style: italic">
+          	  No matches
+          	</td>
+           </#if>
+          </table>
           </#if>
+          
           <#if components?has_content && selectedServiceImpl == servWithoutSpec.id>
             <table style="width: 500px">
               <th style="background-color: #DDD">Components list</th>

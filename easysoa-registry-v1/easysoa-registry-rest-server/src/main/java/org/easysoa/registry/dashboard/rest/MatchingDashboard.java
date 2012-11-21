@@ -13,6 +13,7 @@ import javax.ws.rs.PathParam;
 
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.ServiceMatchingService;
+import org.easysoa.registry.rest.samples.DashboardMatchingSamples;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -91,7 +92,15 @@ public class MatchingDashboard extends ModuleRoot {
 	@Path("suggest/{serviceImplUuid}")
 	public Template suggestServices(@PathParam("serviceImplUuid") String serviceImplUuid) throws Exception {
 		Template view = viewDashboard();
-		view.arg("suggestions", fetchSuggestions(serviceImplUuid, null));
+		List<DocumentModel> suggestions = fetchSuggestions(serviceImplUuid, null, false);
+		view.arg("suggestions", suggestions);
+		List<DocumentModel> anyPlatformSuggestions = fetchSuggestions(serviceImplUuid, null, true);
+		if (suggestions.size() == 0) {
+			view.arg("anyPlatformSuggestions", anyPlatformSuggestions);
+		}
+		else {
+			view.arg("anyPlatformSuggestionsCount", anyPlatformSuggestions.size());
+		}
 		view.arg("selectedServiceImpl", serviceImplUuid);
 		return view;
 	}
@@ -103,7 +112,15 @@ public class MatchingDashboard extends ModuleRoot {
 		Template view = viewDashboard();
 		List<DocumentModel> components = fetchComponents();
 		view.arg("components", fetchComponents());
-		view.arg("suggestions", fetchSuggestions(serviceImplUuid, componentUuid));
+		List<DocumentModel> suggestions = fetchSuggestions(serviceImplUuid, componentUuid, false);
+		view.arg("suggestions", suggestions);
+		List<DocumentModel> anyPlatformSuggestions = fetchSuggestions(serviceImplUuid, componentUuid, true);
+		if (suggestions.size() == 0) {
+			view.arg("anyPlatformSuggestions", anyPlatformSuggestions);
+		}
+		else {
+			view.arg("anyPlatformSuggestionsCount", anyPlatformSuggestions.size() - suggestions.size());
+		}
 		view.arg("selectedServiceImpl", serviceImplUuid);
 		for (DocumentModel component : components) {
 			if (component.getId().equals(componentUuid)) {
@@ -113,6 +130,7 @@ public class MatchingDashboard extends ModuleRoot {
 		}
 		return view;
 	}
+	
 	@POST
 	public Object submit(@FormParam("infoServiceId") String infoServiceId,
 			@FormParam("serviceImplId") String serviceImplId) {
@@ -147,13 +165,21 @@ public class MatchingDashboard extends ModuleRoot {
 		}
 	}
 
+	@POST
+	@Path("samples")
+	public Object submit() {
+		new DashboardMatchingSamples("http://localhost:8080").run();
+		return viewDashboard();
+	}
+	
 	private List<DocumentModel> fetchComponents() throws Exception {
         CoreSession session = SessionFactory.getSession(request);
 		DocumentService docService = Framework.getService(DocumentService.class);
 		return docService.query(session, "SELECT * FROM Component", true, false);
 	}
 	
-	private List<DocumentModel> fetchSuggestions(String serviceImplUuid, String componentUuid) throws Exception {
+	private List<DocumentModel> fetchSuggestions(String serviceImplUuid, String componentUuid,
+			boolean skipPlatformMatching) throws Exception {
 		if (serviceImplUuid != null) {
 	        CoreSession session = SessionFactory.getSession(request);
 			ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);
@@ -164,7 +190,7 @@ public class MatchingDashboard extends ModuleRoot {
 				componentModel = session.getDocument(new IdRef(componentUuid));
 			}
 			
-			return matchingService.findInformationServices(session, serviceImplModel, componentModel);
+			return matchingService.findInformationServices(session, serviceImplModel, componentModel, skipPlatformMatching);
 		}
 		else {
 			return new ArrayList<DocumentModel>();

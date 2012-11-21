@@ -21,20 +21,12 @@ import org.nuxeo.runtime.api.Framework;
 public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 
     private static Logger logger = Logger.getLogger(ServiceMatchingListener.class);
-
-	/* (non-Javadoc)
-	 * @see org.easysoa.registry.ServiceMatchingService#findInformationServices(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel)
-	 */
-	public DocumentModelList findInformationServices(CoreSession documentManager,
-			DocumentModel impl) throws ClientException {
-		return findInformationServices(documentManager, impl, null);
-	}
 	
 	/* (non-Javadoc)
-	 * @see org.easysoa.registry.ServiceMatchingService#findInformationServices(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel, org.nuxeo.ecm.core.api.DocumentModel)
+	 * @see org.easysoa.registry.ServiceMatchingService#findInformationServices(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel, org.nuxeo.ecm.core.api.DocumentModel, boolean)
 	 */
 	public DocumentModelList findInformationServices(CoreSession documentManager, DocumentModel impl,
-			DocumentModel filterComponent) throws ClientException {
+			DocumentModel filterComponent, boolean skipPlatformMatching) throws ClientException {
 
 		DocumentService documentService;
 		try {
@@ -57,11 +49,13 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
 
-    	query.addConstraintMatchCriteriaIfSet("platform:language", implLanguage);
-    	query.addConstraintMatchCriteriaIfSet("platform:build", implBuild);
-    	query.addConstraintMatchCriteriaIfSet("platform:deliverableNature", implDeliverableNature);
-    	query.addConstraintMatchCriteriaIfSet("platform:deliverableRepositoryUrl", implDeliverableRepositoryUrl);
-    	query.addConstraintMatchCriteriaIfSet("platform:serviceLanguage", implServiceLanguage);
+    	if (!skipPlatformMatching) {
+	    	query.addConstraintMatchCriteriaIfSet("platform:language", implLanguage);
+	    	query.addConstraintMatchCriteriaIfSet("platform:build", implBuild);
+	    	query.addConstraintMatchCriteriaIfSet("platform:deliverableNature", implDeliverableNature);
+	    	query.addConstraintMatchCriteriaIfSet("platform:deliverableRepositoryUrl", implDeliverableRepositoryUrl);
+	    	query.addConstraintMatchCriteriaIfSet("platform:serviceLanguage", implServiceLanguage);
+    	}
     	
     	if (filterComponent != null) {
     		DocumentModel trueComponent = documentManager.getWorkingCopy(filterComponent.getRef());

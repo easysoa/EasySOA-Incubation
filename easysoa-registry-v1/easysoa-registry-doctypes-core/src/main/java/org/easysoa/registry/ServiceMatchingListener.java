@@ -67,7 +67,8 @@ public class ServiceMatchingListener implements EventListener {
 	private void findAndMatchInformationService(CoreSession documentManager,
 			ServiceMatchingService matchingService, DocumentModel sourceDocument)
 			throws ClientException {
-		DocumentModelList foundInformationServices = matchingService.findInformationServices(documentManager, sourceDocument);
+		DocumentModelList foundInformationServices = matchingService.findInformationServices(
+				documentManager, sourceDocument, null, false);
 		if (foundInformationServices.size() > 0) {
 			matchingService.linkInformationService(documentManager, sourceDocument,
 					foundInformationServices.get(0).getId(), true);

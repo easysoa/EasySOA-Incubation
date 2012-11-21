@@ -8,17 +8,19 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.SoaNodeId;
-import org.easysoa.registry.rest.AbstractRestApiTest;
+import org.easysoa.registry.rest.marshalling.JsonMessageReader;
+import org.easysoa.registry.rest.marshalling.JsonMessageWriter;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.names.InformationServiceName;
 import org.easysoa.registry.types.names.ServiceIdentifierType;
 import org.easysoa.registry.types.names.ServiceImplementationName;
-import org.junit.Ignore;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 /**
  * Creates some sample documents to fill the repository enough
@@ -27,8 +29,7 @@ import com.sun.jersey.api.client.WebResource;
  * @author mkalam-alami
  *
  */
-@Ignore
-public class DashboardMatchingSamples extends AbstractRestApiTest {
+public class DashboardMatchingSamples {
 
 	private static final Logger logger = Logger.getLogger(DashboardMatchingSamples.class);
     
@@ -74,5 +75,15 @@ public class DashboardMatchingSamples extends AbstractRestApiTest {
 		logger.info("My component");
 		properties.clear();
 	}
+	
+    private Client createAuthenticatedHTTPClient() {
+        DefaultClientConfig clientConfig = new DefaultClientConfig();
+        clientConfig.getSingletons().add(new JsonMessageReader());
+        clientConfig.getSingletons().add(new JsonMessageWriter());
+        Client client = Client.create(clientConfig);
+        client.addFilter(new HTTPBasicAuthFilter("Administrator", "Administrator"));
+        return client;
+    }
+    
 	
 }

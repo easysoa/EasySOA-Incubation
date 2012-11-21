@@ -135,9 +135,8 @@ public class MatchingDashboard extends ModuleRoot {
 	    		}
 	    		
 	    		// Apply on document
-				serviceImpl.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE, newInfoServiceId);
-				session.saveDocument(serviceImpl);
-				session.save();
+	    		ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);
+	    		matchingService.linkInformationService(session, serviceImpl, newInfoServiceId, true);
 				return viewDashboard();
 	    	}
 	    	else {

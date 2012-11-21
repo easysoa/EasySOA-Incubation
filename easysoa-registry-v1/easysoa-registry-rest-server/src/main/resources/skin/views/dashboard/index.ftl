@@ -20,7 +20,7 @@
 	<div id="headerContents">
 	    <div id="logoLink">&nbsp;</div>
     	<div id="headerUserBar"></div>
-		EasySOA Light summary
+		EasySOA Matching dashboard
     </div>
 </div>
 

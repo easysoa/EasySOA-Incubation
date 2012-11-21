@@ -38,17 +38,17 @@ public interface ServiceMatchingService {
 			DocumentModel informationService) throws ClientException;
 	
 	/**
-	 * Links the specified service impl to an information service.
-	 * Optionally calls documentManager.saveDocument() + save().
+	 * Links the specified service impl to an information service,
+	 * optionally calls documentManager.saveDocument() + save().
+	 * Does nothing if the information service is already linked.
 	 * @param documentManager
 	 * @param serviceImplModel
-	 * @param informationServiceModel
+	 * @param informationServiceUuid
 	 * @param save
 	 * @throws ClientException
 	 */
-	public abstract void linkInformationService(CoreSession documentManager,
-			DocumentModel serviceImplModel,
-			DocumentModel informationServiceModel, boolean save)
-			throws ClientException;
+	void linkInformationService(CoreSession documentManager,
+			DocumentModel serviceImplModel, String informationServiceUuid,
+			boolean save) throws ClientException;
 
 }

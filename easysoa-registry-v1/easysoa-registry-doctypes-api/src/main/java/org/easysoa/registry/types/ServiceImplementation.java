@@ -31,6 +31,10 @@ public interface ServiceImplementation extends SoaNode, RestInfo, WsdlInfo {
 
     static final String XPATH_LINKED_INFORMATION_SERVICE = "impl:linkedInformationService";
 
+    static final String XPATH_COMPONENT = "impl:component"; // nuxeo id ; component that this impl fills ; TODO rather candidate also ?
+
+    static final String XPATH_PLATFORM = "impl:platform"; // nuxeo id ; this impl's dev platform ; TODO rather candidate also ?
+
     static final String OPERATION_NAME = "operationName";
     
     static final String OPERATION_PARAMETERS = "operationParameters";

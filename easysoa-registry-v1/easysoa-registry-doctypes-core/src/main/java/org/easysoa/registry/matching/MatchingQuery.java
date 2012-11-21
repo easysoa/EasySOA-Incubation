@@ -5,6 +5,12 @@ import java.util.ArrayList;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 
+
+/**
+ * TODO isProxy & version ?!?
+ * @author mdutoo
+ *
+ */
 public class MatchingQuery {
 
 	private ArrayList<Object> params = new ArrayList<Object>();
@@ -16,13 +22,20 @@ public class MatchingQuery {
 	}
 
 	public void addCriteria(String criteria) {
-		if (firstCriteria) {
-			firstCriteria = false;
-			querySbuf.append(" WHERE ");
-		} else {
-			querySbuf.append(" AND ");
-		}
+		startCriteria();
 		querySbuf.append(criteria);
+	}
+	public void addCriteria(String xpath, Object value) {
+		startCriteria();
+		// match criteria :
+		querySbuf.append(xpath);
+		querySbuf.append("=?");
+		params.add(value);
+	}
+	public void addCriteriaIfSet(String xpath, Object value) {
+    	if (value != null) {
+    		addCriteria(xpath, value);
+    	}
 	}
 	/**
 	 * Adds criteria that matches this constraint only if it is present on the looked up documents
@@ -30,12 +43,7 @@ public class MatchingQuery {
 	 * @param value if String, will be wrapped by ''
 	 */
 	public void addConstraintMatchCriteria(String xpath, Object value) {
-		if (firstCriteria) {
-			firstCriteria = false;
-			querySbuf.append(" WHERE ");
-		} else {
-			querySbuf.append(" AND ");
-		}
+		startCriteria();
 		querySbuf.append("(");
 		
 		// check that constrain is present :
@@ -70,5 +78,14 @@ public class MatchingQuery {
 	}
 	public String toString() {
 		return querySbuf.toString() + " " + params; // TODO  better
+	}
+	
+	private void startCriteria() {
+		if (firstCriteria) {
+			firstCriteria = false;
+			querySbuf.append(" WHERE ");
+		} else {
+			querySbuf.append(" AND ");
+		}
 	}
 }

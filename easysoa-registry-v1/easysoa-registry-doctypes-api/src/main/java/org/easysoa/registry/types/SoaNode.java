@@ -12,6 +12,12 @@ public interface SoaNode extends Document {
     public static final String SCHEMA = "soanode";
     
     public static final String XPATH_SOANAME = "soan:name";
+
+    /** copied from subProject TODO */
+    public static final String XPATH_SUBPROJECT = "soan:subproject";
+    //public static final String XPATH_PARENT_SUBPROJECT(S) = "soan:parentSubproject"; // only on subProject TODO
+    /** subproject + parentSubproject(s)'s visibleSubprojects, copied from subproject, computed once there TODO */
+    public static final String XPATH_VISIBLE_SUBPROJECTS = "soan:visibleSubprojects";
     
     public static final String XPATH_ISPLACEHOLDER = "soan:isplaceholder";
 

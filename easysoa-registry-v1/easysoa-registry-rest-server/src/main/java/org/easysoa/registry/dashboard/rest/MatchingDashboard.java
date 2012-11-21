@@ -12,6 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.easysoa.registry.DocumentService;
+import org.easysoa.registry.ServiceMatchingService;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -150,16 +151,15 @@ public class MatchingDashboard extends ModuleRoot {
 	private List<DocumentModel> fetchSuggestions(String serviceImplUuid, String componentUuid) throws Exception {
 		if (serviceImplUuid != null) {
 	        CoreSession session = SessionFactory.getSession(request);
-			DocumentService docService = Framework.getService(DocumentService.class);
-			//DocumentModel serviceImpl = session.getDocument(new IdRef(serviceImplUuid));
+			ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);
 			
-			// TODO Find matching information services only
-			String informationServiceQuery = "SELECT * FROM " + InformationService.DOCTYPE;
+			DocumentModel serviceImplModel = session.getDocument(new IdRef(serviceImplUuid));
+			DocumentModel componentModel = null;
 			if (componentUuid != null) {
-				// TODO Add filter to query
-				informationServiceQuery += "";
+				componentModel = session.getDocument(new IdRef(componentUuid));
 			}
-			return docService.query(session, informationServiceQuery, true, false);
+			
+			return matchingService.findInformationServices(session, serviceImplModel, componentModel);
 		}
 		else {
 			return new ArrayList<DocumentModel>();

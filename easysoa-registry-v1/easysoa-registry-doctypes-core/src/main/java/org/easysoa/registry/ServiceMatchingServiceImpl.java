@@ -2,6 +2,7 @@ package org.easysoa.registry;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.matching.MatchingQuery;
+import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.RestInfo;
@@ -10,13 +11,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.event.Event;
-import org.nuxeo.ecm.core.event.EventContext;
-import org.nuxeo.ecm.core.event.EventListener;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -24,100 +18,24 @@ import org.nuxeo.runtime.api.Framework;
  * @author mkalam-alami
  *
  */
-public class ServiceMatchingListener implements EventListener {
+public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 
     private static Logger logger = Logger.getLogger(ServiceMatchingListener.class);
-    
-    @Override
-    public void handleEvent(Event event) throws ClientException {
-    	
-        // Ensure event nature
-        EventContext context = event.getContext();
-        if (!(context instanceof DocumentEventContext)) {
-            return;
-        }
-        DocumentEventContext documentContext = (DocumentEventContext) context;
-        DocumentModel sourceDocument = documentContext.getSourceDocument();
-        CoreSession documentManager = documentContext.getCoreSession();
-		DocumentService documentService;
-		try {
-			documentService = Framework.getService(DocumentService.class);
-		} catch (Exception e) {
-			logger.error("Document service unavailable, aborting");
-			return;
-		}
-        if (sourceDocument.hasSchema("soanode") && sourceDocument.getPropertyValue("soan:name") == null) { // TODO pb !!!!!!!!!!!!
-        	System.out.println("PB matching Null soaname for " + sourceDocument.getPathAsString());
-        	return;
-        }
 
-        // Service impl: Link to information service
-        if (documentService.isTypeOrSubtype(documentManager, sourceDocument.getType(), ServiceImplementation.DOCTYPE)) {
-        	lookForAnInformationServiceToMatch(documentManager, documentService, sourceDocument, 
-        			!event.getName().equals(DocumentEventTypes.BEFORE_DOC_UPDATE));
-        }
-
-        // Information service: Find matching serviceimpls
-        if (documentService.isTypeOrSubtype(documentManager, sourceDocument.getType(), InformationService.DOCTYPE)) {
-        	DocumentModel serviceModel = sourceDocument;
-        	
-        	boolean isWsdl = serviceModel.hasFacet("WsdlInfo"); // TODO impl.hasFacet("WsdlInfo");
-        	boolean isRest = serviceModel.hasFacet("RestInfo");// OPT dynamic
-        	// or platform:serviceDefinition=WSDL|JAXRS ?
-        	
-        	MatchingQuery query = new MatchingQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE);
-        	
-        	if (isWsdl) { // consistency logic
-            	String implPortTypeName = (String) serviceModel.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME); // if JAXWS
-            	query.addCriteria("ecm:mixinType = 'WsdlInfo'");
-            	query.addConstraintMatchCriteria(InformationService.XPATH_WSDL_PORTTYPE_NAME, implPortTypeName);
-            			
-        	} else if (isRest) {
-            	String implRestPath = (String) serviceModel.getPropertyValue(RestInfo.XPATH_REST_PATH); // if JAXRS
-            	//OPT String implMediaType = (String) impl.getPropertyValue(ServiceImplementation.XPATH_REST_MEDIA_TYPE); // if JAXRS
-        		//infoServiceQueryString +=
-    					//" AND ecm:mixinType = 'RestInfo' AND " +
-            			//" AND " InformationService.XPATH_REST_PATH + "='" + implRestPath + "'" +
-            			//OPT " AND " InformationService.XPATH_REST_MEDIA_TYPE + "='" + implMediaType + "'" +
-            			
-        	}
-        	
-        	String serviceImplQuery = NXQLQueryBuilder.getQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE + 
-        			" WHERE " + ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME + " = '?'",
-        			new Object[] { serviceModel.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME) },
-        			false, true);
-        	DocumentModelList foundServiceImpls = documentService.query(documentManager,
-        			serviceImplQuery, true, false);
-        	if (foundServiceImpls.size() > 0) {
-        		if (event.getName().equals(DocumentEventTypes.BEFORE_DOC_UPDATE)) {
-	        		documentManager.saveDocument(serviceModel);
-	        		documentManager.save();
-        		}
-            	for (DocumentModel serviceImpl : foundServiceImpls) {
-            		lookForAnInformationServiceToMatch(documentManager, documentService, serviceImpl, true);
-            	}
-        	}
-        }
-        
-	}
-
-	private void lookForAnInformationServiceToMatch(CoreSession documentManager,
-			DocumentService documentService, DocumentModel serviceImplModel, boolean save) throws ClientException {
-    	if (serviceImplModel.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE) == null) {
-        	DocumentModelList foundInfoServices = findIServicesForImpl(documentManager, serviceImplModel);
-        	if (foundInfoServices != null && foundInfoServices.size() > 0) {
-        		serviceImplModel.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE,
-        				foundInfoServices.get(0).getId());
-        		if (save) {
-        			documentManager.saveDocument(serviceImplModel);
-        			documentManager.save();
-        		}
-        	} // else none, or too much (go to matching dashboard)
-        }
+	/* (non-Javadoc)
+	 * @see org.easysoa.registry.ServiceMatchingService#findInformationServices(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel)
+	 */
+	public DocumentModelList findInformationServices(CoreSession documentManager,
+			DocumentModel impl) throws ClientException {
+		return findInformationServices(documentManager, impl, null);
 	}
 	
-	public DocumentModelList findIServicesForImpl(CoreSession documentManager, DocumentModel impl)
-			throws PropertyException, ClientException {
+	/* (non-Javadoc)
+	 * @see org.easysoa.registry.ServiceMatchingService#findInformationServices(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel, org.nuxeo.ecm.core.api.DocumentModel)
+	 */
+	public DocumentModelList findInformationServices(CoreSession documentManager, DocumentModel impl,
+			DocumentModel filterComponent) throws ClientException {
+
 		DocumentService documentService;
 		try {
 			documentService = Framework.getService(DocumentService.class);
@@ -144,6 +62,12 @@ public class ServiceMatchingListener implements EventListener {
     	query.addConstraintMatchCriteriaIfSet("platform:deliverableNature", implDeliverableNature);
     	query.addConstraintMatchCriteriaIfSet("platform:deliverableRepositoryUrl", implDeliverableRepositoryUrl);
     	query.addConstraintMatchCriteriaIfSet("platform:serviceLanguage", implServiceLanguage);
+    	
+    	if (filterComponent != null) {
+    		DocumentModel trueComponent = documentManager.getWorkingCopy(filterComponent.getRef());
+    		query.addConstraintMatchCriteriaIfSet(Component.XPATH_COMPONENT_ID, trueComponent.getId());
+    	}
+    	
     	/*
     			" WHERE  " +
     			//"soan:subProjectId IN " + implReferredSubProjectIds + "' OR soan:subProjectId='" + implSubProjectId + "'" +
@@ -156,8 +80,8 @@ public class ServiceMatchingListener implements EventListener {
     			" AND platform:serviceLanguage='" + implServiceLanguage + "'"; // if any ; OPT multiple options (consistency handled in logic)
     	*/
     	
-    	boolean isWsdl = impl.hasFacet("WsdlInfo"); // TODO impl.hasFacet("WsdlInfo");
-    	boolean isRest = impl.hasFacet("RestInfo");// OPT dynamic
+    	boolean isWsdl = impl.hasFacet("WsdlInfo") && impl.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME) != null;// OPT dynamic if possible when setting props in DiscoveryService ??
+    	boolean isRest = impl.hasFacet("RestInfo") && impl.getPropertyValue(RestInfo.XPATH_REST_PATH) != null;// OPT dynamic if possible when setting props in DiscoveryService ??
     	// or platform:serviceDefinition=WSDL|JAXRS ?
     	
     	if (isWsdl) { // consistency logic
@@ -201,6 +125,65 @@ public class ServiceMatchingListener implements EventListener {
     	DocumentModelList foundInfoServices = documentService.query(documentManager,
     			infoServiceQuery, true, false);
     	return foundInfoServices;
+	}
+
+	
+	/* (non-Javadoc)
+	 * @see org.easysoa.registry.ServiceMatchingService#findServiceImplementations(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel)
+	 */
+	public DocumentModelList findServiceImplementations(CoreSession documentManager,
+			DocumentModel informationService) throws ClientException {
+		
+		DocumentService documentService;
+		try {
+			documentService = Framework.getService(DocumentService.class);
+		} catch (Exception e) {
+			logger.error("Document service unavailable, aborting");
+			return null;
+		}
+		
+		boolean isWsdl = informationService.hasFacet("WsdlInfo"); // TODO impl.hasFacet("WsdlInfo");
+    	boolean isRest = informationService.hasFacet("RestInfo");// OPT dynamic
+    	// or platform:serviceDefinition=WSDL|JAXRS ?
+    	
+    	MatchingQuery query = new MatchingQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE);
+    	
+    	if (isWsdl) { // consistency logic
+        	String implPortTypeName = (String) informationService.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME); // if JAXWS
+        	query.addCriteria("ecm:mixinType = 'WsdlInfo'");
+        	query.addConstraintMatchCriteria(InformationService.XPATH_WSDL_PORTTYPE_NAME, implPortTypeName);
+        			
+    	} else if (isRest) {
+        	String implRestPath = (String) informationService.getPropertyValue(RestInfo.XPATH_REST_PATH); // if JAXRS
+        	//OPT String implMediaType = (String) impl.getPropertyValue(ServiceImplementation.XPATH_REST_MEDIA_TYPE); // if JAXRS
+    		//infoServiceQueryString +=
+					//" AND ecm:mixinType = 'RestInfo' AND " +
+        			//" AND " InformationService.XPATH_REST_PATH + "='" + implRestPath + "'" +
+        			//OPT " AND " InformationService.XPATH_REST_MEDIA_TYPE + "='" + implMediaType + "'" +
+        			
+    	}
+
+    	// TODO handle the case of IS-impl links that are now wrong i.e. SOA validation
+    	
+    	/*String serviceImplQuery = NXQLQueryBuilder.getQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE + 
+    			" WHERE " + ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME + " = '?'",
+    			new Object[] { serviceModel.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME) },
+    			false, true);*/
+    	String serviceImplQuery = query.build();
+    	return documentService.query(documentManager, serviceImplQuery, true, false);
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.easysoa.registry.ServiceMatchingService#linkInformationService(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel, org.nuxeo.ecm.core.api.DocumentModel, boolean)
+	 */
+	public void linkInformationService(CoreSession documentManager, DocumentModel serviceImplModel,
+			DocumentModel informationServiceModel, boolean save) throws ClientException {
+    	serviceImplModel.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE,
+    		informationServiceModel.getId());
+		if (save) {
+			documentManager.saveDocument(serviceImplModel);
+			documentManager.save();
+		}
 	}
 
 }

@@ -1,4 +1,4 @@
-package org.easysoa.registry;
+package org.easysoa.registry.types.listeners;
 
 import java.io.File;
 import java.util.List;
@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.log4j.Logger;
+import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;

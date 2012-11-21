@@ -16,34 +16,35 @@ import org.easysoa.registry.rest.marshalling.WSDLInformation;
 public interface SimpleRegistryService {
 
     /**
-     * 
+     * Returns the Information services registered in Nuxeo
      * @param search looked up in name, description, in interface extracted metas (portType)
      * OPT in interface fulltext
      * @param subProjectId if null, looks up in all subprojects
      * OPT in the configured entreprise-wide environment(s)
      * & version strategy (ex. "staging : latest published, integration : latest")
      * OPT may be provided from FraSCAtiStudio app (name ?)
-     * @param platformServiceStandard (ex : SOAP[1.1])
-     * @param wsBindingTransport (ex : http://schemas.xmlsoap.org/soap/http)
-     * @param platform (ex : fraSCAtiStudioPlatformId)
-     * @return WSDL Information array
+     * @return WSDLInformation array
      * @throws Exception If a problem occurs
      */
+    //@param platformServiceStandard (ex : SOAP[1.1]) (LATER)
+    //@param wsBindingTransport (ex : http://schemas.xmlsoap.org/soap/http) (LATER)
+    //@param platform (ex : fraSCAtiStudioPlatformId) (LATER)
     @GET
     @Path("/queryWSDLInterfaces")
     @Produces(MediaType.APPLICATION_JSON)
     public WSDLInformation[] queryWSDLInterfaces(
             @QueryParam("search") String search, 
-            @QueryParam("subProjectId") String subProjectId,
+            @QueryParam("subProjectId") String subProjectId/*,
             @QueryParam("platformServiceStandard") String platformServiceStandard,
             @QueryParam("wsBindingTransport") String wsBindingTransport,
-            @QueryParam("platform") String platform ) throws Exception;
+            @QueryParam("platform") String platform*/ ) throws Exception;
     
     /**
-     * 
-     * @param search
-     * @param subProjectId
-     * @return
+     * Returns the Endpoints registered in Nuxeo
+     * @param search looked up in name, description, in interface extracted metas (portType)
+     * @param subProjectId if null, looks up in all subprojects
+     * @return WSDLInformation array
+     * @throws Exception If a problem occurs
      */
     @GET
     @Path("/queryEndpoints")
@@ -76,11 +77,10 @@ public interface SimpleRegistryService {
     (5. improve impl)
     6. do it for querySOAPEndpoints
     7. extract REST interface in easysoa-registry-integration-api with FraSCAti only in test dependencies and unit test them
-*/
-
+    */
     
     /*
-SimpleServiceRegistryService.query(SOAP)Endpoints(...) : select * from Endpoint where ...
+    SimpleServiceRegistryService.query(SOAP)Endpoints(...) : select * from Endpoint where ...
 
     returns : (sub)projectId, (nuxeo id,) name(title), description, soaname, objectType=Endpoint, endpointUrl [, wsdlUrl=deduced, wsdlDownloadUrl=attachedFileUrl]
     endpointUrl is enough to identify it in EasySOA. OPT store EasySOA id anyway in binding name in composite.

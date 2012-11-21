@@ -68,7 +68,7 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
     }
     
     @Test
-    public void testSoaNodeTypeService() throws Exception {
+    public void testSoaMetamodelService() throws Exception {
         // Check a few random values of the default contribution
         Assert.assertTrue("The default contributions must be loaded",
                 soaMetamodelService.getChildren(Deliverable.DOCTYPE).contains(ServiceImplementation.DOCTYPE));

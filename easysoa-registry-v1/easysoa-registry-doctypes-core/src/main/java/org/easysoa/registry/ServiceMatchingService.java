@@ -6,17 +6,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 
 public interface ServiceMatchingService {
-
-	/**
-	 * @param documentManager
-	 * @param impl The service implementation to find matches for
-	 * @return List of matching information services
-	 * @throws ClientException
-	 */
-	public abstract DocumentModelList findInformationServices(
-			CoreSession documentManager, DocumentModel impl)
-			throws ClientException;
-
+	
 	/**
 	 * @param documentManager
 	 * @param impl The service implementation to find matches for
@@ -26,7 +16,7 @@ public interface ServiceMatchingService {
 	 */
 	public abstract DocumentModelList findInformationServices(
 			CoreSession documentManager, DocumentModel impl,
-			DocumentModel filterComponent) throws ClientException;
+			DocumentModel filterComponent, boolean skipPlatformMatching) throws ClientException;
 
 	/**
 	 * @param documentManager

@@ -20,7 +20,13 @@
       <event>documentCreated</event>
       <event>documentModified</event><!-- rather than beforeDocumentModification otherwise loops ! -->
     </listener>
-    <listener name="wsdlParsingListener" class="org.easysoa.registry.WSDLParsingListener"
+    
+    <listener name="wsdlParsingListener" class="org.easysoa.registry.types.listeners.WSDLParsingListener"
+      priority="150">
+      <event>documentCreated</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+    <listener name="componentListener" class="org.easysoa.registry.types.listeners.ComponentListener"
       priority="150">
       <event>documentCreated</event>
       <event>beforeDocumentModification</event>

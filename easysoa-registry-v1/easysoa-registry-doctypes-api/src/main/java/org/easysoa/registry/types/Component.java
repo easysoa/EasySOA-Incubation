@@ -12,4 +12,6 @@ public interface Component extends SoaNode {
 
 	public static final String XPATH_PROVIDER_ACTOR = SCHEMA_PREFIX + ":providerActor";
 	
+	public static final String XPATH_COMPONENT_ID = SCHEMA_PREFIX + ":componentId";
+	
 }

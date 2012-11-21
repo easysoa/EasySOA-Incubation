@@ -4,6 +4,7 @@
 package org.easysoa.registry.integration;
 
 import org.easysoa.registry.rest.marshalling.WSDLInformation;
+import org.easysoa.registry.types.Endpoint;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -31,9 +32,11 @@ public class SoaNodeInformationToWSDLInformationMapper {
         wsdlInformation.setNuxeoID(nodeModel.getId()); // the Nuxeo object ID
         wsdlInformation.setObjectType(nodeModel.getType());
         
-        // Only for endpoint objects
-        wsdlInformation.setEndpoint(""); 
-        
+        if(Endpoint.DOCTYPE.equalsIgnoreCase(wsdlInformation.getObjectType())){
+            // Only for endpoint objects
+            wsdlInformation.setEndpointUrl((String)nodeModel.getPropertyValue("endp:url")); 
+            wsdlInformation.setEnvironment((String)nodeModel.getPropertyValue("env:environment"));
+        }
         // WSDL download URL : To be builded by hand
         // http://localhost:8080/nuxeo/nxfile/default/d5bd2a85-a936-4319-8cf9-6e4cd5fd0381/files:files/0/file/WeatherService.wsdl
         try {

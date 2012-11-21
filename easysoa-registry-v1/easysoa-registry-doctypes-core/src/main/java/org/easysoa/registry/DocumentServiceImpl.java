@@ -66,6 +66,8 @@ public class DocumentServiceImpl implements DocumentService {
             // Create proxy if needed (but make sure the parent is the instance of the repository,
             // otherwise the child proxy will only be visible in the context of the parent proxy)
             if (createProxy) {
+            }
+            if (createProxy) {
                 PathRef parentRef = new PathRef(parentPath);
                 DocumentModel parentModel = documentManager.getDocument(parentRef);
                 if (parentModel != null) {
@@ -76,7 +78,22 @@ public class DocumentServiceImpl implements DocumentService {
                 else {
                     throw new ClientException("Invalid parent path: " + parentPath);
                 }
-                return documentManager.createProxy(documentModel.getRef(), parentModel.getRef());
+                
+                DocumentModel existingProxy = null;
+            	DocumentModelList foundProxies = findProxies(documentManager, identifier);
+            	for (DocumentModel foundProxy : foundProxies) {
+            		if (foundProxy.getParentRef().equals(parentModel.getRef())) {
+            			existingProxy = foundProxy;
+            			break;
+            		}
+            	}
+            	
+            	if (existingProxy == null) {
+            		return documentManager.createProxy(documentModel.getRef(), parentModel.getRef());
+            	}
+            	else {
+            		return existingProxy;
+            	}
             }
             else {
                 return documentModel;

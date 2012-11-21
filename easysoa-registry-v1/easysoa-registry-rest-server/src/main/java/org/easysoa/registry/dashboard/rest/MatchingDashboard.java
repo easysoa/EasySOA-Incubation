@@ -118,24 +118,29 @@ public class MatchingDashboard extends ModuleRoot {
 			@FormParam("serviceImplId") String serviceImplId) {
 	    try {
 	    	if (serviceImplId != null && !serviceImplId.isEmpty()) {
+	    		// Fetch impl
+	            CoreSession session = SessionFactory.getSession(request);
+				DocumentModel serviceImpl = session.getDocument(new IdRef(serviceImplId));
+				
+				// Compute new link value
 	            String newInfoServiceId; 
 	    		if (infoServiceId != null && !infoServiceId.isEmpty()) {
 	    			newInfoServiceId = infoServiceId; // Create link
 	    		}
 	    		else {
+					if (serviceImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE) == null) {
+			    		throw new Exception("Information Service not selected");
+					}
 	    			newInfoServiceId = null; // Destroy link
 	    		}
 	    		
 	    		// Apply on document
-	            CoreSession session = SessionFactory.getSession(request);
-				DocumentModel serviceImpl = session.getDocument(new IdRef(serviceImplId));
-				serviceImpl.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE, newInfoServiceId);
-				session.saveDocument(serviceImpl);
-				session.save();
+	    		ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);
+	    		matchingService.linkInformationService(session, serviceImpl, newInfoServiceId, true);
 				return viewDashboard();
 	    	}
 	    	else {
-	    		throw new Exception("InfoService and/or ServiceImpl is not selected");
+	    		throw new Exception("Service Implementation not selected");
 	    	}
 		} catch (Exception e) {
 			return getView("error").arg("error", e);

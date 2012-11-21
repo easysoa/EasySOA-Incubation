@@ -20,7 +20,7 @@
 	<div id="headerContents">
 	    <div id="logoLink">&nbsp;</div>
     	<div id="headerUserBar"></div>
-		EasySOA Light summary
+		EasySOA Matching dashboard
     </div>
 </div>
 
@@ -55,6 +55,15 @@
                 	</td>
                 </tr>
               </#list>
+            </table>
+          <#elseif suggestions??>
+            <table style="width: 500px">
+              <th style="background-color: #FFA">Suggested services <#if selectedComponentTitle??>from <i>${selectedComponentTitle}</i></#if></th>
+              <tr>
+              	<td style="text-align: center; font-style: italic">
+              	  No matches
+              	</td>
+              </tr>
             </table>
           </#if>
           <#if components?has_content && selectedServiceImpl == servWithoutSpec.id>

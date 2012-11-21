@@ -15,7 +15,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * 
- * @author mkalam-alami
+ * @author mdutoo, mkalam-alami
  *
  */
 public class ServiceMatchingServiceImpl implements ServiceMatchingService {
@@ -174,15 +174,17 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.easysoa.registry.ServiceMatchingService#linkInformationService(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel, org.nuxeo.ecm.core.api.DocumentModel, boolean)
+	 * @see org.easysoa.registry.ServiceMatchingService#linkInformationService(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel, java.lang.String, boolean)
 	 */
 	public void linkInformationService(CoreSession documentManager, DocumentModel serviceImplModel,
-			DocumentModel informationServiceModel, boolean save) throws ClientException {
-    	serviceImplModel.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE,
-    		informationServiceModel.getId());
-		if (save) {
-			documentManager.saveDocument(serviceImplModel);
-			documentManager.save();
+			String informationServiceUuid, boolean save) throws ClientException {
+		Object previousLinkValue = serviceImplModel.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE);
+		if (previousLinkValue == null || !previousLinkValue.equals(informationServiceUuid)) {
+	    	serviceImplModel.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE, informationServiceUuid);
+			if (save) {
+				documentManager.saveDocument(serviceImplModel);
+				documentManager.save();
+			}
 		}
 	}
 

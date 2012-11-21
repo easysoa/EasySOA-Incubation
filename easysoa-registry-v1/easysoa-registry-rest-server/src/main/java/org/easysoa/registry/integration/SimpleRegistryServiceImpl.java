@@ -22,7 +22,7 @@ import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 @Path("easysoa/simpleRegistryService")
 public class SimpleRegistryServiceImpl implements SimpleRegistryService {
 
-    //TODO : How to get nuxeo base url  
+    //TODO : How to get nuxeo base url ?
     public final static String NUXEO_BASE_URL = "http://localhost:8080/nuxeo/";
     
     /**
@@ -34,7 +34,7 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
      * 
      */
     @Override
-    public WSDLInformation[] queryWSDLInterfaces(String search, String subProjectId, String platformServiceStandard, String wsBindingTransport, String platformId) throws Exception {
+    public WSDLInformation[] queryWSDLInterfaces(String search, String subProjectId) throws Exception {
         
         CoreSession documentManager = SessionFactory.getSession(request);
 
@@ -43,7 +43,6 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
         query.append("SELECT * FROM InformationService ");
         // Search parameter
         if(search != null && !"".equals(search)){
-            // TODO ecm:name (NOT FOUND !!), SoaNode.XPATH_SOANAME (soan:name), WsdlInfo.XPATH_WSDL_PORTTYPE_NAME
             String searchParam = "%"+search+"%";
             query.append("WHERE dc:title like '?' " +
                     "OR " + SoaNode.XPATH_SOANAME + " like '?' " +
@@ -55,30 +54,33 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
             parameters.add(searchParam);
         }
         // Project ID parameter
-        if(subProjectId != null && !"".equals(subProjectId)){
+        if(subProjectId != null && !"".equals(subProjectId)){ 
             // TODO : not implemented yet in Nuxeo registry
             //[and projectId=appGivenProjectId || projectId in (allProjectIdsReferredByFraSCAtiStudioProject)]
         }
         
+        // LATER
         // Platform parameter
-        if(platformId != null && !"".equals(platformId)){
+        //if(platformId != null && !"".equals(platformId)){
             // TODO Add implementation for condition, would allow to search only in its own services
             // what acts as platformId for : FraSCAti Studio (base url and not Cloud(s) url), Talend (talend repository url ?)
             // for now only platform:deliverableRepositoryUrl exists that could act as platform id, later maybe :
             // [and is/impl:platformId='fraSCAtiStudioPlatformId']
-        }
+        //}
 
+        // LATER
         // Platform service standard parameter
-        if(platformServiceStandard != null && !"".equals(platformServiceStandard)){
+        //if(platformServiceStandard != null && !"".equals(platformServiceStandard)){
             // LATER Add doc model & implementation for condition (FraSCAti & CXF only support WSDL11), something like :
             // platform:wsdlVersion / WsdlInfo.XPATH_WSDL_VERSION='1.1'            
-        }        
+        //}        
         
+        // LATER
         // WS binding transport(_type) parameter
-        if(wsBindingTransport != null && !"".equals(wsBindingTransport)){
+        //if(wsBindingTransport != null && !"".equals(wsBindingTransport)){
             // LATER Add doc model & implementation for condition (for now only HTTP), something like :
             // [and platform:serviceTransport or endpointServiceTransport='http://schemas.xmlsoap.org/soap/http']
-        }
+        //}
         
         // LATER other platform parameters (see ServiceMatchingListener.findIServicesForImpl()) ?
 
@@ -121,6 +123,11 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
             parameters.add(searchParam);
             parameters.add(searchParam);
         }
+        // Project ID parameter
+        if(subProjectId != null && !"".equals(subProjectId)){
+            // TODO : not implemented yet in Nuxeo registry
+            //[and projectId=appGivenProjectId || projectId in (allProjectIdsReferredByFraSCAtiStudioProject)]
+        }        
         
         String nxqlQuery = NXQLQueryBuilder.getQuery(query.toString(), parameters.toArray(), false, true);
         DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);        

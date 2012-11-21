@@ -101,14 +101,15 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
             infoService.setPropertyValue("dc:title", anotherTitle);
             infoService.setPropertyValue("dc:description", anotherDescription);
             // Add a associated wsdl file
-            StringBlob blob = new StringBlob("test blob content");
+            /*StringBlob blob = new StringBlob("test blob content");
             blob.setFilename("testFile.wsdl");
-            infoService.setPropertyValue("file:content", blob);
+            infoService.setPropertyValue("file", blob);*/
             documentManager.saveDocument(infoService);
             
             // Add endpoint
             isProperties = new HashMap<String, Object>();
-            //isProperties.put("environement:url", "environement url");            
+            isProperties.put("env:environment", "Test");
+            isProperties.put("endp:url", "http://localhost:8659/Test");
             discoveryService.runDiscovery(documentManager, ENDPOINT_TEST, isProperties, null);
             
             documentManager.save();
@@ -147,6 +148,14 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         firstWSDLInformation = wsdlInformations[0];
         Assert.assertEquals("anotherName", firstWSDLInformation.getSoaName());
         Assert.assertEquals("anotherDescription", firstWSDLInformation.getDescription());
+        //Assert.assertTrue(firstWSDLInformation.getWsdlDownloadUrl() != null && firstWSDLInformation.getWsdlDownloadUrl().contains("testFile.wsdl"));
+        
+        // Run third test request
+        discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryWSDLInterfaces");
+        wsdlInformations = discoveryRequest.get(WSDLInformation[].class);
+        
+        Assert.assertNotNull(wsdlInformations);
+        Assert.assertEquals(3, wsdlInformations.length); // 3 Informations services should be returned
     }
     
     /**
@@ -165,12 +174,13 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
 
         WSDLInformation firstWSDLInformation = wsdlInformations[0];
         Assert.assertEquals("ns:endpointTest", firstWSDLInformation.getName());
+        Assert.assertEquals("Test", firstWSDLInformation.getEnvironment());
+        Assert.assertEquals("http://localhost:8659/Test", firstWSDLInformation.getEndpointUrl());
         // TODO : got a marshalling problem when not result is returned
         // See JSONMessageReader.readFrom method => if(jsonNode.get(0)!=null && jsonNode.get(0).has("projectID")){ (line 40)
         
         //WebResource discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryEndpoints").queryParam("search", "test").queryParam("subProjectId", "test");
         //WSDLInformation[] wsdlInformations = discoveryRequest.get(WSDLInformation[].class);
-        
     }    
     
 }

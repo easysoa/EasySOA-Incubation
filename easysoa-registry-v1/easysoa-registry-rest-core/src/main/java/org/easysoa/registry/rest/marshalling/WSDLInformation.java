@@ -16,7 +16,6 @@ import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 public class WSDLInformation {
 
     // TODO rename this class SimpleRegistryInformation ? Common name for all objects returned by simpleRegistryInformation
-    // TODO what is objectType ???
     
     // Returned by queryWSDLInformation
     //returns : (sub)projectId, (nuxeo id,) name(title), description, soaname, objectType=InformationService(Endpoint), wsdlDownloadUrl=attachedFileUrl
@@ -37,11 +36,28 @@ public class WSDLInformation {
     private String soaName;
 
     private String objectType;
+
+    private String environment;
     
-    private String endpoint;
+    private String endpointUrl;
     
     private String wsdlDownloadUrl;
 
+    /**
+     * Default constructor
+     */
+    public WSDLInformation(){
+        this.description = "";
+        this.endpointUrl = "";
+        this.environment = "";
+        this.name = "";
+        this.nuxeoID = "";
+        this.objectType = "";
+        this.projectID = "";
+        this.soaName = "";
+        this.wsdlDownloadUrl = "";
+    }
+    
     /**
      * @return the projectID
      */
@@ -115,15 +131,15 @@ public class WSDLInformation {
     /**
      * @return the endpoint
      */
-    public String getEndpoint() {
-        return endpoint;
+    public String getEndpointUrl() {
+        return endpointUrl;
     }
 
     /**
      * @param endpoint the endpoint to set
      */
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
+    public void setEndpointUrl(String endpointUrl) {
+        this.endpointUrl = endpointUrl;
     }
 
     /**
@@ -152,6 +168,20 @@ public class WSDLInformation {
      */
     public void setObjectType(String objectType) {
         this.objectType = objectType;
+    }
+
+    /**
+     * @return the environment
+     */
+    public String getEnvironment() {
+        return environment;
+    }
+
+    /**
+     * @param environment the environment to set
+     */
+    public void setEnvironment(String environment) {
+        this.environment = environment;
     }
     
 }

@@ -88,6 +88,19 @@
           	  No matches
           	</td>
            </#if>
+           <#if allServicesFromComponent?? && allServicesFromComponent?has_content>
+	         <tr>
+	          <th style="background-color: #FFA">All services from <i>${selectedComponentTitle}</i></th>
+	         </tr>
+             <#list allServicesFromComponent as suggestion>
+                <tr>
+                	<td class="clickable infoService">
+                	  <#assign document = suggestion>
+                	  <#include "/views/dashboard/document.ftl">
+                	</td>
+                </tr>
+             </#list>
+           </#if>
           </table>
           </#if>
           

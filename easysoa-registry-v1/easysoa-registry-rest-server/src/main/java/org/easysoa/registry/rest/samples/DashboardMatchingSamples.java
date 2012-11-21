@@ -33,7 +33,7 @@ public class DashboardMatchingSamples {
 
 	private static final Logger logger = Logger.getLogger(DashboardMatchingSamples.class);
     
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		new DashboardMatchingSamples("http://localhost:8080").run();
 	}
 
@@ -44,7 +44,7 @@ public class DashboardMatchingSamples {
 		registryApi = client.resource(nuxeoUrl).path("nuxeo/site/easysoa/registry");
 	}
 	
-	public void run() {
+	public void run() throws Exception {
 		// Create information services
 		Map<String, Serializable> properties = new HashMap<String, Serializable>();
 		for (int i = 0; i < 5; i++) {
@@ -67,8 +67,12 @@ public class DashboardMatchingSamples {
 		}
 		
 		// Create component
+		SoaNodeInformation infoServiceInformation = registryApi.path(InformationService.DOCTYPE)
+			.path(new InformationServiceName(ServiceIdentifierType.WEB_SERVICE, "namespace", "itf0").toString())
+			.type(MediaType.APPLICATION_JSON_TYPE)
+			.get(SoaNodeInformation.class);
 		properties.put("dc:title", "My component");
-		properties.put("acomp:linkedInformationService", "25f3854a-3153-4982-8d46-3613de1f1e05");
+		properties.put("acomp:linkedInformationService", infoServiceInformation.getUuid());
 		registryApi.type(MediaType.APPLICATION_JSON_TYPE).post(
 				new SoaNodeInformation(new SoaNodeId("Component", "My component"),
 				properties, null));

@@ -1,8 +1,10 @@
 /**
  * 
  */
-package org.easysoa.registry.rest.marshalling;
+package org.easysoa.registry.rest.integration;
 
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAccessType;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
@@ -12,6 +14,7 @@ import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
  * @author jguillemotte
  *
  */
+@XmlAccessorType(XmlAccessType.FIELD)
 @JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE, setterVisibility=Visibility.NONE)
 public class WSDLInformation {
 
@@ -69,7 +72,7 @@ public class WSDLInformation {
      * @param projectID the projectID to set
      */
     public void setProjectID(String projectID) {
-        this.projectID = projectID;
+        this.projectID = checkNotNull(projectID);
     }
 
     /**
@@ -83,7 +86,7 @@ public class WSDLInformation {
      * @param nuxeoID the nuxeoID to set
      */
     public void setNuxeoID(String nuxeoID) {
-        this.nuxeoID = nuxeoID;
+        this.nuxeoID = checkNotNull(nuxeoID);
     }
 
     /**
@@ -97,7 +100,7 @@ public class WSDLInformation {
      * @param name the name to set
      */
     public void setName(String name) {
-        this.name = name;
+        this.name = checkNotNull(name);
     }
 
     /**
@@ -111,7 +114,7 @@ public class WSDLInformation {
      * @param description the description to set
      */
     public void setDescription(String description) {
-        this.description = description;
+        this.description = checkNotNull(description);
     }
 
     /**
@@ -125,7 +128,7 @@ public class WSDLInformation {
      * @param soaName the soaName to set
      */
     public void setSoaName(String soaName) {
-        this.soaName = soaName;
+        this.soaName = checkNotNull(soaName);
     }
 
     /**
@@ -139,7 +142,7 @@ public class WSDLInformation {
      * @param endpoint the endpoint to set
      */
     public void setEndpointUrl(String endpointUrl) {
-        this.endpointUrl = endpointUrl;
+        this.endpointUrl = checkNotNull(endpointUrl);
     }
 
     /**
@@ -153,7 +156,7 @@ public class WSDLInformation {
      * @param wsdlDownloadUrl the wsdlDownloadUrl to set
      */
     public void setWsdlDownloadUrl(String wsdlDownloadUrl) {
-        this.wsdlDownloadUrl = wsdlDownloadUrl;
+        this.wsdlDownloadUrl = checkNotNull(wsdlDownloadUrl);
     }
 
     /**
@@ -167,7 +170,7 @@ public class WSDLInformation {
      * @param objectType the objectType to set
      */
     public void setObjectType(String objectType) {
-        this.objectType = objectType;
+        this.objectType = checkNotNull(objectType);
     }
 
     /**
@@ -181,7 +184,19 @@ public class WSDLInformation {
      * @param environment the environment to set
      */
     public void setEnvironment(String environment) {
-        this.environment = environment;
+        this.environment = checkNotNull(environment);
     }
     
+    /**
+     * 
+     * @param param The parameter to check
+     * @return The param avlue or empty string if the param is null
+     */
+    private String checkNotNull(String param){
+        if(param != null){
+            return param;
+        } else {
+            return "";
+        }        
+    }
 }

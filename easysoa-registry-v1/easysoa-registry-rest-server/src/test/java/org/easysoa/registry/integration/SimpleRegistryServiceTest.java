@@ -10,7 +10,8 @@ import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.rest.AbstractRestApiTest;
-import org.easysoa.registry.rest.marshalling.WSDLInformation;
+import org.easysoa.registry.rest.integration.WSDLInformations;
+import org.easysoa.registry.rest.integration.WSDLInformation;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.SoaNode;
@@ -126,35 +127,36 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         // Run first test request
         Client client = createAuthenticatedHTTPClient();
         WebResource discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryWSDLInterfaces").queryParam("search", "test").queryParam("subProjectId", "test");
-        WSDLInformation[] wsdlInformations = discoveryRequest.get(WSDLInformation[].class);
+        //WSDLInformation[] wsdlInformations = discoveryRequest.get(WSDLInformation[].class);
+        WSDLInformations wsdlInformations = discoveryRequest.get(WSDLInformations.class);
         // Check a result is returned
         Assert.assertNotNull(wsdlInformations);
 
         // Check result
-        WSDLInformation firstWSDLInformation = wsdlInformations[0];
+        WSDLInformation firstWSDLInformation = wsdlInformations.getWsdlInformationList().get(0);
         Assert.assertEquals("ns:testWithoutWsdl", firstWSDLInformation.getSoaName());
        
-        WSDLInformation secondWSDLInformation = wsdlInformations[1];
+        WSDLInformation secondWSDLInformation = wsdlInformations.getWsdlInformationList().get(1);
         Assert.assertEquals("ns:test", secondWSDLInformation.getSoaName());
 
         // Run second test request
         discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryWSDLInterfaces").queryParam("search", "another");
-        wsdlInformations = discoveryRequest.get(WSDLInformation[].class);
+        wsdlInformations = discoveryRequest.get(WSDLInformations.class);
         // Check a result is returned
         Assert.assertNotNull(wsdlInformations);        
 
         // Check result
-        firstWSDLInformation = wsdlInformations[0];
+        firstWSDLInformation = wsdlInformations.getWsdlInformationList().get(0);
         Assert.assertEquals("anotherName", firstWSDLInformation.getSoaName());
         Assert.assertEquals("anotherDescription", firstWSDLInformation.getDescription());
         //Assert.assertTrue(firstWSDLInformation.getWsdlDownloadUrl() != null && firstWSDLInformation.getWsdlDownloadUrl().contains("testFile.wsdl"));
         
         // Run third test request
         discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryWSDLInterfaces");
-        wsdlInformations = discoveryRequest.get(WSDLInformation[].class);
+        wsdlInformations = discoveryRequest.get(WSDLInformations.class);
         
         Assert.assertNotNull(wsdlInformations);
-        Assert.assertEquals(3, wsdlInformations.length); // 3 Informations services should be returned
+        Assert.assertEquals(3, wsdlInformations.getWsdlInformationList().size()); // 3 Informations services should be returned
     }
     
     /**
@@ -167,11 +169,11 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         // Run request
         Client client = createAuthenticatedHTTPClient();
         WebResource discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryEndpoints");
-        WSDLInformation[] wsdlInformations = discoveryRequest.get(WSDLInformation[].class);
+        WSDLInformations wsdlInformations = discoveryRequest.get(WSDLInformations.class);
         
         Assert.assertNotNull(wsdlInformations);
 
-        WSDLInformation firstWSDLInformation = wsdlInformations[0];
+        WSDLInformation firstWSDLInformation = wsdlInformations.getWsdlInformationList().get(0);
         Assert.assertEquals("ns:endpointTest", firstWSDLInformation.getName());
         Assert.assertEquals("Test", firstWSDLInformation.getEnvironment());
         Assert.assertEquals("http://localhost:8659/Test", firstWSDLInformation.getEndpointUrl());

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+xmlns:cxf="http://cxf.apache.org/core"
+xmlns:util="http://www.springframework.org/schema/util" 
+xmlns:http="http://cxf.apache.org/transports/http/configuration"
+xmlns:sec="http://cxf.apache.org/configuration/security"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd
+    http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd">
+
+<import resource="classpath:META-INF/cxf/cxf.xml" />
+
+<!--<jaxrs:client id="simpleRegistryServiceCXFTestClient"
+	serviceClass="org.easysoa.registry.rest.integration.SimpleRegistryService"
+	address="http://localhost:8080/nuxeo/site/" >
+</jaxrs:client>
+-->
+<!--
+<http:conduit name="http://localhost:8080/.*">
+    <http:authorization>
+        <sec:UserName>Administrator</sec:UserName>
+        <sec:Password>Administrator</sec:Password>
+        <sec:AuthorizationType>Basic</sec:AuthorizationType>
+     </http:authorization>
+ </http:conduit>
+-->
+</beans>

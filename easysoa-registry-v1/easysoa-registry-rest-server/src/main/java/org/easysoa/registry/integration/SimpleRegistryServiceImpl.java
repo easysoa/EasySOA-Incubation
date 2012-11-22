@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-import org.easysoa.registry.rest.marshalling.WSDLInformation;
+import org.easysoa.registry.rest.integration.SimpleRegistryService;
+import org.easysoa.registry.rest.integration.WSDLInformations;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.WsdlInfo;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -28,13 +29,13 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
     /**
      * 
      */
-    @Context HttpServletRequest request;    
+    @Context HttpServletRequest request;
     
     /**
      * 
      */
     @Override
-    public WSDLInformation[] queryWSDLInterfaces(String search, String subProjectId) throws Exception {
+    public WSDLInformations queryWSDLInterfaces(String search, String subProjectId) throws Exception {
         
         CoreSession documentManager = SessionFactory.getSession(request);
 
@@ -89,11 +90,13 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
         DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);        
         
         // Write response
-        WSDLInformation[] wsdlInformations = new WSDLInformation[soaNodeModelList.size()];
-        int index = 0;
+        //WSDLInformation[] wsdlInformations = new WSDLInformation[soaNodeModelList.size()];
+        WSDLInformations wsdlInformations = new WSDLInformations();
+        //int index = 0;
         for (DocumentModel soaNodeModel : soaNodeModelList) {
-            wsdlInformations[index] = SoaNodeInformationToWSDLInformationMapper.mapToWSDLInformation(soaNodeModel, NUXEO_BASE_URL);
-            index++;
+            //wsdlInformations[index] = SoaNodeInformationToWSDLInformationMapper.mapToWSDLInformation(soaNodeModel, NUXEO_BASE_URL);
+            wsdlInformations.addWsdlInformation(SoaNodeInformationToWSDLInformationMapper.mapToWSDLInformation(soaNodeModel, NUXEO_BASE_URL));
+            //index++;
         }
         return wsdlInformations;
     }
@@ -102,7 +105,7 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
      * 
      */
     @Override
-    public WSDLInformation[] queryEndpoints(String search, String subProjectId) throws Exception {
+    public WSDLInformations queryEndpoints(String search, String subProjectId) throws Exception {
 
         CoreSession documentManager = SessionFactory.getSession(request);
 
@@ -133,11 +136,13 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
         DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);        
         
         // Write response
-        WSDLInformation[] wsdlInformations = new WSDLInformation[soaNodeModelList.size()];
-        int index = 0;
+        //WSDLInformation[] wsdlInformations = new WSDLInformation[soaNodeModelList.size()];
+        WSDLInformations wsdlInformations = new WSDLInformations();
+        //int index = 0;
         for (DocumentModel soaNodeModel : soaNodeModelList) {
-            wsdlInformations[index] = SoaNodeInformationToWSDLInformationMapper.mapToWSDLInformation(soaNodeModel, NUXEO_BASE_URL);
-            index++;
+            //wsdlInformations[index] = SoaNodeInformationToWSDLInformationMapper.mapToWSDLInformation(soaNodeModel, NUXEO_BASE_URL);
+            wsdlInformations.addWsdlInformation(SoaNodeInformationToWSDLInformationMapper.mapToWSDLInformation(soaNodeModel, NUXEO_BASE_URL));
+            //index++;
         }
         return wsdlInformations;
     }

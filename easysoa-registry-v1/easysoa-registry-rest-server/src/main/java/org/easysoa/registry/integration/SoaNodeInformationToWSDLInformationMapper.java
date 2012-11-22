@@ -3,7 +3,7 @@
  */
 package org.easysoa.registry.integration;
 
-import org.easysoa.registry.rest.marshalling.WSDLInformation;
+import org.easysoa.registry.rest.integration.WSDLInformation;
 import org.easysoa.registry.types.Endpoint;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;

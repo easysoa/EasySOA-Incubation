@@ -162,9 +162,21 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 		SchemaManager schemaManager = Framework.getService(SchemaManager.class);
 		for (String inheritedFacet : getInheritedFacets(model.getFacets())) {
 			CompositeType facetToReset = schemaManager.getFacet(inheritedFacet);
-			for (Schema schemaToReset : facetToReset.getSchemas()) {
-				for (Field fieldToReset : schemaToReset.getFields()) {
-					model.setPropertyValue(fieldToReset.getName().toString(), null);
+			InheritedFacetDescriptor inheritedFacetDesc = inheritedFacets.get(inheritedFacet);
+			
+			boolean isFacetInherited = false;
+			for (TransferLogic transferLogic : inheritedFacetDesc.transferLogicList) {
+				if (model.getType().equals(transferLogic.to)) {
+					isFacetInherited = true;
+					break;
+				}
+			}
+			
+			if (isFacetInherited) {
+				for (Schema schemaToReset : facetToReset.getSchemas()) {
+					for (Field fieldToReset : schemaToReset.getFields()) {
+						model.setPropertyValue(fieldToReset.getName().toString(), null);
+					}
 				}
 			}
 		}

@@ -39,6 +39,9 @@ public class MavenHierarchyClassifier implements IntelligentSystemTreeClassifier
         try {
             // Gather information
             MavenDeliverable mavenDeliverable = model.getAdapter(MavenDeliverable.class);
+            if (mavenDeliverable == null) {
+            	throw new NullPointerException("Failed to get Maven deliverable adapter (invalid Maven ID?)");
+            }
             String groupId = mavenDeliverable.getGroupId();
             
             // Build classification

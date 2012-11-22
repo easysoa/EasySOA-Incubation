@@ -148,6 +148,9 @@
           <widget>deliverable_nature</widget>
         </row>
         <row>
+          <widget>deliverable_repositoryUrl</widget>
+        </row>
+        <row>
           <widget>deliverable_application</widget>
         </row>
         <row>
@@ -163,7 +166,7 @@
         </labels>
         <translated>true</translated>
         <fields>
-          <field>del:nature</field>
+          <field>deltype:nature</field>
         </fields>
         <properties mode="any">
           <property name="directoryName">deliverable_nature</property>
@@ -172,6 +175,15 @@
           <property name="required">true</property>
           <property name="styleClass">dataInputText</property>
         </properties>
+      </widget>
+      <widget name="deliverable_repositoryUrl" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.deliverable.repositoryurl</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>deltype:repositoryUrl</field>
+        </fields>
       </widget>
       <widget name="deliverable_application" type="text">
         <labels>

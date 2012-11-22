@@ -3,7 +3,7 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:nxs="http://www.nuxeo.org/ecm/schemas/impl/">
 
-  <xs:element name="language" type="xs:string" />
+  <xs:element name="language" type="xs:string" /><!-- XXX duplicate of platform:language? -->
   <!-- xs:element name="build" type="xs:string" / --><!-- on top-level deliverable only ?? -->
   <xs:element name="technology" type="xs:string" />
   <xs:element name="documentation" type="xs:string" />

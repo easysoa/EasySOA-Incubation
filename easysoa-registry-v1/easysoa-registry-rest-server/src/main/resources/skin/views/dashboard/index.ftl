@@ -48,7 +48,7 @@
       	  <#assign document = servWithoutSpec>
       	  <#include "/views/dashboard/document.ftl">
       	  	
-          <#if selectedServiceImpl == servWithoutSpec.id>
+          <#if suggestions?? && selectedServiceImpl == servWithoutSpec.id>
           <table style="width: 500px">
            <tr>
   	         <th style="background-color: #FFA">Suggested services <#if selectedComponentTitle??>from <i>${selectedComponentTitle}</i></#if></th>

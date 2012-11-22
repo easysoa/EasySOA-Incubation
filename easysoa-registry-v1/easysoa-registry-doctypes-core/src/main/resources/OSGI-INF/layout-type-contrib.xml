@@ -263,6 +263,88 @@
       </widget>
     </layout>
     
+    <!-- Layout for platform schema -->
+    <layout name="platform">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml
+        </template>
+      </templates>
+      <rows>
+        <row>
+          <widget>platform_language</widget>
+        </row>
+        <row>
+          <widget>platform_build</widget>
+        </row>
+        <row>
+          <widget>platform_serviceLanguage</widget>
+        </row>
+        <row>
+          <widget>platform_deliverableNature</widget>
+        </row>
+        <row>
+          <widget>platform_deliverableRepositoryUrl</widget>
+        </row>
+      </rows>
+      <widget name="platform_language" type="selectOneDirectory">
+        <labels>
+          <label mode="any">label.easysoa.layout.platform.language</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>platform:language</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">platform_language</property>
+        </properties>
+      </widget>
+      <widget name="platform_build" type="selectOneDirectory">
+        <labels>
+          <label mode="any">label.easysoa.layout.platform.build</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>platform:build</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">platform_build</property>
+        </properties>
+      </widget>
+      <widget name="platform_serviceLanguage" type="selectOneDirectory">
+        <labels>
+          <label mode="any">label.easysoa.layout.platform.servicelanguage</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>platform:serviceLanguage</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">platform_serviceLanguage</property>
+        </properties>
+      </widget>
+      <widget name="platform_deliverableNature" type="selectOneDirectory">
+        <labels>
+          <label mode="any">label.easysoa.layout.platform.deliverablenature</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>platform:deliverableNature</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">deliverable_nature</property>
+        </properties>
+      </widget>
+      <widget name="platform_deliverableRepositoryUrl" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.platform.deliverablerepositoryurl</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>platform:deliverableRepositoryUrl</field>
+        </fields>
+      </widget>
+    </layout>
+      
     <!-- Layout for serviceimpl schema -->
     <layout name="serviceimpl">
       <templates>

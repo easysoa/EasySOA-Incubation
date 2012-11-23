@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- EasySOA                                                             -->
+<!-- Copyright (C) 2011-2012 Open Wide                                   -->
+<!--                                                                     -->
+<!-- This library is free software; you can redistribute it and/or       -->
+<!-- modify it under the terms of the GNU Lesser General Public          -->
+<!-- License as published by the Free Software Foundation; either        -->
+<!-- version 2 of the License, or (at your option) any later version.    -->
+<!--                                                                     -->
+<!-- This library is distributed in the hope that it will be useful,     -->
+<!-- but WITHOUT ANY WARRANTY; without even the implied warranty of      -->
+<!-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU    -->
+<!-- Lesser General Public License for more details.                     -->
+<!--                                                                     -->
+<!-- You should have received a copy of the GNU Lesser General Public    -->
+<!-- License along with this library; if not, write to the Free Software -->
+<!-- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 -->
+<!-- USA                                                                 -->
+<!--                                                                     -->
+<!-- Contact: http://www.easysoa.org                                     -->
+<!--                                                                     -->
+<!-- Author: Marc Dutoo                                                  -->
+<!--                                                                     -->
+<!-- Contributor(s): Jeremie Guillemotte, Marwane Kalam-Alami            -->
+<!--                                                                     -->
+<composite xmlns="http://www.osoa.org/xmlns/sca/1.0"
+    xmlns:frascati="http://frascati.ow2.org/xmlns/sca/1.1" xmlns:web="http://frascati.ow2.org/xmlns/web/1.0"
+    xmlns:sca="http://tuscany.apache.org/xmlns/sca/1.0" name="AXXXPivotal">
+    
+    <component name="Pivotal">
+        <service name="Velocity">
+            <interface.java interface="javax.servlet.Servlet" />
+            <sca:binding.http uri="/pivotal" />
+        </service>
+        <property name="title">Pivotal</property>
+        <web:implementation.velocity location="pivotal" default="index.html" />
+        <reference name="connection" target="Connection/connection" />
+        <reference name="clientService" target="Client/ClientService" />
+        <!-- reference name="implementations" target="ImplementationsProcessor/processor" / -->
+    </component>
+    
+    <component name="PivotalDatabase">
+        <implementation.java class="fr.axxx.pivotal.persistence.EntityManagerProviderImpl" />
+        <service name="database">
+            <interface.java interface="fr.axxx.pivotal.persistence.EntityManagerProvider" />
+        </service>
+        <property name="persistenceUnitName">jpa-pivotal</property>
+    </component>
+
+    <component name="Connection">
+        <implementation.java class="fr.axxx.pivotal.app.impl.UserServiceImpl" />
+
+        <service name="connection">
+            <interface.java interface="fr.axxx.pivotal.app.api.UserService" />
+        </service>
+        <reference name="database" target="PivotalDatabase/database" />
+    </component>
+
+    <component name="Client">
+        <implementation.java class="fr.axxx.pivotal.client.impl.ClientServiceImpl" />
+
+        <service name="ClientService">
+            <interface.java interface="fr.axxx.pivotal.client.api.ClientService" />
+        </service>
+        <reference name="database" target="PivotalDatabase/database" />
+    </component>
+
+    <!-- component name="Rest">
+        <implementation.java class="org.easysoa.impl.RESTCallImpl" />
+        <service name="rest">
+            <frascati:binding.rest uri="/rest" />
+        </service>
+        <reference name="clientService" target="Client/ClientService" />
+        <reference name="processor" target="Processor/processor" />
+        <reference name="users" target="Connection/connection" />
+        <reference name="implementations" target="ImplementationsProcessor/processor" />
+        <reference name="database" target="PivotalDatabase/database" />
+    </component>
+    
+    
+    <component name="StudioGUIRest">
+        <implementation.java class="org.easysoa.impl.StudioGUIRestImpl" />
+        <service name="studio-gui-rest">
+            <frascati:binding.rest uri="/studioGUIRest" />
+        </service>
+        <reference name="serviceManager" target="ServiceManager/serviceManager" />
+        <reference name="processor" target="Processor/processor" />
+    </component>
+
+    <component name="Processor">
+        <implementation.java class="org.easysoa.processor.ComplexProcessor" />
+        <service name="processor">
+            <interface.java interface="org.easysoa.api.ComplexProcessorItf" />
+        </service>
+        <reference multiplicity="0..n" name="processors">
+            <interface.java interface="org.easysoa.api.ComplexProcessorItf" />
+        </reference>
+    </component>
+
+    <component name="CompositeImplementationProcessor">
+        <implementation.java
+            class="org.easysoa.processor.CompositeImplementationProcessor" />
+        <service name="composite-implementation">
+            <interface.java interface="org.easysoa.api.ComplexProcessorItf" />
+        </service>
+        <reference name="implementationsProcessor" target="ImplementationsProcessor/processor" />
+        <reference name="serviceManager" target="ServiceManager/serviceManager" />
+        <reference name="html" target="HTMLProcessor/html"/>
+    </component>
+    <wire source="Processor/processors" target="CompositeImplementationProcessor/composite-implementation" />
+    <wire source="ImplementationsProcessor/processors" target="CompositeImplementationProcessor/composite-implementation" />
+
+
+
+    <component name="ImplementationsProcessor">
+        <implementation.java class="org.easysoa.processor.ImplementationsProcessor" />
+        <service name="processor">
+            <interface.java interface="org.easysoa.api.ImplementationsProcessorItf" />
+        </service>
+        <reference multiplicity="0..n" name="processors">
+            <interface.java interface="org.easysoa.api.ComplexProcessorItf" />
+        </reference>
+        <reference name="serviceManager" target="ServiceManager/serviceManager" />
+        <reference name="fileManager" target="FileManager/fileManager" />
+        <reference name="preferences" target="Preferences/preferences"/>
+    </component>
+
+    
+    <component name="HTMLProcessor">
+        <web:implementation.velocity location="processor"
+            default="htmlProcessor.vm" />
+        <service name="html">
+            <interface.java interface="org.easysoa.api.HTMLProcessorItf" />
+        </service>
+        <reference name="serviceManager" target="ServiceManager/serviceManager" />
+    </component -->
+    
+</composite>

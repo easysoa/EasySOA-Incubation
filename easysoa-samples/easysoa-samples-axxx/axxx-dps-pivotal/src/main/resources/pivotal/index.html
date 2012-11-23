@@ -1,0 +1,62 @@
+#parse("header.html") #parse("roundedDiv.html")
+
+<div id="welcome-title">Welcome on AXXX Pivotal website 
+    <div id="connexionPanel">
+			<div id="connexionLink" class="font-title">Log In</div>
+	</div>
+</div>
+#if($request.getSession().getAttribute("messageConnection") == "error")
+	<script>
+		showMessage("error","Error","This account doesn't exist or the password is wrong.");
+	</script>
+#end
+<div style="display: none" id="connection-dialog" title="Log-in">
+	<FORM METHOD="POST" ACTION="/pivotal/action/connection">
+		<table>
+	          <tr>
+	             <td><label for="login">Login : </label></td>
+	             <td><input type="text" name="login" id="login" /></td>
+	         </tr>
+	         <tr>
+	             <td><label for="password">Password : </label></td>
+	             <td><input type="password" name="password" id="password" /></td>
+	         </tr>
+	         <tr>
+	             <td colspan="2" align="center"><input type="submit"
+	                 class="orange button" value="Connect" /></td>
+	         </tr>
+		</table>
+	</FORM>
+	<div class="ui-dialog-titlebar ui-widget-header ui-corner-all div-separator"><a href="accountCreation.html">Create account</a></div>
+</div>
+<div id="rounded-div-content">
+	<div class="rounded-div-padding">
+			<strong>AXXX Pivotal</strong> manages Customers at AXXX.
+	</div>
+</div>
+
+<script>
+	$(document).ready(function() {
+		
+		$('#connexionLink').click(function() {
+			$.fx.speeds._default = 1000;
+		    $connectionDialog = $("#connection-dialog")
+		            .dialog(
+		                    {
+		                        autoOpen : false,
+		                        show : "blind",
+		                        hide : "explode",
+		                        buttons : {
+		                            Cancel : function() {
+		                                $(this).dialog("close");
+		                            }
+		                        }
+		                    });
+		    $("#connection-dialog").css("display", "block");
+		    $("#connection-dialog").dialog( "option", "width", "auto" );
+		    $connectionDialog.dialog("open");	
+		});
+	});
+	
+</script>
+#parse("footpage.html")

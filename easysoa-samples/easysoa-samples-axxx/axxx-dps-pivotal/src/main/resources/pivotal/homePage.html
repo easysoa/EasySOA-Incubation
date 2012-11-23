@@ -1,0 +1,20 @@
+#parse("banner.html")
+#parse("header.html")
+#parse("roundedDiv.html")
+#set($user = $request.getSession().getAttribute("user"))
+<div id="welcome-title">Welcome $user.getLogin()</div>
+<div id="rounded-div-content">
+	<div id="homePage">
+	Clients
+    
+    <p/>
+    
+    Users
+    <ul>
+    #foreach($u in $connection.getAllUsers())
+    	<li>$u.getLogin()</li>
+    #end
+    </ul>
+    </div>
+</div>
+#parse("footpage.html")

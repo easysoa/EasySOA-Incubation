@@ -1,0 +1,721 @@
+#macro ( getComponentPanel )
+<div class="component_frame_line">
+	<table>
+    	<tr>
+        	<td>
+        		<div class="component-image"></div>
+        		Name :
+        	</td>
+        	<td colspan="2">
+        	#if($arg0.getName())
+        		<input type="text" id="name" name="name" value="$arg0.getName()"/><br/>
+        	#else
+       			<input type="text" id="name" name="name" value=""/><br/>
+       		#end
+       		</td>
+       </tr>
+   </table>
+</div>
+#end
+
+#macro ( getComponentMenu )
+<div id="add" text="Add">
+            <div id="addComponentService" img="AddComponentService.gif" text="Add service"></div>
+            <div id="addComponentReference" img="AddComponentReference.gif" text="Add reference"></div>
+            <div id="addComponentProperty" img="AddComponentProperty.gif" text="Add property"></div>
+            <div id="addImplementation" img="Implementation.gif" class="opener" text="Add implementation"></div>
+</div>
+<div id="delete" text="Delete">
+	<div id="deleteComponent" img="Component.gif" text="Delete component"></div>
+</div>
+<div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+#end
+
+#macro ( getComponentReferencePanel )
+        <div class="component_frame_line">
+            <table>
+	            <tr>
+	                <td>
+	                    <div class="reference-image"></div>
+	                    Name : 
+	                </td>
+	                <td colspan="2">
+	                    #if($arg0.getName())
+	                    	<input type="text" id="name" name="name" value="$arg0.getName()"/><br/>
+	                    #else
+	                    	<input type="text" id="name" name="name" value=""/><br/>
+	                    #end
+	                </td>
+	            </tr>
+            </table>
+                <tr>
+                    <td>
+                    	Target : 
+                    </td>
+                    <td colspan="2">
+	                    #if($arg0.getTarget())
+	                    	<input type="text" id="target" name="target" size="40" value="$arg0.getTarget()"/><br/>
+	                    #else
+	                    	<input type="text" id="target" name="target" size="40" value=""/><br/>
+	                    #end
+                    </td>
+                </tr>
+            </table>
+        </div>
+#end
+
+#macro ( getComponentReferenceMenu )
+	<div id="add" text="Add">
+            <div id="addBinding" img="Binding.gif" text="Add Binding"></div>
+            <div id="addInterface" img="Interface.gif" class="opener" text="Add interface"></div>
+        </div>
+        <div id="delete" text="Delete">
+            <div id="deleteComponentReference" img="ComponentReference.gif" text="Delete reference"></div>
+        </div>
+    <div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+#end
+
+#macro ( getComponentServicePanel )
+<div class="component_frame_line">
+            <table>
+            <tr>
+            <td>
+                    <div class="service-image"></div>
+                    Name : 
+                    </td>
+                    <td colspan="2">
+                    #if($arg0.getName())
+                    <input type="text" id="name" name="name" value="$arg0.getName()"/><br/>
+                    #else
+                    <input type="text" id="name" name="name" value=""/><br/>
+                    #end
+                    </td>
+                    </tr>
+                    </table>
+        </div>
+#end
+
+#macro ( getComponentServiceMenu )
+<div id="add" text="Add">
+            <div id="addBinding" img="Binding.gif" text="Add Binding"></div>
+            <div id="addInterface" img="Interface.gif" class="opener-interface" text="Add interface"></div>
+        </div>
+        <div id="delete" text="Delete">
+            <div id="deleteComponentService" img="ComponentService.gif" text="Delete service"></div>
+        </div>
+        <div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+#end
+
+#macro ( getCompositePanel )
+<div class="component_frame_line">
+        <table>
+        <tr>
+        <td>
+        <div class="composite-image"></div>
+        Name : 
+        </td>
+        <td>
+        #if($arg0.getName())
+        <input type="text" id="name" name="name" value="$arg0.getName()" disabled="disabled" />
+        <input type="hidden" id="name" name="name" value="$arg0.getName()" />
+        #else
+        <input type="text" id="name" name="name" value=""/>
+        #end
+        </td>
+        </tr>
+        </table>
+        </div>
+#end
+
+#macro ( getCompositeMenu )
+<div id="add" text="Add">
+        <div id="addComponent" img="AddComponent.gif" text="Add component"></div>
+        <div id="addService" img="AddService.gif" text="Add service"></div>
+        <div id="addReference" img="AddReference.gif" text="Add reference"></div>
+</div>
+<div id="deploy"  text="Deploy"></div>
+<div id="undeploy"  text="Undeploy"></div>
+<div id="upload"  text="Upload"></div>
+#end
+
+#macro ( getHttpBindingPanel )
+ <div class="component_frame_line">
+            <table>
+            <tr>
+            <td>
+            <div class="http-binding-image"></div>
+            Name : 
+            </td>
+            <td colspan="2">
+            #if($arg0.getName())
+            	<input type="text" id="name" name="name" value="$arg0.getName()"/><br/>
+            #else
+            	<input type="text" id="name" name="name" value=""/><br/>
+            #end
+            </td>
+            </tr>
+            <tr>
+            <td>
+            <div class="http-binding-image"></div>
+            Uri : 
+            </td>
+            <td>
+            #if($arg0.getUri())
+            	<input type="text" id="uri" name="uri" value="$arg0.getUri()"/><br/>
+            #else
+            	<input type="text" id="uri" name="uri" value=""/><br/>
+            #end
+            </td>
+            <td>
+            Http
+            </td>
+            </tr>
+            </table>
+        </div>
+#end
+
+#macro ( getHttpBindingMenu )
+<div id="delete" text="Delete">
+        <div id="deleteBinding" img="Binding.gif" text="Delete binding"></div>
+        </div>
+        <div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+#end
+
+#macro ( getJavaImplementationPanel )
+<table id="implementation-panel">
+        <tr>
+        <td>
+        <div class="java-implementation-image"></div>
+        Implementation : 
+        </td>
+        <td name="implementation-type" id="implementation-type" size="1">
+        Java
+        </td>
+        </tr>
+        <tr>
+        <td>
+        Class : 
+        </td>
+        <td>
+        #if($arg0.getClass_())
+        <input type="text" id="implementation" name="implementation" size="40" value="$arg0.getClass_()"/>
+        #else 
+        <input type="text" id="implementation" name="implementation" size="40" value=""/>
+        #end
+        </td>
+        </tr>
+        <tr>
+        <td colspan="2">
+        <div id="editor"
+        </div>
+        </td>
+        </tr>
+        </table>
+#end
+
+#macro ( getJavaImplementationMenu )
+<div id="delete" text="Delete">
+        <div id="deleteImplementation" img="Implementation.gif" text="Delete implementation"></div>
+        </div>
+        <div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+#end 
+
+#macro ( getJavaInterfacePanel )
+<table id="interface-panel">
+        <tr>
+        <td>
+        <div class="java-interface-image"></div>
+        Interface : 
+        </td>
+        <td>
+        #if($arg0.getInterface())
+        <input type="text" id="interface" name="interface" size="40" value="$arg0.getInterface()"/>
+        #else
+         <input type="text" id="interface" name="interface" size="40" value=""/>
+        #end
+        </td>
+        <td>
+        Java
+        </td>
+        </tr>
+        <tr>
+        <td colspan="2">
+        <div id="editor"
+        </div>
+        </td>
+        </tr>
+        </table>
+#end
+
+#macro ( getJavaInterfaceMenu )
+<div id="delete" text="Delete">
+        <div id="deleteInterface" img="Interface.gif" text="Delete interface"></div>
+        </div>
+        <div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+#end 
+
+#macro ( getPropertyPanel )
+<div class="component_frame_line">
+        <table>
+        <tr>
+        <td>
+        <div class="property-image"></div>
+        Name : 
+        </td>
+        <td>
+        #if($arg0.getName())
+        	<input type="text" id="name" name="name" value="$arg0.getName()"/><br/>
+        #else
+        	<input type="text" id="name" name="name" value=""/><br/>
+        #end
+        </tr>
+        <tr>
+        <td>
+        Type : 
+        </td>
+        <td>
+        #if($arg0.getType())
+        	<input type="text" id="type" name="type" value="$arg0.getType().getLocalPart()"/><br/>
+        #else
+        	<input type="text" id="type" name="type" value=""/><br/>
+        #end
+        </td>
+        </tr>
+        <tr>
+        <td>
+        Value : 
+        </td>
+        <td>
+        #if($arg0.getValue())
+        	<input type="text" id="value" name="value" value="$arg0.getValue()"/><br/>
+        #else
+        	<input type="text" id="value" name="value" value=""/><br/>
+        #end
+        </td>
+        </tr>
+        </table>
+        </div>
+#end
+
+#macro ( getPropertyMenu )
+<a onclick="action('deleteComponentProperty')">Delete</a>
+        <a onclick="save()">Save</a>
+
+        <div id="delete" text="Delete">
+        <div id="deleteComponentProperty" img="ComponentProperty.gif" text="Delete property"></div>
+        </div>
+        <div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+#end 
+
+#macro ( getReferencePanel )
+<div class="component_frame_line">
+        <table>
+        <tr>
+        <td>
+        <div class="reference-image"></div>
+        Name : 
+        </td>
+        <td colspan="2">
+        #if($arg0.getName())
+        <input type="text" id="name" name="name" value="$arg0.getName()"/><br/>
+        #else 
+        <input type="text" id="name" name="name" value=""/><br/>
+        #end
+        </td>
+        </tr>
+        <tr>
+        <td>
+        Target : 
+        </td>
+        <td colspan="2">
+        <select name="target" id="target" size="1">
+        #foreach($target in $serviceManager.getAllTarget($arg1)){
+            #if($arg0.getTarget() && $arg0.getTarget().equals($target)){
+                <option selected="selected">$target</option>
+            #else{
+                <option>$target</option>
+            #end
+        #end
+        </select>
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <div class="promote-image"></div>
+        Promote : 
+        </td>
+        <td colspan="2">
+        #if($arg0.getPromote())
+        	<input type="text" id="promote" name="promote" size="40" value="$arg0.getPromote()"/><br/>
+        #else
+        	<input type="text" id="promote" name="promote" size="40" value=""/><br/>
+        #end
+        </td>
+        </tr>
+        </table>
+        </div>
+#end
+
+#macro ( getReferenceMenu )
+<div id="add" text="Add">
+        <div id="addBinding" img="Binding.gif" text="Add Binding"></div>
+        <div id="addInterface" img="Interface.gif" class="opener-interface" text="Add interface"></div>
+        </div>
+        <div id="delete" text="Delete">
+        <div id="deleteReference" img="Reference.gif" text="Delete reference"></div>
+        </div>
+        <div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+#end
+
+#macro ( getRestBindingPanel )
+<div class="component_frame_line">
+        <table>
+        <tr>
+        <td>
+        <div class="http-binding-image"></div>
+        Name : 
+        </td>
+        <td colspan="2">
+        #if($arg0.getName())
+        	<input type="text" id="name" name="name" value="$arg0.getName()"/><br/>
+        #else
+        	<input type="text" id="name" name="name" value=""/><br/>
+        #end
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <div class="http-binding-image"></div>
+        Uri : 
+        </td>
+        <td>
+        #if($arg0.getUri())
+        	<input type="text" id="uri" name="uri" value="$arg0.getUri()"/><br/>
+        #else
+        	<input type="text" id="uri" name="uri" value=""/><br/>
+        #end
+        </td>
+        <td>
+        Rest
+        </td>
+        </tr>
+        </table>
+        </div>
+#end
+
+#macro ( getRestBindingMenu )
+<div id="delete" text="Delete">
+        <div id="deleteBinding" img="Binding.gif" text="Delete binding"></div>
+        </div>
+        <div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+#end
+
+#macro ( getScaBindingPanel )
+<div class="component_frame_line">
+        <table>
+        <tr>
+        <td>
+        <div class="http-binding-image"></div>
+        Name : 
+        </td>
+        <td colspan="2">
+        #if($arg0.getName())
+        	<input type="text" id="name" name="name" value="$arg0.getName()"/><br/>
+        #else
+        	<input type="text" id="name" name="name" value=""/><br/>
+        #end
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <div class="http-binding-image"></div>
+        Uri : 
+        </td>
+        <td>
+        #if($arg0.getUri())
+        	<input type="text" id="uri" name="uri" value="$arg0.getUri()"/><br/>
+        #else
+        	<input type="text" id="uri" name="uri" value=""/><br/>
+        #end
+        </td>
+        <td>
+        Sca
+        </td>
+        </tr>
+        </table>
+        </div>
+#end
+
+#macro ( getScaBindingMenu )
+<div id="delete" text="Delete">
+        <div id="deleteBinding" img="Binding.gif" text="Delete binding"></div>
+        </div>
+        <div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+#end
+
+#macro ( getScriptImplementationPanel )
+<table id="implementation-panel">
+        <tr>
+        <td>
+        <div class="implementation-image"></div>
+        Implementation : 
+        </td>
+        <td name="implementation-type" id="implementation-type" size="1">
+        Script
+        </td>
+        </tr>
+        <tr>
+        <td>
+        Source : 
+        </td>
+        <td>
+        #if($arg0.getScript())
+        <input type="text" id="implementation" name="implementation" size="40" value="$arg0.getScript()"/>
+        #else 
+        <input type="text" id="implementation" name="implementation" size="40" value=""/>
+        #end
+        </td>
+        </tr>
+        <tr>
+        <td colspan="2">
+        <div id="editor"
+        </div>
+        </td>
+        </tr>
+        </table>
+#end
+
+#macro ( getScriptImplementationMenu )
+<div id="delete" text="Delete">
+        <div id="deleteImplementation" img="Implementation.gif" text="Delete implementation"></div>
+        </div>
+        <div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+#end 
+
+#macro ( getServicePanel )
+<div class="component_frame_line">
+        <table>
+        <tr>
+        <td>
+        <div class="service-image"></div>
+        Name : 
+        </td>
+        <td colspan="2">
+        #if($arg0.getName())
+        	<input type="text" id="name" name="name" value="$arg0.getName()"/><br/>
+        #else 
+        	<input type="text" id="name" name="name" value=""/><br/>
+        #end
+        </td>
+        </tr>
+        </table>
+
+        <tr>
+        <td>
+        <div class="promote-image"></div>
+        Promote : 
+        </td>
+        <td colspan="2">
+        #if($arg0.getPromote())
+        	<input type="text" id="promote" name="promote" size="40" value="$arg0.getPromote()"/><br/>
+        #else 
+        	<input type="text" id="promote" name="promote" size="40" value=""/><br/>
+        #end
+        </td>
+        </tr>
+        #if($arg0.getRequires() && $arg0.getRequires().size() > 0)
+	        <tr>
+	        <td colspan="2">
+	        <div id="intent-editor" style="display:none;">
+	        </div>
+	        </td>
+	        </tr>
+        #end
+        </table>
+        </div>
+#end
+
+#macro ( getServiceMenu )
+<div id="add" text="Add">
+        <div id="addBinding" img="Binding.gif" text="Add Binding"></div>
+        <div id="addInterface" img="Interface.gif" class="opener-interface" text="Add interface"></div>
+        </div>
+        <div id="delete" text="Delete">
+        <div id="deleteService" img="Reference.gif" text="Delete service"></div>
+        </div>
+        <div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+        #if($arg0.getRequires() && $arg0.getRequires().size() > 0)
+        	<div id="seeIntent"  text="seeIntent"></div>
+        	<div id="saveIntent" img="filesave.png" text="saveIntent"></div>
+        #end
+#end
+
+#macro ( getVelocityImplementationPanel )
+<table id="implementation-panel">
+        <tr>
+        <td>
+        <div class="velocity-implementation-image"></div>
+        Implementation : 
+        </td>
+        <td name="implementation-type" id="implementation-type" size="1">
+        Velocity
+        </td>
+        </tr>
+        <tr>
+        <td>
+        Location/Default : 
+        </td>
+        <td>
+        <input type="text" id="implementation" name="implementation" size="40" value="$arg0.getLocation()+"/"+$arg0.getDefault()+""/>
+        </td>
+        </tr>
+        <tr>
+        <td colspan="2">
+        <div id="editor"
+        </div>
+        </td>
+        </tr>
+        </table>
+#end
+
+#macro ( getVelocityImplementationMenu )
+<div id="delete" text="Delete">
+        <div id="deleteImplementation" img="Implementation.gif" text="Delete implementation"></div>
+        </div>
+        <div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+#end
+
+#macro ( getWebServiceBindingPanel )
+        <div class="component_frame_line">
+        <table>
+        <tr>
+        <td>
+        <div class="web-service-binding-image"></div>
+        Name : 
+        </td>
+        <td>
+        #if($arg0.getName())
+        	<input type="text" id="name" name="name" value="$arg0.getName()"/><br/>
+        #else
+        	<input type="text" id="name" name="name" value=""/><br/>
+        #end
+        </td>
+        </tr>
+        <tr>
+        <td colspan="2">
+        Web Service
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <div class="web-service-binding-image"></div>
+        Wsdl Element : 
+        </td>
+        <td>
+        #if($arg0.getWsdlElement())
+        	<input type="text" id="wsdl-element" name="wsdl-element" value="$arg0.getWsdlElement()"/><br/>
+        
+        #else
+        	<input type="text" id="wsdl-element" name="wsdl-element" value=""/><br/>
+        #end
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <div class="web-service-binding-image"></div>
+        Wsdl Uri : 
+        </td>
+        <td>
+        #if($arg0.getUri())
+        	<input type="text" id="uri" name="uri" value="$arg0.getUri()"/><br/>
+        #else
+        	<input type="text" id="uri" name="uri" value=""/><br/>
+        #end
+        </td>
+        </tr>
+        <tr>
+        <td>
+        <div class="web-service-binding-image"></div>
+        Wsdl Location : 
+        </td>
+        <td>
+        #if($arg0.getWsdlLocation() && $arg0.getWsdlLocation().size()>0)
+        	<input type="text" id="wsdl-location" name="wsdl-location" value="$arg0.getWsdlLocation().get(0)"/><br/>
+        #else
+        	<input type="text" id="wsdl-location" name="wsdl-location" value=""/><br/>
+        #end
+        </td>
+        </tr>
+        </table>
+        </div>
+#end
+	
+#macro ( getWebServiceBindingMenu )
+<div id="delete" text="Delete">
+        <div id="deleteBinding" img="Binding.gif" text="Delete binding"></div>
+        </div>
+        <div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+#end
+	
+#macro ( getWsdlInterfacePanel )
+<table id="interface-panel">
+        <tr>
+        <td>
+        <div class="interface-image"></div>
+        Wsdl interface : 
+        </td>
+        <td>
+        #if($arg0.getInterface())
+        	<input type="text" id="interface" name="interface" size="70" value="$arg0.getInterface()"/>
+        #else 
+        	<input type="text" id="interface" name="interface" size="70" value=""/>
+        #end
+        </td>
+        </table>
+#end
+	
+#macro ( getWdslInterfaceMenu )
+<div id="delete" text="Delete">
+        <div id="deleteInterface" img="Interface.gif" text="Delete interface"></div>
+        </div>
+        <div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+#end
+
+#macro ( getCompositeImplementationPanel )
+<table id="implementation-panel">
+        <tr>
+        <td>
+        <div class="composite-implementation-image"></div>
+        Implementation : 
+        </td>
+        <td name="implementation-type" id="implementation-type" size="1">
+        Composite
+        </td>
+        </tr>
+        <tr>
+        <td>
+        Name: 
+        </td>
+        <td>
+        #if($arg0.getName())
+        <input type="text" id="implementation" name="implementation" size="40" value="$arg0.getName()"/>
+        #else 
+        <input type="text" id="implementation" name="implementation" size="40" value=""/>
+        #end
+        </td>
+        </tr>
+        <tr>
+        <td colspan="2">
+        <div id="editor"
+        </div>
+        </td>
+        </tr>
+        </table>
+#end
+
+#macro ( getCompositeImplementationMenu )
+<div id="delete" text="Delete">
+        <div id="deleteImplementation" img="Implementation.gif" text="Delete implementation"></div>
+        </div>
+        <div id="save" img="filesave.png" text="Save"><hotkey>Ctrl+S</hotkey><hotkey>Cmd+S</hotkey></div>
+#end 

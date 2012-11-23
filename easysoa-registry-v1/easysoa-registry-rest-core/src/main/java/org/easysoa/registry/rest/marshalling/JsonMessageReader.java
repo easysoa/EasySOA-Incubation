@@ -28,7 +28,7 @@ public class JsonMessageReader implements MessageBodyReader<Object> {
     @Override
     public boolean isReadable(Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType) {
-        return MediaType.APPLICATION_JSON_TYPE.isCompatible(mediaType);  // && (type.isArray() || type.getPackage().equals("org.easysoa.registry.rest.marshalling"))
+        return MediaType.APPLICATION_JSON_TYPE.isCompatible(mediaType); // && (type.isArray() || type.getPackage().equals("org.easysoa.registry.rest.marshalling"))
     }
 
     @Override
@@ -37,12 +37,7 @@ public class JsonMessageReader implements MessageBodyReader<Object> {
             InputStream entityStream) throws IOException, WebApplicationException {
         JsonNode jsonNode = mapper.readValue(entityStream, JsonNode.class);
         if (jsonNode.isArray()) {
-            // TODO : find a better way to determine what type of object in the array
-            /*if(jsonNode.get(0)!=null && jsonNode.get(0).has("projectID")){
-                return mapper.readValue(jsonNode, WSDLInformations.class);
-            } else {*/
-                return mapper.readValue(jsonNode, SoaNodeInformation[].class);
-            //}
+            return mapper.readValue(jsonNode, SoaNodeInformation[].class);
         }
         else {
             JsonNode idNode = jsonNode.get("id");

@@ -27,9 +27,19 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * REST discovery API
  * 
- * For now try to put info discovered in source code the simplest way
+ * Powerful but complex API allowing to add and return any SOA elements to and from Nuxeo.
+ * It is complex in a business way because it requires knowing the underlaying EasySOA metamodel in Nuxeo.
+ * It is complex technically because it uses specialized JSON providers (to avoid
+ * root elements when returning lists, and to handle in SoaNodeInformation class any complex object types
+ * as Map<String, Serializable>).
+ * See JsonMessageReader and JsonMessageWriter in easysoa-registry-rest-core module 
  * 
- * later (once indicators are computed...) soanodeinformation may need to be be detailed (add correlation direction, full model...)
+ * To get less complicated results and / or other clients than the Jersey one, use the SimpleRegistryService.
+ * The SimpleRegistryService returns simple objects with direct access to Nuxeo objects properties
+ * 
+ * About implementation :
+ * For now try to put info discovered in source code the simplest way.
+ * Later (once indicators are computed...) soanodeinformation may need to be be detailed (add correlation direction, full model...)
  * 
  * @author mkalam-alami
  * 

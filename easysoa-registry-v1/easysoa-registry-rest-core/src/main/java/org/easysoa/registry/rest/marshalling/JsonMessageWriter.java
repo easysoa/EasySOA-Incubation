@@ -29,7 +29,7 @@ public class JsonMessageWriter implements MessageBodyWriter<Object> {
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType) {
-        return MediaType.APPLICATION_JSON_TYPE.isCompatible(mediaType);  // && (type.isArray() || type.getPackage().equals("org.easysoa.registry.rest.marshalling"))
+        return MediaType.APPLICATION_JSON_TYPE.isCompatible(mediaType); // && (type.isArray() || type.getPackage().equals("org.easysoa.registry.rest.marshalling"))
     }
 
     @Override

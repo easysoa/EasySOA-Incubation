@@ -47,8 +47,6 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
     
     @Inject
     DiscoveryService discoveryService;    
-    
-    private final static int SERVICE_COUNT = 5;
 
     public static final SoaNodeId INFORMATIONSERVICE_TEST_WITHOUT_POPRTTYPE_ID = 
             new SoaNodeId(InformationService.DOCTYPE, "ns:testWithoutWsdl");
@@ -127,7 +125,6 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         // Run first test request
         Client client = createAuthenticatedHTTPClient();
         WebResource discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryWSDLInterfaces").queryParam("search", "test").queryParam("subProjectId", "test");
-        //WSDLInformation[] wsdlInformations = discoveryRequest.get(WSDLInformation[].class);
         WSDLInformations wsdlInformations = discoveryRequest.get(WSDLInformations.class);
         // Check a result is returned
         Assert.assertNotNull(wsdlInformations);
@@ -149,7 +146,6 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         firstWSDLInformation = wsdlInformations.getWsdlInformationList().get(0);
         Assert.assertEquals("anotherName", firstWSDLInformation.getSoaName());
         Assert.assertEquals("anotherDescription", firstWSDLInformation.getDescription());
-        //Assert.assertTrue(firstWSDLInformation.getWsdlDownloadUrl() != null && firstWSDLInformation.getWsdlDownloadUrl().contains("testFile.wsdl"));
         
         // Run third test request
         discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryWSDLInterfaces");
@@ -177,11 +173,6 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         Assert.assertEquals("ns:endpointTest", firstWSDLInformation.getName());
         Assert.assertEquals("Test", firstWSDLInformation.getEnvironment());
         Assert.assertEquals("http://localhost:8659/Test", firstWSDLInformation.getEndpointUrl());
-        // TODO : got a marshalling problem when not result is returned
-        // See JSONMessageReader.readFrom method => if(jsonNode.get(0)!=null && jsonNode.get(0).has("projectID")){ (line 40)
-        
-        //WebResource discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryEndpoints").queryParam("search", "test").queryParam("subProjectId", "test");
-        //WSDLInformation[] wsdlInformations = discoveryRequest.get(WSDLInformation[].class);
     }    
     
 }

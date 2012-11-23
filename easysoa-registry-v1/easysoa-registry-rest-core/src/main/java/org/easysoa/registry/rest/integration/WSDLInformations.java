@@ -12,6 +12,8 @@ import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
 /**
+ * WSDLInformation list container, used for JSON conversion
+ * 
  * @author jguillemotte
  *
  */

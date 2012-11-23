@@ -48,7 +48,7 @@
       	  <#assign document = servWithoutSpec>
       	  <#include "/views/dashboard/document.ftl">
       	  	
-          <#if selectedServiceImpl == servWithoutSpec.id>
+          <#if suggestions?? && selectedServiceImpl == servWithoutSpec.id>
           <table style="width: 500px">
            <tr>
   	         <th style="background-color: #FFA">Suggested services <#if selectedComponentTitle??>from <i>${selectedComponentTitle}</i></#if></th>
@@ -87,6 +87,19 @@
           	<td style="text-align: center; font-style: italic">
           	  No matches
           	</td>
+           </#if>
+           <#if allServicesFromComponent?? && allServicesFromComponent?has_content>
+	         <tr>
+	          <th style="background-color: #FFA">All services from <i>${selectedComponentTitle}</i></th>
+	         </tr>
+             <#list allServicesFromComponent as suggestion>
+                <tr>
+                	<td class="clickable infoService">
+                	  <#assign document = suggestion>
+                	  <#include "/views/dashboard/document.ftl">
+                	</td>
+                </tr>
+             </#list>
            </#if>
           </table>
           </#if>

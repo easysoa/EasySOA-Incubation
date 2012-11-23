@@ -110,8 +110,8 @@ public class RepositoryManagementListener implements EventListener {
 		    		}
 		    		else {
 		    	        // Reset metadata after move/deletion
-		    			if (!DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())
-		    					&& !DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(event.getName())) {
+		    			if (DocumentEventTypes.DOCUMENT_MOVED.equals(event.getName())
+		    					|| DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
 		    				soaMetamodel.resetInheritedFacets(sourceDocument);
 		    				documentManager.saveDocument(sourceDocument);
 				        }

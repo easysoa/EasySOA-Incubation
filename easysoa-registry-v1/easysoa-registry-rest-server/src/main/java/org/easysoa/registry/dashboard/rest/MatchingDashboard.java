@@ -14,12 +14,14 @@ import javax.ws.rs.PathParam;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.ServiceMatchingService;
 import org.easysoa.registry.rest.samples.DashboardMatchingSamples;
+import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -82,8 +84,9 @@ public class MatchingDashboard extends ModuleRoot {
 	@GET
 	@Path("components/{serviceImplUuid}")
 	public Template suggestComponents(@PathParam("serviceImplUuid") String serviceImplUuid) throws Exception {
+        CoreSession session = SessionFactory.getSession(request);
 		Template view = viewDashboard();
-		view.arg("components", fetchComponents());
+		view.arg("components", fetchComponents(session));
 		view.arg("selectedServiceImpl", serviceImplUuid);
 		return view;
 	}
@@ -91,10 +94,11 @@ public class MatchingDashboard extends ModuleRoot {
 	@GET
 	@Path("suggest/{serviceImplUuid}")
 	public Template suggestServices(@PathParam("serviceImplUuid") String serviceImplUuid) throws Exception {
+        CoreSession session = SessionFactory.getSession(request);
 		Template view = viewDashboard();
-		List<DocumentModel> suggestions = fetchSuggestions(serviceImplUuid, null, false);
+		List<DocumentModel> suggestions = fetchSuggestions(session, serviceImplUuid, null, false);
 		view.arg("suggestions", suggestions);
-		List<DocumentModel> anyPlatformSuggestions = fetchSuggestions(serviceImplUuid, null, true);
+		List<DocumentModel> anyPlatformSuggestions = fetchSuggestions(session, serviceImplUuid, null, true);
 		if (suggestions.size() == 0) {
 			view.arg("anyPlatformSuggestions", anyPlatformSuggestions);
 		}
@@ -109,17 +113,28 @@ public class MatchingDashboard extends ModuleRoot {
 	@Path("suggest/{serviceImplUuid}/{componentUuid}")
 	public Template suggestServicesFromComponent(@PathParam("serviceImplUuid") String serviceImplUuid,
 			@PathParam("componentUuid") String componentUuid) throws Exception {
+        CoreSession session = SessionFactory.getSession(request);
 		Template view = viewDashboard();
-		List<DocumentModel> components = fetchComponents();
-		view.arg("components", fetchComponents());
-		List<DocumentModel> suggestions = fetchSuggestions(serviceImplUuid, componentUuid, false);
+		List<DocumentModel> components = fetchComponents(session);
+		view.arg("components", fetchComponents(session));
+		List<DocumentModel> suggestions = fetchSuggestions(session, serviceImplUuid, componentUuid, false);
 		view.arg("suggestions", suggestions);
-		List<DocumentModel> anyPlatformSuggestions = fetchSuggestions(serviceImplUuid, componentUuid, true);
+		List<DocumentModel> anyPlatformSuggestions = fetchSuggestions(session, serviceImplUuid, componentUuid, true);
 		if (suggestions.size() == 0) {
 			view.arg("anyPlatformSuggestions", anyPlatformSuggestions);
 		}
 		else {
 			view.arg("anyPlatformSuggestionsCount", anyPlatformSuggestions.size() - suggestions.size());
+		}
+		if (anyPlatformSuggestions.size() == 0) {
+			String infoServicesQuery = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE ? = '?'",
+					new Object[] {
+						InformationService.DOCTYPE,
+						Component.XPATH_COMPONENT_ID,
+						componentUuid
+					}, false, true);
+			DocumentService docService = Framework.getService(DocumentService.class);
+			view.arg("allServicesFromComponent", docService.query(session, infoServicesQuery, true, false));
 		}
 		view.arg("selectedServiceImpl", serviceImplUuid);
 		for (DocumentModel component : components) {
@@ -167,21 +182,19 @@ public class MatchingDashboard extends ModuleRoot {
 
 	@POST
 	@Path("samples")
-	public Object submit() {
+	public Object submit() throws Exception {
 		new DashboardMatchingSamples("http://localhost:8080").run();
 		return viewDashboard();
 	}
 	
-	private List<DocumentModel> fetchComponents() throws Exception {
-        CoreSession session = SessionFactory.getSession(request);
+	private List<DocumentModel> fetchComponents(CoreSession session) throws Exception {
 		DocumentService docService = Framework.getService(DocumentService.class);
 		return docService.query(session, "SELECT * FROM Component", true, false);
 	}
 	
-	private List<DocumentModel> fetchSuggestions(String serviceImplUuid, String componentUuid,
+	private List<DocumentModel> fetchSuggestions(CoreSession session, String serviceImplUuid, String componentUuid,
 			boolean skipPlatformMatching) throws Exception {
 		if (serviceImplUuid != null) {
-	        CoreSession session = SessionFactory.getSession(request);
 			ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);
 			
 			DocumentModel serviceImplModel = session.getDocument(new IdRef(serviceImplUuid));

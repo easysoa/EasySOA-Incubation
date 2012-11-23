@@ -1,11 +1,10 @@
-package org.easysoa.registry.integration;
+package org.easysoa.registry.rest.integration;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import org.easysoa.registry.rest.marshalling.WSDLInformation;
 
 /**
  * 
@@ -17,6 +16,33 @@ public interface SimpleRegistryService {
 
     /**
      * Returns the Information services registered in Nuxeo
+     * 
+     * {
+     *   "wsdlInformations":[
+     *     {
+     *       "projectID":"",
+     *       "nuxeoID":"61739c9d-6308-4618-a547-769f20c8f51b",
+     *       "name":"TdrService",
+     *       "description":null,
+     *       "soaName":"\"http://www.pureairflowers.com/services/\":TdrService",
+     *       "objectType":"InformationService",
+     *       "environment":"",
+     *       "endpointUrl":"",
+     *       "wsdlDownloadUrl":""
+     *     },{
+     *       "projectID":"",
+     *       "nuxeoID":"f20fa784-7ece-4b20-abe0-a28b3c73bb1e",
+     *       "name":"PureAirFlowersService",
+     *       "description":null,
+     *       "soaName":"http://www.pureairflowers.com/services/:PureAirFlowersService",
+     *       "objectType":"InformationService",
+     *       "environment":"",
+     *       "endpointUrl":"",
+     *       "wsdlDownloadUrl":""
+     *     }
+     *   ]
+     * }
+     * 
      * @param search looked up in name, description, in interface extracted metas (portType)
      * OPT in interface fulltext
      * @param subProjectId if null, looks up in all subprojects
@@ -32,7 +58,7 @@ public interface SimpleRegistryService {
     @GET
     @Path("/queryWSDLInterfaces")
     @Produces(MediaType.APPLICATION_JSON)
-    public WSDLInformation[] queryWSDLInterfaces(
+    public WSDLInformations queryWSDLInterfaces(
             @QueryParam("search") String search, 
             @QueryParam("subProjectId") String subProjectId/*,
             @QueryParam("platformServiceStandard") String platformServiceStandard,
@@ -50,7 +76,7 @@ public interface SimpleRegistryService {
     @Path("/queryEndpoints")
     @Produces(MediaType.APPLICATION_JSON)
     // TODO : change return type for EndpointInformation or common type
-    public WSDLInformation[] queryEndpoints(@QueryParam("search") String search, 
+    public WSDLInformations queryEndpoints(@QueryParam("search") String search, 
             @QueryParam("subProjectId") String subProjectId ) throws Exception;
     
     //OPT public SoaNodeInformation[] queryJAXRSInterfaces(String search, String subProjectId);
@@ -76,7 +102,18 @@ public interface SimpleRegistryService {
     4. design returned model
     (5. improve impl)
     6. do it for querySOAPEndpoints
-    7. extract REST interface in easysoa-registry-integration-api with FraSCAti only in test dependencies and unit test them
+    
+    then extract REST interface in easysoa-registry-integration-api with FraSCAti only in test dependencies and unit test them :
+    * insert WSDLInformations root element
+    * add constraint to MessageBodyReader/Writer so it won't use them
+    * redeploy, test SRS server use frascati then jetty clients
+    * test no result & single result cases
+    * copy json in SRS interface to document it
+    * write mock SRS frascati server that returns 2 results copied from actual ones
+    * (write cxf test client)
+    * discuss then migrate RegistryApi (Discovery)
+    
+    
     */
     
     /*

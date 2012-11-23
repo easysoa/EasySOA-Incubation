@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+
+<composite name="simpleRegistryServiceClient"
+  xmlns="http://www.osoa.org/xmlns/sca/1.0"
+  xmlns:frascati="http://frascati.ow2.org/xmlns/sca/1.1">
+
+  <!-- Test client REST service -->
+  <service name="simpleRegistryServiceTestClient" promote="simpleRegistryService/testService" />
+
+  <!-- Test client component REST binding -->
+  <component name="simpleRegistryService">
+  	<implementation.java class="org.easysoa.registry.integration.TestClient"/>
+	<service name="testService">
+      <interface.java interface="org.easysoa.registry.integration.TestClientItf"/>
+    </service>
+	<reference name="service">
+      <frascati:binding.rest uri="http://localhost:8080/nuxeo/site/" requires="nuxeoAuthorization"/>
+    </reference>
+  </component>
+
+  <!-- Nuxeo authentification -->
+  <component name="nuxeoAuthorization">
+    <implementation.composite name="BasicAuthorizationPolicyIntent"/>
+    <property name="UserName">Administrator</property>
+    <property name="Password">Administrator</property>
+  </component>
+
+  <!-- Simple registry service mock server -->
+  <component name="simpleRegistryServiceMockServer">
+    <implementation.java class="org.easysoa.registry.integration.SimpleRegistryServiceServerImpl" />
+    <service name="simpleRegistryServiceMockServerService">
+      <interface.java interface="org.easysoa.registry.rest.integration.SimpleRegistryService"/>
+      <frascati:binding.rest uri="http://localhost:8080/nuxeo/site/"/>
+    </service>
+  </component>
+
+
+</composite>

@@ -125,5 +125,10 @@ public class SoaNodeInformation implements SoaNode {
 		}
 		properties.put(XPATH_PARENTSIDS, (Serializable) parentsIdsStringList);
 	}
+
+	@Override
+	public String getUuid() throws Exception {
+		return (String) properties.get(XPATH_UUID);
+	}
     
 }

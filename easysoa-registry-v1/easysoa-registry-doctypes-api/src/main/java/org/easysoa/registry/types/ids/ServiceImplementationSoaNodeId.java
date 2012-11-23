@@ -1,9 +1,10 @@
-package org.easysoa.registry.types.names;
+package org.easysoa.registry.types.ids;
+
+import org.easysoa.registry.SoaNodeId;
+import org.easysoa.registry.types.ServiceImplementation;
 
 
-public class ServiceImplementationName {
-	
-	private String fullName;
+public class ServiceImplementationSoaNodeId extends SoaNodeId {
 	
 	private ServiceIdentifierType type;
 
@@ -13,30 +14,36 @@ public class ServiceImplementationName {
 
 	private String implementationName;
 
-	public ServiceImplementationName(ServiceIdentifierType type, String namespace,
+	public ServiceImplementationSoaNodeId(ServiceIdentifierType type, String namespace,
 			String interfaceName, String implementationName) {
-		switch (type) {
-		case WEB_SERVICE: this.fullName = InformationServiceName.WS; break;
-		case JAVA_INTERFACE: this.fullName = InformationServiceName.JAVA; break;
-		default: this.fullName = "???";
-		}
-		this.fullName += ":" + namespace + ":" + interfaceName + "=" + implementationName;
+		super(ServiceImplementation.DOCTYPE, buildName(type, namespace, interfaceName, implementationName));
 		this.type = type;
 		this.namespace = namespace;
 		this.interfaceName = interfaceName;
 		this.implementationName = implementationName;
 	}
 	
-	public ServiceImplementationName(String name) {
-		this.fullName = name;
+	private static String buildName(ServiceIdentifierType type, String namespace,
+			String interfaceName, String implementationName) {
+		String name;
+		switch (type) {
+		case WEB_SERVICE: name = InformationServiceSoaNodeId.WS; break;
+		case JAVA_INTERFACE: name = InformationServiceSoaNodeId.JAVA; break;
+		default: name = "???";
+		}
+		return name + ":" + namespace + ":" + interfaceName + "=" + implementationName;
+	}
+
+	public ServiceImplementationSoaNodeId(String name) {
+		super(ServiceImplementation.DOCTYPE, name);
 		String[] splitName = name.split("[:=]");
 		
 		if (splitName.length == 4) {
 			// Namespace
-			if (InformationServiceName.WS.equals(splitName[0])) {
+			if (InformationServiceSoaNodeId.WS.equals(splitName[0])) {
 				this.type = ServiceIdentifierType.WEB_SERVICE;
 			}
-			else if (InformationServiceName.JAVA.equals(splitName[0])) {
+			else if (InformationServiceSoaNodeId.JAVA.equals(splitName[0])) {
 				this.type = ServiceIdentifierType.JAVA_INTERFACE;
 			}
 			else {
@@ -55,7 +62,7 @@ public class ServiceImplementationName {
 		}
 	}
 	
-	public ServiceIdentifierType getType() {
+	public ServiceIdentifierType getServiceIdentifierType() {
 		return type;
 	}
 	
@@ -72,17 +79,7 @@ public class ServiceImplementationName {
 	}
 	
 	public String getInformationServiceSoaName() {
-		return this.fullName.replaceAll("=.*$", "");
-	}
-	
-	@Override
-	public String toString() {
-		return this.fullName;
-	}
-	
-	@Override
-	public int hashCode() {
-		return this.fullName.hashCode();
+		return this.getName().replaceAll("=.*$", "");
 	}
 	
 }

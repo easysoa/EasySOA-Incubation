@@ -355,6 +355,9 @@
           <widget>serviceimpl_linkedInformationService</widget>
         </row>
         <row>
+          <widget>serviceimpl_language</widget>
+        </row>
+        <row>
           <widget>serviceimpl_technology</widget>
         </row>
         <row>
@@ -390,6 +393,18 @@
         <fields>
           <field>impl:technology</field>
         </fields>
+      </widget>
+      <widget name="serviceimpl_language" type="selectOneDirectory">
+        <labels>
+          <label mode="any">label.easysoa.layout.platform.language</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>impl:language</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">platform_language</property>
+        </properties>
       </widget>
       <widget name="serviceimpl_documentation" type="textarea">
         <labels>

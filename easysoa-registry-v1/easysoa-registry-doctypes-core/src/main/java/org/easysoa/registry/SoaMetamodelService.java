@@ -17,7 +17,9 @@ public interface SoaMetamodelService {
     public static final String EXTENSIONPOINT_TYPES = "types";
 
     public static final String EXTENSIONPOINT_INHERITEDFACETS = "inheritedFacets";
-    
+
+	SoaNodeTypeDescriptor getSoaNodeType(String name);
+	
     Collection<String> getChildren(String type);
     
     /**
@@ -37,5 +39,6 @@ public interface SoaMetamodelService {
 			boolean isFacetSource) throws Exception;
 
 	void resetInheritedFacets(DocumentModel model) throws Exception;
+
 	
 }

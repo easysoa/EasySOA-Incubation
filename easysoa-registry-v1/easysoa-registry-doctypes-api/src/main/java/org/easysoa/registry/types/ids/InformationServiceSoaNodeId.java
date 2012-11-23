@@ -1,35 +1,31 @@
-package org.easysoa.registry.types.names;
+package org.easysoa.registry.types.ids;
+
+import org.easysoa.registry.SoaNodeId;
+import org.easysoa.registry.types.InformationService;
 
 
-public class InformationServiceName {
+public class InformationServiceSoaNodeId extends SoaNodeId {
 
 	protected static final String JAVA = "java";
 	
 	protected static final String WS = "ws";
 
-	private String fullName;
-	
 	private ServiceIdentifierType type;
 
 	private String namespace;
 
 	private String interfaceName;
 
-	public InformationServiceName(ServiceIdentifierType type, String namespace,
+	public InformationServiceSoaNodeId(ServiceIdentifierType type, String namespace,
 			String interfaceName) {
-		switch (type) {
-		case WEB_SERVICE: this.fullName = WS; break;
-		case JAVA_INTERFACE: this.fullName = JAVA; break;
-		default: this.fullName = "???";
-		}
-		this.fullName += ":" + namespace + ":" + interfaceName;
+		super(InformationService.DOCTYPE, buildName(type, namespace, interfaceName));
 		this.type = type;
 		this.namespace = namespace;
 		this.interfaceName = interfaceName;
 	}
-	
-	public InformationServiceName(String name) {
-		this.fullName = name;
+
+	public InformationServiceSoaNodeId(String name) {
+		super(InformationService.DOCTYPE, name);
 		String[] splitName = name.split(":");
 		
 		if (splitName.length == 3) {
@@ -53,8 +49,20 @@ public class InformationServiceName {
 			this.interfaceName = name;
 		}
 	}
-	
-	public ServiceIdentifierType getType() {
+
+	private static String buildName(ServiceIdentifierType type, String namespace,
+			String interfaceName) {
+		String fullName;
+		switch (type) {
+		case WEB_SERVICE: fullName = WS; break;
+		case JAVA_INTERFACE: fullName = JAVA; break;
+		default: fullName = "???";
+		}
+		fullName += ":" + namespace + ":" + interfaceName;
+		return fullName;
+	}
+
+	public ServiceIdentifierType getServiceIdentifierType() {
 		return type;
 	}
 	
@@ -64,16 +72,6 @@ public class InformationServiceName {
 	
 	public String getInterfaceName() {
 		return interfaceName;
-	}
-	
-	@Override
-	public String toString() {
-		return this.fullName;
-	}
-	
-	@Override
-	public int hashCode() {
-		return this.fullName.hashCode();
 	}
 	
 }

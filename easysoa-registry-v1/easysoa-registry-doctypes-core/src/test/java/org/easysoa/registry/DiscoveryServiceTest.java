@@ -128,4 +128,5 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         Assert.assertEquals("http://www.services.com/endpoint", foundEndpoint.getPropertyValue(Endpoint.XPATH_URL));
         Assert.assertEquals("Blahblah", foundEndpoint.getPropertyValue("dc:description"));
     }
+    
 }

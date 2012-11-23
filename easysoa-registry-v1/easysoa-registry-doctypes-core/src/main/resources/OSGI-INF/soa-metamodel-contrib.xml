@@ -1,35 +1,46 @@
 <?xml version="1.0"?>
-<component name="org.easysoa.registry.doctypes.core.soametamodel.contrib" version="1.0">
-  
-  <extension target="org.easysoa.registry.SoaMetamodelService" point="types">
+<component name="org.easysoa.registry.doctypes.core.soametamodel.contrib"
+  version="1.0">
+
+  <extension target="org.easysoa.registry.SoaMetamodelService"
+    point="types">
     <soaNodeType name="TaggingFolder">
-        <subtype>SoftwareComponent</subtype>
-        <subtype>InformationService</subtype>
-        <subtype>Deliverable</subtype>
-        <subtype>ServiceImplementation</subtype>
-        <subtype>DeployedDeliverable</subtype>
-        <subtype>Endpoint</subtype>
+      <subtype>SoftwareComponent</subtype>
+      <subtype>InformationService</subtype>
+      <subtype>Deliverable</subtype>
+      <subtype>ServiceImplementation</subtype>
+      <subtype>DeployedDeliverable</subtype>
+      <subtype>Endpoint</subtype>
     </soaNodeType>
-    
+
     <soaNodeType name="SoftwareComponent">
-        <subtype>Deliverable</subtype>
+      <subtype>Deliverable</subtype>
     </soaNodeType>
-    
+
     <soaNodeType name="Deliverable">
-        <subtype>ServiceImplementation</subtype>
-        <subtype>DeployedDeliverable</subtype>
-        <subtype>EndpointConsumption</subtype>
+      <subtype>ServiceImplementation</subtype>
+      <subtype>DeployedDeliverable</subtype>
+      <subtype>EndpointConsumption</subtype>
     </soaNodeType>
     <soaNodeType name="ServiceImplementation">
-        <subtype>Endpoint</subtype>
+      <subtype>Endpoint</subtype>
+    </soaNodeType>
+
+    <soaNodeType name="DeployedDeliverable">
+      <subtype>Endpoint</subtype>
     </soaNodeType>
     
-    <soaNodeType name="DeployedDeliverable">
-        <subtype>Endpoint</subtype>
+    <soaNodeType name="Endpoint">
+      <managedSoaName>${document.endpoint.environment}:${document.endpoint.url}</managedSoaName>
+      <immutableProperties>
+        <property>endp:environment</property>
+        <property>endp:url</property>
+      </immutableProperties>
     </soaNodeType>
   </extension>
-  
-  <extension target="org.easysoa.registry.SoaMetamodelService" point="inheritedFacets">
+
+  <extension target="org.easysoa.registry.SoaMetamodelService"
+    point="inheritedFacets">
     <inheritedFacet facetName="ServiceImplementationData">
       <transfer>
         <from>ServiceImplementation</from>
@@ -44,26 +55,35 @@
         <selector type="children" />
       </transfer>
     </inheritedFacet>
-    
-    <!-- TODO Implement facet ComponentData and attach it to all doctypes below -->
+
     <inheritedFacet facetName="ComponentData">
       <transfer>
         <from>Component</from>
         <to>InformationService</to>
         <selector type="uuidInSource">
-          <parameter name="metadata">acomp:linkedInformationService</parameter>
+          <parameter name="metadata">acomp:linkedInformationService
+          </parameter>
         </selector>
       </transfer>
       <transfer>
         <from>InformationService</from>
         <to>ServiceImplementation</to>
         <selector type="uuidInTarget">
-          <parameter name="metadata">impl:linkedInformationService</parameter>
+          <parameter name="metadata">impl:linkedInformationService
+          </parameter>
         </selector>
       </transfer>
       <transfer>
         <from>ServiceImplementation</from>
         <to>Endpoint</to>
+        <selector type="children" />
+      </transfer>
+    </inheritedFacet>
+
+    <inheritedFacet facetName="PlatformData">
+      <transfer>
+        <from>Platform</from>
+        <to>InformationService</to>
         <selector type="children" />
       </transfer>
     </inheritedFacet>

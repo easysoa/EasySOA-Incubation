@@ -80,6 +80,7 @@ public class RepositoryManagementListener implements EventListener {
 	    		        Framework.getService(IntelligentSystemTreeService.class);
 	    		intelligentSystemTreeServiceCache.handleDocumentModel(documentManager, sourceDocument,
 	    		        !isCreation);
+	    			    		
 	    		documentManager.save();
 	        } catch (Exception e) {
 	            logger.error("Failed to check document after creation", e);
@@ -165,7 +166,6 @@ public class RepositoryManagementListener implements EventListener {
 		    }
 		    else {
 		        // Move to repository otherwise
-		        sourceDocument.setPropertyValue(SoaNode.XPATH_SOANAME, soaName);
 		    	sourceDocument = documentManager.move(sourceDocument.getRef(),
 		            new PathRef(sourceFolderPath), sourceDocument.getName());
 		    }

@@ -52,7 +52,10 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 
 	private Map<String, InheritedFacetModelSelector> facetTransferSelectors
 		= new HashMap<String, InheritedFacetModelSelector>();
-    
+
+	private Map<String, SoaNodeTypeDescriptor> soaNodeTypes
+		= new HashMap<String, SoaNodeTypeDescriptor>();
+	
 	public SoaMetamodelServiceImpl() {
 		facetTransferSelectors.put(ChildrenModelSelector.NAME, new ChildrenModelSelector());
 		facetTransferSelectors.put(UuidInSourceSelector.NAME, new UuidInSourceSelector());
@@ -64,6 +67,8 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
             ComponentInstance contributor) throws Exception {
         if (EXTENSIONPOINT_TYPES.equals(extensionPoint)) {
             SoaNodeTypeDescriptor descriptor = (SoaNodeTypeDescriptor) contribution;
+            soaNodeTypes.put(descriptor.name, descriptor);
+            // Update types graph
             graph.addVertex(descriptor.name);
             for (String subtype : descriptor.subtypes) {
                 graph.addVertex(subtype);
@@ -79,6 +84,10 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
         		logger.error("Invalid " + EXTENSIONPOINT_INHERITEDFACETS + " contribution");
         	}
         }
+    }
+    
+    public SoaNodeTypeDescriptor getSoaNodeType(String name) {
+    	return soaNodeTypes.get(name);
     }
     
     public Collection<String> getChildren(String type) {

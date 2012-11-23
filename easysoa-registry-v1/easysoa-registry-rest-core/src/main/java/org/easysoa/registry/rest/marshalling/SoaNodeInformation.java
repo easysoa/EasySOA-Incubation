@@ -101,10 +101,6 @@ public class SoaNodeInformation implements SoaNode {
         return this.id.toString();
     }
     
-    protected void setDoctype(String doctype) {
-        this.id.setType(doctype);
-    }
-
     public List<SoaNodeId> getParentIds() throws Exception {
 		Serializable[] parentsIdsArray = (Serializable[]) properties.get(XPATH_PARENTSIDS);
 		List<String> parentsIdsStringList = ListUtils.toStringList(parentsIdsArray);

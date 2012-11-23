@@ -11,7 +11,7 @@ import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.OperationImplementation;
 import org.easysoa.registry.types.ServiceImplementation;
-import org.easysoa.registry.types.names.ServiceImplementationName;
+import org.easysoa.registry.types.ids.ServiceImplementationSoaNodeId;
 import org.easysoa.registry.utils.ListUtils;
 
 public class ServiceImplementationInformation extends SoaNodeInformation implements ServiceImplementation {
@@ -25,8 +25,8 @@ public class ServiceImplementationInformation extends SoaNodeInformation impleme
     }
     
     @Override
-    public ServiceImplementationName getParsedSoaName() throws Exception {
-    	return new ServiceImplementationName(this.getSoaName());
+    public ServiceImplementationSoaNodeId getParsedSoaName() throws Exception {
+    	return new ServiceImplementationSoaNodeId(this.getSoaName());
     }
     
     public List<OperationImplementation> getOperations() {

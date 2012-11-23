@@ -17,9 +17,11 @@ public class SoaNodeTypeDescriptor {
 
     @XNode("@name")
     public String name;
+
+    @XNode("managedSoaName")
+    public String managedSoaName = null;
     
     @XNodeList(value = "subtype", type = ArrayList.class, componentType=String.class, trim = true)
     public List<String> subtypes;
-
     
 }

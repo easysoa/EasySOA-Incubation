@@ -8,6 +8,8 @@ import org.easysoa.registry.rest.integration.WSDLInformation;
 import org.easysoa.registry.rest.integration.WSDLInformations;
 
 /**
+ * Simple registry service mock server implementation
+ * 
  * @author jguillemotte
  *
  */

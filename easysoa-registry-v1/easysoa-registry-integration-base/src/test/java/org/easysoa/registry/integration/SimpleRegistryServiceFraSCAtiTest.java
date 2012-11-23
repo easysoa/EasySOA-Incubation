@@ -34,7 +34,7 @@ public class SimpleRegistryServiceFraSCAtiTest {
 
     @BeforeClass
     public static void setUp() throws FrascatiException {
-        // logger.info("FraSCATI Starting");
+        logger.info("FraSCATI Starting");
         componentList = new ArrayList<Component>();
         frascati = FraSCAti.newFraSCAti();
         componentList.add(frascati.processComposite("simpleRegistryServiceClient", new ProcessingContextImpl()));        
@@ -60,5 +60,6 @@ public class SimpleRegistryServiceFraSCAtiTest {
         for (Component component : componentList) {
             frascati.close(component);
         }
+        logger.info("FraSCATI closing");
     }
 }

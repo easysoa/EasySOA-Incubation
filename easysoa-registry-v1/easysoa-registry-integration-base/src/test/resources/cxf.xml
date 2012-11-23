@@ -13,18 +13,21 @@ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 
 <import resource="classpath:META-INF/cxf/cxf.xml" />
 
-<!--<jaxrs:client id="simpleRegistryServiceCXFTestClient"
+<!-- Spring configuration for Simple registry service CXF client -->
+<jaxrs:client id="simpleRegistryServiceCXFTestClient"
 	serviceClass="org.easysoa.registry.rest.integration.SimpleRegistryService"
-	address="http://localhost:8080/nuxeo/site/" >
+	address="http://localhost:8080/nuxeo/site/"
+	username="Administrator" 
+	password="Administrator">
 </jaxrs:client>
--->
-<!--
-<http:conduit name="http://localhost:8080/.*">
-    <http:authorization>
-        <sec:UserName>Administrator</sec:UserName>
-        <sec:Password>Administrator</sec:Password>
-        <sec:AuthorizationType>Basic</sec:AuthorizationType>
-     </http:authorization>
- </http:conduit>
--->
+
+<!-- Spring configuration for Simple registry service CXF mock server -->
+<jaxrs:server id="simpleRegistryServiceCXFTestMockServer" address="http://localhost:8080/nuxeo/site/" >
+        <jaxrs:serviceBeans>
+           <ref bean="serviceBean" />
+        </jaxrs:serviceBeans>
+</jaxrs:server>
+
+<bean id="serviceBean" class="org.easysoa.registry.integration.SimpleRegistryServiceServerImpl"/>
+
 </beans>

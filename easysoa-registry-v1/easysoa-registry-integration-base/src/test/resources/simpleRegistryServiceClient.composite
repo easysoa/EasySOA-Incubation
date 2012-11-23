@@ -14,7 +14,8 @@
       <interface.java interface="org.easysoa.registry.integration.TestClientItf"/>
     </service>
 	<reference name="service">
-      <frascati:binding.rest uri="http://localhost:8080/nuxeo/site/" requires="nuxeoAuthorization"/>
+	  <!-- Change the port to 8080 to use this test with real nuxeo server-->
+      <frascati:binding.rest uri="http://localhost:8180/nuxeo/site/" requires="nuxeoAuthorization"/>
     </reference>
   </component>
 
@@ -30,7 +31,7 @@
     <implementation.java class="org.easysoa.registry.integration.SimpleRegistryServiceServerImpl" />
     <service name="simpleRegistryServiceMockServerService">
       <interface.java interface="org.easysoa.registry.rest.integration.SimpleRegistryService"/>
-      <frascati:binding.rest uri="http://localhost:8080/nuxeo/site/"/>
+      <frascati:binding.rest uri="http://localhost:8180/nuxeo/site/"/>
     </service>
   </component>
 

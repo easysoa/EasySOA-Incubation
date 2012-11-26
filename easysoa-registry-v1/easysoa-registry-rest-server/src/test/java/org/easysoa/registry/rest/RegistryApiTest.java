@@ -161,7 +161,7 @@ public class RegistryApiTest extends AbstractRestApiTest {
                 .type(MediaType.TEXT_PLAIN);
        SoaNodeInformation[] foundEndpoints = discoveryRequest.post(SoaNodeInformation[].class, "SELECT * FROM Endpoint WHERE endp:url = 'EndpointToQuery'");
        Assert.assertTrue(foundEndpoints.length == 1);
-       Assert.assertEquals(endpointToQuery.getName(), foundEndpoints[0].getProperties().get(Endpoint.XPATH_TITLE));
+       Assert.assertEquals(endpointToQuery.getEnvironment(), foundEndpoints[0].getProperties().get(Endpoint.XPATH_ENVIRONMENT));
         
     }
 }

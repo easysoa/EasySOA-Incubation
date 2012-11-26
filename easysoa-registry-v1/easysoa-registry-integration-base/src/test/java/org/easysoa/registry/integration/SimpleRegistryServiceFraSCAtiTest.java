@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.rest.integration.WSDLInformations;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.objectweb.fractal.api.Component;
 import org.ow2.frascati.FraSCAti;
@@ -20,6 +21,7 @@ import org.testng.Assert;
  * @author jguillemotte
  * 
  */
+@Ignore // until Juliac is fixed
 public class SimpleRegistryServiceFraSCAtiTest {
 
     /**

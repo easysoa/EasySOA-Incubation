@@ -81,7 +81,7 @@ public class IntelligentSystemTreeTest extends AbstractRegistryTest {
         
         // By alphabetical order
         
-        endpointModel = documentManager.getDocument(new PathRef("/default-domain/workspaces/alphabeticalOrder:first2Letters/P/R/Production:MyEndpoint"));
+        endpointModel = documentManager.getDocument(new PathRef("/default-domain/workspaces/alphabeticalOrder:first2Letters/M/Y/Production:MyEndpoint"));
         Assert.assertNotNull("The endpoint must be classified by alphabetical order " +
         		"(= in a multiple-levels hierarchy defined with parameters)", endpointModel);
         

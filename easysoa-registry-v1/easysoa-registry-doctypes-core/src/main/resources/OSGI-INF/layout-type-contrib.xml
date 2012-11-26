@@ -239,6 +239,13 @@
         <fields>
           <field>env:environment</field>
         </fields>
+        <widgetModes>
+          <mode value="edit">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="create">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
       </widget>
     </layout>
     
@@ -260,6 +267,13 @@
         <fields>
           <field>endp:url</field>
         </fields>
+        <widgetModes>
+          <mode value="edit">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="create">
+          <property name="required">true</property>
+          <property name="styleClass">dataInputText</property>
+        </properties>
       </widget>
     </layout>
     

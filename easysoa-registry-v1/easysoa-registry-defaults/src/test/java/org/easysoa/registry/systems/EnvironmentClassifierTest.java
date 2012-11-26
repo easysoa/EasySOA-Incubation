@@ -8,6 +8,7 @@ import org.easysoa.registry.types.IntelligentSystem;
 import org.easysoa.registry.types.IntelligentSystemTreeRoot;
 import org.easysoa.registry.types.SystemTreeRoot;
 import org.easysoa.registry.types.TaggingFolder;
+import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.DocumentModelHelper;
 import org.junit.Assert;
@@ -51,9 +52,8 @@ public class EnvironmentClassifierTest extends AbstractRegistryTest {
 
         // Create Endpoint in it
         DocumentModel endpointModel  = documentService.create(documentManager,
-                new SoaNodeId(Endpoint.DOCTYPE, "MyEndpoint"),
+                new EndpointId("Production", "MyEndpoint"),
                 systemModel.getPathAsString());
-        endpointModel.setPropertyValue(Endpoint.XPATH_ENVIRONMENT, "Production");
         documentManager.saveDocument(endpointModel);
         
         documentManager.save();
@@ -75,7 +75,8 @@ public class EnvironmentClassifierTest extends AbstractRegistryTest {
         
         DocumentModel childModel = productionSystemChildren.get(0);
         Assert.assertTrue("The document in the 'Production' system must be the expected endpoint",
-                Endpoint.DOCTYPE.equals(childModel.getType()) && "MyEndpoint".equals(childModel.getTitle()));
+                Endpoint.DOCTYPE.equals(childModel.getType()) &&
+                "MyEndpoint".equals(childModel.getPropertyValue(Endpoint.XPATH_URL)));
         
     }
     

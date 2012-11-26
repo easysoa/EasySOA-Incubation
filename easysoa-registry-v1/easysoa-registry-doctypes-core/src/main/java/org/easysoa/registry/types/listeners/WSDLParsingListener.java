@@ -61,23 +61,27 @@ public class WSDLParsingListener implements EventListener {
         	if (sourceDocument.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME) == null) {
         		InformationServiceId parsedSoaName = InformationServiceId.fromName(
         				(String) sourceDocument.getPropertyValue(InformationService.XPATH_SOANAME));
-        		String portTypeName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getInterfaceName();
-        		sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
-        		documentModified = true;
+            	if (parsedSoaName != null) {
+	        		String portTypeName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getInterfaceName();
+	        		sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
+	        		documentModified = true;
+            	}
         	}
         }
         else if (ServiceImplementation.DOCTYPE.equals(sourceDocument.getType())) {
         	ServiceImplementationId parsedSoaName = ServiceImplementationId.fromName(
     				(String) sourceDocument.getPropertyValue(ServiceImplementation.XPATH_SOANAME));
-        	if (sourceDocument.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME) == null) {
-        		String portTypeName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getInterfaceName();
-        		sourceDocument.setPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
-        		documentModified = true;
-        	}
-        	if (sourceDocument.getPropertyValue(ServiceImplementation.XPATH_WSDL_SERVICE_NAME) == null) {
-        		String serviceName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getImplementationName();
-        		sourceDocument.setPropertyValue(ServiceImplementation.XPATH_WSDL_SERVICE_NAME, serviceName);
-        		documentModified = true;
+        	if (parsedSoaName != null) {
+	        	if (sourceDocument.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME) == null) {
+	        		String portTypeName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getInterfaceName();
+	        		sourceDocument.setPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
+	        		documentModified = true;
+	        	}
+	        	if (sourceDocument.getPropertyValue(ServiceImplementation.XPATH_WSDL_SERVICE_NAME) == null) {
+	        		String serviceName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getImplementationName();
+	        		sourceDocument.setPropertyValue(ServiceImplementation.XPATH_WSDL_SERVICE_NAME, serviceName);
+	        		documentModified = true;
+	        	}
         	}
         }
 

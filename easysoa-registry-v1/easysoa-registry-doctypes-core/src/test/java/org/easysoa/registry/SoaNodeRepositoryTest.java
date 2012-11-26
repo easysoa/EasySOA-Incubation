@@ -6,6 +6,7 @@ import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.Repository;
 import org.easysoa.registry.types.SystemTreeRoot;
 import org.easysoa.registry.types.TaggingFolder;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.DocumentModelHelper;
 import org.easysoa.registry.utils.RepositoryHelper;
 import org.junit.Assert;

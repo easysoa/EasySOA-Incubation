@@ -1,10 +1,9 @@
 package org.easysoa.registry.types.ids;
 
-import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.types.InformationService;
 
 
-public class InformationServiceSoaNodeId extends SoaNodeId {
+public class InformationServiceId extends SoaNodeId {
 
 	protected static final String JAVA = "java";
 	
@@ -16,7 +15,7 @@ public class InformationServiceSoaNodeId extends SoaNodeId {
 
 	private String interfaceName;
 
-	public InformationServiceSoaNodeId(ServiceIdentifierType type, String namespace,
+	public InformationServiceId(ServiceIdentifierType type, String namespace,
 			String interfaceName) {
 		super(InformationService.DOCTYPE, buildName(type, namespace, interfaceName));
 		this.type = type;
@@ -24,7 +23,7 @@ public class InformationServiceSoaNodeId extends SoaNodeId {
 		this.interfaceName = interfaceName;
 	}
 
-	public InformationServiceSoaNodeId(String name) {
+	public InformationServiceId(String name) {
 		super(InformationService.DOCTYPE, name);
 		String[] splitName = name.split(":");
 		

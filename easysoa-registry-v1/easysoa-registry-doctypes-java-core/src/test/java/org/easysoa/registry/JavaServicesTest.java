@@ -1,6 +1,7 @@
 package org.easysoa.registry;
 
 import org.easysoa.registry.test.AbstractRegistryTest;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.types.java.JavaServiceConsumption;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
 import org.easysoa.registry.types.java.utils.JavaDoctypesHelper;

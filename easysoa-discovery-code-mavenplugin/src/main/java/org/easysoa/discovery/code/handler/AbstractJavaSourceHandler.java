@@ -23,7 +23,7 @@ import org.easysoa.discovery.code.handler.consumption.ImportedServicesConsumptio
 import org.easysoa.discovery.code.handler.consumption.ServiceConsumptionFinder;
 import org.easysoa.discovery.code.model.JavaServiceInterfaceInformation;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.marshalling.SoaNodeResult;
 
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaSource;
@@ -86,11 +86,11 @@ public abstract class AbstractJavaSourceHandler implements SourcesHandler {
         return null;
     }
 
-    public Collection<SoaNodeInformation> handleSources(CodeDiscoveryMojo codeDiscovery,
+    public Collection<SoaNodeResult> handleSources(CodeDiscoveryMojo codeDiscovery,
             JavaSource[] sources,
             MavenDeliverableInformation mavenDeliverable,
             CodeDiscoveryRegistryClient registryClient, Log log) throws Exception {
-        List<SoaNodeInformation> discoveredNodes = new LinkedList<SoaNodeInformation>();
+        List<SoaNodeResult> discoveredNodes = new LinkedList<SoaNodeResult>();
         
         // Find WS interfaces in sources
         Map<String, JavaServiceInterfaceInformation> wsInterfaces =
@@ -137,7 +137,7 @@ public abstract class AbstractJavaSourceHandler implements SourcesHandler {
         }
         
         // Find WS implementations
-        Collection<SoaNodeInformation> wsImpls = findWSImplementations(sources,
+        Collection<SoaNodeResult> wsImpls = findWSImplementations(sources,
                 wsInterfaces, mavenDeliverable, registryClient, log);
         discoveredNodes.addAll(wsImpls);
         
@@ -164,11 +164,11 @@ public abstract class AbstractJavaSourceHandler implements SourcesHandler {
             MavenDeliverableInformation mavenDeliverable,
             CodeDiscoveryRegistryClient registryClient, Log log) throws Exception;
 
-    public abstract Collection<SoaNodeInformation> findWSImplementations(JavaSource[] sources,
+    public abstract Collection<SoaNodeResult> findWSImplementations(JavaSource[] sources,
             Map<String, JavaServiceInterfaceInformation> wsInterfaces, MavenDeliverableInformation mavenDeliverable,
             CodeDiscoveryRegistryClient registryClient, Log log) throws Exception;
 
-    public Collection<SoaNodeInformation> handleAdditionalDiscovery(JavaSource[] sources,
+    public Collection<SoaNodeResult> handleAdditionalDiscovery(JavaSource[] sources,
             Map<String, JavaServiceInterfaceInformation> wsInterfaces,
             MavenDeliverableInformation mavenDeliverable,
             CodeDiscoveryRegistryClient registryClient, Log log) throws Exception {

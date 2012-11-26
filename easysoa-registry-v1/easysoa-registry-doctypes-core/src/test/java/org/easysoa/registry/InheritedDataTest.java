@@ -10,6 +10,7 @@ import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;

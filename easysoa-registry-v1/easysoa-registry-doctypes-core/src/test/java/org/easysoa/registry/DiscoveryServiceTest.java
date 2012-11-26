@@ -12,6 +12,12 @@ import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoftwareComponent;
+import org.easysoa.registry.types.ids.DeliverableId;
+import org.easysoa.registry.types.ids.EndpointId;
+import org.easysoa.registry.types.ids.ServiceIdentifierType;
+import org.easysoa.registry.types.ids.ServiceImplementationId;
+import org.easysoa.registry.types.ids.SoaNodeId;
+import org.easysoa.registry.types.ids.SoftwareComponentId;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,7 +55,7 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
     @Test
     public void testSimpleDiscovery() throws Exception {
         // Gather discovery information
-        discoveredEndpointId = new SoaNodeId(Endpoint.DOCTYPE, "http://www.services.com/endpoint");
+        discoveredEndpointId = new EndpointId("Production", "http://www.services.com/endpoint");
         properties = new HashMap<String, Object>();
         properties.put(Endpoint.XPATH_TITLE, "My Endpoint");
         properties.put(Endpoint.XPATH_URL, "http://www.services.com/endpoint");
@@ -86,11 +92,11 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         
         // Add correlation information
         List<SoaNodeId> parentDocuments = new LinkedList<SoaNodeId>();
-        SoaNodeId deliverableId = new SoaNodeId(Deliverable.DOCTYPE, "org.easysoa.services:myservices");
+        SoaNodeId deliverableId = new DeliverableId("nature", "org.easysoa.services:myservices");
         parentDocuments.add(deliverableId);
-        SoaNodeId serviceImplId = new SoaNodeId(ServiceImplementation.DOCTYPE, "myserviceimpl");
+        SoaNodeId serviceImplId = new ServiceImplementationId(ServiceIdentifierType.WEB_SERVICE, "namespace", "itf", "impl");
         parentDocuments.add(serviceImplId);
-        SoaNodeId softwareCompId = new SoaNodeId(SoftwareComponent.DOCTYPE, "mysoftwarecomponent");
+        SoaNodeId softwareCompId = new SoftwareComponentId("mysoftwarecomponent");
         parentDocuments.add(softwareCompId);
         
         // Run discovery

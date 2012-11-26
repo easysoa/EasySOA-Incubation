@@ -3,6 +3,7 @@ package org.easysoa.registry;
 import java.util.List;
 import java.util.Map;
 
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -55,7 +56,7 @@ public interface DocumentService {
      * 
      * @throws ClientException
      */
-    DocumentModel create(CoreSession documentManager, SoaNodeId identifier, String parentPath) throws ClientException;
+    DocumentModel create(CoreSession documentManager, SoaNodeId identifier, String parentPath) throws Exception;
 
     /**
      * TODO NO triggers documentCreate event but properties have not yet been set !
@@ -63,21 +64,21 @@ public interface DocumentService {
      * exists, returns it instead.
      * Works only with SoaNode types (returns null otherwise).
      * 
-     * @throws ClientException
+     * @throws Exception 
      */
     DocumentModel create(CoreSession documentManager, SoaNodeId identifier)
-            throws ClientException;
+            throws Exception;
     /**
      * Creates a new SoaNode document but doesn't save it (therefore have to save
      * afterwards using ex. coreSession.saveDocument()). To be preferred to createDocument
      * because doesn't trigger documentCreated event.
      * @param documentManager nuxeo core session
      * @param identifier must be a valid SoaNodeId (check it with isSoaNode())
-     * @throws ClientException nuxeo error, or if already exists - check it before using
+     * @throws Exception nuxeo error, or if already exists - check it before using
      * documentService.find(documentManager, identifier)
      */
     DocumentModel newSoaNodeDocument(CoreSession documentManager, SoaNodeId identifier)
-            throws ClientException;
+            throws Exception;
     
     /**
      * Copies a document at the target destination.

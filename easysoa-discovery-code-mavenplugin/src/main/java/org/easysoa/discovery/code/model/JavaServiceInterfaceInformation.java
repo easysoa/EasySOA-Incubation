@@ -1,7 +1,7 @@
 package org.easysoa.discovery.code.model;
 
-import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
+import org.easysoa.registry.types.ids.SoaNodeId;
 
 public class JavaServiceInterfaceInformation {
 

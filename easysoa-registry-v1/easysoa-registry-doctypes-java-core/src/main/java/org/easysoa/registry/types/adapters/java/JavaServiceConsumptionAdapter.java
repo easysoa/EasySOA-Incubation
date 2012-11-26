@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.InvalidDoctypeException;
-import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.types.adapters.SoaNodeAdapter;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.types.java.JavaServiceConsumption;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
 import org.nuxeo.ecm.core.api.ClientException;

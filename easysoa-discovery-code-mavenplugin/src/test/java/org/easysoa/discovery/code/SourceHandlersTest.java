@@ -17,7 +17,7 @@ import org.easysoa.discovery.code.handler.SourcesHandler;
 import org.easysoa.registry.rest.RegistryApi;
 import org.easysoa.registry.rest.client.ClientBuilder;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.marshalling.SoaNodeResult;
 import org.easysoa.registry.test.AbstractWebEngineTest;
 import org.easysoa.registry.test.EasySOAWebEngineFeature;
 import org.junit.BeforeClass;
@@ -66,24 +66,24 @@ public class SourceHandlersTest extends AbstractWebEngineTest {
         
         // Run code discovery
         MavenDeliverableInformation mavenDeliverable = new MavenDeliverableInformation("TestDeliverable");
-        List<SoaNodeInformation> soaNodeResults = runHandlers(sources, mavenDeliverable,
+        List<SoaNodeResult> soaNodeResults = runHandlers(sources, mavenDeliverable,
                 new CodeDiscoveryRegistryClient(registryApi), new SystemStreamLog());
         
         Assert.assertTrue("SoaNodes must have been found during discovery", soaNodeResults.size() > 0);
 
         logger.info("Found SoaNodes");
         logger.info("--------------");
-        for (SoaNodeInformation soaNode : soaNodeResults) {
+        for (SoaNodeResult soaNode : soaNodeResults) {
             logger.info("   > ID = " + soaNode.getSoaNodeId());
             logger.info("     Properties =  " + soaNode.getProperties());
             logger.info("     Parents =  " + soaNode.getParentDocuments());
         }
     }
     
-    private List<SoaNodeInformation> runHandlers(JavaSource[] sources, 
+    private List<SoaNodeResult> runHandlers(JavaSource[] sources, 
             MavenDeliverableInformation mavenDeliverable,
             CodeDiscoveryRegistryClient registryClient, Log log) throws Exception {
-        List<SoaNodeInformation> discoveredNodes = new LinkedList<SoaNodeInformation>();
+        List<SoaNodeResult> discoveredNodes = new LinkedList<SoaNodeResult>();
         for (SourcesHandler handler : availableHandlers.values()) {
             // TODO mock instead of null CodeDiscoveryMojo, to test interfaces discovery from deps
             discoveredNodes.addAll(handler.handleSources(null, sources, mavenDeliverable, registryClient, log));

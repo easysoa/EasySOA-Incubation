@@ -3,9 +3,11 @@ package org.easysoa.registry;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.easysoa.registry.utils.SimpleELEvaluator;
 import org.nuxeo.common.xmap.annotation.XNode;
 import org.nuxeo.common.xmap.annotation.XNodeList;
 import org.nuxeo.common.xmap.annotation.XObject;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  * 
@@ -23,5 +25,10 @@ public class SoaNodeTypeDescriptor {
     
     @XNodeList(value = "subtype", type = ArrayList.class, componentType=String.class, trim = true)
     public List<String> subtypes;
+    
+    public String evaluateSoaName(SimpleELEvaluator elEvaluator, DocumentModel model) {
+    	elEvaluator.set("document", model);
+    	return elEvaluator.evaluate(this.managedSoaName);
+    }
     
 }

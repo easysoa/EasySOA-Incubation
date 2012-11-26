@@ -11,12 +11,12 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
-import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.rest.marshalling.OperationResult;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.marshalling.SoaNodeResult;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Test;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -86,7 +86,7 @@ public class EndpointRegistryApiTest extends AbstractRestApiTest {
         // rather done on server side, once possible matching has been done 
         //properties.put("dc:title", "CreerPrecompteService " + env + " endpoint");
         
-		SoaNodeInformation soaNodeInfo = new SoaNodeInformation(new SoaNodeId(
+		SoaNodeResult soaNodeInfo = new SoaNodeResult(new SoaNodeId(
         		Endpoint.DOCTYPE, env + ":" + endpUrl), properties, parents );
 
         // Run request

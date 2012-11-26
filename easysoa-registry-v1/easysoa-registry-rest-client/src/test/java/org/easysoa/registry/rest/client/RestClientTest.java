@@ -1,12 +1,12 @@
 package org.easysoa.registry.rest.client;
 
-import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.rest.RegistryApi;
 import org.easysoa.registry.rest.marshalling.OperationResult;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.marshalling.SoaNodeResult;
 import org.easysoa.registry.test.AbstractWebEngineTest;
 import org.easysoa.registry.test.EasySOAWebEngineFeature;
 import org.easysoa.registry.types.InformationService;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -31,11 +31,11 @@ public class RestClientTest extends AbstractWebEngineTest {
         
         // Create some document
         SoaNodeId myServiceId = new SoaNodeId(InformationService.DOCTYPE, "MyService");
-        OperationResult result = registryApi.post(new SoaNodeInformation(myServiceId, null, null));
+        OperationResult result = registryApi.post(new SoaNodeResult(myServiceId, null, null));
         Assert.assertTrue("Creation must be successful", result.isSuccessful());
         
         // Fetch it
-        SoaNodeInformation foundSoaNode = registryApi.get(myServiceId.getType(), myServiceId.getName());
+        SoaNodeResult foundSoaNode = registryApi.get(myServiceId.getType(), myServiceId.getName());
         Assert.assertNotNull("Created SoaNode must have been found by the client", foundSoaNode);
         Assert.assertEquals("Found document must be the expected Service", myServiceId, foundSoaNode.getSoaNodeId());
     }

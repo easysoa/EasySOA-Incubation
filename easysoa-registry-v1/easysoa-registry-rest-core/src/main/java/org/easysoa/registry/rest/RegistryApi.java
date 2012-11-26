@@ -10,30 +10,31 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.easysoa.registry.rest.marshalling.OperationResult;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.marshalling.SoaNodeRequest;
+import org.easysoa.registry.rest.marshalling.SoaNodeResult;
 
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public interface RegistryApi {
 
     @POST
-    OperationResult post(SoaNodeInformation soaNodeInfo) throws Exception;
+    OperationResult post(SoaNodeRequest soaNodeInfo) throws Exception;
 
     @POST
     @Path("query")
     @Consumes(MediaType.TEXT_PLAIN)
-    SoaNodeInformation[] query(String query) throws Exception;
+    SoaNodeResult[] query(String query) throws Exception;
     
     @GET
-    SoaNodeInformation get() throws Exception;
+    SoaNodeResult get() throws Exception;
 
     @GET
     @Path("{doctype}")
-    SoaNodeInformation[] get(@PathParam("doctype") String doctype) throws Exception;
+    SoaNodeResult[] get(@PathParam("doctype") String doctype) throws Exception;
 
     @GET
     @Path("{doctype}/{name}")
-    SoaNodeInformation get(@PathParam("doctype") String doctype, @PathParam("name") String name) throws Exception;
+    SoaNodeResult get(@PathParam("doctype") String doctype, @PathParam("name") String name) throws Exception;
 
     @DELETE
     @Path("{doctype}/{name}")

@@ -40,13 +40,13 @@ public class JsonMessageReader implements MessageBodyReader<Object> {
             if(jsonNode.get(0)!=null && jsonNode.get(0).has("projectID")){
                 return mapper.readValue(jsonNode, WSDLInformation[].class);
             } else {
-                return mapper.readValue(jsonNode, SoaNodeInformation[].class);
+                return mapper.readValue(jsonNode, SoaNodeResult[].class);
             }
         }
         else {
             JsonNode idNode = jsonNode.get("id");
             if (idNode != null && idNode.has("type") && idNode.has("name")) {
-                return mapper.readValue(jsonNode, SoaNodeInformation.class);
+                return mapper.readValue(jsonNode, SoaNodeResult.class);
             }
             else if (jsonNode.has("result")) {
                 return mapper.readValue(jsonNode, OperationResult.class);

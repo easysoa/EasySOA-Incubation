@@ -14,7 +14,7 @@ import org.easysoa.discovery.code.model.JavaServiceImplementationInformation;
 import org.easysoa.discovery.code.model.JavaServiceInterfaceInformation;
 import org.easysoa.registry.rest.client.types.InformationServiceInformation;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.marshalling.SoaNodeResult;
 import org.easysoa.registry.types.OperationImplementation;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
 
@@ -91,11 +91,11 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
     }
 
     @Override
-    public Collection<SoaNodeInformation> findWSImplementations(JavaSource[] sources,
+    public Collection<SoaNodeResult> findWSImplementations(JavaSource[] sources,
             Map<String, JavaServiceInterfaceInformation> wsInterfaces, MavenDeliverableInformation mavenDeliverable,
             CodeDiscoveryRegistryClient registryClient, Log log) throws Exception {
         // Pass 2 : Find all WS impl, including those implementing known interfaces (though its not "classical" JAXRS)
-        List<SoaNodeInformation> discoveredNodes = new ArrayList<SoaNodeInformation>();
+        List<SoaNodeResult> discoveredNodes = new ArrayList<SoaNodeResult>();
         for (JavaSource source : sources) {
             // TODO diff between main & tests
             JavaClass[] classes = source.getClasses();

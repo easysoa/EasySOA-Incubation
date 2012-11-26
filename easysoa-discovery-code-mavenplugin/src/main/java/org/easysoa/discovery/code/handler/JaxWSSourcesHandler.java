@@ -20,7 +20,7 @@ import org.easysoa.discovery.code.model.JavaServiceImplementationInformation;
 import org.easysoa.discovery.code.model.JavaServiceInterfaceInformation;
 import org.easysoa.registry.rest.client.types.InformationServiceInformation;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.marshalling.SoaNodeResult;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.OperationImplementation;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
@@ -155,12 +155,12 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
     }
 
     @Override
-    public Collection<SoaNodeInformation> findWSImplementations(JavaSource[] sources,
+    public Collection<SoaNodeResult> findWSImplementations(JavaSource[] sources,
             Map<String, JavaServiceInterfaceInformation> wsInterfaces,
             MavenDeliverableInformation mavenDeliverable, CodeDiscoveryRegistryClient registryClient, Log log)
             throws Exception {
         // Pass 2 : Explore each impl
-        List<SoaNodeInformation> discoveredNodes = new ArrayList<SoaNodeInformation>();
+        List<SoaNodeResult> discoveredNodes = new ArrayList<SoaNodeResult>();
         for (JavaSource source : sources) {
             JavaClass[] classes = source.getClasses();
             for (JavaClass c : classes) {
@@ -261,11 +261,11 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
    
     
      @Override
-    public Collection<SoaNodeInformation> handleAdditionalDiscovery(JavaSource[] sources,
+    public Collection<SoaNodeResult> handleAdditionalDiscovery(JavaSource[] sources,
             Map<String, JavaServiceInterfaceInformation> wsInterfaces,
             MavenDeliverableInformation mavenDeliverable, CodeDiscoveryRegistryClient registryClient, Log log)
             throws Exception {
-         List<SoaNodeInformation> discoveredNodes = new ArrayList<SoaNodeInformation>();
+         List<SoaNodeResult> discoveredNodes = new ArrayList<SoaNodeResult>();
          
         // Additional pass : Find WS tests
         for (JavaSource source : sources) {
@@ -286,9 +286,9 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                 	    for (JavaServiceConsumptionInformation foundConsumption : foundConsumptions) {
                             // Try to attach test to existing non-mock impls
                             boolean foundOriginalImplementation = false;
-                            SoaNodeInformation[] matchingRegistryImpls = registryClient
+                            SoaNodeResult[] matchingRegistryImpls = registryClient
                                     .findImplsByInterface(foundConsumption.getConsumedInterface());
-                            for (SoaNodeInformation matchingRegistryImpl : matchingRegistryImpls) {
+                            for (SoaNodeResult matchingRegistryImpl : matchingRegistryImpls) {
                                 foundOriginalImplementation = true;
                                 discoveredNodes.add(createTestDiscovery(
                                         matchingRegistryImpl.getSoaName(),

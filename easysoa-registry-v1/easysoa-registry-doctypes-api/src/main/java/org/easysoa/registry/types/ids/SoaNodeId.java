@@ -1,4 +1,4 @@
-package org.easysoa.registry;
+package org.easysoa.registry.types.ids;
 
 import org.easysoa.registry.types.Endpoint;
 
@@ -12,6 +12,14 @@ public class SoaNodeId {
         // Empty constructor required to be compatible with JAXB serialization
     }
     
+    /**
+     * IMPORTANT: When possible, use doctype-specific classes instead of this default one.
+     * If the "name" parameter is not formatted in the way the document types expects,
+     * errors will be thrown during document creation/update.
+     * 
+     * @param doctype
+     * @param name
+     */
     public SoaNodeId(String doctype, String name) {
         this.setType(doctype);
         this.setName(name);

@@ -12,9 +12,10 @@ import javax.ws.rs.core.Context;
 
 import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
-import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.rest.marshalling.OperationResult;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.marshalling.SoaNodeRequest;
+import org.easysoa.registry.rest.marshalling.SoaNodeResult;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -39,15 +40,15 @@ public class RegistryApiImpl implements RegistryApi {
     
     @Context HttpServletRequest request;
 
-    public OperationResult post(SoaNodeInformation soaNodeInfo) throws Exception {
+    public OperationResult post(SoaNodeRequest soaNodeRequest) throws Exception {
         try {
             // Initialization
             CoreSession documentManager = SessionFactory.getSession(request);
             DiscoveryService discoveryService = Framework.getService(DiscoveryService.class);
 
             // Run discovery
-            discoveryService.runDiscovery(documentManager, soaNodeInfo.getSoaNodeId(),
-                    toObjectProperties(soaNodeInfo.getProperties()), soaNodeInfo.getParentDocuments());
+            discoveryService.runDiscovery(documentManager, soaNodeRequest.getSoaNodeId(),
+                    toObjectProperties(soaNodeRequest.getProperties()), soaNodeRequest.getParentIds());
             documentManager.save();
             return new OperationResult(true);
         } catch (Exception e) {
@@ -55,11 +56,11 @@ public class RegistryApiImpl implements RegistryApi {
         }
     }
     
-    public SoaNodeInformation[] query(String query) throws Exception {
+    public SoaNodeResult[] query(String query) throws Exception {
         try {
             CoreSession documentManager = SessionFactory.getSession(request);
             DocumentModelList modelList = documentManager.query(query + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER);
-            SoaNodeInformation soaNodes[] = new SoaNodeInformation[modelList.size()];
+            SoaNodeResult soaNodes[] = new SoaNodeResult[modelList.size()];
             int i = 0;
             for (DocumentModel model : modelList) {
                 soaNodes[i++] = SoaNodeInformationFactory.create(documentManager, model);
@@ -70,13 +71,13 @@ public class RegistryApiImpl implements RegistryApi {
         }
     }
     
-    public SoaNodeInformation get() throws Exception {
+    public SoaNodeResult get() throws Exception {
         CoreSession documentManager = SessionFactory.getSession(request);
         DocumentModel document = documentManager.getDocument(new PathRef("/default-domain/workspaces"));
         return SoaNodeInformationFactory.create(documentManager, document); // FIXME WorkspaceRoot is not a SoaNode
     }
 
-    public SoaNodeInformation[] get(String doctype) throws Exception {
+    public SoaNodeResult[] get(String doctype) throws Exception {
         // Initialization
         CoreSession documentManager = SessionFactory.getSession(request);
         DocumentService documentService = Framework.getService(DocumentService.class);
@@ -89,17 +90,17 @@ public class RegistryApiImpl implements RegistryApi {
         DocumentModelList soaNodeModelList = documentManager.query(query);
 
         // Convert data for marshalling
-        List<SoaNodeInformation> modelsToMarshall = new LinkedList<SoaNodeInformation>();
+        List<SoaNodeResult> modelsToMarshall = new LinkedList<SoaNodeResult>();
         for (DocumentModel soaNodeModel : soaNodeModelList) {
-            modelsToMarshall.add(new SoaNodeInformation(documentService.createSoaNodeId(soaNodeModel),
+            modelsToMarshall.add(new SoaNodeResult(documentService.createSoaNodeId(soaNodeModel),
                     null, null));
         }
 
         // Write response
-        return modelsToMarshall.toArray(new SoaNodeInformation[]{});
+        return modelsToMarshall.toArray(new SoaNodeResult[]{});
     }
 
-    public SoaNodeInformation get(String doctype, String name) throws Exception {
+    public SoaNodeResult get(String doctype, String name) throws Exception {
         SoaNodeId id = new SoaNodeId(doctype, name);
         try {
             // Initialization

@@ -3,10 +3,10 @@ package org.easysoa.registry;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.test.AbstractRegistryTest;
 import org.easysoa.registry.types.TaggingFolder;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.RepositoryHelper;
 import org.junit.Assert;
 import org.junit.Test;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
@@ -34,7 +34,7 @@ public class DocumentServiceTest extends AbstractRegistryTest {
     DocumentService documentService;
     
     @Test
-    public void testModelCreation() throws ClientException {
+    public void testModelCreation() throws Exception {
         DocumentModel systemModel = documentService.create(documentManager, MYSYSTEM_ID);
         documentManager.save();
         Assert.assertNotNull(systemModel);
@@ -43,7 +43,7 @@ public class DocumentServiceTest extends AbstractRegistryTest {
     }
 
     @Test
-    public void testModelQuery() throws ClientException {
+    public void testModelQuery() throws Exception {
         DocumentModel systemModel = documentService.find(documentManager, MYSYSTEM_ID);
         Assert.assertNotNull("Created system must be found by name", systemModel);
         Assert.assertEquals(MYSYSTEM_ID.getName(), systemModel.getTitle());
@@ -52,7 +52,7 @@ public class DocumentServiceTest extends AbstractRegistryTest {
     }
 
     @Test
-    public void testModelDeletion() throws ClientException {
+    public void testModelDeletion() throws Exception {
         boolean success = documentService.delete(documentManager, MYSYSTEM_ID);
         Assert.assertTrue("Document deletion must be successful", success);
         DocumentModel systemModel = documentService.find(documentManager, MYSYSTEM_ID);

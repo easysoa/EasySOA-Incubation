@@ -10,12 +10,12 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
-import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.rest.marshalling.OperationResult;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.marshalling.SoaNodeResult;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -60,7 +60,7 @@ public class RegistryApiTest extends AbstractRestApiTest {
         Client client = createAuthenticatedHTTPClient();
         WebResource discoveryRequest = client.resource(discoveryApi.getRootURL())
                 .path(InformationService.DOCTYPE).path("MyService0");
-        SoaNodeInformation soaNodeInformation = discoveryRequest.get(SoaNodeInformation.class);
+        SoaNodeResult soaNodeInformation = discoveryRequest.get(SoaNodeResult.class);
 
         // Check result
         Assert.assertEquals("Returned SoaNode must have the expected ID", 
@@ -80,7 +80,7 @@ public class RegistryApiTest extends AbstractRestApiTest {
         // Run request
         Client client = createAuthenticatedHTTPClient();
         WebResource discoveryRequest = client.resource(discoveryApi.getRootURL()).path(InformationService.DOCTYPE);
-        SoaNodeInformation[] soaNodes = discoveryRequest.get(SoaNodeInformation[].class);
+        SoaNodeResult[] soaNodes = discoveryRequest.get(SoaNodeResult[].class);
 
         // Check result
         Assert.assertEquals("All registered services must be found", SERVICE_COUNT, soaNodes.length);
@@ -99,7 +99,7 @@ public class RegistryApiTest extends AbstractRestApiTest {
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
         properties.put("dc:title", "My Deliverable");
         properties.put("del:application", "myapp");
-        SoaNodeInformation soaNodeInfo = new SoaNodeInformation(deliverableId, properties, null);
+        SoaNodeResult soaNodeInfo = new SoaNodeResult(deliverableId, properties, null);
 
         // Run request
         Client client = createAuthenticatedHTTPClient();
@@ -108,10 +108,10 @@ public class RegistryApiTest extends AbstractRestApiTest {
 
         // Check result
         Assert.assertTrue("Creation request must be successful", result.isSuccessful());
-        SoaNodeInformation resultSoaNodeInfo = client.resource(discoveryApi.getRootURL())
+        SoaNodeResult resultSoaNodeInfo = client.resource(discoveryApi.getRootURL())
                     .path(deliverableId.getType())
                     .path(deliverableId.getName())
-                    .get(SoaNodeInformation.class);
+                    .get(SoaNodeResult.class);
         SoaNodeId id = resultSoaNodeInfo.getSoaNodeId();
         Assert.assertEquals("'type' property must be provided for the document",
                 deliverableId.getType(), id.getType());
@@ -157,7 +157,7 @@ public class RegistryApiTest extends AbstractRestApiTest {
         Builder discoveryRequest = client.resource(discoveryApi.getRootURL())
                 .path("query")
                 .type(MediaType.TEXT_PLAIN);
-       SoaNodeInformation[] foundEndpoints = discoveryRequest.post(SoaNodeInformation[].class, "SELECT * FROM Endpoint WHERE dc:title = 'EndpointToQuery'");
+       SoaNodeResult[] foundEndpoints = discoveryRequest.post(SoaNodeResult[].class, "SELECT * FROM Endpoint WHERE dc:title = 'EndpointToQuery'");
        Assert.assertTrue(foundEndpoints.length == 1);
        Assert.assertEquals("EndpointToQuery", foundEndpoints[0].getProperties().get("dc:title"));
         

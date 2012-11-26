@@ -18,6 +18,7 @@ import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoftwareComponent;
 import org.easysoa.registry.types.SystemTreeRoot;
 import org.easysoa.registry.types.TaggingFolder;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;

@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.easysoa.registry.types.Document;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.IntelligentSystem;
 import org.easysoa.registry.types.Repository;
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.DocumentModelHelper;
 import org.easysoa.registry.utils.RepositoryHelper;
 import org.nuxeo.common.utils.Path;
@@ -41,12 +43,12 @@ public class DocumentServiceImpl implements DocumentService {
         // TODO if doctype belongs to SoaNode subtypes, throw new Exception("createDocument() doesn't work for SoaNode types, rather use create()")
         DocumentModel documentModel = documentManager.createDocumentModel(doctype);
         documentModel.setPathInfo(parentPath, safeName(name));
-        documentModel.setProperty("dublincore", "title", title);
+        documentModel.setPropertyValue(Document.XPATH_TITLE, title);
         documentModel = documentManager.createDocument(documentModel);
         return documentModel;
     }
     
-    public DocumentModel create(CoreSession documentManager, SoaNodeId identifier, String parentPath) throws ClientException {
+    public DocumentModel create(CoreSession documentManager, SoaNodeId identifier, String parentPath) throws Exception {
         String doctype = identifier.getType();
  
         if (isSoaNode(documentManager, doctype)) {
@@ -106,8 +108,9 @@ public class DocumentServiceImpl implements DocumentService {
 
     /**
      * TODO NO triggers documentCreate event but properties have not yet been set !
+     * @throws Exception 
      */
-    public DocumentModel create(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
+    public DocumentModel create(CoreSession documentManager, SoaNodeId identifier) throws Exception {
         DocumentModel documentModel = null;
         
         if (isSoaNode(documentManager, identifier.getType())) {
@@ -124,13 +127,15 @@ public class DocumentServiceImpl implements DocumentService {
     /* (non-Javadoc)
      * @see org.easysoa.registry.DocumentService#newSoaNodeDocument(org.nuxeo.ecm.core.api.CoreSession, org.easysoa.registry.SoaNodeId)
      */
-    public DocumentModel newSoaNodeDocument(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
+    public DocumentModel newSoaNodeDocument(CoreSession documentManager, SoaNodeId identifier) throws Exception {
         String doctype = identifier.getType(), name = identifier.getName();
+        
         ensureSourceFolderExists(documentManager, doctype);
         DocumentModel documentModel = documentManager.createDocumentModel(doctype);
         documentModel.setPathInfo(getSourceFolderPath(doctype), safeName(name));
         documentModel.setPropertyValue(SoaNode.XPATH_TITLE, name);
         documentModel.setPropertyValue(SoaNode.XPATH_SOANAME, name);
+        
         return documentModel;
     }
 

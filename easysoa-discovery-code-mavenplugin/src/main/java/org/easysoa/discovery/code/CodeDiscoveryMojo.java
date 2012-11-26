@@ -20,7 +20,7 @@ import org.easysoa.registry.rest.RegistryApi;
 import org.easysoa.registry.rest.client.ClientBuilder;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
 import org.easysoa.registry.rest.marshalling.OperationResult;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.marshalling.SoaNodeResult;
 import org.easysoa.registry.types.Deliverable;
 
 import com.sun.jersey.api.client.ClientHandlerException;
@@ -110,7 +110,7 @@ public class CodeDiscoveryMojo extends AbstractMojo {
         } catch (MalformedURLException e) {
             log.error("Failed to convert project location to URL", e);
         }
-        List<SoaNodeInformation> discoveredNodes = new ArrayList<SoaNodeInformation>();
+        List<SoaNodeResult> discoveredNodes = new ArrayList<SoaNodeResult>();
         discoveredNodes.add(mavenDeliverable);
 
         // Configure parser
@@ -128,7 +128,7 @@ public class CodeDiscoveryMojo extends AbstractMojo {
         try {
             log.info("Sending found SoaNodes to " + nuxeoSitesUrl);
             if (discoveredNodes.size() > 0) {
-                for (SoaNodeInformation soaNode : discoveredNodes) {
+                for (SoaNodeResult soaNode : discoveredNodes) {
                     log.info("> " + soaNode.toString());
                     OperationResult result = registryApi.post(soaNode);
                     if (!result.isSuccessful()) {

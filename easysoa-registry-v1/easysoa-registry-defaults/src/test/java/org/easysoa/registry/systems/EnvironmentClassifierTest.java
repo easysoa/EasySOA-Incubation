@@ -2,13 +2,13 @@ package org.easysoa.registry.systems;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
-import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.test.AbstractRegistryTest;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.IntelligentSystem;
 import org.easysoa.registry.types.IntelligentSystemTreeRoot;
 import org.easysoa.registry.types.SystemTreeRoot;
 import org.easysoa.registry.types.TaggingFolder;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.DocumentModelHelper;
 import org.junit.Assert;
 import org.junit.Test;

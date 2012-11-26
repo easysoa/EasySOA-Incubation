@@ -2,7 +2,7 @@ package org.easysoa.registry.types;
 
 import java.util.List;
 
-import org.easysoa.registry.types.names.ServiceImplementationName;
+import org.easysoa.registry.types.ids.ServiceImplementationId;
 
 
 /**
@@ -41,7 +41,7 @@ public interface ServiceImplementation extends SoaNode, RestInfo, WsdlInfo {
     
     static final String OPERATION_DOCUMENTATION = "operationDocumentation";
     
-    ServiceImplementationName getParsedSoaName() throws Exception;
+    ServiceImplementationId getParsedSoaName() throws Exception;
 
     List<OperationImplementation> getOperations() throws Exception;
     

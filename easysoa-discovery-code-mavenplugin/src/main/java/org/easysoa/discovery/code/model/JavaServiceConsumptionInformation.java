@@ -2,9 +2,9 @@ package org.easysoa.discovery.code.model;
 
 import java.util.List;
 
-import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.Deliverable;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.types.java.JavaServiceConsumption;
 
 // TODO Put in a rest-client-java project

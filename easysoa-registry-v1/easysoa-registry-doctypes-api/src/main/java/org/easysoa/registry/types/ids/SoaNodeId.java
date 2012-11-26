@@ -1,6 +1,8 @@
-package org.easysoa.registry;
+package org.easysoa.registry.types.ids;
 
-import org.easysoa.registry.types.Endpoint;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class SoaNodeId {
@@ -12,33 +14,40 @@ public class SoaNodeId {
         // Empty constructor required to be compatible with JAXB serialization
     }
     
+    /**
+     * <i>Warning</i>: Use doctype-specific classes instead when available (eg.: {@link EndpointId})
+     * to avoid the creation of illegal names. Otherwise, using the wrong <code>name</code> format, 
+     * or not initializing required properties will induce errors upon document creation/update.
+     * 
+     * @param doctype The document type
+     * @param name The SOA name of the document
+     */
     public SoaNodeId(String doctype, String name) {
-        this.setType(doctype);
-        this.setName(name);
+        this.type = doctype;
+    	this.name = name;
     }
     
     public String getName() {
         return name;
     }
     
-    public void setName(String name) {
-        // Remove eventual suffix added by Nuxeo when some proxies conflict
-        // XXX Side effect is that no document should end its "real" name with a dot followed by numbers
-        this.name = name.replaceAll("\\.[0-9]+$", "");
-        if (Endpoint.DOCTYPE.equals(this.type)) {
-        	this.name = this.name.replace('/', '-');
-        }
-    }
+    protected void setName(String name) {
+		this.name = name;
+	}
     
     public String getType() {
         return type;
     }
     
-    public void setType(String doctype) {
-        this.type = doctype;
-    }
-    
-    @Override
+    protected void setType(String type) {
+		this.type = type;
+	}
+
+	public Map<String, Serializable> getDefaultPropertyValues() {
+		return new HashMap<String, Serializable>();
+	}
+
+	@Override
     public String toString() {
         return type + ":" + name;
     }

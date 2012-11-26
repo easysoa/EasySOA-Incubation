@@ -27,6 +27,14 @@
     <soaNodeType name="DeployedDeliverable">
         <subtype>Endpoint</subtype>
     </soaNodeType>
+    
+    <soaNodeType name="Endpoint">
+      <soaNameFormat>${document.environment.environment}:${document.endpoint.url}</soaNameFormat>
+      <immutableProperties>
+        <property>endp:url</property>
+        <property>env:environment</property>
+      </immutableProperties>
+    </soaNodeType>
   </extension>
   
   <extension target="org.easysoa.registry.SoaMetamodelService" point="inheritedFacets">

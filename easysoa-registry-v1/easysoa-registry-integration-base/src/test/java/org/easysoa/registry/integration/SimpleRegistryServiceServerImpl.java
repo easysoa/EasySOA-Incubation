@@ -56,7 +56,7 @@ public class SimpleRegistryServiceServerImpl implements SimpleRegistryService {
         WSDLInformations wsdlInformations = new WSDLInformations();
         WSDLInformation wsdlInformation1 = new WSDLInformation();
 
-        wsdlInformation1.setSoaName("TestEndpoint");
+        wsdlInformation1.setSoaName("Test:http://localhost:8785/Test");
         wsdlInformation1.setProjectID("");
         wsdlInformation1.setName("TestEndpoint");  
         wsdlInformation1.setDescription("");            

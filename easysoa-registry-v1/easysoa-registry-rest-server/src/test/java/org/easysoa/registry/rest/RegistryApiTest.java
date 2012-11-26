@@ -10,12 +10,13 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
-import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.rest.marshalling.OperationResult;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
+import org.easysoa.registry.types.ids.EndpointId;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -97,8 +98,8 @@ public class RegistryApiTest extends AbstractRestApiTest {
 
         // Create service
         Map<String, Serializable> properties = new HashMap<String, Serializable>();
-        properties.put("dc:title", "My Deliverable");
-        properties.put("del:application", "myapp");
+        properties.put(Deliverable.XPATH_TITLE, "My Deliverable");
+        properties.put(Deliverable.XPATH_APPLICATION, "myapp");
         SoaNodeInformation soaNodeInfo = new SoaNodeInformation(deliverableId, properties, null);
 
         // Run request
@@ -119,10 +120,10 @@ public class RegistryApiTest extends AbstractRestApiTest {
                 deliverableId.getName(), id.getName());
         Map<String, Serializable> resultProperties = resultSoaNodeInfo.getProperties();
         Assert.assertTrue("Properties must be provided for the document", properties != null && !properties.isEmpty());
-        Assert.assertEquals("Valid properties must be returned", properties.get("dc:title"),
-                resultProperties.get("dc:title"));
-        Assert.assertEquals("Valid properties must be returned", properties.get("del:application"),
-                resultProperties.get("del:application"));
+        Assert.assertEquals("Valid properties must be returned", properties.get(Deliverable.XPATH_TITLE),
+                resultProperties.get(Deliverable.XPATH_TITLE));
+        Assert.assertEquals("Valid properties must be returned", properties.get(Deliverable.XPATH_APPLICATION),
+                resultProperties.get(Deliverable.XPATH_APPLICATION));
     }
 
     @Test
@@ -130,7 +131,7 @@ public class RegistryApiTest extends AbstractRestApiTest {
         logTestName(logger);
 
         // Run discovery to make a proxy to delete
-        SoaNodeId endpointId = new SoaNodeId(Endpoint.DOCTYPE, "MyEndpoint");
+        SoaNodeId endpointId = new EndpointId("Production", "MyEndpoint");
         discoveryService.runDiscovery(documentManager, endpointId, null, Arrays.asList(deliverableId));
 
         // Delete only proxy (TODO test as array)
@@ -151,15 +152,16 @@ public class RegistryApiTest extends AbstractRestApiTest {
     public void query() throws Exception {
         logTestName(logger);
         
-        documentService.create(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "EndpointToQuery"));
+        EndpointId endpointToQuery = new EndpointId("Production", "EndpointToQuery");
+        documentService.create(documentManager, endpointToQuery);
         
         Client client = createAuthenticatedHTTPClient();
         Builder discoveryRequest = client.resource(discoveryApi.getRootURL())
                 .path("query")
                 .type(MediaType.TEXT_PLAIN);
-       SoaNodeInformation[] foundEndpoints = discoveryRequest.post(SoaNodeInformation[].class, "SELECT * FROM Endpoint WHERE dc:title = 'EndpointToQuery'");
+       SoaNodeInformation[] foundEndpoints = discoveryRequest.post(SoaNodeInformation[].class, "SELECT * FROM Endpoint WHERE endp:url = 'EndpointToQuery'");
        Assert.assertTrue(foundEndpoints.length == 1);
-       Assert.assertEquals("EndpointToQuery", foundEndpoints[0].getProperties().get("dc:title"));
+       Assert.assertEquals(endpointToQuery.getName(), foundEndpoints[0].getProperties().get(Endpoint.XPATH_TITLE));
         
     }
 }

@@ -12,6 +12,8 @@ import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoftwareComponent;
+import org.easysoa.registry.types.ids.EndpointId;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -44,26 +46,26 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
 
     private static Map<String, Object> properties;
     
-    private static DocumentModel foundDeliverable;
+    private static DocumentModel foundEndpoint;
     
     @Test
     public void testSimpleDiscovery() throws Exception {
         // Gather discovery information
-        discoveredEndpointId = new SoaNodeId(Endpoint.DOCTYPE, "http://www.services.com/endpoint");
+        discoveredEndpointId = new EndpointId("Production", "http://www.services.com/endpoint");
         properties = new HashMap<String, Object>();
         properties.put(Endpoint.XPATH_TITLE, "My Endpoint");
-        properties.put(Endpoint.XPATH_URL, "http://www.services.com/endpoint");
         
         // Run discovery
         discoveryService.runDiscovery(documentManager, discoveredEndpointId, properties, null);
         documentManager.save();
         
         // Check results
-        foundDeliverable = documentService.find(documentManager, discoveredEndpointId);
-        Assert.assertNotNull("An endpoint must be created by the discovery processing", foundDeliverable);
+        foundEndpoint = documentService.find(documentManager, discoveredEndpointId);
+        Assert.assertNotNull("An endpoint must be created by the discovery processing", foundEndpoint);
+        properties.put(Endpoint.XPATH_URL, "http://www.services.com/endpoint"); // URL must be set automatically
         for (Entry<String, Object> property : properties.entrySet()) {
             Assert.assertEquals("Property " + property.getKey() + " must match value from discovery",
-                    property.getValue(), foundDeliverable.getPropertyValue(property.getKey()));
+                    property.getValue(), foundEndpoint.getPropertyValue(property.getKey()));
         }
     }
     
@@ -128,4 +130,5 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         Assert.assertEquals("http://www.services.com/endpoint", foundEndpoint.getPropertyValue(Endpoint.XPATH_URL));
         Assert.assertEquals("Blahblah", foundEndpoint.getPropertyValue("dc:description"));
     }
+
 }

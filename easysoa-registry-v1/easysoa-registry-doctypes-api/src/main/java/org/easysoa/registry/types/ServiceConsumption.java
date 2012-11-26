@@ -2,7 +2,7 @@ package org.easysoa.registry.types;
 
 import java.util.List;
 
-import org.easysoa.registry.SoaNodeId;
+import org.easysoa.registry.types.ids.SoaNodeId;
 
 
 

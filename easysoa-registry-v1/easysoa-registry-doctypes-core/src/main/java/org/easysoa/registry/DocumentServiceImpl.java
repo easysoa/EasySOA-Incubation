@@ -1,14 +1,17 @@
 package org.easysoa.registry;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.IntelligentSystem;
 import org.easysoa.registry.types.Repository;
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.DocumentModelHelper;
 import org.easysoa.registry.utils.RepositoryHelper;
 import org.nuxeo.common.utils.Path;
@@ -27,15 +30,6 @@ import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 
 public class DocumentServiceImpl implements DocumentService {
-
-	public void checkSoaName(DocumentModel soaNodeDoc) throws ClientException {
-        if (soaNodeDoc.getPropertyValue(SoaNode.XPATH_SOANAME) == null) {
-        	throw new ClientException("Null soaname for " + soaNodeDoc.getPathAsString()
-        			+ " - did happen when : doc was created when it already existed "
-        			+ "because it was queried for using erroneously safeName(), "
-        			+ "doc was created before setting soaname");
-        }
-	}
 	
     public DocumentModel createDocument(CoreSession documentManager, String doctype, String name, String parentPath, String title) throws ClientException {
         // TODO if doctype belongs to SoaNode subtypes, throw new Exception("createDocument() doesn't work for SoaNode types, rather use create()")
@@ -131,6 +125,9 @@ public class DocumentServiceImpl implements DocumentService {
         documentModel.setPathInfo(getSourceFolderPath(doctype), safeName(name));
         documentModel.setPropertyValue(SoaNode.XPATH_TITLE, name);
         documentModel.setPropertyValue(SoaNode.XPATH_SOANAME, name);
+        for (Entry<String, Serializable> defaultPropertyValue : identifier.getDefaultPropertyValues().entrySet()) {
+        	documentModel.setPropertyValue(defaultPropertyValue.getKey(), defaultPropertyValue.getValue());
+        }
         return documentModel;
     }
 
@@ -186,7 +183,7 @@ public class DocumentServiceImpl implements DocumentService {
     
     public DocumentModel find(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
         String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'",
-                new Object[] { identifier.getType(), safeName(identifier.getName()) },
+                new Object[] { identifier.getType(), identifier.getName() },
                 false, true);
         DocumentModelList results = query(documentManager, query, true, false);
         return results.size() > 0 ? results.get(0) : null;
@@ -196,7 +193,7 @@ public class DocumentServiceImpl implements DocumentService {
     public DocumentModelList findProxies(CoreSession documentManager, SoaNodeId identifier)
             throws ClientException {
         String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'",
-                new Object[] { identifier.getType(), safeName(identifier.getName()) },
+                new Object[] { identifier.getType(), identifier.getName() },
                 false, true);
         return query(documentManager, query, false, true);
     }

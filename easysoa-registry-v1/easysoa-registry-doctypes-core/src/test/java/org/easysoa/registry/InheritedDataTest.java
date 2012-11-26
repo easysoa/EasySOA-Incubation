@@ -10,6 +10,8 @@ import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.types.ids.EndpointId;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -29,7 +31,7 @@ public class InheritedDataTest extends AbstractRegistryTest {
 	
 	private static final SoaNodeId MYIMPL2_ID = new SoaNodeId(ServiceImplementation.DOCTYPE, "MyServiceImpl2");
 
-	private static final SoaNodeId MYENDPOINT_ID = new SoaNodeId(Endpoint.DOCTYPE, "MyEndpoint");
+	private static final SoaNodeId MYENDPOINT_ID = new EndpointId("Production", "MyEndpoint");
 
 	@Inject
 	private CoreSession documentManager;

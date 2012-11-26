@@ -3,7 +3,6 @@ package org.easysoa.registry;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
-import org.easysoa.registry.types.SoaNode;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -36,16 +35,22 @@ public class ServiceMatchingListener implements EventListener {
         CoreSession documentManager = documentContext.getCoreSession();
 		DocumentService documentService;
 		ServiceMatchingService matchingService;
+		SoaMetamodelService metamodelService;
 		try {
 			documentService = Framework.getService(DocumentService.class);
 			matchingService = Framework.getService(ServiceMatchingService.class);
+			metamodelService = Framework.getService(SoaMetamodelService.class);
 		} catch (Exception e) {
 			logger.error("Document service unavailable, aborting");
 			return;
 		}
-        if (sourceDocument.hasSchema(SoaNode.SCHEMA)) {
-        	documentService.checkSoaName(sourceDocument);
-        }
+
+        try {
+        	metamodelService.validateIntegrity(sourceDocument);
+		} catch (ModelIntegrityException e) {
+			logger.error("Aborting service matching on " + sourceDocument.getTitle() + ": " + e.getMessage());
+			return;
+		}
 
         // Service impl: Link to information service
         if (documentService.isTypeOrSubtype(documentManager, sourceDocument.getType(), ServiceImplementation.DOCTYPE)) {

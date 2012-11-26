@@ -10,6 +10,7 @@ import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -255,9 +256,9 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     			new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:testCheckSoaNode=testCheckSoaNodeImpl"));
     	soaNodeDoc.setPropertyValue(SoaNode.XPATH_SOANAME, null);
         try {
-			documentService.checkSoaName(soaNodeDoc);
-			Assert.fail("checkSoaName should fail on null soan:name");
-		} catch (ClientException e) {
+        	soaMetamodelService.validateIntegrity(soaNodeDoc);
+			Assert.fail("validateIntegrity should fail on null soan:name");
+		} catch (ModelIntegrityException e) {
 			Assert.assertTrue("testCheckSoaNode successful",  true);
 		}
     }

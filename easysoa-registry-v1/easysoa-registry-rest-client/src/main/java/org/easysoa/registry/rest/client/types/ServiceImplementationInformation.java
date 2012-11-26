@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
-import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.OperationImplementation;
 import org.easysoa.registry.types.ServiceImplementation;
-import org.easysoa.registry.types.names.ServiceImplementationName;
+import org.easysoa.registry.types.ids.ServiceImplementationId;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ListUtils;
 
 public class ServiceImplementationInformation extends SoaNodeInformation implements ServiceImplementation {
@@ -25,8 +25,8 @@ public class ServiceImplementationInformation extends SoaNodeInformation impleme
     }
     
     @Override
-    public ServiceImplementationName getParsedSoaName() throws Exception {
-    	return new ServiceImplementationName(this.getSoaName());
+    public ServiceImplementationId getParsedSoaName() throws Exception {
+    	return ServiceImplementationId.fromName(this.getSoaName());
     }
     
     public List<OperationImplementation> getOperations() {

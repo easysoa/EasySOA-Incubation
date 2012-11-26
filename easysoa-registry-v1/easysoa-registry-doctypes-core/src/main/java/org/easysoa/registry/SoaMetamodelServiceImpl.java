@@ -1,5 +1,7 @@
 package org.easysoa.registry;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,6 +17,9 @@ import org.easysoa.registry.inheritance.InheritedFacetDescriptor.TransferLogic;
 import org.easysoa.registry.inheritance.InheritedFacetModelSelector;
 import org.easysoa.registry.inheritance.UuidInSourceSelector;
 import org.easysoa.registry.inheritance.UuidInTargetSelector;
+import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.utils.SimpleELEvaluator;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -52,6 +57,9 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 
 	private Map<String, InheritedFacetModelSelector> facetTransferSelectors
 		= new HashMap<String, InheritedFacetModelSelector>();
+
+	private Map<String, SoaNodeTypeDescriptor> soaNodeTypes
+		= new HashMap<String, SoaNodeTypeDescriptor>();
     
 	public SoaMetamodelServiceImpl() {
 		facetTransferSelectors.put(ChildrenModelSelector.NAME, new ChildrenModelSelector());
@@ -64,6 +72,7 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
             ComponentInstance contributor) throws Exception {
         if (EXTENSIONPOINT_TYPES.equals(extensionPoint)) {
             SoaNodeTypeDescriptor descriptor = (SoaNodeTypeDescriptor) contribution;
+            soaNodeTypes.put(descriptor.name, descriptor);
             graph.addVertex(descriptor.name);
             for (String subtype : descriptor.subtypes) {
                 graph.addVertex(subtype);
@@ -177,6 +186,44 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 					for (Field fieldToReset : schemaToReset.getFields()) {
 						model.setPropertyValue(fieldToReset.getName().toString(), null);
 					}
+				}
+			}
+		}
+	}
+	
+	public void validateIntegrity(DocumentModel model) throws ModelIntegrityException, ClientException {
+		SoaNodeTypeDescriptor soaNodeTypeDescriptor = soaNodeTypes.get(model.getType());
+		if (soaNodeTypeDescriptor != null) {
+		   SimpleELEvaluator elEvaluator = new SimpleELEvaluator();
+           String expectedSoaName = soaNodeTypeDescriptor.evaluateSoaName(elEvaluator, model);
+           Serializable actualSoaName = model.getPropertyValue(SoaNode.XPATH_SOANAME);
+
+           if (actualSoaName == null) {
+	           	throw new ModelIntegrityException("Null soaname for " + model.getPathAsString()
+	           			+ " - did happen when : doc was created when it already existed "
+	           			+ "because it was queried for using erroneously safeName(), "
+	           			+ "doc was created before setting soaname");
+           }
+           
+           if (!actualSoaName.equals(expectedSoaName)) {
+               throw new ModelIntegrityException("Invalid SoaName, found '" 
+                        + actualSoaName + "' instead of '" + expectedSoaName + "'");
+           }
+		}
+	}
+	
+	public void validateWriteRightsOnProperties(String doctype, Map<String, Object> properties) throws ModelIntegrityException {
+		SoaNodeTypeDescriptor soaNodeTypeDescriptor = soaNodeTypes.get(doctype);
+		if (properties != null && soaNodeTypeDescriptor != null) {
+			List<String> immutableProperties = new ArrayList<String>();
+			immutableProperties.add(SoaNode.XPATH_SOANAME);
+			List<String> doctypeImmutableProperties = soaNodeTypeDescriptor.immutableProperties;
+			if (doctypeImmutableProperties != null) {
+				immutableProperties.addAll(doctypeImmutableProperties);
+			}
+			for (String immutableProperty : immutableProperties) {
+				if (properties.containsKey(immutableProperty)) {
+					throw new ModelIntegrityException("Property '" + immutableProperty + "' cannot be changed");
 				}
 			}
 		}

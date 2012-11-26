@@ -3,6 +3,7 @@ package org.easysoa.registry;
 import java.util.List;
 import java.util.Map;
 
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -26,15 +27,6 @@ public interface DocumentService {
     
     static final String NON_PROXIES_QUERY_FILTER = " AND " + NXQL.ECM_ISPROXY + " = 1";
 
-    /**
-     * Explodes if soan:name is null.
-     * Use it (in event listeners...) to helps maintaining consistency
-     * across events & lookup methods.
-     * @param soaNodeDoc
-     * @throws ClientException
-     */
-	public void checkSoaName(DocumentModel soaNodeDoc) throws ClientException;
-	
     /**
      * Helper for general document creation.
      * Direct use is not recommended for SoaNode types (whose auto reclassification requires soaId).

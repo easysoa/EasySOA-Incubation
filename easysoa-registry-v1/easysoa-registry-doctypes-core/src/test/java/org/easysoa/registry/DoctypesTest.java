@@ -18,6 +18,8 @@ import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoftwareComponent;
 import org.easysoa.registry.types.SystemTreeRoot;
 import org.easysoa.registry.types.TaggingFolder;
+import org.easysoa.registry.types.ids.EndpointId;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -124,7 +126,7 @@ public class DoctypesTest extends AbstractRegistryTest {
         // Manipulate and test it
         Assert.assertNull("EndpointConsumption must not initially consume endpoints",
                 endpointConsumption.getConsumedEndpoint());
-        SoaNodeId consumedEndpoint = new SoaNodeId(Endpoint.DOCTYPE, "Blah");
+        SoaNodeId consumedEndpoint = new EndpointId("myenv", "myurl");
         endpointConsumption.setConsumedEndpoint(consumedEndpoint);
         Assert.assertEquals("EndpointConsumption must be set as expected", consumedEndpoint,
                 endpointConsumption.getConsumedEndpoint());

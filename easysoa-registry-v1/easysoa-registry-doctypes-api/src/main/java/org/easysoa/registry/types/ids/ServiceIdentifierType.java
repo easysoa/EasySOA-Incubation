@@ -1,4 +1,4 @@
-package org.easysoa.registry.types.names;
+package org.easysoa.registry.types.ids;
 
 public enum ServiceIdentifierType {
 	WEB_SERVICE,

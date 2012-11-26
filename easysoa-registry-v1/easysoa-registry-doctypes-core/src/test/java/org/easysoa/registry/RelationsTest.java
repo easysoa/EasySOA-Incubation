@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.test.AbstractRegistryTest;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.EndpointConsumption;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.RelationsHelper;
 import org.junit.Assert;
 import org.junit.Test;

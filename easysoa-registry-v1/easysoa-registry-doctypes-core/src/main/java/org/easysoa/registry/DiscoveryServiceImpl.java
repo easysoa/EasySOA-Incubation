@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -31,7 +32,8 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 //        if (Endpoint.DOCTYPE.equals(identifier.getType())) { // TODO MDU hack
 //        	return discoverEndpoint(documentManager, identifier, properties, parentDocuments);
 //        }
-        
+    	
+    	SoaMetamodelService metamodelService = Framework.getService(SoaMetamodelService.class);
         DocumentService documentService = Framework.getService(DocumentService.class);
 
         if (!documentService.isSoaNode(documentManager, identifier.getType())) {
@@ -44,8 +46,10 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         DocumentModel documentModel = documentService.find(documentManager, identifier);
         if (documentModel == null) {
             shouldCreate = true;
-            //documentModel = documentService.create(documentManager, identifier); // TODO MDU ?!
             documentModel = documentService.newSoaNodeDocument(documentManager, identifier);
+        }
+        else {
+            metamodelService.validateWriteRightsOnProperties(identifier.getType(), properties);
         }
         
         // Set properties

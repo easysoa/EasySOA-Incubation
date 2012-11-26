@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.systems.IntelligentSystemTreeService;
 import org.easysoa.registry.types.Repository;
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -46,15 +47,21 @@ public class RepositoryManagementListener implements EventListener {
         // Initialize
         CoreSession documentManager = documentContext.getCoreSession();
         DocumentService documentService;
-        SoaMetamodelService soaMetamodel;
+        SoaMetamodelService metamodelService;
         try {
 			documentService = Framework.getService(DocumentService.class);
-			soaMetamodel = Framework.getService(SoaMetamodelService.class);
+			metamodelService = Framework.getService(SoaMetamodelService.class);
 		} catch (Exception e) {
 			logger.error("A required service is missing, aborting SoaNode repository management: " + e.getMessage());
 			return;
 		}
-        documentService.checkSoaName(sourceDocument);
+        
+        try {
+        	metamodelService.validateIntegrity(sourceDocument);
+		} catch (ModelIntegrityException e) {
+			logger.error("Aborting repository management on " + sourceDocument.getTitle() + ": " + e.getMessage());
+			return;
+		}
         
         boolean isCreationOnCheckinMode = "ProjetWebServiceImpl".equals(sourceDocument.getPropertyValue("dc:title")); // isJwt(OrCmis)
         boolean isCreationOnCheckin = isCreationOnCheckinMode && DocumentEventTypes.DOCUMENT_CHECKEDIN.equals(event.getName());
@@ -101,23 +108,23 @@ public class RepositoryManagementListener implements EventListener {
 				}
 		    }
 
-	    	Set<String> inheritedFacets = soaMetamodel.getInheritedFacets(sourceDocument.getFacets());
+	    	Set<String> inheritedFacets = metamodelService.getInheritedFacets(sourceDocument.getFacets());
 	    	if (!inheritedFacets.isEmpty()) {
 	    		try {
 			        // Copy metadata from inherited facets to children
 		    		if (DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
-				    	soaMetamodel.applyFacetInheritance(documentManager, sourceDocument, true);
+		    			metamodelService.applyFacetInheritance(documentManager, sourceDocument, true);
 		    		}
 		    		else {
 		    	        // Reset metadata after move/deletion
 		    			if (DocumentEventTypes.DOCUMENT_MOVED.equals(event.getName())
 		    					|| DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
-		    				soaMetamodel.resetInheritedFacets(sourceDocument);
+		    				metamodelService.resetInheritedFacets(sourceDocument);
 		    				documentManager.saveDocument(sourceDocument);
 				        }
 		    	        // Copy metadata from inherited facets from parents
 		    			if (!DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
-					    	soaMetamodel.applyFacetInheritance(documentManager, sourceDocument, false);
+		    				metamodelService.applyFacetInheritance(documentManager, sourceDocument, false);
 					    	if (DocumentEventTypes.DOCUMENT_MOVED.equals(event.getName())) {
 			    				documentManager.saveDocument(sourceDocument);
 					    	}

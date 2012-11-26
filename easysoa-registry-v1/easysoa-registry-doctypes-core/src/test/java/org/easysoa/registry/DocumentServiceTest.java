@@ -3,6 +3,7 @@ package org.easysoa.registry;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.test.AbstractRegistryTest;
 import org.easysoa.registry.types.TaggingFolder;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.RepositoryHelper;
 import org.junit.Assert;
 import org.junit.Test;

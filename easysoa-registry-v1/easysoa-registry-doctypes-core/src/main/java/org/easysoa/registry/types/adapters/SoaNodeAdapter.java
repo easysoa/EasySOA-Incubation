@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.easysoa.registry.InvalidDoctypeException;
-import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ListUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;

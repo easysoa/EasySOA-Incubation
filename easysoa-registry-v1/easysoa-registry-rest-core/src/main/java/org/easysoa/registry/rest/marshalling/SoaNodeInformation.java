@@ -13,8 +13,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.annotate.JsonTypeInfo.As;
 import org.codehaus.jackson.annotate.JsonTypeInfo.Id;
-import org.easysoa.registry.SoaNodeId;
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ListUtils;
 
 @JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE, setterVisibility=Visibility.NONE)
@@ -34,6 +34,7 @@ public class SoaNodeInformation implements SoaNode {
     public SoaNodeInformation(SoaNodeId id, Map<String, Serializable> properties, List<SoaNodeId> parentDocuments) {
         this.id = id;
         this.properties = (properties == null) ? new HashMap<String, Serializable>() : properties;
+        this.properties.putAll(id.getDefaultPropertyValues());
         this.parentDocuments = (parentDocuments == null) ? new LinkedList<SoaNodeId>() : parentDocuments;
     }
 
@@ -99,10 +100,6 @@ public class SoaNodeInformation implements SoaNode {
 
     public String toString() {
         return this.id.toString();
-    }
-    
-    protected void setDoctype(String doctype) {
-        this.id.setType(doctype);
     }
 
     public List<SoaNodeId> getParentIds() throws Exception {

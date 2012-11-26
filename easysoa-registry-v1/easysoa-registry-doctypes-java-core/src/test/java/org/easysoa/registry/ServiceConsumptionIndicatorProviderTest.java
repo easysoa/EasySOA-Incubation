@@ -11,6 +11,7 @@ import org.easysoa.registry.rest.client.ClientBuilder;
 import org.easysoa.registry.test.AbstractWebEngineTest;
 import org.easysoa.registry.test.EasySOAWebEngineFeature;
 import org.easysoa.registry.types.Deliverable;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.types.java.JavaServiceConsumption;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
 import org.junit.Test;

@@ -2,8 +2,10 @@ package org.easysoa.registry;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -37,5 +39,18 @@ public interface SoaMetamodelService {
 			boolean isFacetSource) throws Exception;
 
 	void resetInheritedFacets(DocumentModel model) throws Exception;
+	
+	/**
+	 * Ensures that an SoaNode id valid, i.e. that:
+	 * - it's soan:name is not null
+	 * - it's soan:name is consistent with its other properties
+	 * @param model
+	 * @throws ModelIntegrityException
+	 * @throws ClientException
+	 */
+	void validateIntegrity(DocumentModel model) throws ModelIntegrityException, ClientException;
+
+	void validateWriteRightsOnProperties(String doctype,
+			Map<String, Object> properties) throws ModelIntegrityException;
 	
 }

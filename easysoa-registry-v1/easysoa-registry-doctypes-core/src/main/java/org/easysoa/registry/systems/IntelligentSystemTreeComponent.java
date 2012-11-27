@@ -2,7 +2,6 @@ package org.easysoa.registry.systems;
 
 import java.security.InvalidParameterException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -10,11 +9,9 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.IntelligentSystem;
 import org.easysoa.registry.types.IntelligentSystemTreeRoot;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -102,116 +99,58 @@ public class IntelligentSystemTreeComponent extends DefaultComponent implements 
         
         // Find the document source & proxies
         DocumentService documentService = Framework.getService(DocumentService.class);
-        DocumentModelList proxyModels = documentService.findAllInstances(documentManager, model);
-        DocumentModel sourceModel = null;
-        for (DocumentModel instance : proxyModels) {
-            if (!instance.isProxy()) {
-                sourceModel = instance;
-            }
-        }
+        SoaNodeId soaNodeId = documentService.createSoaNodeId(model);
+		DocumentModel sourceModel = documentService.find(documentManager, soaNodeId);
         if (sourceModel == null) {
-            // Can't find source document (usually happens when it is not saved yet)
+            // Can't find source document (can happen when the document is not saved yet)
             return;
         }
-        proxyModels.remove(sourceModel);
         
         // Run the classifiers
+        IntelligentSystemTreeApi intelligentSystemTreeApi = new IntelligentSystemTreeApiProxyImpl(documentManager);
         for (Entry<String, IntelligentSystemTreeClassifier> istEntry : ists.entrySet()) {
             IntelligentSystemTreeDescriptor istDescriptor = istDescriptors.get(istEntry.getKey());
 
             // Filter disabled ISTs
             if (istDescriptor.isEnabled()) {
-                // Fetch or create the IST model
-                String istName = istDescriptor.getClassifier() + ':' + istDescriptor.getName();
-                DocumentModel istModel = documentService.findDocument(documentManager,
-                        IntelligentSystemTreeRoot.DOCTYPE, istName);
-                if (istModel == null) {
-                    istModel = documentService.createDocument(documentManager,
-                            IntelligentSystemTreeRoot.DOCTYPE, istName,
-                            "/default-domain/workspaces", istDescriptor.getTitle());
-                }
+                // Run classifier, that returns a string to tell where the model must be sorted
+                String classification = uniformizeClassificationPath(istEntry.getValue().classify(documentManager, model));
 
                 // Find eventual presence of model in the IST
-                DocumentModel existingModel = null;
-                for (DocumentModel proxyModel : proxyModels) {
-                    if (proxyModel.getPathAsString().startsWith(istModel.getPathAsString())) {
-                        existingModel = proxyModel;
-                    }
-                }
-                
-                // Run classifier!
-                String classification = istEntry.getValue().classify(documentManager, model);
-                
+                String treeName = istDescriptor.getClassifier() + ':' + istDescriptor.getName();
+
                 // Handling when model is accepted
                 if (classification != null) {
-                    // Make path uniform
-                    if (classification.length() > 0 && classification.charAt(0) == '/') {
-                        classification = classification.substring(1);
-                    }
-                    if (classification.length() > 0 && classification.charAt(classification.length() - 1) == '/') {
-                        classification = classification.substring(0, classification.length() - 1);
-                    }
+                    // Fetch or create the IST model
+	            	if (!intelligentSystemTreeApi.intelligentSystemTreeExists(treeName)) {
+	            		intelligentSystemTreeApi.createIntelligentSystemTree(treeName, istDescriptor.getTitle());
+	            	}
                     
                     // Check if the model is at its right place
-                    PathRef expectedParentPath = new PathRef(istModel.getPathAsString() +
-                            (("".equals(classification)) ? "" : "/" + classification));
-
-                    // Ensure the parent systems exist
-                    if (!documentManager.exists(expectedParentPath)) {
-                        String[] parentSystems = classification.split("/");
-                        DocumentModel currentFolder = istModel;
-                        for (String parentSystem : parentSystems) {
-                            String childPath = currentFolder.getPathAsString() + '/' + parentSystem;
-                            if (!documentManager.exists(new PathRef(childPath))) {
-                                currentFolder = documentService.createDocument(documentManager,
-                                        IntelligentSystem.DOCTYPE, parentSystem,
-                                        currentFolder.getPathAsString(), parentSystem);
-                            }
-                        }
-                    }
-                    
-                    // If the model is missing, create a proxy
-                    if (existingModel == null) {
-                        documentManager.createProxy(sourceModel.getRef(), expectedParentPath);
-                    }
-
-                    // If in the IST but not at the right place, move the document
-                    else if (!existingModel.getPathAsString().equals(expectedParentPath.toString() + '/' + existingModel.getName())){
-                        List<DocumentModel> parents = documentManager.getParentDocuments(existingModel.getRef());
-                        documentManager.move(existingModel.getRef(), expectedParentPath, existingModel.getName());
-                        removeEmptyParentSystems(documentManager, parents);
-                    }
+                    intelligentSystemTreeApi.setSoaNode(treeName, soaNodeId, classification);
                 }
                 
                 // Handling when model is rejected
-                else {
-                    // If the model was in the IST, delete it
-                    for (DocumentModel proxyModel : proxyModels) {
-                        if (proxyModel.getPathAsString().startsWith(istModel.getPathAsString())) {
-                            List<DocumentModel> parents = documentManager.getParentDocuments(proxyModel.getRef());
-                            documentManager.removeDocument(proxyModel.getRef());
-                            removeEmptyParentSystems(documentManager, parents);
-                            break;
-                        }
-                    }
+                else if (intelligentSystemTreeApi.intelligentSystemTreeExists(treeName)) {
+	            	intelligentSystemTreeApi.removeSoaNode(treeName, soaNodeId);
                 }
             }
         }
         
     }
-
-    private void removeEmptyParentSystems(CoreSession documentManager, List<DocumentModel> hierarchy)
-            throws ClientException {
-        for (int i = hierarchy.size() - 2; i >= 0; i--) {
-            DocumentModel parentModel = hierarchy.get(i);
-            if (!documentManager.hasChildren(parentModel.getRef())
-                    && IntelligentSystem.DOCTYPE.equals(parentModel.getType())) {
-                documentManager.removeDocument(parentModel.getRef());
-            }
-            else {
-                break;
-            }
-        }
+    
+    private String uniformizeClassificationPath(String classification) {
+   	 	// Make path uniform
+    	if (classification == null) {
+    		return null;
+    	}
+		if (classification.length() > 0 && classification.charAt(0) == '/') {
+			classification = classification.substring(1);
+		}
+		if (classification.length() > 0	&& classification.charAt(classification.length() - 1) == '/') {
+			classification = classification.substring(0, classification.length() - 1);
+		}
+          return classification;
     }
     
 }

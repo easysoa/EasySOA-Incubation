@@ -6,21 +6,20 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.test.AbstractRegistryTest;
-import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 
-@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.CLASS)
+@RepositoryConfig(cleanup = Granularity.CLASS)
 public class ServiceMatchingTest extends AbstractRegistryTest {
 
 	@SuppressWarnings("unused")
@@ -177,7 +176,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	
         // Discover endpoint that matches no is or impl (use matching dashboard TODO mka)
         HashMap<String, Object> epProperties = new HashMap<String, Object>();
-        DocumentModel foundEndpoint = discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "staging:http://localhost:8080/cxf/WS1"), epProperties, null);
+        DocumentModel foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("Production", "staging:http://localhost:8080/cxf/WS1"), epProperties, null);
         Assert.assertEquals("Created endpoint must not be linked to existing matching information service", null,
         		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
 

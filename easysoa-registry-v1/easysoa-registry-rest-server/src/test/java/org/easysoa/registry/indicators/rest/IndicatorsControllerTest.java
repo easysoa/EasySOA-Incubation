@@ -13,10 +13,10 @@ import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.rest.AbstractRestApiTest;
 import org.easysoa.registry.types.Deliverable;
-import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoftwareComponent;
 import org.easysoa.registry.types.TaggingFolder;
+import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Test;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -45,11 +45,11 @@ public class IndicatorsControllerTest extends AbstractRestApiTest {
         // Fill repository for all tests :
         
         // endpoints
-        SoaNodeId endpointId = new SoaNodeId(Endpoint.DOCTYPE, "MyEndpoint");
+        SoaNodeId endpointId = new EndpointId("Production", "MyEndpoint");
         discoveryService.runDiscovery(documentManager, endpointId, null, null);
-        discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "MyEndpoint1"),
+        discoveryService.runDiscovery(documentManager, new EndpointId("Production", "MyEndpoint1"),
                 null, null);
-        discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "MyEndpoint2"),
+        discoveryService.runDiscovery(documentManager, new EndpointId("Production", "MyEndpoint2"),
                 null, null);
         
 		// service impls

@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -25,7 +24,7 @@ import com.google.inject.Inject;
  *
  */
 @Deploy("org.easysoa.registry.doctypes.java.core")
-@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.CLASS)
+@RepositoryConfig(cleanup = Granularity.CLASS)
 public class JavaServicesTest extends AbstractRegistryTest {
 
     private static final String WS_INTERFACE = "org.easysoa.WSItf";

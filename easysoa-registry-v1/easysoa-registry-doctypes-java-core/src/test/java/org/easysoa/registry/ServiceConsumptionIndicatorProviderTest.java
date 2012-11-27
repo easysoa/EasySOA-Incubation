@@ -15,7 +15,6 @@ import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.types.java.JavaServiceConsumption;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
 import org.junit.Test;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -31,7 +30,7 @@ import com.sun.jersey.api.client.WebResource;
  *
  */
 @Deploy({"org.easysoa.registry.rest.server", "org.easysoa.registry.doctypes.java.core"})
-@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.CLASS)
+@RepositoryConfig(cleanup = Granularity.CLASS)
 public class ServiceConsumptionIndicatorProviderTest extends AbstractWebEngineTest {
 
     private static Logger logger = Logger.getLogger(ServiceConsumptionIndicatorProviderTest.class);

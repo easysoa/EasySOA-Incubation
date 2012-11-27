@@ -20,10 +20,8 @@
 
 package org.easysoa.preview;
 
-import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
 import org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterFactory;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
 

@@ -161,6 +161,8 @@
           </exclusion>
         </exclusions>
       </dependency>
+      
+      <!-- EasySOA -->
       <dependency>
         <groupId>org.easysoa.registry</groupId>
         <artifactId>easysoa-registry-test</artifactId>
@@ -168,7 +170,6 @@
       </dependency>
       <dependency>
         <groupId>easysoa</groupId>
-        <!-- EasySOA Registry Business Doctypes (from Nuxeo Studio) -->
         <artifactId>easy-soa-open-wide</artifactId>
         <version>${easysoa.studio.version}</version>
       </dependency>
@@ -232,6 +233,20 @@
         <artifactId>easysoa-registry-defaults</artifactId>
         <version>${easysoa.version}</version>
       </dependency>
+      
+      <!-- Nuxeo add-ons -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-classification-api</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-classification-core</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      
+      <!-- JUNG (graph lib.) -->
       <dependency>
         <groupId>net.sf.jung</groupId>
         <artifactId>jung-api</artifactId>
@@ -252,6 +267,8 @@
         <artifactId>collections-generic</artifactId>
         <version>${collections.generic.version}</version>
       </dependency>
+      
+      <!-- EasyWSDL -->
       <dependency>
         <groupId>org.ow2.easywsdl</groupId>
         <artifactId>easywsdl-schema</artifactId>

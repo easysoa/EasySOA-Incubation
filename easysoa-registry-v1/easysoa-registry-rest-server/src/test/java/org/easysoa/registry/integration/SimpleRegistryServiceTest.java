@@ -9,12 +9,12 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.rest.AbstractRestApiTest;
-import org.easysoa.registry.rest.integration.WSDLInformations;
 import org.easysoa.registry.rest.integration.WSDLInformation;
-import org.easysoa.registry.types.Endpoint;
+import org.easysoa.registry.rest.integration.WSDLInformations;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.WsdlInfo;
+import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
 import org.junit.Before;
@@ -58,7 +58,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
             new SoaNodeId(InformationService.DOCTYPE, "ns:testWithPlatformMetas");
 
     public static final SoaNodeId ENDPOINT_TEST = 
-            new SoaNodeId(Endpoint.DOCTYPE, "ns:endpointTest");
+            new EndpointId("Test", "http://localhost:8659/Test");
     
     public static final String anotherTitle = "anotherTitle";
     public static final String anotherName = "anotherName";
@@ -106,8 +106,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
             
             // Add endpoint
             isProperties = new HashMap<String, Object>();
-            isProperties.put("env:environment", "Test");
-            isProperties.put("endp:url", "http://localhost:8659/Test");
+            isProperties.put("dc:title", "ns:endpointTest");
             discoveryService.runDiscovery(documentManager, ENDPOINT_TEST, isProperties, null);
             
             documentManager.save();

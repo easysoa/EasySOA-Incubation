@@ -13,7 +13,6 @@ import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Features;
@@ -25,7 +24,7 @@ import static org.easysoa.registry.test.EasySOAWebEngineFeature.NUXEO_URL;
 
 @RunWith(FeaturesRunner.class)
 @Features({EasySOAFeature.class, EasySOAWebEngineFeature.class})
-@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.METHOD)
+@RepositoryConfig(cleanup = Granularity.METHOD)
 public abstract class AbstractWebEngineTest {
 
     private static final Logger logger = Logger.getLogger(AbstractWebEngineTest.class);

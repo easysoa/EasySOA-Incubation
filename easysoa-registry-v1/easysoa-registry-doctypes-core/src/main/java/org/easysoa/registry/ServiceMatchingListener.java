@@ -35,11 +35,9 @@ public class ServiceMatchingListener implements EventListener {
         CoreSession documentManager = documentContext.getCoreSession();
 		DocumentService documentService;
 		ServiceMatchingService matchingService;
-		SoaMetamodelService metamodelService;
 		try {
 			documentService = Framework.getService(DocumentService.class);
 			matchingService = Framework.getService(ServiceMatchingService.class);
-			metamodelService = Framework.getService(SoaMetamodelService.class);
 		} catch (Exception e) {
 			logger.error("Document service unavailable, aborting");
 			return;

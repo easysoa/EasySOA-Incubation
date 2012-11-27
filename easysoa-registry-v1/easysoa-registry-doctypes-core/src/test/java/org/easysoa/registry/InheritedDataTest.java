@@ -18,11 +18,10 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 
-@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.CLASS)
+@RepositoryConfig(cleanup = Granularity.CLASS)
 public class InheritedDataTest extends AbstractRegistryTest {
 
 	private static final SoaNodeId MYIS_ID = new SoaNodeId(InformationService.DOCTYPE, "myinfoserv");

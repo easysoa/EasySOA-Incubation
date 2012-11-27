@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 
@@ -26,7 +25,7 @@ import com.google.inject.Inject;
  * @author mkalam-alami
  *
  */
-@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.CLASS)
+@RepositoryConfig(cleanup = Granularity.CLASS)
 public class SoaNodeRepositoryTest extends AbstractRegistryTest {
 
     @SuppressWarnings("unused")
@@ -88,7 +87,7 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
         Assert.assertTrue("System tree root child must be a proxy", strChild.isProxy());
         
         // Make sure that the system tree root is not in the repository (not a SoaNode)
-        DocumentModelList strInstances = documentManager.query("SELECT * FROM " + strModel.getType());
+        DocumentModelList strInstances = documentManager.query("SELECT * FROM " + strModel.getType() + " WHERE dc:title = 'MyRoot'");
         Assert.assertEquals("The system tree root must not have a proxy", 1, strInstances.size());
     }
 

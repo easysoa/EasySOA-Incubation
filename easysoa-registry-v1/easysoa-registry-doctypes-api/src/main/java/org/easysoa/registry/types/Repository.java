@@ -12,6 +12,6 @@ public interface Repository extends Document {
 
     public static final String REPOSITORY_PATH = "/default-domain/repository";
     
-    public static final String REPOSITORY_TITLE = "Repository"; // TODO l10n
+    public static final String REPOSITORY_TITLE = "Repository";
 
 }

@@ -21,6 +21,10 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
     "org.nuxeo.ecm.platform.types.api",
     "org.nuxeo.ecm.platform.types.core",
     
+    // Nuxeo classification add-on core
+    "org.nuxeo.ecm.platform.classification.api",
+    "org.nuxeo.ecm.platform.classification.core",
+    
     // Minimal EasySOA requirements
     "org.easysoa.registry.doctypes.api",
     "studio.extensions.easy-soa-open-wide",

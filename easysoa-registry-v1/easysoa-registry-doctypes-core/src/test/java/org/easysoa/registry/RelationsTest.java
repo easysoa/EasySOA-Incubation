@@ -2,15 +2,14 @@ package org.easysoa.registry;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.test.AbstractRegistryTest;
-import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.EndpointConsumption;
+import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.RelationsHelper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.test.DefaultRepositoryInit;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 
@@ -20,7 +19,7 @@ import com.google.inject.Inject;
  * 
  * @author mkalam-alami
  */
-@RepositoryConfig(init = DefaultRepositoryInit.class, cleanup = Granularity.CLASS)
+@RepositoryConfig(cleanup = Granularity.CLASS)
 public class RelationsTest extends AbstractRegistryTest {
 
     @SuppressWarnings("unused")
@@ -33,7 +32,7 @@ public class RelationsTest extends AbstractRegistryTest {
     public void testRelationCreationAndAccess() throws Exception {
         DocumentModel endpointConsumptionModel = documentService.create(documentManager, new SoaNodeId(
                 EndpointConsumption.DOCTYPE, "Foo"));
-        DocumentModel endpointModel = documentService.create(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "Bar"));
+        DocumentModel endpointModel = documentService.create(documentManager, new EndpointId("Foo", "Bar"));
 
         // Create and read relation
         

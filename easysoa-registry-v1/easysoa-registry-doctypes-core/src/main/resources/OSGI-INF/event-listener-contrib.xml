@@ -21,11 +21,6 @@
       <event>documentModified</event><!-- rather than beforeDocumentModification otherwise loops ! -->
     </listener>
     
-    <listener name="soaNodeListener" class="org.easysoa.registry.types.listeners.SoaNodeListener"
-      priority="150">
-      <event>documentCreated</event>
-      <event>beforeDocumentModification</event>
-    </listener>
     <listener name="wsdlParsingListener" class="org.easysoa.registry.types.listeners.WSDLParsingListener"
       priority="151">
       <event>documentCreated</event>

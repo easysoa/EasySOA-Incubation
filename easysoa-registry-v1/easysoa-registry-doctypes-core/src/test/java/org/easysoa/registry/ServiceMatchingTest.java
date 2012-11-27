@@ -256,7 +256,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     			new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:testCheckSoaNode=testCheckSoaNodeImpl"));
     	soaNodeDoc.setPropertyValue(SoaNode.XPATH_SOANAME, null);
         try {
-        	soaMetamodelService.validateIntegrity(soaNodeDoc);
+        	soaMetamodelService.validateIntegrity(soaNodeDoc, false);
 			Assert.fail("validateIntegrity should fail on null soan:name");
 		} catch (ModelIntegrityException e) {
 			Assert.assertTrue("testCheckSoaNode successful",  true);

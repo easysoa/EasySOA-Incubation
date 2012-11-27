@@ -182,8 +182,8 @@ public class DocumentServiceImpl implements DocumentService {
     }
     
     public DocumentModel find(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
-        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'",
-                new Object[] { identifier.getType(), identifier.getName() },
+        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE ecm:path STARTSWITH '?' AND " + SoaNode.XPATH_SOANAME + " = '?'",
+                new Object[] { identifier.getType(), Repository.REPOSITORY_PATH, identifier.getName() },
                 false, true);
         DocumentModelList results = query(documentManager, query, true, false);
         return results.size() > 0 ? results.get(0) : null;

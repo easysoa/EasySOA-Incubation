@@ -21,15 +21,6 @@
           <widget>soanode_isplaceholder</widget>
         </row>
       </rows>
-      <widget name="soanode_name" type="text">
-        <labels>
-          <label mode="any">label.easysoa.layout.soanode.name</label>
-        </labels>
-        <translated>true</translated>
-        <fields>
-          <field>soan:name</field>
-        </fields>
-      </widget>
       <widget name="soanode_isplaceholder" type="checkbox">
         <labels>
           <label mode="any">label.easysoa.layout.soanode.isplaceholder</label>
@@ -38,11 +29,24 @@
         <fields>
           <field>soan:isplaceholder</field>
         </fields>
-        <widgetModes>
+         <widgetModes>
           <mode value="create">hidden</mode>
-          <mode value="view">hidden</mode>
-        </widgetModes>
+         </widgetModes>
       </widget>
+      <widget name="soanode_name" type="text">
+         <labels>
+           <label mode="any">label.easysoa.layout.soanode.name</label>
+         </labels>
+         <translated>true</translated>
+         <fields>
+           <field>soan:name</field>
+         </fields>
+         <widgetModes>
+          <mode value="create">hidden</mode>
+          <mode value="edit">hidden</mode>
+         </widgetModes>
+      </widget>
+      
     </layout>
     
     <!-- Layout for soaversion schema -->
@@ -240,9 +244,10 @@
           <field>env:environment</field>
         </fields>
         <widgetModes>
+          <mode value="create">edit</mode>
           <mode value="edit">hidden</mode>
         </widgetModes>
-        <properties widgetMode="create">
+        <properties widgetMode="edit">
           <property name="required">true</property>
           <property name="styleClass">dataInputText</property>
         </properties>
@@ -268,9 +273,10 @@
           <field>endp:url</field>
         </fields>
         <widgetModes>
+          <mode value="create">edit</mode>
           <mode value="edit">hidden</mode>
         </widgetModes>
-        <properties widgetMode="create">
+        <properties widgetMode="edit">
           <property name="required">true</property>
           <property name="styleClass">dataInputText</property>
         </properties>

@@ -8,7 +8,7 @@
   <!-- Prority set to 150 to run after dcListener, which inits "created" -->
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
-    <listener name="repositoryManagementListener" class="org.easysoa.registry.RepositoryManagementListener" order="150">
+    <listener name="repositoryManagementListener" class="org.easysoa.registry.RepositoryManagementListener" order="155">
       <event>documentCreated</event>
       <event>documentCreatedByCopy</event>
       <event>documentMoved</event>
@@ -16,18 +16,23 @@
       <event>aboutToRemove</event>
     </listener>
     <listener name="serviceMatchingListener" class="org.easysoa.registry.ServiceMatchingListener"
-    	priority="151">
+    	priority="156">
       <event>documentCreated</event>
       <event>documentModified</event><!-- rather than beforeDocumentModification otherwise loops ! -->
     </listener>
     
-    <listener name="wsdlParsingListener" class="org.easysoa.registry.types.listeners.WSDLParsingListener"
+    <listener name="soaNodeListener" class="org.easysoa.registry.types.listeners.SoaNodeListener"
       priority="150">
       <event>documentCreated</event>
       <event>beforeDocumentModification</event>
     </listener>
+    <listener name="wsdlParsingListener" class="org.easysoa.registry.types.listeners.WSDLParsingListener"
+      priority="151">
+      <event>documentCreated</event>
+      <event>beforeDocumentModification</event>
+    </listener>
     <listener name="componentListener" class="org.easysoa.registry.types.listeners.ComponentListener"
-      priority="150">
+      priority="151">
       <event>documentCreated</event>
       <event>beforeDocumentModification</event>
     </listener>

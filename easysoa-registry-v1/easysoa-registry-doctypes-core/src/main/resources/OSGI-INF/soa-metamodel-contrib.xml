@@ -30,10 +30,10 @@
     
     <soaNodeType name="Endpoint">
       <soaNameFormat>${document.environment.environment}:${document.endpoint.url}</soaNameFormat>
-      <immutableProperties>
+      <idProperties>
         <property>endp:url</property>
         <property>env:environment</property>
-      </immutableProperties>
+      </idProperties>
     </soaNodeType>
   </extension>
   

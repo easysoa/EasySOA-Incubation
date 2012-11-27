@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.test.AbstractRegistryTest;
 import org.easysoa.registry.types.Endpoint;
+import org.easysoa.registry.types.SoftwareComponent;
 import org.easysoa.registry.types.ids.EndpointId;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,9 +42,38 @@ public class ModelIntegrityTests extends AbstractRegistryTest {
 		// Check default values
 		Assert.assertEquals(endpointId.getEnvironment(), createdEndpoint.getPropertyValue(Endpoint.XPATH_ENVIRONMENT));
 		Assert.assertEquals(endpointId.getUrl(), createdEndpoint.getPropertyValue(Endpoint.XPATH_URL));
-		
 	}
 
+    @Test
+    public void testSoaNameGeneration() throws ClientException {
+    	// Create endpoint without SOA name & make sure it has been generated
+    	DocumentModel endpointModel = documentManager.createDocumentModel("/default-domain/workspaces",
+    			"endpoint", Endpoint.DOCTYPE);
+    	endpointModel.setPropertyValue(Endpoint.XPATH_ENVIRONMENT, "Production");
+    	endpointModel.setPropertyValue(Endpoint.XPATH_URL, "MyEndpointURL");
+    	endpointModel = documentManager.createDocument(endpointModel);
+    	Assert.assertEquals("Production:MyEndpointURL", endpointModel.getPropertyValue(Endpoint.XPATH_SOANAME));
+
+    	// Create endpoint without SOA name nor sufficient info to generate it & make sure it has failed
+    	endpointModel = documentManager.createDocumentModel("/default-domain/workspaces", "endpoint2", Endpoint.DOCTYPE);
+    	try {
+    		documentManager.createDocument(endpointModel);
+    		Assert.fail("Creation of an incomplete SoaNode must not work");
+    	}
+    	catch (Exception e) {
+    		logger.info("Document creation exception message: " + e.getCause().getMessage());
+    	}
+
+    	// Create Software Component without SOA name: in that case, there's no rule to manage the SOA name,
+    	// so it must be created using the document title
+    	DocumentModel softCompModel = documentManager.createDocumentModel("/default-domain/workspaces",
+    			"softwarecomponent", SoftwareComponent.DOCTYPE);
+    	softCompModel.setPropertyValue(SoftwareComponent.XPATH_TITLE, "MySoftwareComponent");
+    	softCompModel = documentManager.createDocument(softCompModel); // XXX SoaName is not set on the createDocument() result, but is be saved eventually
+    	//softCompModel = documentManager.getDocument(softCompModel.getRef());
+    	Assert.assertEquals("MySoftwareComponent", softCompModel.getPropertyValue(SoftwareComponent.XPATH_SOANAME));
+    }
+    
     @Test
     public void testInvalidDiscovery() throws Exception {
         // Try to override Endpoint URL
@@ -54,7 +84,7 @@ public class ModelIntegrityTests extends AbstractRegistryTest {
         	discoveryService.runDiscovery(documentManager, endpointId, properties, null);
 			Assert.fail("Update of an Endpoint URL must fail");
 		} catch (ModelIntegrityException e) {
-			logger.info("Discovery exception message: " + e.getMessage());
+			logger.info("Discovery exception success");
         }
         
         // Try to override Endpoint SOA name

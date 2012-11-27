@@ -28,11 +28,17 @@ public class SoaNodeTypeDescriptor {
     @XNodeList(value = "subtype", type = ArrayList.class, componentType=String.class, trim = true)
     public List<String> subtypes;
 
-    @XNodeList(value = "immutableProperties/property", type = ArrayList.class, componentType=String.class, trim = true)
-    public List<String> immutableProperties;
+    @XNodeList(value = "idProperties/property", type = ArrayList.class, componentType=String.class, trim = true)
+    public List<String> idProperties;
     
-    public String evaluateSoaName(SimpleELEvaluator elEvaluator, DocumentModel model) throws ClientException {
+    public String evaluateSoaName(SimpleELEvaluator elEvaluator, DocumentModel model)
+    		throws ModelIntegrityException, ClientException {
     	if (soaNameFormat != null) {
+    		for (String property : idProperties) {
+    			if (model.getPropertyValue(property) == null) {
+    				throw new ModelIntegrityException("Can't build SOA name, property " + property + " is missing");
+    			}
+    		}
 	    	elEvaluator.set("document", model);
 	    	return elEvaluator.evaluate(soaNameFormat);
     	}

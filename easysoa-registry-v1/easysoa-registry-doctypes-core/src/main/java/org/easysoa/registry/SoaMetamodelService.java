@@ -44,13 +44,15 @@ public interface SoaMetamodelService {
 	 * Ensures that an SoaNode id valid, i.e. that:
 	 * - it's soan:name is not null
 	 * - it's soan:name is consistent with its other properties
-	 * @param model
+	 * @return null if it was valid, otherwise the expected soa name (only if returnExpectedNameIfNull is enabled)
 	 * @throws ModelIntegrityException
 	 * @throws ClientException
 	 */
-	void validateIntegrity(DocumentModel model) throws ModelIntegrityException, ClientException;
+	String validateIntegrity(DocumentModel model, boolean returnExpectedNameIfNull)
+			throws ModelIntegrityException, ClientException;
 
 	void validateWriteRightsOnProperties(String doctype,
 			Map<String, Object> properties) throws ModelIntegrityException;
+
 	
 }

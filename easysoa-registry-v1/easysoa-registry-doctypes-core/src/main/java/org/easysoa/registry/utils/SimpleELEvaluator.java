@@ -1,9 +1,9 @@
 package org.easysoa.registry.utils;
 
-import javax.el.ExpressionFactory;
-
 import org.nuxeo.ecm.platform.el.ExpressionContext;
 import org.nuxeo.ecm.platform.el.ExpressionEvaluator;
+
+import de.odysseus.el.ExpressionFactoryImpl;
 
 public class SimpleELEvaluator {
 
@@ -12,7 +12,7 @@ public class SimpleELEvaluator {
 
 	public SimpleELEvaluator() {
 		expressionContext = new ExpressionContext();
-		expressionEvaluator = new ExpressionEvaluator(ExpressionFactory.newInstance());
+		expressionEvaluator = new ExpressionEvaluator(new ExpressionFactoryImpl());
 	}
 
 	public void set(String key, Object value) {

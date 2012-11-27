@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.log4j.Logger;
-import org.easysoa.registry.SoaMetamodelService;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
@@ -24,7 +23,6 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.runtime.api.Framework;
 import org.ow2.easywsdl.wsdl.WSDLFactory;
 import org.ow2.easywsdl.wsdl.api.Description;
 import org.ow2.easywsdl.wsdl.api.WSDLException;
@@ -46,14 +44,9 @@ public class WSDLParsingListener implements EventListener {
         CoreSession documentManager = documentContext.getCoreSession();
         boolean documentModified = false;
         
-        if (sourceDocument.hasSchema(SoaNode.SCHEMA)) {
-        	try {
-        		SoaMetamodelService soaMetamodelService = Framework.getService(SoaMetamodelService.class);
-        		soaMetamodelService.validateIntegrity(sourceDocument);
-			} catch (Exception e) {
-				logger.error("Error while validating SoaNode integrity, aborting SoaNode repository management: " + e.getMessage());
-				return;
-			}
+        if (!sourceDocument.hasSchema(SoaNode.SCHEMA)
+        		|| sourceDocument.getPropertyValue(InformationService.XPATH_SOANAME) == null) {
+			return;
         }
         
         // Extract metadata from soaname

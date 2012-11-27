@@ -45,13 +45,6 @@ public class ServiceMatchingListener implements EventListener {
 			return;
 		}
 
-        try {
-        	metamodelService.validateIntegrity(sourceDocument);
-		} catch (ModelIntegrityException e) {
-			logger.error("Aborting service matching on " + sourceDocument.getTitle() + ": " + e.getMessage());
-			return;
-		}
-
         // Service impl: Link to information service
         if (documentService.isTypeOrSubtype(documentManager, sourceDocument.getType(), ServiceImplementation.DOCTYPE)) {
         	findAndMatchInformationService(documentManager, matchingService, sourceDocument);
@@ -74,7 +67,7 @@ public class ServiceMatchingListener implements EventListener {
 			throws ClientException {
 		DocumentModelList foundInformationServices = matchingService.findInformationServices(
 				documentManager, sourceDocument, null, false);
-		if (foundInformationServices.size() > 0) {
+		if (foundInformationServices.size() == 1) {
 			matchingService.linkInformationService(documentManager, sourceDocument,
 					foundInformationServices.get(0).getId(), true);
 		}

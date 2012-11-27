@@ -191,7 +191,7 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 		}
 	}
 	
-	public void validateIntegrity(DocumentModel model) throws ModelIntegrityException, ClientException {
+	public String validateIntegrity(DocumentModel model, boolean returnExpectedNameIfNull) throws ModelIntegrityException, ClientException {
 		SoaNodeTypeDescriptor soaNodeTypeDescriptor = soaNodeTypes.get(model.getType());
 		if (soaNodeTypeDescriptor != null) {
 		   SimpleELEvaluator elEvaluator = new SimpleELEvaluator();
@@ -199,10 +199,20 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
            Serializable actualSoaName = model.getPropertyValue(SoaNode.XPATH_SOANAME);
 
            if (actualSoaName == null) {
-	           	throw new ModelIntegrityException("Null soaname for " + model.getPathAsString()
-	           			+ " - did happen when : doc was created when it already existed "
-	           			+ "because it was queried for using erroneously safeName(), "
-	           			+ "doc was created before setting soaname");
+        	   if (returnExpectedNameIfNull) {
+        		   if (expectedSoaName != null) {
+        			   return expectedSoaName;
+        		   }
+        		   else {
+        			   return (String) model.getPropertyValue(SoaNode.XPATH_TITLE);
+        		   }
+        	   }
+        	   else {
+	           		throw new ModelIntegrityException("Null soaname for " + model.getPathAsString()
+		           			+ " - did happen when : doc was created when it already existed "
+		           			+ "because it was queried for using erroneously safeName(), "
+		           			+ "doc was created before setting soaname");
+        	   }
            }
            
            if (!actualSoaName.equals(expectedSoaName)) {
@@ -210,6 +220,8 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
                         + actualSoaName + "' instead of '" + expectedSoaName + "'");
            }
 		}
+		
+		return null;
 	}
 	
 	public void validateWriteRightsOnProperties(String doctype, Map<String, Object> properties) throws ModelIntegrityException {
@@ -217,7 +229,7 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 		if (properties != null && soaNodeTypeDescriptor != null) {
 			List<String> immutableProperties = new ArrayList<String>();
 			immutableProperties.add(SoaNode.XPATH_SOANAME);
-			List<String> doctypeImmutableProperties = soaNodeTypeDescriptor.immutableProperties;
+			List<String> doctypeImmutableProperties = soaNodeTypeDescriptor.idProperties;
 			if (doctypeImmutableProperties != null) {
 				immutableProperties.addAll(doctypeImmutableProperties);
 			}

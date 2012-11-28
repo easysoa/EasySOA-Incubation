@@ -1,13 +1,13 @@
 ## AXXX Pivotal
 
-TODO allow to list, remove & add Client
-TODO new Client page
-TODO Client details page allowing to modify it BUT NOT IDENTIFIANT_CLIENT OR , also listing ContactClients and InformationAVPs
-TODO in ClientServiceImpl, (like in UserServiceImpl) at init if table empty fill with default data (ask MDU)
-TODO Client details page : button "Créer précompte" that calls TdrService.creerPrecompte() (ask MDU)
-TODO expose ContactSvc.asmx.wsdl WS using FraSCAti (and already gen'd source) and implement it on top of ClientService
-TODO UI : more MS-y, display partner logos that are in pivotal/images/logos and pivotal/css/images.css, remove unused images & js
-TODO doc : deploy in production
+* TODO allow to list, remove & add Client
+* TODO new Client page
+* TODO Client details page allowing to modify it BUT NOT IDENTIFIANT_CLIENT OR , also listing ContactClients and InformationAVPs
+* TODO in ClientServiceImpl, (like in UserServiceImpl) at init if table empty fill with default data (ask MDU)
+* TODO Client details page : button "Créer précompte" that calls TdrService.creerPrecompte() (ask MDU)
+* TODO expose ContactSvc.asmx.wsdl WS using FraSCAti (and already gen'd source) and implement it on top of ClientService
+* TODO UI : more MS-y, display partner logos that are in pivotal/images/logos and pivotal/css/images.css, remove unused images & js
+* TODO deploy in production (notably doc ; see FStudio)
 
 
 ### About

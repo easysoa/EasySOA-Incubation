@@ -13,8 +13,9 @@
         <config.directory>src/main/resources</config.directory>
 
         <frascati.version>1.5-SNAPSHOT</frascati.version><!-- at least 1.5-SNAPSHOT for implementation.velocity -->
-        <juliac.version>2.4.3</juliac.version>
-        <slf4j.version>1.5.5</slf4j.version>
+        <tinfi.version>1.4.5-SNAPSHOT</tinfi.version>
+        <juliac.version>2.5-SNAPSHOT</juliac.version>
+        <slf4j.version>1.6.2</slf4j.version>
         <xerces.version>2.9.1</xerces.version>
         <hibernate.version>3.6.0.Final</hibernate.version>
         
@@ -65,7 +66,7 @@
     	<dependency>
             <groupId>org.ow2.frascati.tinfi</groupId>
             <artifactId>frascati-tinfi-runtime-api</artifactId>
-            <version>1.4.4</version>
+            <version>${tinfi.version}</version><!-- brought by FraSCAti ; TODO enough ?? -->
         </dependency>
         <dependency>
             <groupId>org.ow2.frascati</groupId>

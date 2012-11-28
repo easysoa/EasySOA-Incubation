@@ -53,5 +53,9 @@
  		serviceClass="fromwsdl" 
  		address="http://localhost:8075/pivotal" >
  	</jaxws:client -->
+ 	
+	<jaxws:endpoint id="com.axxx.dps.apv.ws.projetWebServiceImplEndpoint"
+		implementor="#com.axxx.dps.apv.ws.projetWebServiceImpl"
+		address="${axxx.dps.apv.ws.baseUrl}/ProjetService" />
 	
 </beans>

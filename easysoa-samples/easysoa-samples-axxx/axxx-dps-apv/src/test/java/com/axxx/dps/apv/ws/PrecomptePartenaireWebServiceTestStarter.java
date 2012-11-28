@@ -17,7 +17,10 @@ public class PrecomptePartenaireWebServiceTestStarter {
         new PrecomptePartenaireWebServiceTestStarter();
         System.out.println("Server ready..."); 
         
-        Thread.sleep(5 * 60 * 1000); 
+        // stay up until...
+        //Thread.sleep(5 * 60 * 1000); // ... delay
+        System.in.read(); // ... input
+        
         System.out.println("Server exiting");
         System.exit(0);
     }

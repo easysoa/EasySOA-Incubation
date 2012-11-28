@@ -44,7 +44,7 @@ public class IntelligentSystemTreeApiProxyImpl implements IntelligentSystemTreeA
 	}
 
 	@Override
-	public void setSoaNode(String treeName, SoaNodeId identifier, String classification) throws ClientException {
+	public void classifySoaNode(String treeName, SoaNodeId identifier, String classification) throws ClientException {
 		DocumentModel istModel = findISTModel(treeName);
 		if (istModel == null) {
 			throw new ClientException("Tree '" + treeName + "' doesn't exist, can't classify SoaNode " + identifier);
@@ -82,7 +82,7 @@ public class IntelligentSystemTreeApiProxyImpl implements IntelligentSystemTreeA
 	}
 
 	@Override
-	public void removeSoaNode(String treeName, SoaNodeId identifier) throws ClientException {
+	public void deleteSoaNode(String treeName, SoaNodeId identifier) throws ClientException {
 		 // If the model was in the IST, delete it
 		DocumentModel istModel = findISTModel(treeName);
 		if (istModel == null) {

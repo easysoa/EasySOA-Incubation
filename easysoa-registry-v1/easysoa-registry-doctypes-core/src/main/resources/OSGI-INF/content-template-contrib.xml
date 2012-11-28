@@ -18,8 +18,8 @@
     <factoryBinding name="DomainFactory" factoryName="SimpleTemplateFactory" targetType="Domain">
       <template>
         <templateItem typeName="WorkspaceRoot" id="workspaces" title="Hierarchies" description="Service Registry"/>
-        <templateItem typeName="SectionRoot" id="sections" title="Environments" description="Sections"/>
-        <templateItem typeName="TemplateRoot" id="templates" title="Templates" description="Root of workspaces templates"/>
+        <templateItem typeName="SectionRoot" id="sections" title="Publications" description="Root of sections"/>
+<!--         <templateItem typeName="TemplateRoot" id="templates" title="Templates" description="Root of workspaces templates"/> -->
       </template>
     </factoryBinding>
 

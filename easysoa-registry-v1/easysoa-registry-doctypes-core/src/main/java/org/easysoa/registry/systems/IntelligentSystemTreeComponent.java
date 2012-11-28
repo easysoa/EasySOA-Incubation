@@ -127,12 +127,12 @@ public class IntelligentSystemTreeComponent extends DefaultComponent implements 
 	            	}
                     
                     // Check if the model is at its right place
-                    intelligentSystemTreeApi.setSoaNode(treeName, soaNodeId, classification);
+                    intelligentSystemTreeApi.classifySoaNode(treeName, soaNodeId, classification);
                 }
                 
                 // Handling when model is rejected
                 else if (intelligentSystemTreeApi.intelligentSystemTreeExists(treeName)) {
-	            	intelligentSystemTreeApi.removeSoaNode(treeName, soaNodeId);
+	            	intelligentSystemTreeApi.deleteSoaNode(treeName, soaNodeId);
                 }
             }
         }

@@ -181,12 +181,12 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
 
         /*
-        // TODO LATER Discover endpoint that matches is (on url-extracted service name), but no impl (or too much ???)
+        // TODO LATER Discover endpoint that matches is (on url-extracted service name), but no impl LATER
         foundEndpoint = discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "staging:http://localhost:8080/cxf/name"), epProperties, null);
         //Assert.assertEquals("Created endpoint must be linked to existing matching information service", foundInfoServ.getId(),
         //		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
 
-        // Discover endpoint that matches is (on provided portType), but no impl (or too much ???)
+        // Discover endpoint that matches is (on provided portType), but no impl
         epProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
         foundEndpoint = discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "staging:http://localhost:8080/cxf/WS2"), epProperties, null);
         Assert.assertEquals("Created endpoint must be linked to existing matching information service", foundInfoServ.getId(),
@@ -232,19 +232,19 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // how should work matching in discovery & dashboard for :
         
     	// impl :
-    	// 1. find IS on IS req itf (portType) in provided component and whose component's platform match the impl's platform (criteria) ;
+    	// 1. find IS on IS req itf (portType) in provided component if anyand whose component's platform match the impl's platform (criteria) if any ;
     	// (if more than one result, use matching dashboard)
     	// if single result, link impl to IS and to component (that it fills)
-    	// 2. if none, find IS on IS req itf (portType) only ;
+    	// 2. if none, find IS on IS req itf (portType) in provided component (i.e. this impl is not the actual one) ;
     	// (if more than one result, use matching dashboard)
     	// if single result, link impl to IS, then attempt to find platform (single query result) to link to else go to matching dashboard 
     	// 3. if none ("technical" service), create service (?) and attempt to find platform (single query result) to link to else go to matching dashboard
     	
     	// endpoint :
-    	// find impl on IS req itf (portType) in provided component and whose impl platform match the endpoint's platform (criteria) ;
+    	// find impl on IS req itf (portType) in provided component if any and whose impl platform match the endpoint's platform (criteria) if any ;
     	// if single matched link to it
     	// (if more than one result, use matching dashboard)
-    	// if none, createe impl and do as above : 1. and fill component, else 2. and link to platform, else 3. 
+    	// if none, create impl and do as above : 1. and fill component, else 2. and link to platform, else 3. 
     	
          */
     }

@@ -9,8 +9,8 @@ public interface IntelligentSystemTreeApi {
 
 	public void createIntelligentSystemTree(String name, String title) throws ClientException;
 
-	public void setSoaNode(String treeName, SoaNodeId identifier, String path) throws ClientException;
+	public void classifySoaNode(String treeName, SoaNodeId identifier, String path) throws ClientException;
 	
-	public void removeSoaNode(String treeName, SoaNodeId identifier) throws ClientException;
+	public void deleteSoaNode(String treeName, SoaNodeId identifier) throws ClientException;
 	
 }

@@ -61,6 +61,17 @@ public class SoaNodeAdapter extends AbstractDocumentAdapter implements SoaNode {
 		return parentsIds;
     }
 
+	@Override
+	public boolean hasParentOfType(String doctype) throws ClientException {
+		Serializable[] parentsIdsArray = (Serializable[]) documentModel.getPropertyValue(XPATH_PARENTSIDS);
+		for (Serializable parentId : parentsIdsArray) {
+			if (parentId.toString().startsWith(doctype + ":")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void setParentIds(List<SoaNodeId> parentIds) throws PropertyException, ClientException {
 		List<String> parentsIdsStringList = new ArrayList<String>();
 		for (SoaNodeId parentId : parentIds) {

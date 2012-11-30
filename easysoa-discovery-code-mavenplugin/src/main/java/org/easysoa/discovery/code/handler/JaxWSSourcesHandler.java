@@ -220,7 +220,6 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                         }
                     }
                     serviceImpl.addParentDocument(mavenDeliverable.getSoaNodeId());
-                    discoveredNodes.add(serviceImpl);
                     
                     if (itfClass != null) {
                         // Extract service info
@@ -253,6 +252,8 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                         }
                         serviceImpl.setOperations(operations);
                     }
+                    
+                    discoveredNodes.add(serviceImpl);
                 }
             }
         }

@@ -10,8 +10,11 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.rest.marshalling.JsonMessageReader;
 import org.easysoa.registry.rest.marshalling.JsonMessageWriter;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.types.Component;
+import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.InformationServiceId;
 import org.easysoa.registry.types.ids.ServiceIdentifierType;
 import org.easysoa.registry.types.ids.ServiceImplementationId;
@@ -48,22 +51,22 @@ public class DashboardMatchingSamples {
 		// Create information services
 		Map<String, Serializable> properties = new HashMap<String, Serializable>();
 		for (int i = 0; i < 5; i++) {
-			properties.put("dc:title", "My Information Service " + i);
+			properties.clear();
+			properties.put(InformationService.XPATH_TITLE, "My Information Service " + i);
 			registryApi.type(MediaType.APPLICATION_JSON_TYPE).post(new SoaNodeInformation(new SoaNodeId(InformationService.DOCTYPE, 
 					new InformationServiceId(ServiceIdentifierType.WEB_SERVICE, "namespace", "itf" + i).toString()),
 					properties, null));
 			logger.info("Information service " + i);
-			properties.clear();
 		}
 		
 		// Create service impls
 		for (int i = 3; i < 6; i++) {
-			properties.put("dc:title", "My Service Impl " + i);
+			properties.clear();
+			properties.put(ServiceImplementation.XPATH_TITLE, "My Service Impl " + i);
 			registryApi.type(MediaType.APPLICATION_JSON_TYPE).post(new SoaNodeInformation(new SoaNodeId(ServiceImplementation.DOCTYPE, 
 					new ServiceImplementationId(ServiceIdentifierType.WEB_SERVICE, "namespace", "itf" + i, "impl" + i).toString()),
 					properties, null)); // The informationService will be set automatically
 			logger.info("Service impl. " + i);
-			properties.clear();
 		}
 		
 		// Create component
@@ -71,13 +74,22 @@ public class DashboardMatchingSamples {
 			.path(new InformationServiceId(ServiceIdentifierType.WEB_SERVICE, "namespace", "itf0").toString())
 			.type(MediaType.APPLICATION_JSON_TYPE)
 			.get(SoaNodeInformation.class);
-		properties.put("dc:title", "My component");
-		properties.put("acomp:linkedInformationService", infoServiceInformation.getUuid());
+		properties.clear();
+		properties.put(InformationService.XPATH_TITLE, "My component");
+		properties.put(InformationService.XPATH_COMP_LINKED_INFORMATION_SERVICE, infoServiceInformation.getUuid());
 		registryApi.type(MediaType.APPLICATION_JSON_TYPE).post(
-				new SoaNodeInformation(new SoaNodeId("Component", "My component"),
+				new SoaNodeInformation(new SoaNodeId(Component.DOCTYPE, "My component"),
 				properties, null));
 		logger.info("My component");
+		
+		// Create Endpoint
 		properties.clear();
+		properties.put(Endpoint.XPATH_TITLE, "My endpoint");
+		registryApi.type(MediaType.APPLICATION_JSON_TYPE).post(
+				new SoaNodeInformation(new EndpointId("Production", "http://www.endpoint.com"),
+				properties, null));
+		logger.info("My endpoint");
+		
 	}
 	
     private Client createAuthenticatedHTTPClient() {

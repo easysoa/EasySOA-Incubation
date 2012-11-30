@@ -122,6 +122,12 @@ public class InheritedDataTest extends AbstractRegistryTest {
 				+ " WHERE " + NXQL.ECM_ISPROXY + " = 0 AND "
 				+ Endpoint.XPATH_PARENTSIDS + "/* = '" + MYIMPL2_ID + "'");
 		Assert.assertEquals("Query of parent IDs on Endpoints must work", 1, results.size());
+		
+		// Look for an endpoint that is classified under any impl
+		results = documentManager.query("SELECT * FROM " + Endpoint.DOCTYPE
+				+ " WHERE " + NXQL.ECM_ISPROXY + " = 0 AND "
+				+ Endpoint.XPATH_PARENTSIDS + "/* LIKE '" + ServiceImplementation.DOCTYPE + "%'");
+		Assert.assertEquals("Query of parent IDs on Endpoints must work (pt. 2)", 1, results.size());
 	}
 	
 	@Test

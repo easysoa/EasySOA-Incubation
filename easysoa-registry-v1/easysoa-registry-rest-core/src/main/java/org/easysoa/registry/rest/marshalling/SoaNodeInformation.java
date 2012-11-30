@@ -115,6 +115,17 @@ public class SoaNodeInformation implements SoaNode {
 		return parentsIds;
     }
     
+	@Override
+	public boolean hasParentOfType(String doctype) throws Exception {
+		Serializable[] parentsIdsArray = (Serializable[]) properties.get(XPATH_PARENTSIDS);
+		for (Serializable parentId : parentsIdsArray) {
+			if (parentId.toString().startsWith(doctype + ":")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void setParentIds(List<SoaNodeId> parentIds) throws Exception {
 		List<String> parentsIdsStringList = new ArrayList<String>();
 		for (SoaNodeId parentId : parentIds) {

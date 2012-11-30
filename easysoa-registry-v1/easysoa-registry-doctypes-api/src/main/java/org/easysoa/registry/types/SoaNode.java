@@ -40,5 +40,6 @@ public interface SoaNode extends Document {
     List<SoaNodeId> getParentIds() throws Exception;
 
 	void setParentIds(List<SoaNodeId> parentIds) throws Exception;
-    
+	
+	boolean hasParentOfType(String doctype) throws Exception;
 }

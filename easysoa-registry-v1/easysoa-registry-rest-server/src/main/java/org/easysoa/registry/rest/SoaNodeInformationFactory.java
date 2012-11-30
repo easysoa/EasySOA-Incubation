@@ -13,7 +13,6 @@ import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
 
@@ -45,11 +44,9 @@ public class SoaNodeInformationFactory {
         
         // Parent SoaNodes
         List<SoaNodeId> parentDocuments = new LinkedList<SoaNodeId>();
-        DocumentModelList parentDocumentList = documentService.findAllParents(documentManager, model);
-        for (DocumentModel parentDocument : parentDocumentList) {
-            if (parentDocument.hasSchema(SoaNode.SCHEMA)) { 
-                parentDocuments.add(documentService.createSoaNodeId(parentDocument));
-            }
+        String[] parentIds = (String[]) model.getPropertyValue(SoaNode.XPATH_PARENTSIDS);
+        for (String parentId : parentIds) {
+        	parentDocuments.add(SoaNodeId.fromString(parentId));
         }
         
         return new SoaNodeInformation(id, properties, parentDocuments);

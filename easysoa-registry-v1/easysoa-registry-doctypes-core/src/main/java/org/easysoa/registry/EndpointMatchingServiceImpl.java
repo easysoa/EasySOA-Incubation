@@ -93,8 +93,22 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 	public void linkServiceImplementation(CoreSession documentManager,
 			SoaNodeId endpointId, SoaNodeId implId, boolean save)
 			throws Exception {
-		DiscoveryService discoveryService = Framework.getService(DiscoveryService.class);
-		discoveryService.runDiscovery(documentManager, endpointId, null, Arrays.asList(implId));
+		if (implId != null) {
+			// Create link
+			DiscoveryService discoveryService = Framework.getService(DiscoveryService.class);
+			discoveryService.runDiscovery(documentManager, endpointId, null, Arrays.asList(implId));
+		}
+		else {
+			// Remove link
+			DocumentService docService = Framework.getService(DocumentService.class);
+			DocumentModelList endpointProxies = docService.findProxies(documentManager, endpointId);
+			for (DocumentModel endpointProxy : endpointProxies) {
+				DocumentModel proxyParent = documentManager.getParentDocument(endpointProxy.getRef());
+				if (ServiceImplementation.DOCTYPE.equals(proxyParent.getType())) {
+					documentManager.removeDocument(endpointProxy.getRef());
+				}
+			}
+		}
 		if (save) {
 			documentManager.save();
 		}

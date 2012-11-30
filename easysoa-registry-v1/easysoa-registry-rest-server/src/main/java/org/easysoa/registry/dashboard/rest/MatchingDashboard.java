@@ -12,9 +12,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 
 import org.easysoa.registry.DocumentService;
+import org.easysoa.registry.EndpointMatchingService;
 import org.easysoa.registry.ServiceMatchingService;
 import org.easysoa.registry.rest.samples.DashboardMatchingSamples;
 import org.easysoa.registry.types.Component;
+import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -41,11 +43,11 @@ public class MatchingDashboard extends ModuleRoot {
 	public Template viewDashboard() {
         CoreSession session = SessionFactory.getSession(request);
 		try {
-			DocumentService service = Framework.getService(DocumentService.class);
+			DocumentService docService = Framework.getService(DocumentService.class);
 			Template view = getView("index");
 			
 			// All information services
-			DocumentModelList allInfoServices = service.query(session, "SELECT * FROM "
+			DocumentModelList allInfoServices = docService.query(session, "SELECT * FROM "
 					+ InformationService.DOCTYPE, true, false);
 			Map<String, DocumentModel> infoServicesById = new HashMap<String, DocumentModel>();
 			for (DocumentModel infoService : allInfoServices) {
@@ -53,7 +55,7 @@ public class MatchingDashboard extends ModuleRoot {
 			}
  
 			// Find matched impls & their infoservice
-			DocumentModelList matchedImpls = service.query(session, "SELECT * FROM " + ServiceImplementation.DOCTYPE + 
+			DocumentModelList matchedImpls = docService.query(session, "SELECT * FROM " + ServiceImplementation.DOCTYPE + 
 					 " WHERE " + ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE + " IS NOT NULL",
 					 true, false);
 			view.arg("matchedImpls", matchedImpls);
@@ -68,8 +70,14 @@ public class MatchingDashboard extends ModuleRoot {
 			}
 			view.arg("unimplementedServs", unimplementedServsMap.values());
 
+			// List endpoints without impls
+			DocumentModelList unmatchedEndpoints = docService.query(session,
+					"SELECT * FROM " + Endpoint.DOCTYPE + " WHERE " +
+					Endpoint.XPATH_PARENTSIDS + " NOT LIKE '" + ServiceImplementation.DOCTYPE + "%'", true, false);
+			view.arg("endpointWithoutImpl", unmatchedEndpoints);
+			
 			// List impls without infoservice
-			DocumentModelList servWithoutSpecs = service.query(session, 
+			DocumentModelList servWithoutSpecs = docService.query(session, 
 					 "SELECT * FROM " + ServiceImplementation.DOCTYPE + 
 					 " WHERE " + ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE + " IS NULL",
 					 true, false);
@@ -82,44 +90,61 @@ public class MatchingDashboard extends ModuleRoot {
 	}
 
 	@GET
-	@Path("components/{serviceImplUuid}")
-	public Template suggestComponents(@PathParam("serviceImplUuid") String serviceImplUuid) throws Exception {
+	@Path("components/{uuid}")
+	public Template suggestComponents(@PathParam("serviceImplUuid") String uuid) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
 		Template view = viewDashboard();
 		view.arg("components", fetchComponents(session));
-		view.arg("selectedServiceImpl", serviceImplUuid);
+		view.arg("selectedModel", uuid);
 		return view;
 	}
-
+	
 	@GET
-	@Path("suggest/{serviceImplUuid}")
-	public Template suggestServices(@PathParam("serviceImplUuid") String serviceImplUuid) throws Exception {
+	@Path("suggest/{uuid}")
+	public Template suggestServices(@PathParam("uuid") String uuid) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
+        DocumentModel model = session.getDocument(new IdRef(uuid));
 		Template view = viewDashboard();
-		List<DocumentModel> suggestions = fetchSuggestions(session, serviceImplUuid, null, false);
+
+		// Args: suggestions
+		List<DocumentModel> suggestions = fetchSuggestions(session, model, null, false);
 		view.arg("suggestions", suggestions);
-		List<DocumentModel> anyPlatformSuggestions = fetchSuggestions(session, serviceImplUuid, null, true);
+		List<DocumentModel> anyPlatformSuggestions = fetchSuggestions(session, model, null, true);
 		if (suggestions.size() == 0) {
 			view.arg("anyPlatformSuggestions", anyPlatformSuggestions);
 		}
 		else {
 			view.arg("anyPlatformSuggestionsCount", anyPlatformSuggestions.size() - suggestions.size());
 		}
-		view.arg("selectedServiceImpl", serviceImplUuid);
+		
+		// Arg: selected document
+		view.arg("selectedModel", uuid);
+		
 		return view;
 	}
-	
+
 	@GET
-	@Path("suggest/{serviceImplUuid}/{componentUuid}")
-	public Template suggestServicesFromComponent(@PathParam("serviceImplUuid") String serviceImplUuid,
+	@Path("impl/suggest/{uuid}/{componentUuid}")
+	public Template suggestServicesFromComponent(@PathParam("uuid") String uuid,
 			@PathParam("componentUuid") String componentUuid) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
+        DocumentModel model = session.getDocument(new IdRef(uuid));
 		Template view = viewDashboard();
+
+		// Args: components
 		List<DocumentModel> components = fetchComponents(session);
 		view.arg("components", fetchComponents(session));
-		List<DocumentModel> suggestions = fetchSuggestions(session, serviceImplUuid, componentUuid, false);
+		for (DocumentModel component : components) {
+			if (component.getId().equals(componentUuid)) {
+				view.arg("selectedComponentTitle", component.getTitle());
+				break;
+			}
+		}
+		
+		// Args: suggestions
+		List<DocumentModel> suggestions = fetchSuggestions(session, model, componentUuid, false);
 		view.arg("suggestions", suggestions);
-		List<DocumentModel> anyPlatformSuggestions = fetchSuggestions(session, serviceImplUuid, componentUuid, true);
+		List<DocumentModel> anyPlatformSuggestions = fetchSuggestions(session, model, componentUuid, true);
 		if (suggestions.size() == 0) {
 			view.arg("anyPlatformSuggestions", anyPlatformSuggestions);
 		}
@@ -127,49 +152,67 @@ public class MatchingDashboard extends ModuleRoot {
 			view.arg("anyPlatformSuggestionsCount", anyPlatformSuggestions.size() - suggestions.size());
 		}
 		if (anyPlatformSuggestions.size() == 0) {
+			String targetDoctype = Endpoint.DOCTYPE.equals(model.getType()) ?
+					ServiceImplementation.DOCTYPE : 
+					InformationService.DOCTYPE;
 			String infoServicesQuery = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE ? = '?'",
 					new Object[] {
-						InformationService.DOCTYPE,
+						targetDoctype,
 						Component.XPATH_COMPONENT_ID,
 						componentUuid
 					}, false, true);
 			DocumentService docService = Framework.getService(DocumentService.class);
-			view.arg("allServicesFromComponent", docService.query(session, infoServicesQuery, true, false));
+			view.arg("allFromComponent", docService.query(session, infoServicesQuery, true, false));
 		}
-		view.arg("selectedServiceImpl", serviceImplUuid);
-		for (DocumentModel component : components) {
-			if (component.getId().equals(componentUuid)) {
-				view.arg("selectedComponentTitle", component.getTitle());
-				break;
-			}
-		}
+		
+		// Arg: selected document
+		view.arg("selectedModel", uuid);
+		
 		return view;
 	}
 	
 	@POST
-	public Object submit(@FormParam("infoServiceId") String infoServiceId,
-			@FormParam("serviceImplId") String serviceImplId) {
+	public Object submit(@FormParam("unmatchedModelId") String unmatchedModelId,
+			@FormParam("targetId") String targetId) {
 	    try {
-	    	if (serviceImplId != null && !serviceImplId.isEmpty()) {
+	    	if (unmatchedModelId != null && !unmatchedModelId.isEmpty()) {
 	    		// Fetch impl
 	            CoreSession session = SessionFactory.getSession(request);
-				DocumentModel serviceImpl = session.getDocument(new IdRef(serviceImplId));
+				DocumentModel model = session.getDocument(new IdRef(unmatchedModelId));
+				String doctype = model.getType();
 				
 				// Compute new link value
-	            String newInfoServiceId; 
-	    		if (infoServiceId != null && !infoServiceId.isEmpty()) {
-	    			newInfoServiceId = infoServiceId; // Create link
+	            String newTargetId; 
+	    		if (targetId != null && !targetId.isEmpty()) {
+	    			newTargetId = targetId; // Create link
 	    		}
 	    		else {
-					if (serviceImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE) == null) {
+					if (ServiceImplementation.DOCTYPE.equals(doctype)
+							&& model.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE) == null) {
 			    		throw new Exception("Information Service not selected");
 					}
-	    			newInfoServiceId = null; // Destroy link
+					else if (Endpoint.DOCTYPE.equals(doctype)) {
+						Endpoint endpointAdapter = model.getAdapter(Endpoint.class);
+						if (!endpointAdapter.hasParentOfType(ServiceImplementation.DOCTYPE)) {
+				    		throw new Exception("Service Implementation not selected");
+						}
+					}
+					newTargetId = null; // Destroy link
 	    		}
 	    		
 	    		// Apply on document
-	    		ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);
-	    		matchingService.linkInformationService(session, serviceImpl, newInfoServiceId, true);
+				if (ServiceImplementation.DOCTYPE.equals(doctype)) {
+		    		ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);
+					matchingService.linkInformationService(session, model, newTargetId, true);
+				}
+				else {
+					DocumentService docService = Framework.getService(DocumentService.class);
+		    		EndpointMatchingService matchingService = Framework.getService(EndpointMatchingService.class);
+					matchingService.linkServiceImplementation(session,
+							docService.createSoaNodeId(model),
+							((newTargetId != null) ? docService.createSoaNodeId(session.getDocument(new IdRef(newTargetId))) : null),
+							true);
+				}
 				return viewDashboard();
 	    	}
 	    	else {
@@ -192,18 +235,24 @@ public class MatchingDashboard extends ModuleRoot {
 		return docService.query(session, "SELECT * FROM Component", true, false);
 	}
 	
-	private List<DocumentModel> fetchSuggestions(CoreSession session, String serviceImplUuid, String componentUuid,
+	private List<DocumentModel> fetchSuggestions(CoreSession session, DocumentModel model, String componentUuid,
 			boolean skipPlatformMatching) throws Exception {
-		if (serviceImplUuid != null) {
-			ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);
-			
-			DocumentModel serviceImplModel = session.getDocument(new IdRef(serviceImplUuid));
+		if (model != null) {
+			// Fetch component
 			DocumentModel componentModel = null;
 			if (componentUuid != null) {
 				componentModel = session.getDocument(new IdRef(componentUuid));
 			}
 			
-			return matchingService.findInformationServices(session, serviceImplModel, componentModel, skipPlatformMatching);
+			// Run  matching service according to doctype
+			if (Endpoint.DOCTYPE.equals(model.getType())) {
+				EndpointMatchingService matchingService = Framework.getService(EndpointMatchingService.class);
+				return matchingService.findServiceImpls(session, model, componentModel, skipPlatformMatching);
+			}
+			else {
+				ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);
+				return matchingService.findInformationServices(session, model, componentModel, skipPlatformMatching);
+			}
 		}
 		else {
 			return new ArrayList<DocumentModel>();

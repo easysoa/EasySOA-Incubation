@@ -3,14 +3,17 @@ package org.easysoa.registry.types.ids;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.easysoa.registry.types.Endpoint;
 
+@JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE, setterVisibility=Visibility.NONE)
 public class EndpointId extends SoaNodeId {
 	
 	@JsonIgnore
 	private final String environment;
-	
+
 	@JsonIgnore
 	private final String url;
 

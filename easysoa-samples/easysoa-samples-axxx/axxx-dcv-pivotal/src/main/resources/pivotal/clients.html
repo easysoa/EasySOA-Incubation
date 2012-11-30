@@ -1,0 +1,49 @@
+#parse("banner.html")
+#parse("header.html")
+#parse("roundedDiv.html")
+#set($user = $request.getSession().getAttribute("user"))
+<div id="welcome-title">Welcome $user.getLogin()</div>
+<div id="rounded-div-content">
+	<div id="homePage">
+	Clients
+
+    <p/>
+    <table id="clientTable" imgpath="images/dhxgrid" style="width:800px;" border="1">
+    	<tbody>
+	    	<tr>
+	    		<td>Identifiant client</td>
+	    		<td>Raison sociale</td>
+	    		<td>Siren</td>
+	    		<td>Email</td>
+	    		<td></td>
+	    	<tr>
+	    	#foreach($u in $clientService.listClient())
+	    	<tr>
+	    		<td><a href="clientDetails.html?identifiantClient=$u.getIdentifiantClient()">$u.getIdentifiantClient()</a></td>
+	    		<td>$u.getRaisonSociale()</td>
+	    		<td>$u.getSIREN()</td>
+	    		<td>$u.getEmail()</td>
+	    		<td><button class="removeClientButton" id="removeClientButton" title="Remove" onclick="removeClient('$u.getIdentifiantClient()')">Remove</button></td>
+	    	</tr>
+	    	#end
+    	</tbody>
+    </table>
+    
+    <p/>
+    
+    <a href="createClient.html">New client</a>
+    
+    </div>
+</div>
+
+<script type="text/javascript">
+
+	function removeClient(identifiantClient){
+		if(confirm('Are you sure ?')){ 
+			window.location='/pivotal/action/removeClient?identifiantClient='+identifiantClient;
+		}
+	}
+
+</script>
+
+#parse("footpage.html")

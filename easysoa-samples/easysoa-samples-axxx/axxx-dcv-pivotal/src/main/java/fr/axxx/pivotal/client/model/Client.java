@@ -132,6 +132,27 @@ public class Client extends GenericEntity<Client> {
     protected BigDecimal nbBenefN;
 
     /**
+     * Default constructor
+     */
+    public Client() {
+    }
+
+    /**
+     * 
+     * @param identifiantClient
+     * @param raisonSociale
+     * @param siren
+     * @param email
+     */
+    public Client(String identifiantClient, String raisonSociale, String siren, String email) {
+        this();
+        this.identifiantClient = identifiantClient;
+        this.raisonSociale = raisonSociale;
+        this.siren = siren;
+        this.email = email;
+    }    
+    
+    /**
      * Gets the value of the identifiantClient property.
      * 
      * @return

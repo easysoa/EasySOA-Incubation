@@ -1,0 +1,51 @@
+#parse("banner.html")
+#parse("header.html")
+#parse("roundedDiv.html")
+#set($user = $request.getSession().getAttribute("user"))
+#set($client = $clientService.getClient($identifiantClient))
+<div id="welcome-title">Welcome $user.getLogin()</div>
+<div id="rounded-div-content">
+	<div id="homePage">
+		Client details
+	
+		<p/>
+		<form method="POST" action="/pivotal/action/updateClient" id="formUpdateClient">
+		    <table style="margin-left:auto;margin-right:auto;">
+				<colgroup>
+			       	<col width="450px">
+			       	<col width="320px">
+			      	<col width="230px">
+		        </colgroup>
+			    <tbody>
+		            <tr>
+		                <td>Identifiant client :</td>
+		                <td>$client.getIdentifiantClient()<input type="hidden" name="identifiantClient" value="$client.getIdentifiantClient()"></td>
+		                <td></td>
+		            </tr>
+		            <tr>
+		                <td>Raison sociale :</td>
+		                <td><input class="validate[required,custom[onlyLetter]] text-input" type="text" name="raisonSociale" id="raisonSociale" value="$client.getRaisonSociale()"></td>
+		                <td id="raisonSocialeError" class="error"></td>
+		            </tr>
+		            <tr>
+		                <td>Siren :</td>
+		                <td><input class="validate[required,custom[onlyNumber]] text-input" type="text" name="siren" id="siren" value="$client.getSIREN()"></td>
+		                <td id="sirenError" class="error"></td>
+		            </tr>		            
+		            <tr>
+		                <td>Email:</td>
+		                <td><input class="validate[required] text-input" type="text" name="email" id="email" value="$client.getEmail()"></td>
+		                <td id="emailError" class="error"></td>
+		            </tr>
+		          	<tr>
+		            	<td><input id="cancelUpdate" name="cancelUpdate" type="submit" class="orange button" value="cancel update"></td>
+		            	<td><input id="submitUpdate" name="submitUpdate" type="submit" class="orange button" value="update client"></td>
+		            	<td><input id="submitCreationPrecompte" name="creationPrecompte" type="submit" class="orange button" value="Cr&eacute;er pr&eacute;compte"></td>
+		          	</tr>
+		        </tbody>
+		    </table>
+		</form>
+	
+    </div>
+</div>
+#parse("footpage.html")

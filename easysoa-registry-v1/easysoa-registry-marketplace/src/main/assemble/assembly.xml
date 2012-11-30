@@ -21,6 +21,11 @@
     </copy>
 
     <copy todir="${outdir}/marketplace/install/bundles">
+      <!-- Nuxeo Classification -->
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-classification-api::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-classification-core::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-classification-web::jar" />
+    	
       <!-- Core -->
       <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-doctypes-api::jar" />
       <artifact:resolveFile key="org.easysoa.registry:easysoa-registry-doctypes-core::jar" />

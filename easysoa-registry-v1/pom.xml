@@ -245,6 +245,11 @@
         <artifactId>nuxeo-classification-core</artifactId>
         <version>${nuxeo.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-classification-web</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
       
       <!-- JUNG (graph lib.) -->
       <dependency>

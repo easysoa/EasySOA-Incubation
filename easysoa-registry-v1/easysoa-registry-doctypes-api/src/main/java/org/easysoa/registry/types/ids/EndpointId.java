@@ -3,11 +3,15 @@ package org.easysoa.registry.types.ids;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.easysoa.registry.types.Endpoint;
 
 public class EndpointId extends SoaNodeId {
-
+	
+	@JsonIgnore
 	private final String environment;
+	
+	@JsonIgnore
 	private final String url;
 
 	public EndpointId(String environment, String url) {

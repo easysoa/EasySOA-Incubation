@@ -1,16 +1,17 @@
 package org.easysoa.registry;
 
 import org.apache.log4j.Logger;
+import org.easysoa.registry.facets.RestInfoFacet;
 import org.easysoa.registry.matching.MatchingQuery;
 import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.InformationService;
-import org.easysoa.registry.types.RestInfo;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -20,7 +21,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 
-    private static Logger logger = Logger.getLogger(ServiceMatchingListener.class);
+    private static Logger logger = Logger.getLogger(ServiceMatchingServiceImpl.class);
 	
 	/* (non-Javadoc)
 	 * @see org.easysoa.registry.ServiceMatchingService#findInformationServices(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel, org.nuxeo.ecm.core.api.DocumentModel, boolean)
@@ -57,9 +58,22 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 	    	query.addConstraintMatchCriteriaIfSet("platform:serviceLanguage", implServiceLanguage);
     	}
     	
+    	// Filter by component
+    	DocumentModel filterComponentModel = null;
     	if (filterComponent != null) {
-    		DocumentModel trueComponent = documentManager.getWorkingCopy(filterComponent.getRef());
-    		query.addCriteria(Component.XPATH_COMPONENT_ID + " = '" + trueComponent.getId() + "'");
+    		filterComponentModel = documentManager.getWorkingCopy(filterComponent.getRef());
+    	}
+    	else if (impl.getPropertyValue(ServiceImplementation.XPATH_COMPONENT_ID) != null) {
+    		try {
+	    		filterComponentModel = documentManager.getWorkingCopy(
+	    				new IdRef((String) impl.getPropertyValue(ServiceImplementation.XPATH_COMPONENT_ID)));
+    		}
+    		catch (Exception e) {
+    			logger.warn("Component ID stored in impl doesn't exist: " + impl.getPropertyValue(ServiceImplementation.XPATH_COMPONENT_ID));
+    		}
+    	}
+    	if (filterComponentModel != null) {
+    		query.addCriteria(Component.XPATH_COMPONENT_ID + " = '" + filterComponentModel.getId() + "'");
     	}
     	
     	/*
@@ -74,8 +88,10 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
     			" AND platform:serviceLanguage='" + implServiceLanguage + "'"; // if any ; OPT multiple options (consistency handled in logic)
     	*/
     	
-    	boolean isWsdl = impl.hasFacet("WsdlInfo") && impl.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME) != null;// OPT dynamic if possible when setting props in DiscoveryService ??
-    	boolean isRest = impl.hasFacet("RestInfo") && impl.getPropertyValue(RestInfo.XPATH_REST_PATH) != null;// OPT dynamic if possible when setting props in DiscoveryService ??
+    	boolean isWsdl = impl.hasFacet(ServiceImplementation.FACET_WSDLINFO)
+    			&& impl.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME) != null;// OPT dynamic if possible when setting props in DiscoveryService ??
+    	boolean isRest = impl.hasFacet(ServiceImplementation.FACET_RESTINFO)
+    			&& impl.getPropertyValue(RestInfoFacet.XPATH_REST_PATH) != null;// OPT dynamic if possible when setting props in DiscoveryService ??
     	// or platform:serviceDefinition=WSDL|JAXRS ?
     	
     	if (isWsdl) { // consistency logic
@@ -84,7 +100,7 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
         	query.addConstraintMatchCriteria(InformationService.XPATH_WSDL_PORTTYPE_NAME, implPortTypeName);
         			
     	} else if (isRest) {
-        	String implRestPath = (String) impl.getPropertyValue(RestInfo.XPATH_REST_PATH); // if JAXRS
+        	String implRestPath = (String) impl.getPropertyValue(RestInfoFacet.XPATH_REST_PATH); // if JAXRS
         	//OPT String implMediaType = (String) impl.getPropertyValue(ServiceImplementation.XPATH_REST_MEDIA_TYPE); // if JAXRS
     		//infoServiceQueryString +=
 					//" AND ecm:mixinType = 'RestInfo' AND " +
@@ -148,7 +164,7 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
         	query.addConstraintMatchCriteria(InformationService.XPATH_WSDL_PORTTYPE_NAME, implPortTypeName);
         			
     	} else if (isRest) {
-        	String implRestPath = (String) informationService.getPropertyValue(RestInfo.XPATH_REST_PATH); // if JAXRS
+        	String implRestPath = (String) informationService.getPropertyValue(RestInfoFacet.XPATH_REST_PATH); // if JAXRS
         	//OPT String implMediaType = (String) impl.getPropertyValue(ServiceImplementation.XPATH_REST_MEDIA_TYPE); // if JAXRS
     		//infoServiceQueryString +=
 					//" AND ecm:mixinType = 'RestInfo' AND " +
@@ -172,9 +188,9 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 	 */
 	public void linkInformationService(CoreSession documentManager, DocumentModel serviceImplModel,
 			String informationServiceUuid, boolean save) throws ClientException {
-		Object previousLinkValue = serviceImplModel.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE);
+		Object previousLinkValue = serviceImplModel.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE);
 		if (previousLinkValue == null || !previousLinkValue.equals(informationServiceUuid)) {
-	    	serviceImplModel.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE, informationServiceUuid);
+	    	serviceImplModel.setPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE, informationServiceUuid);
 			if (save) {
 				documentManager.saveDocument(serviceImplModel);
 				documentManager.save();

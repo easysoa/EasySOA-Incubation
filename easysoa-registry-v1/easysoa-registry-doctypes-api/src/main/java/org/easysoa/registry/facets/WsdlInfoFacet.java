@@ -1,6 +1,6 @@
-package org.easysoa.registry.types;
+package org.easysoa.registry.facets;
 
-public interface WsdlInfo {
+public interface WsdlInfoFacet {
 	
     static final String FACET_WSDLINFO = "WsdlInfo";
 

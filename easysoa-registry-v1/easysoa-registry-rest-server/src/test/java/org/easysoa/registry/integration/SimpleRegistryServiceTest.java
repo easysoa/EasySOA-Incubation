@@ -8,12 +8,12 @@ import java.util.HashMap;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
+import org.easysoa.registry.facets.WsdlInfoFacet;
 import org.easysoa.registry.rest.AbstractRestApiTest;
 import org.easysoa.registry.rest.integration.WSDLInformation;
 import org.easysoa.registry.rest.integration.WSDLInformations;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.SoaNode;
-import org.easysoa.registry.types.WsdlInfo;
 import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
@@ -84,7 +84,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
             
             discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_TEST_WITHOUT_POPRTTYPE_ID, isProperties, null);
             
-            isProperties.put(WsdlInfo.XPATH_WSDL_PORTTYPE_NAME, "{namespace}portType");
+            isProperties.put(WsdlInfoFacet.XPATH_WSDL_PORTTYPE_NAME, "{namespace}portType");
             discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_TEST_ID, isProperties, null);
             
             //isProperties.put(WsdlInfo.XPATH_WSDL_PORTTYPE_NAME, "{namespace}portType");

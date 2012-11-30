@@ -140,7 +140,8 @@ public class RepositoryManagementListener implements EventListener {
 		    	        // Copy metadata from inherited facets from parents
 		    			if (!DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
 		    				metamodelService.applyFacetInheritance(documentManager, sourceDocument, false);
-					    	if (DocumentEventTypes.DOCUMENT_MOVED.equals(event.getName())) {
+					    	if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())
+					    			|| DocumentEventTypes.DOCUMENT_MOVED.equals(event.getName())) {
 			    				documentManager.saveDocument(sourceDocument);
 					    	}
 		    			}

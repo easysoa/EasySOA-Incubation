@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+
+import org.easysoa.registry.facets.WsdlInfoFacet;
 import org.easysoa.registry.rest.integration.SimpleRegistryService;
 import org.easysoa.registry.rest.integration.WSDLInformations;
 import org.easysoa.registry.types.SoaNode;
-import org.easysoa.registry.types.WsdlInfo;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -48,7 +49,7 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
             query.append("WHERE dc:title like '?' " +
                     "OR " + SoaNode.XPATH_SOANAME + " like '?' " +
                             "OR dc:description like '?' " +
-                                    "OR " + WsdlInfo.XPATH_WSDL_PORTTYPE_NAME + " like '?'");
+                                    "OR " + WsdlInfoFacet.XPATH_WSDL_PORTTYPE_NAME + " like '?'");
             parameters.add(searchParam);
             parameters.add(searchParam);
             parameters.add(searchParam);
@@ -120,7 +121,7 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
             query.append("WHERE dc:title like '?' " +
                     "OR " + SoaNode.XPATH_SOANAME + " like '?' " +
                             "OR dc:description like '?' " +
-                                    "OR " + WsdlInfo.XPATH_WSDL_PORTTYPE_NAME + " like '?'");
+                                    "OR " + WsdlInfoFacet.XPATH_WSDL_PORTTYPE_NAME + " like '?'");
             parameters.add(searchParam);
             parameters.add(searchParam);
             parameters.add(searchParam);

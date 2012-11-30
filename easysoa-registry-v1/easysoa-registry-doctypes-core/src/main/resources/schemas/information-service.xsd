@@ -5,5 +5,6 @@
 
   <xs:element name="linkedBusinessService" type="xs:string" />
   <xs:element name="providerActor" type="xs:string" />
+  <xs:element name="linkedPlatform" type="xs:string" />
   
 </xs:schema>

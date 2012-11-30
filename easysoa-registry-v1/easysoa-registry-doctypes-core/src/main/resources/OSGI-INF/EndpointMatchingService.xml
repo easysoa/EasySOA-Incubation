@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.easysoa.registry.EndpointMatchingService" version="1.0">
+
+  <implementation class="org.easysoa.registry.EndpointMatchingServiceImpl" />
+
+  <service>
+    <provide interface="org.easysoa.registry.EndpointMatchingService" />
+  </service>
+
+</component>

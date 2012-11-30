@@ -68,7 +68,8 @@ public class RegistryApiImpl implements RegistryApi {
     public SoaNodeInformation[] query(String query) throws Exception {
         try {
             CoreSession documentManager = SessionFactory.getSession(request);
-            DocumentModelList modelList = documentManager.query(query + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER);
+        	DocumentService docService = Framework.getService(DocumentService.class);
+            DocumentModelList modelList = docService.query(documentManager, query + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER, true, false);
             SoaNodeInformation soaNodes[] = new SoaNodeInformation[modelList.size()];
             int i = 0;
             for (DocumentModel model : modelList) {

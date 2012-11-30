@@ -14,5 +14,10 @@
   <name>EasySOA Registry Doctypes API</name>
 
   <dependencies>
+    <!-- JSON mapping annotations -->
+    <dependency>
+      <groupId>org.codehaus.jackson</groupId>
+      <artifactId>jackson-mapper-asl</artifactId>
+    </dependency>
   </dependencies>
 </project>

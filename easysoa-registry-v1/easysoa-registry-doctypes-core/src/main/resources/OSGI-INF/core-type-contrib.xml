@@ -66,15 +66,6 @@
       <facet name="Folderish" />
     </doctype>
     
-    <doctype extends="SoaNode" name="ServiceImplementation">
-      <facet name="WsdlInfo" /><!-- schema name="wsdlinfo" / --><!-- TODO dynamic -->
-      <facet name="ServiceImplementationData" />
-      <facet name="Folderish" />
-      <facet name="ComponentData" />
-      <facet name="DeliverableType" />
-      <!-- dynamic : wsdlinfo, restinfo -->
-    </doctype>
-
     <!-- Systems hierarchies -->
     <doctype extends="Document" name="Repository">
       <schema name="common" />
@@ -133,6 +124,7 @@
       <facet name="Folderish" />
       <facet name="ComponentData" /><!-- TODO MDU not necessary ?! does not comprise Component id where impl has been successfully classified which is required-->
       <facet name="DeliverableType" />
+      <facet name="PlatformData" />
       <!-- dynamic : wsdlinfo, restinfo -->
     </doctype>
     <doctype extends="SoaNode" name="ServiceConsumption">

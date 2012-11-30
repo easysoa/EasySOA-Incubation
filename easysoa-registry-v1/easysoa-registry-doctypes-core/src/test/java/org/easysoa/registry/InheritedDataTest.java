@@ -139,10 +139,10 @@ public class InheritedDataTest extends AbstractRegistryTest {
 	public void testUuidSelectors() throws Exception {
 		// Link comp > infoservice < serviceimpl by UUIDs
 		DocumentModel infoServModel = documentService.create(documentManager, MYIS_ID);
-		myServiceImplModel.setPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE, infoServModel.getId());
+		myServiceImplModel.setPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE, infoServModel.getId());
 		documentManager.saveDocument(myServiceImplModel);
 		DocumentModel componentModel = documentService.create(documentManager, new SoaNodeId(Component.DOCTYPE, "mycomp"));
-		componentModel.setPropertyValue(Component.XPATH_LINKED_INFORMATION_SERVICE, infoServModel.getId());
+		componentModel.setPropertyValue(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE, infoServModel.getId());
 		documentManager.saveDocument(componentModel);
 		documentManager.save();
 		
@@ -150,10 +150,10 @@ public class InheritedDataTest extends AbstractRegistryTest {
 		DocumentModel myInfoServiceModel = documentService.find(documentManager, MYIS_ID);
 		Assert.assertEquals("Facet inheritance through UUID metadata must work",
 				infoServModel.getId(),
-				myInfoServiceModel.getPropertyValue(Component.XPATH_LINKED_INFORMATION_SERVICE));
+				myInfoServiceModel.getPropertyValue(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE));
 		myServiceImplModel = documentService.find(documentManager, MYIMPL_ID);
 		Assert.assertEquals("Facet inheritance through UUID metadata must work",
 				infoServModel.getId(),
-				myServiceImplModel.getPropertyValue(Component.XPATH_LINKED_INFORMATION_SERVICE));
+				myServiceImplModel.getPropertyValue(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE));
 	}
 }

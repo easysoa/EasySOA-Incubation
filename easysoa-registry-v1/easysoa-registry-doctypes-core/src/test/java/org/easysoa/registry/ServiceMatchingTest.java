@@ -6,6 +6,8 @@ import javax.inject.Inject;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.test.AbstractRegistryTest;
+import org.easysoa.registry.types.Component;
+import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
@@ -37,6 +39,9 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     public static final SoaNodeId INFORMATIONSERVICE_ID = 
     		new SoaNodeId(InformationService.DOCTYPE, "nsxxx:namexxx");
     
+    public static final SoaNodeId COMPONENT_ID = 
+    		new SoaNodeId(Component.DOCTYPE, "xxx component");
+    
     @Inject
     DocumentService documentService;
 
@@ -45,6 +50,8 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     
     @Inject
     SoaMetamodelService soaMetamodelService;
+
+	private static DocumentModel foundComponent;
     
     @Test
     public void testSimpleDiscovery() throws Exception {
@@ -58,19 +65,25 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	isProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
     	DocumentModel foundInfoServ = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_ID, isProperties, null);
 
+    	// Discover component
+    	HashMap<String, Object> compProperties = new HashMap<String, Object>();
+    	compProperties.put(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE, foundInfoServ.getId());
+    	foundComponent = discoveryService.runDiscovery(documentManager, COMPONENT_ID, compProperties, null);
+    	
     	// check
         foundInfoServ = documentService.find(documentManager, INFORMATIONSERVICE_ID);
         DocumentModel foundImpl = documentService.find(documentManager, FIRST_SERVICEIMPL_ID);
         Assert.assertEquals("Created information service must be linked to existing matching impls", foundInfoServ.getId(),
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
     	
     	// Discover another impl
+        implProperties.put(ServiceImplementation.XPATH_ISMOCK, "1");
         discoveryService.runDiscovery(documentManager, SECOND_SERVICEIMPL_ID, implProperties, null);
 
         // check
         foundImpl = documentService.find(documentManager, SECOND_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must be linked to existing matching information service", foundInfoServ.getId(),
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
     	
     	// Discover a non matching impl
     	HashMap<String, Object> impl3Properties = new HashMap<String, Object>();
@@ -80,19 +93,20 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // check
         foundImpl = documentService.find(documentManager, THIRD_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must not be linked to existing matching information service", null,
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
 
     	// Rediscover known is then impl
         foundInfoServ  = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_ID, isProperties, null);
         foundImpl = discoveryService.runDiscovery(documentManager, SECOND_SERVICEIMPL_ID, implProperties, null);
         Assert.assertEquals("Created impl must still be linked to existing matching information service", foundInfoServ.getId(),
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
     }
     
     @Test
     public void testSimpleDiscoveryWithCriteria() throws Exception {
         // Discover service impl that won't match platform criteria TODO SHOULD STILL MATCH AT IS LEVEL
     	HashMap<String, Object> implN1Properties = new HashMap<String, Object>();
+    	implN1Properties.put(ServiceImplementation.XPATH_ISMOCK, "1");
     	implN1Properties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
     	implN1Properties.put("impl:language", "Javascript"); // differs
     	//implN1Properties.put("impl:build", "Maven");
@@ -113,6 +127,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         
     	// Discover service impl that won't match platform criteria
     	HashMap<String, Object> implN2Properties = new HashMap<String, Object>();
+    	implN2Properties.put(ServiceImplementation.XPATH_ISMOCK, "1");
     	implN2Properties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
     	implN2Properties.put("impl:language", "Java");
     	//implN2Properties.put("impl:build", "Maven");
@@ -145,7 +160,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         foundInfoServ = documentService.find(documentManager, INFORMATIONSERVICE_ID);
         DocumentModel foundImpl = documentService.find(documentManager, FIRST_SERVICEIMPL_ID);
         Assert.assertEquals("Created information service must be linked to existing matching impls", foundInfoServ.getId(),
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
     	
     	// Discover another impl
         discoveryService.runDiscovery(documentManager, SECOND_SERVICEIMPL_ID, implProperties, null);
@@ -153,7 +168,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // check
         foundImpl = documentService.find(documentManager, SECOND_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must be linked to existing matching information service", foundInfoServ.getId(),
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
     	
     	// Discover a non matching impl
     	HashMap<String, Object> impl3Properties = new HashMap<String, Object>();
@@ -166,52 +181,53 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // check
         foundImpl = documentService.find(documentManager, THIRD_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must not be linked to existing matching information service", null,
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
 
     	// Discover another is, then impl that has 2 matches
         foundInfoServ = discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE, "nsxxx:namexxx" + "P1KO"), isProperties, null);
         foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx" + "P1KO"), implProperties, null);
         Assert.assertEquals("Created impl must not be linked because there is too much matching information services", null,
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
     	
         // Discover endpoint that matches no is or impl (use matching dashboard TODO mka)
         HashMap<String, Object> epProperties = new HashMap<String, Object>();
         DocumentModel foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("Production", "staging:http://localhost:8080/cxf/WS1"), epProperties, null);
         Assert.assertEquals("Created endpoint must not be linked to existing matching information service", null,
-        		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+        		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
 
-        /*
+        
         // TODO LATER Discover endpoint that matches is (on url-extracted service name), but no impl LATER
-        foundEndpoint = discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "staging:http://localhost:8080/cxf/name"), epProperties, null);
+        foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("staging", "http://localhost:8080/cxf/name"), epProperties, null);
         //Assert.assertEquals("Created endpoint must be linked to existing matching information service", foundInfoServ.getId(),
         //		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
 
         // Discover endpoint that matches is (on provided portType), but no impl
-        epProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
-        foundEndpoint = discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "staging:http://localhost:8080/cxf/WS2"), epProperties, null);
-        Assert.assertEquals("Created endpoint must be linked to existing matching information service", foundInfoServ.getId(),
-        		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+        epProperties.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
+        epProperties.put(Endpoint.XPATH_COMPONENT_ID, foundComponent.getId());
+        foundEndpoint = discoveryService.runDiscovery(documentManager,  new EndpointId("staging", "http://localhost:8080/cxf/WS2"), epProperties, null);
+        Assert.assertNotNull("Created endpoint must be linked to existing matching information service",
+        		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
         
         // Discover endpoint that matches impl (TODO how, by parent ?? matching ?? component / platform ?)
-        foundEndpoint = discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "staging:http://localhost:8080/cxf/WS3"), epProperties, null);
-        Assert.assertEquals("Created endpoint must be linked to existing matching information service", foundInfoServ.getId(),
-        		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+        foundEndpoint = discoveryService.runDiscovery(documentManager,  new EndpointId("staging", "http://localhost:8080/cxf/WS3"), epProperties, null);
+        Assert.assertNotNull("Created endpoint must be linked to existing matching information service",
+        		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
 
         
     	// Discover a non matching impl because of provided component id and check
         // TODO how is provided component id : in DiscoveryService (but then put matching algo there),
         // or on impl then how to check it (in discoService) and how to handle inconsistencies with metas (validation ?)
         // or on impl as metas with platformUrl as platform id
-    	implProperties.put("impl's(candidate)componentId", "zz");
+    	implProperties.put(ServiceImplementation.XPATH_COMPONENT_ID, "id-that-doesnt-exist");
     	foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nszzz:namezzz=servicenamezzz" + "C1KO"), implProperties, null);
         Assert.assertEquals("Created impl must not be linked to existing matching information service because of provided component id", null,
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
 
     	// Discover a matching impl because of provided component id and check
-        implProperties.put("impl's(candidate)componentId", "zz");
+        implProperties.put(ServiceImplementation.XPATH_COMPONENT_ID, foundComponent.getId());
     	foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nszzz:namezzz=servicenamezzz" + "C1OK"), implProperties, null);
-        Assert.assertEquals("Created impl must be linked to existing matching information service because of provided component id", foundInfoServ.getId(),
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
+        Assert.assertNotNull("Created impl must be linked to existing matching information service because of provided component id",
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
         
         // discover endpoint matching guided by component / platform (criteria)
         // ex. in web disco :
@@ -221,7 +237,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // 2. choose (impl) platform (id, criteria ?) (because you know it's this techno / runs & is dev'd on it), use it to match to impl, then / else match is using this new info (platform matches)
         // 3. both
         // TODO component path actor:cpt, isMock as "test" platform
-        discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "staging:http://localhost:8080/cxf"), epProperties, null);
+        discoveryService.runDiscovery(documentManager, new EndpointId("staging", "http://localhost:8080/cxf"), epProperties, null);
         // OK match impl with is on is' component constraints (including platform:deliverableRepositoryUrl that can act as platform id), guided by impl's own metas
         // still TODO set link to Component & isProxy
         // TODO match guided by provided component id : if provided, use it as additional criteria
@@ -245,8 +261,6 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	// if single matched link to it
     	// (if more than one result, use matching dashboard)
     	// if none, create impl and do as above : 1. and fill component, else 2. and link to platform, else 3. 
-    	
-         */
     }
     
     @Test

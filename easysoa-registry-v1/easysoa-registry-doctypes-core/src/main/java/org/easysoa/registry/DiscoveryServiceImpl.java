@@ -68,9 +68,9 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         // only now that props are OK, create or save document
         // (required below for handling parents by creating proxies to it)
         if (shouldCreate) {
-        	documentManager.createDocument(documentModel);
-        } else {
-        	documentManager.saveDocument(documentModel);
+        	documentModel = documentManager.createDocument(documentModel);
+        } else if (properties != null && !properties.isEmpty()) {
+        	documentModel = documentManager.saveDocument(documentModel);
         }
         
         // Link to parent documents

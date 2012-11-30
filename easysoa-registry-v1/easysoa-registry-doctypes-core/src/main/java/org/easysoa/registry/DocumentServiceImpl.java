@@ -60,8 +60,6 @@ public class DocumentServiceImpl implements DocumentService {
             // Create proxy if needed (but make sure the parent is the instance of the repository,
             // otherwise the child proxy will only be visible in the context of the parent proxy)
             if (createProxy) {
-            }
-            if (createProxy) {
                 PathRef parentRef = new PathRef(parentPath);
                 DocumentModel parentModel = documentManager.getDocument(parentRef);
                 if (parentModel != null) {

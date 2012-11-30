@@ -1,4 +1,4 @@
-package org.easysoa.registry.types;
+package org.easysoa.registry.facets;
 
 /**
  * Facet
@@ -6,7 +6,7 @@ package org.easysoa.registry.types;
  * @author mdutoo
  *
  */
-public interface RestInfo {
+public interface RestInfoFacet {
 	
 	static final String FACET_RESTINFO = "RestInfo";
 

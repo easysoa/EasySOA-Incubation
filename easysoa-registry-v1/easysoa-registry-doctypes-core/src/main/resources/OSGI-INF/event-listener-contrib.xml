@@ -15,10 +15,10 @@
       <event>documentModified</event>
       <event>aboutToRemove</event>
     </listener>
-    <listener name="serviceMatchingListener" class="org.easysoa.registry.ServiceMatchingListener"
+    <listener name="soaNodeMatchingListener" class="org.easysoa.registry.SoaNodeMatchingListener"
     	priority="156">
       <event>documentCreated</event>
-      <event>documentModified</event><!-- rather than beforeDocumentModification otherwise loops ! -->
+      <event>documentModified</event>
     </listener>
     
     <listener name="wsdlParsingListener" class="org.easysoa.registry.types.listeners.WSDLParsingListener"

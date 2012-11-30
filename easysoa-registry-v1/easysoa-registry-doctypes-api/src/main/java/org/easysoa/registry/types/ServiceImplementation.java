@@ -2,6 +2,11 @@ package org.easysoa.registry.types;
 
 import java.util.List;
 
+import org.easysoa.registry.facets.ArchitectureComponentFacet;
+import org.easysoa.registry.facets.PlatformDataFacet;
+import org.easysoa.registry.facets.RestInfoFacet;
+import org.easysoa.registry.facets.ServiceImplementationDataFacet;
+import org.easysoa.registry.facets.WsdlInfoFacet;
 import org.easysoa.registry.types.ids.ServiceImplementationId;
 
 
@@ -13,33 +18,10 @@ import org.easysoa.registry.types.ids.ServiceImplementationId;
  * @author mkalam-alami
  *
  */
-public interface ServiceImplementation extends SoaNode, RestInfo, WsdlInfo {
+public interface ServiceImplementation extends SoaNode, RestInfoFacet, WsdlInfoFacet,
+	ArchitectureComponentFacet, PlatformDataFacet, ServiceImplementationDataFacet {
 	
     static final String DOCTYPE = "ServiceImplementation";
-
-	static final String XPATH_LANGUAGE = "impl:language";
-	
-    static final String XPATH_TECHNOLOGY = "impl:technology";
-    
-    static final String XPATH_OPERATIONS = "impl:operations";
-    
-    static final String XPATH_DOCUMENTATION = "impl:documentation";
-
-    static final String XPATH_ISMOCK = "impl:ismock";
-
-    static final String XPATH_TESTS = "impl:tests";
-
-    static final String XPATH_LINKED_INFORMATION_SERVICE = "impl:linkedInformationService";
-
-    static final String XPATH_COMPONENT = "impl:component"; // nuxeo id ; component that this impl fills ; TODO rather candidate also ?
-
-    static final String XPATH_PLATFORM = "impl:platform"; // nuxeo id ; this impl's dev platform ; TODO rather candidate also ?
-
-    static final String OPERATION_NAME = "operationName";
-    
-    static final String OPERATION_PARAMETERS = "operationParameters";
-    
-    static final String OPERATION_DOCUMENTATION = "operationDocumentation";
     
     ServiceImplementationId getParsedSoaName() throws Exception;
 

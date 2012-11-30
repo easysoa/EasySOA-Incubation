@@ -1,7 +1,7 @@
 package org.easysoa.registry.types.listeners;
 
 import org.apache.log4j.Logger;
-import org.easysoa.registry.ServiceMatchingListener;
+import org.easysoa.registry.SoaNodeMatchingListener;
 import org.easysoa.registry.types.Component;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -19,7 +19,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  */
 public class ComponentListener implements EventListener {
 
-    private static Logger logger = Logger.getLogger(ServiceMatchingListener.class);
+    private static Logger logger = Logger.getLogger(SoaNodeMatchingListener.class);
     
 	@Override
 	public void handleEvent(Event event) throws ClientException {

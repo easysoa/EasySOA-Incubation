@@ -1,6 +1,7 @@
 package org.easysoa.registry;
 
 import org.apache.log4j.Logger;
+import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -18,9 +19,9 @@ import org.nuxeo.runtime.api.Framework;
  * @author mkalam-alami
  *
  */
-public class ServiceMatchingListener implements EventListener {
+public class SoaNodeMatchingListener implements EventListener {
 
-    private static Logger logger = Logger.getLogger(ServiceMatchingListener.class);
+    private static Logger logger = Logger.getLogger(SoaNodeMatchingListener.class);
     
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -34,30 +35,55 @@ public class ServiceMatchingListener implements EventListener {
         DocumentModel sourceDocument = documentContext.getSourceDocument();
         CoreSession documentManager = documentContext.getCoreSession();
 		DocumentService documentService;
-		ServiceMatchingService matchingService;
+		ServiceMatchingService serviceMatchingService;
+		EndpointMatchingService endpointMatchingService;
 		try {
 			documentService = Framework.getService(DocumentService.class);
-			matchingService = Framework.getService(ServiceMatchingService.class);
+			serviceMatchingService = Framework.getService(ServiceMatchingService.class);
+			endpointMatchingService = Framework.getService(EndpointMatchingService.class);
 		} catch (Exception e) {
 			logger.error("Document service unavailable, aborting");
 			return;
 		}
 
+        // Endpoint: Link to service implementation
+        if (documentService.isTypeOrSubtype(documentManager, sourceDocument.getType(), Endpoint.DOCTYPE)) {
+        	findAndMatchServiceImplementation(documentManager, documentService, endpointMatchingService, sourceDocument);
+        }
+        
         // Service impl: Link to information service
         if (documentService.isTypeOrSubtype(documentManager, sourceDocument.getType(), ServiceImplementation.DOCTYPE)) {
-        	findAndMatchInformationService(documentManager, matchingService, sourceDocument);
+        	findAndMatchInformationService(documentManager, serviceMatchingService, sourceDocument);
         }
 
         // Information service: Find matching serviceimpls
         if (documentService.isTypeOrSubtype(documentManager, sourceDocument.getType(), InformationService.DOCTYPE)) {
-        	DocumentModelList foundServiceImpls = matchingService.findServiceImplementations(documentManager, sourceDocument);
+        	DocumentModelList foundServiceImpls = serviceMatchingService.findServiceImplementations(documentManager, sourceDocument);
         	if (foundServiceImpls.size() > 0) {
             	for (DocumentModel serviceImpl : foundServiceImpls) {
-            		findAndMatchInformationService(documentManager, matchingService, serviceImpl);
+            		findAndMatchInformationService(documentManager, serviceMatchingService, serviceImpl);
             	}
         	}
         }
         
+	}
+
+	private void findAndMatchServiceImplementation(CoreSession documentManager,
+			DocumentService docService, EndpointMatchingService matchingService,
+			DocumentModel sourceDocument) throws ClientException {
+		DocumentModelList foundImpls = matchingService.findServiceImpls(
+				documentManager, sourceDocument, null, false);
+		if (foundImpls.size() == 1) {
+			try {
+				matchingService.linkServiceImplementation(documentManager,
+						docService.createSoaNodeId(sourceDocument),
+						docService.createSoaNodeId(foundImpls.get(0)), true);
+			}
+			catch (Exception e) {
+				logger.error(e);
+			}
+		}
+		
 	}
 
 	private void findAndMatchInformationService(CoreSession documentManager,

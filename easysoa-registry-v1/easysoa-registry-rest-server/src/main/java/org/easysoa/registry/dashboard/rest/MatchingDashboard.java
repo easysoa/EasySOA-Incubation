@@ -54,7 +54,7 @@ public class MatchingDashboard extends ModuleRoot {
  
 			// Find matched impls & their infoservice
 			DocumentModelList matchedImpls = service.query(session, "SELECT * FROM " + ServiceImplementation.DOCTYPE + 
-					 " WHERE " + ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE + " IS NOT NULL",
+					 " WHERE " + ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE + " IS NOT NULL",
 					 true, false);
 			view.arg("matchedImpls", matchedImpls);
 			view.arg("infoServicesById", infoServicesById);
@@ -63,7 +63,7 @@ public class MatchingDashboard extends ModuleRoot {
 			Map<String, DocumentModel> unimplementedServsMap = new HashMap<String, DocumentModel>(infoServicesById);
 			for (DocumentModel matchedImpl : matchedImpls) {
 				unimplementedServsMap.remove(
-						matchedImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE)
+						matchedImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE)
 				);
 			}
 			view.arg("unimplementedServs", unimplementedServsMap.values());
@@ -71,7 +71,7 @@ public class MatchingDashboard extends ModuleRoot {
 			// List impls without infoservice
 			DocumentModelList servWithoutSpecs = service.query(session, 
 					 "SELECT * FROM " + ServiceImplementation.DOCTYPE + 
-					 " WHERE " + ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE + " IS NULL",
+					 " WHERE " + ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE + " IS NULL",
 					 true, false);
 			view.arg("servWithoutSpecs", servWithoutSpecs);
 			
@@ -161,7 +161,7 @@ public class MatchingDashboard extends ModuleRoot {
 	    			newInfoServiceId = infoServiceId; // Create link
 	    		}
 	    		else {
-					if (serviceImpl.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE) == null) {
+					if (serviceImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE) == null) {
 			    		throw new Exception("Information Service not selected");
 					}
 	    			newInfoServiceId = null; // Destroy link

@@ -4,5 +4,6 @@
   xmlns:nxs="http://www.nuxeo.org/ecm/schemas/endp/">
   
   <xs:element name="url" type="xs:string"/>
+  <xs:element name="linkedPlatform" type="xs:string" />
   
 </xs:schema>

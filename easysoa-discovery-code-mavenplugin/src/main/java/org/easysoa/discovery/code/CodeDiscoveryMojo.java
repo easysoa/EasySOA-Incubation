@@ -24,6 +24,7 @@ import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.Deliverable;
 
 import com.sun.jersey.api.client.ClientHandlerException;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.thoughtworks.qdox.JavaDocBuilder;
 import com.thoughtworks.qdox.model.JavaSource;
 
@@ -144,6 +145,9 @@ public class CodeDiscoveryMojo extends AbstractMojo {
         
         }
         catch (ClientHandlerException e) {
+            log.error("Failed to connect to Nuxeo", e);
+        }
+        catch (UniformInterfaceException e) {
             log.error("Failed to connect to Nuxeo", e);
         }
         catch (Exception e) {

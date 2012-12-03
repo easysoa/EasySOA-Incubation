@@ -89,9 +89,12 @@ public interface SimpleRegistryService {
     /**
      * TODO jguillemotte
      * 
-     * Returns services of the given subProject that match the search, along with
-     * the array of all their endpoints :
+     * Returns services of the given subProject that match the search, for each
+     * along with the array of all its endpoints :
      * [environmentName, endpointUrl, (seen)wsdlDownloadUrl]
+     * 
+     * This is a convenience method to avoid to do a lot of queries. It is
+     * especially useful to external platforms that want to synchronize all endpoints.
      * 
      * Its implementation does a first query on services as usual, then does a query
      * that finds Endpoints whose serviceId is among those (reuse & refactor in a util

@@ -142,7 +142,7 @@ td:first-child {
 		Vous voulez :
 		<ul>
 			<li>vous en servir par une application</li>
-			<li>prototyper)</li>
+			<li>(prototyper)</li>
 			<li>développer avec[doc,essai en ligne, test endpoint, simulation]</li>
 			<li>le développer(specs, protos(mocks))</li>
 		</ul>

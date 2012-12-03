@@ -55,10 +55,10 @@ public class ServiceDocumentationControllerTest extends AbstractRestApiTest {
         // Fill repository for all tests :
         
         // endpoints
-        SoaNodeId endpointId = new SoaNodeId(Endpoint.DOCTYPE, "MyEndpoint");
+        SoaNodeId endpointId = new SoaNodeId(Endpoint.DOCTYPE, "test:http://localhost:MyEndpoint");
         discoveryService.runDiscovery(documentManager, endpointId, null, null);
-        discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "MyEndpoint1"), null, null);
-        discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "MyEndpoint2"), null, null);
+        discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "test:http://localhost:MyEndpoint1"), null, null);
+        discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "test:http://localhost:MyEndpoint2"), null, null);
         
 		// service impls
         SoaNodeId serviceImplId = new SoaNodeId(ServiceImplementation.DOCTYPE, "MyServiceImpl");

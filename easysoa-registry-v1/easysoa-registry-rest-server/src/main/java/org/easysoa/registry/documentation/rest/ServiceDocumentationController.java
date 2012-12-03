@@ -77,9 +77,9 @@ public class ServiceDocumentationController extends ModuleRoot {
         DocumentModelList services = session.query("SELECT " + SERVICE_LIST_PROPS + " FROM " + InformationService.DOCTYPE + IndicatorProvider.NXQL_WHERE_NO_PROXY);
         DocumentModelList tags = session.query("SELECT " + "*" + " FROM " + TaggingFolder.DOCTYPE + IndicatorProvider.NXQL_WHERE_NO_PROXY);
         DocumentModelList serviceProxies = session.query("SELECT " + "*" + " FROM " + InformationService.DOCTYPE + IndicatorProvider.NXQL_WHERE_PROXY
-                + IndicatorProvider.NXQL_AND + IndicatorProvider.NXQL_PATH_STARTSWITH + "/default-domain/repository/TaggingFolder" + "'");
+                + IndicatorProvider.NXQL_AND + IndicatorProvider.NXQL_PATH_STARTSWITH + "/default-domain/repository" + TaggingFolder.DOCTYPE + "'");
         //DocumentModelList serviceProxyIds = session.query("SELECT " + "ecm:uuid, ecm:parentid" + " FROM " + Service.DOCTYPE + IndicatorProvider.NXQL_WHERE_PROXY
-        //        + IndicatorProvider.NXQL_AND + IndicatorProvider.NXQL_PATH_STARTSWITH + "/default-domain/repository/TaggingFolder" + "'");
+        //        + IndicatorProvider.NXQL_AND + IndicatorProvider.NXQL_PATH_STARTSWITH + "/default-domain/repository" + TaggingFolder.DOCTYPE + "'");
         
         // TODO id to group / aggregate, use... http://stackoverflow.com/questions/5023743/does-guava-have-an-equivalent-to-pythons-reduce-function
         // collection utils :
@@ -150,7 +150,7 @@ public class ServiceDocumentationController extends ModuleRoot {
                     + SoftwareComponentIndicatorProvider.getProxiedIdLiteralList(session,
                             session.query(IndicatorProvider.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
                     + IndicatorProvider.NXQL_WHERE_PROXY + IndicatorProvider.NXQL_AND
-                    + IndicatorProvider.NXQL_PATH_STARTSWITH + "/default-domain/repository/Service" + "'"
+                    + IndicatorProvider.NXQL_PATH_STARTSWITH + "/default-domain/repository/" + InformationService.DOCTYPE + "'"
                     + IndicatorProvider.NXQL_AND + "ecm:parentId='" + service.getId() + "'"
                     + IndicatorProvider.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + " IS NULL"))); // WARNING use IS NULL instead of !='true'
             List<DocumentModel> mockImpls = session.query(IndicatorProvider.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
@@ -158,7 +158,7 @@ public class ServiceDocumentationController extends ModuleRoot {
                     + SoftwareComponentIndicatorProvider.getProxiedIdLiteralList(session,
                             session.query(IndicatorProvider.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
                     + IndicatorProvider.NXQL_WHERE_PROXY + IndicatorProvider.NXQL_AND
-                    + IndicatorProvider.NXQL_PATH_STARTSWITH + "/default-domain/repository/Service" + "'"
+                    + IndicatorProvider.NXQL_PATH_STARTSWITH + "/default-domain/repository/" + InformationService.DOCTYPE + "'"
                     + IndicatorProvider.NXQL_AND + "ecm:parentId='" + service.getId() + "'"
                     + IndicatorProvider.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + "='true'")));
             actualImpls = session.query(IndicatorProvider.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE

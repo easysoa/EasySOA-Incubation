@@ -1,6 +1,6 @@
 package com.axxx.dps.demo;
 
-import org.easysoa.registry.SoaNodeId;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.rest.RegistryApi;
 import org.easysoa.registry.rest.client.ClientBuilder;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;

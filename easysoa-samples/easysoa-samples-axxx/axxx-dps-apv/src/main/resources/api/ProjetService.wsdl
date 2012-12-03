@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions name="ProjetServiceImpl" targetNamespace="http://www.axxx.com/dps/apv" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.axxx.com/dps/apv" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+<xs:schema elementFormDefault="unqualified" targetNamespace="http://www.axxx.com/dps/apv" version="1.0" xmlns:tns="http://www.axxx.com/dps/apv" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:element name="publish" type="tns:publish"/>
+<xs:element name="publishResponse" type="tns:publishResponse"/>
+<xs:complexType name="publish">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="projetId" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+<xs:complexType name="publishResponse">
+    <xs:sequence>
+      <xs:element form="qualified" name="success" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="publishResponse">
+    <wsdl:part element="tns:publishResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="publish">
+    <wsdl:part element="tns:publish" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ProjetService">
+    <wsdl:operation name="publish">
+      <wsdl:input message="tns:publish" name="publish">
+    </wsdl:input>
+      <wsdl:output message="tns:publishResponse" name="publishResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ProjetServiceImplSoapBinding" type="tns:ProjetService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="publish">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="publish">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="publishResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ProjetServiceImpl">
+    <wsdl:port binding="tns:ProjetServiceImplSoapBinding" name="ProjetServicePort">
+      <soap:address location="http://localhost:8076/services/ProjetService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

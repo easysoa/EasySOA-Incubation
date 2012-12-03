@@ -9,6 +9,8 @@ import javax.ws.rs.core.MediaType;
 /**
  * Simple registry service interface
  * 
+ * Architecture : see https://github.com/easysoa/EasySOA/wiki/Easysoa-integration-architecture---development-platform
+ * 
  * @author jguillemotte
  *
  */
@@ -78,6 +80,31 @@ public interface SimpleRegistryService {
     @Produces(MediaType.APPLICATION_JSON)
     // TODO : change return type for EndpointInformation or common type
     public WSDLInformations queryEndpoints(@QueryParam("search") String search, 
-            @QueryParam("subProjectId") String subProjectId ) throws Exception;
+            @QueryParam("subProjectId") String subProjectId/*,
+            @QueryParam("platformServiceStandard") String platformServiceStandard,
+            @QueryParam("wsBindingTransport") String wsBindingTransport,
+            @QueryParam("platform") String platform,
+            @QueryParam("environment") String environment*/ ) throws Exception;
+    
+    /**
+     * TODO jguillemotte
+     * 
+     * Returns services of the given subProject that match the search, along with
+     * the array of all their endpoints :
+     * [environmentName, endpointUrl, (seen)wsdlDownloadUrl]
+     * 
+     * Its implementation does a first query on services as usual, then does a query
+     * that finds Endpoints whose serviceId is among those (reuse & refactor in a util
+     * SoftwareComponentIndicatorProvider.getIdLiteralList()) and fills the result
+     * array.
+     *  
+     * @search if null, returns all of them
+     */
+    /*@GET
+    @Path("/queryServicesWithEndpoints")
+    @Produces(MediaType.APPLICATION_JSON)
+    // TODO : change return type for EndpointInformation or common type
+    public WSDLInformations queryServicesWithEndpoints(@QueryParam("search") String search, 
+            @QueryParam("subProjectId") String subProjectId ) throws Exception;*/
    
 }

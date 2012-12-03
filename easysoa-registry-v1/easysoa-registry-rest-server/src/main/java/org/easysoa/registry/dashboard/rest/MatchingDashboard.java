@@ -91,7 +91,7 @@ public class MatchingDashboard extends ModuleRoot {
 
 	@GET
 	@Path("components/{uuid}")
-	public Template suggestComponents(@PathParam("serviceImplUuid") String uuid) throws Exception {
+	public Template suggestComponents(@PathParam("uuid") String uuid) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
 		Template view = viewDashboard();
 		view.arg("components", fetchComponents(session));
@@ -124,7 +124,7 @@ public class MatchingDashboard extends ModuleRoot {
 	}
 
 	@GET
-	@Path("impl/suggest/{uuid}/{componentUuid}")
+	@Path("suggest/{uuid}/{componentUuid}")
 	public Template suggestServicesFromComponent(@PathParam("uuid") String uuid,
 			@PathParam("componentUuid") String componentUuid) throws Exception {
         CoreSession session = SessionFactory.getSession(request);

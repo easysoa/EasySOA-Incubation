@@ -25,6 +25,12 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 			DocumentModel endpoint, DocumentModel filterComponent,
 			boolean skipPlatformMatching) throws ClientException {
 		
+    	// endpoint :
+    	// find impl on IS req itf (portType) in provided component if any and whose impl platform match the endpoint's platform (criteria) if any ;
+    	// if single matched link to it
+    	// (if more than one result, use matching dashboard)
+    	// if none, create impl and do as above : 1. and fill component, else 2. and link to platform, else 3. 
+		
 		// Init
 		DocumentService documentService;
 		try {

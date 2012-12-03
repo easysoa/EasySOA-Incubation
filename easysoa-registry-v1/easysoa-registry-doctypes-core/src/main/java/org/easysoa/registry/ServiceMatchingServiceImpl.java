@@ -28,7 +28,16 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 	 */
 	public DocumentModelList findInformationServices(CoreSession documentManager, DocumentModel impl,
 			DocumentModel filterComponent, boolean skipPlatformMatching) throws ClientException {
-
+		
+    	// impl :
+    	// 1. find IS on IS req itf (portType) in provided component if anyand whose component's platform match the impl's platform (criteria) if any ;
+    	// (if more than one result, use matching dashboard)
+    	// if single result, link impl to IS and to component (that it fills)
+    	// 2. if none, find IS on IS req itf (portType) in provided component (i.e. this impl is not the actual one) ;
+    	// (if more than one result, use matching dashboard)
+    	// if single result, link impl to IS, then attempt to find platform (single query result) to link to else go to matching dashboard 
+    	// 3. if none ("technical" service), create service (?) and attempt to find platform (single query result) to link to else go to matching dashboard
+ 
 		DocumentService documentService;
 		try {
 			documentService = Framework.getService(DocumentService.class);

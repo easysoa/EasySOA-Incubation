@@ -5,7 +5,7 @@
 	<title>EasySOA Matching dashboard</title>
 	<meta charset="utf-8" />
 	<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />
-	<link rel="shortcut icon" type="image/png" href="skin/favicon.ico" /> 
+	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" /> 
 	<script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery.js"></script>
 	<style type="text/css">
 	  .clickable:hover { cursor: pointer; background-color: #FFC; }

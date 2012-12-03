@@ -23,8 +23,17 @@ public interface EndpointMatchingService {
 			DocumentModel endpoint, DocumentModel filterComponent,
 			boolean skipPlatformMatching) throws ClientException;
 
+	DocumentModelList findInformationServices(CoreSession documentManager,
+			DocumentModel endpoint, DocumentModel filterComponent)
+			throws ClientException;
+
 	void linkServiceImplementation(CoreSession documentManager,
 			SoaNodeId endpointId, SoaNodeId implId,
 			boolean save) throws Exception;
+
+	void linkInformationServiceThroughPlaceholder(CoreSession documentManager,
+			DocumentModel endpoint, DocumentModel informationService,
+			boolean save) throws ClientException, Exception;
+
 
 }

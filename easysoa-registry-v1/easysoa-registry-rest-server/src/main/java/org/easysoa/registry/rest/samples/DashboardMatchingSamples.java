@@ -13,6 +13,7 @@ import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
+import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.InformationServiceId;
@@ -59,10 +60,22 @@ public class DashboardMatchingSamples {
 			logger.info("Information service " + i);
 		}
 		
+		// Create platforms
+		properties.clear();
+		properties.put(Platform.XPATH_TITLE, "FraSCAti");
+		properties.put(Platform.XPATH_DELIVERABLE_NATURE, "FraSCAti Studio");
+		new SoaNodeInformation(new SoaNodeId(Platform.DOCTYPE, "FraSCAti"), properties, null);
+		
+		properties.clear();
+		properties.put(Platform.XPATH_TITLE, "Java");
+		properties.put(Platform.XPATH_DELIVERABLE_NATURE, "Maven");
+		new SoaNodeInformation(new SoaNodeId(Platform.DOCTYPE, "Java"), properties, null);
+		
 		// Create service impls
 		for (int i = 3; i < 6; i++) {
 			properties.clear();
 			properties.put(ServiceImplementation.XPATH_TITLE, "My Service Impl " + i);
+			properties.put(ServiceImplementation.XPATH_DELIVERABLE_NATURE, (i < 5) ? "Maven" : "FraSCAti Studio");
 			registryApi.type(MediaType.APPLICATION_JSON_TYPE).post(new SoaNodeInformation(new SoaNodeId(ServiceImplementation.DOCTYPE, 
 					new ServiceImplementationId(ServiceIdentifierType.WEB_SERVICE, "namespace", "itf" + i, "impl" + i).toString()),
 					properties, null)); // The informationService will be set automatically

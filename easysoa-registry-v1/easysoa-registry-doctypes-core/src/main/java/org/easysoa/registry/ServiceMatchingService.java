@@ -43,4 +43,7 @@ public interface ServiceMatchingService {
 			DocumentModel serviceImplModel, String informationServiceUuid,
 			boolean save) throws ClientException;
 
+	DocumentModelList findPlatforms(CoreSession documentManager,
+			DocumentModel modelWithPlatformFacet) throws ClientException;
+
 }

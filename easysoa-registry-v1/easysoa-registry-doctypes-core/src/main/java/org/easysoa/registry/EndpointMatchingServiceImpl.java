@@ -19,7 +19,8 @@ import org.nuxeo.runtime.api.Framework;
 
 public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 
-    private static Logger logger = Logger.getLogger(EndpointMatchingServiceImpl.class);
+    @SuppressWarnings("unused")
+	private static Logger logger = Logger.getLogger(EndpointMatchingServiceImpl.class);
     
 	public DocumentModelList findServiceImpls(CoreSession documentManager,
 			DocumentModel endpoint, DocumentModel filterComponent,
@@ -32,14 +33,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     	// if none, create impl and do as above : 1. and fill component, else 2. and link to platform, else 3. 
 		
 		// Init
-		DocumentService documentService;
-		try {
-			documentService = Framework.getService(DocumentService.class);
-		} catch (Exception e) {
-			logger.error("Document service unavailable, aborting");
-			return null;
-		}
-
+		DocumentService documentService = getDocumentService();
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE);
 
     	// Match platform properties
@@ -60,7 +54,57 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     	boolean isWsdl = endpoint.hasFacet(Endpoint.FACET_WSDLINFO) && endpoint.getPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME) != null;
     	boolean isRest = endpoint.hasFacet(Endpoint.FACET_RESTINFO) && endpoint.getPropertyValue(Endpoint.XPATH_REST_PATH) != null;    	
     	if (isWsdl) {
-        	String endpointPortTypeName = (String) endpoint.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME); // if JAXWS
+        	String endpointPortTypeName = (String) endpoint.getPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME); // if JAXWS
+        	query.addCriteria("ecm:mixinType = '" + Endpoint.FACET_WSDLINFO + "'");
+        	query.addConstraintMatchCriteria(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, endpointPortTypeName);
+    	} else if (isRest) {
+        	query.addCriteria("ecm:mixinType = '" + Endpoint.FACET_RESTINFO + "'");
+        	//String endpointRestPath = (String) endpoint.getPropertyValue(RestInfoFacet.XPATH_REST_PATH); // if JAXRS
+        	//OPT String endpointMediaType = (String) endpoint.getPropertyValue(Endpoint.XPATH_REST_MEDIA_TYPE); // if JAXRS
+    		//infoServiceQueryString +=
+					//" AND ecm:mixinType = 'RestInfo' AND " +
+        			//" AND " ServiceImplementation.XPATH_REST_PATH + "='" + endpointRestPath + "'" +
+        			//OPT " AND " ServiceImplementation.XPATH_REST_MEDIA_TYPE + "='" + endpointMediaType + "'" +
+    	}
+    	
+    	// Filter by component
+    	appendComponentFilterToQuery(documentManager, query, filterComponent, endpoint);
+    	
+    	// Run query
+    	query.addConstraintMatchCriteria(ServiceImplementation.XPATH_ISMOCK, 0);
+    	String implQuery = query.build();
+    	DocumentModelList foundImpls = documentService.query(documentManager,
+    			implQuery, true, false);
+    	return foundImpls;
+
+	}
+
+	@Override
+	public DocumentModelList findInformationServices(
+			CoreSession documentManager, DocumentModel endpoint,
+			DocumentModel filterComponent) throws ClientException {
+		// Init
+		DocumentService documentService = getDocumentService();
+    	MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
+
+    	// Match platform properties
+    	if (endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM) != null) {
+    		DocumentModel platformDocument = documentManager.getDocument(
+    				new IdRef((String) endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM)));
+    		
+    		String[] platformPropsToMatch = new String[] {
+    				Platform.XPATH_LANGUAGE, Platform.XPATH_BUILD, Platform.XPATH_SERVICE_LANGUAGE,
+    				Platform.XPATH_DELIVERABLE_NATURE, Platform.XPATH_DELIVERABLE_REPOSITORY_URL};
+			for (String property : platformPropsToMatch ) {
+		    	query.addConstraintMatchCriteriaIfSet(property,
+		    			platformDocument.getPropertyValue(property));
+    		}
+    	}
+    	
+    	boolean isWsdl = endpoint.hasFacet(Endpoint.FACET_WSDLINFO) && endpoint.getPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME) != null;
+    	boolean isRest = endpoint.hasFacet(Endpoint.FACET_RESTINFO) && endpoint.getPropertyValue(Endpoint.XPATH_REST_PATH) != null;    	
+    	if (isWsdl) {
+        	String endpointPortTypeName = (String) endpoint.getPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME); // if JAXWS
         	query.addCriteria("ecm:mixinType = '" + Endpoint.FACET_WSDLINFO + "'");
         	query.addConstraintMatchCriteria(InformationService.XPATH_WSDL_PORTTYPE_NAME, endpointPortTypeName);
     	} else if (isRest) {
@@ -74,25 +118,12 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     	}
     	
     	// Filter by component
-    	DocumentModel filterComponentModel = null;
-    	if (filterComponent != null) {
-    		filterComponentModel = documentManager.getWorkingCopy(filterComponent.getRef());
-    	}
-    	else if (endpoint.getPropertyValue(Endpoint.XPATH_COMPONENT_ID) != null) {
-    		filterComponentModel = documentManager.getWorkingCopy(
-    				new IdRef((String) endpoint.getPropertyValue(Endpoint.XPATH_COMPONENT_ID)));
-    	}
-    	if (filterComponentModel != null) {
-    		query.addCriteria(Component.XPATH_COMPONENT_ID + " = '" + filterComponentModel.getId() + "'");
-    	}
+    	appendComponentFilterToQuery(documentManager, query, filterComponent, endpoint);
     	
     	// Run query
-    	query.addConstraintMatchCriteria(ServiceImplementation.XPATH_ISMOCK, 0);
-    	String implQuery = query.build();
-    	DocumentModelList foundImpls = documentService.query(documentManager,
-    			implQuery, true, false);
+    	String isQuery = query.build();
+    	DocumentModelList foundImpls = documentService.query(documentManager, isQuery, true, false);
     	return foundImpls;
-
 	}
 
 	@Override
@@ -117,6 +148,61 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		}
 		if (save) {
 			documentManager.save();
+		}
+	}
+
+	@Override
+	public void linkInformationServiceThroughPlaceholder(
+			CoreSession documentManager, DocumentModel endpoint,
+			DocumentModel informationService, boolean save) throws Exception {
+		DocumentService docService = getDocumentService();
+		
+		// Create placeholder impl
+		String portTypeName = (String) endpoint.getPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME);
+		DocumentModel implModel = docService.create(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, portTypeName));
+		implModel.setPropertyValue(ServiceImplementation.XPATH_ISPLACEHOLDER, true);
+		documentManager.saveDocument(implModel);
+		
+		// Attach placeholder impl to information service
+		try {
+			ServiceMatchingService serviceMatchingService = Framework.getService(ServiceMatchingService.class);
+			serviceMatchingService.linkInformationService(documentManager, implModel, informationService.getId(), true);
+		} catch (Exception e) {
+			documentManager.removeDocument(implModel.getRef());
+			throw new ClientException("Service matching service unavailable, aborting");
+		}
+		
+		// Attach endpoint to placeholder impl
+		linkServiceImplementation(documentManager,
+				docService.createSoaNodeId(endpoint), 
+				docService.createSoaNodeId(implModel),
+				false);
+
+		if (save) {
+			documentManager.save();
+		}
+	}
+
+	private DocumentService getDocumentService() throws ClientException {
+		try {
+			return Framework.getService(DocumentService.class);
+		} catch (Exception e) {
+			throw new ClientException("Document service unavailable, aborting");
+		}
+	}
+
+	private void appendComponentFilterToQuery(CoreSession documentManager,
+			MatchingQuery query, DocumentModel filterComponent, DocumentModel endpoint) throws ClientException {
+		DocumentModel filterComponentModel = null;
+		if (filterComponent != null) {
+			filterComponentModel = documentManager.getWorkingCopy(filterComponent.getRef());
+		}
+		else if (endpoint.getPropertyValue(Endpoint.XPATH_COMPONENT_ID) != null) {
+			filterComponentModel = documentManager.getWorkingCopy(
+					new IdRef((String) endpoint.getPropertyValue(Endpoint.XPATH_COMPONENT_ID)));
+		}
+		if (filterComponentModel != null) {
+			query.addCriteria(Component.XPATH_COMPONENT_ID + " = '" + filterComponentModel.getId() + "'");
 		}
 	}
 

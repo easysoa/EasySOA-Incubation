@@ -21,6 +21,11 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 
+/**
+ * 
+ * @author mdutoo, mkalam-alami
+ *
+ */
 @RepositoryConfig(cleanup = Granularity.CLASS)
 public class ServiceMatchingTest extends AbstractRegistryTest {
 
@@ -228,6 +233,23 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nszzz:namezzz=servicenamezzz" + "C1OK"), implProperties, null);
         Assert.assertNotNull("Created impl must be linked to existing matching information service because of provided component id",
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        
+        // Discover an information service, then and endpoint that matches no impl but matches the IS.
+        // A link should be made through a placeholder
+        isProperties.clear();
+        isProperties.put(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{www}www");
+    	foundInfoServ = discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE, "nswww:namewww"), isProperties, null);
+       
+        epProperties.clear();
+        epProperties.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, "{www}www");
+    	foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("Prod", "www.com"), epProperties, null);
+        Assert.assertEquals("Created endpoint must be linked to matching information service", foundInfoServ.getId(),
+        		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        SoaNodeId implId = foundEndpoint.getAdapter(SoaNode.class).getParentOfType(ServiceImplementation.DOCTYPE);
+        Assert.assertNotNull("Created endpoint must be linked to an impl", implId);
+        foundImpl = documentService.find(documentManager, implId);
+        Assert.assertEquals("Created endpoint must be linked to a placeholder impl",
+        		true, foundImpl.getPropertyValue(SoaNode.XPATH_ISPLACEHOLDER));
         
         // discover endpoint matching guided by component / platform (criteria)
         // ex. in web disco :

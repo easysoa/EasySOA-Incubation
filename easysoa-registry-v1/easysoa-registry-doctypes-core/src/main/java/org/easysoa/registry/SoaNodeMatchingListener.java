@@ -83,6 +83,19 @@ public class SoaNodeMatchingListener implements EventListener {
 				logger.error(e);
 			}
 		}
+		else if (foundImpls.size() == 0) {
+			DocumentModelList foundIS = matchingService.findInformationServices(
+					documentManager, sourceDocument, null);
+			if (foundIS.size() == 1) {
+				try {
+					matchingService.linkInformationServiceThroughPlaceholder(documentManager,
+							sourceDocument, foundIS.get(0), true);
+				}
+				catch (Exception e) {
+					logger.error(e);
+				}
+			}
+		}
 		
 	}
 

@@ -193,7 +193,7 @@ public class MatchingDashboard extends ModuleRoot {
 					}
 					else if (Endpoint.DOCTYPE.equals(doctype)) {
 						Endpoint endpointAdapter = model.getAdapter(Endpoint.class);
-						if (!endpointAdapter.hasParentOfType(ServiceImplementation.DOCTYPE)) {
+						if (endpointAdapter.getParentOfType(ServiceImplementation.DOCTYPE) != null) {
 				    		throw new Exception("Service Implementation not selected");
 						}
 					}

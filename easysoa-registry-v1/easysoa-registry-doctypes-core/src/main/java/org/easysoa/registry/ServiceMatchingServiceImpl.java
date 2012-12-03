@@ -6,6 +6,7 @@ import org.easysoa.registry.matching.MatchingQuery;
 import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.InformationService;
+import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -193,12 +194,37 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 	}
 	
 	/* (non-Javadoc)
+	 * @see org.easysoa.registry.ServiceMatchingService#findPlatforms(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel)
+	 */
+	public DocumentModelList findPlatforms(CoreSession documentManager, DocumentModel modelWithPlatformFacet) throws ClientException {
+		DocumentService documentService;
+		try {
+			documentService = Framework.getService(DocumentService.class);
+		} catch (Exception e) {
+			logger.error("Document service unavailable, aborting");
+			return null;
+		}
+		
+    	MatchingQuery query = new MatchingQuery("SELECT * FROM " + Platform.DOCTYPE);
+		String[] platformPropsToMatch = new String[] {
+				Platform.XPATH_LANGUAGE, Platform.XPATH_BUILD, Platform.XPATH_SERVICE_LANGUAGE,
+				Platform.XPATH_DELIVERABLE_NATURE, Platform.XPATH_DELIVERABLE_REPOSITORY_URL};
+		for (String property : platformPropsToMatch ) {
+	    	query.addConstraintMatchCriteriaIfSet(property,
+	    			modelWithPlatformFacet.getPropertyValue(property));
+		}
+    	String serviceImplQuery = query.build();
+    	return documentService.query(documentManager, serviceImplQuery, true, false);
+	}
+	
+	/* (non-Javadoc)
 	 * @see org.easysoa.registry.ServiceMatchingService#linkInformationService(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel, java.lang.String, boolean)
 	 */
 	public void linkInformationService(CoreSession documentManager, DocumentModel serviceImplModel,
 			String informationServiceUuid, boolean save) throws ClientException {
 		Object previousLinkValue = serviceImplModel.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE);
-		if (previousLinkValue == null || !previousLinkValue.equals(informationServiceUuid)) {
+		if (informationServiceUuid == null && previousLinkValue != null
+				|| informationServiceUuid != null && !informationServiceUuid.equals(previousLinkValue)) {
 	    	serviceImplModel.setPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE, informationServiceUuid);
 			if (save) {
 				documentManager.saveDocument(serviceImplModel);

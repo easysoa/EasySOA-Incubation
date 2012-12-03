@@ -3,6 +3,9 @@
 #if($user)
 	#if($submitUpdate)
 		$clientService.updateClient($identifiantClient, $raisonSociale, $siren, $email)
+	#end
+	#if($submitCreationPrecompte)
+   		$response.sendRedirect("../clients.html")
    	#end
 	$response.sendRedirect("../clients.html")
 #else

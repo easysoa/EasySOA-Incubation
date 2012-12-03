@@ -63,7 +63,21 @@
             <interface.java interface="fr.axxx.pivotal.client.api.ClientService" />
         </service>
         <reference name="database" target="PivotalDatabase/database" />
-    </component>
+    	<reference name="precomptePartenaireService">
+      		<interface.java interface="com.axxx.dps.apv.PrecomptePartenaireService"/>
+      		<binding.ws wsdlElement="http://www.axxx.com/dps/apv#wsdl.port(PrecomptePartenaireServiceImpl/PrecomptePartenairePort)" wsdli:wsdlLocation="http://localhost:8076/services/PrecomptePartenaireService?wsdl"/>
+    	</reference>
+  	</component>
+
+	<component name="ContactSvc">
+		<implementation.java class="fr.axxx.pivotal.ContactSvcSoapImpl" />
+		<service name="contactSvcService">
+			<interface.java interface="fr.axxx.pivotal.ContactSvcSoap"/>
+			<binding.ws uri="http://localhost:18001/WS/ContactSvc.asmx"/>
+			<!--<binding.ws uri="http://localhost:8784/WS/ContactSvc" />-->
+		</service>
+		<reference name="clientService" target="Client/ClientService" />
+	</component>
 
     <!-- component name="Rest">
         <implementation.java class="org.easysoa.impl.RESTCallImpl" />

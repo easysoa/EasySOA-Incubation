@@ -4,11 +4,18 @@
 #set($user = $request.getSession().getAttribute("user"))
 <div id="welcome-title">Welcome $user.getLogin()</div>
 <div id="rounded-div-content">
-	<div id="homePage">
+	<div id="friendsView">
 	Clients
 
     <p/>
-    <table id="clientTable" imgpath="images/dhxgrid" style="width:800px;" border="1">
+    <table id="catalogServices">
+		<colgroup>
+		 	<col width="200px">
+		 	<col width="400px">
+		  	<col width="120px">
+		   	<col width="230px">
+		   	<col width="50px">
+		</colgroup>
     	<tbody>
 	    	<tr>
 	    		<td>Identifiant client</td>
@@ -30,9 +37,7 @@
     </table>
     
     <p/>
-    
-    <a href="createClient.html">New client</a>
-    
+	<button class="orange button" onclick="openNewClientPage()">New client</button>
     </div>
 </div>
 
@@ -42,6 +47,10 @@
 		if(confirm('Are you sure ?')){ 
 			window.location='/pivotal/action/removeClient?identifiantClient='+identifiantClient;
 		}
+	}
+	
+	function openNewClientPage(){
+		document.location= "createClient.html";
 	}
 
 </script>

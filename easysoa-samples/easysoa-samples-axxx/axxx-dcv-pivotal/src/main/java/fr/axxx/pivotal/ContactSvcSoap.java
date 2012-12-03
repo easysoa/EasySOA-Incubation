@@ -14,7 +14,7 @@ import javax.xml.ws.ResponseWrapper;
  * Generated source version: 2.7.0
  * 
  */
-@WebService(targetNamespace = "http://pivotal.axxx.fr/", name = "ContactSvcSoap")
+@WebService(targetNamespace = "http://pivotal.axxx.fr/", name = "ContactSvcSoap", serviceName="ContactSvc", portName="ContactSvcSoap")
 @XmlSeeAlso({ObjectFactory.class})
 public interface ContactSvcSoap {
 

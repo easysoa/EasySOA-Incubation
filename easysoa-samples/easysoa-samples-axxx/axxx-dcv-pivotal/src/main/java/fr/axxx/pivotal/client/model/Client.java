@@ -87,31 +87,31 @@ public class Client extends GenericEntity<Client> {
 	
 	/** same as id, don't modify */
 	@XmlElement(name = "Identifiant_Client")
-    protected String identifiantClient;
+    protected String identifiantClient = "";
     @XmlElement(name = "Raison_Sociale")
-    protected String raisonSociale;
+    protected String raisonSociale = "";
     @XmlElement(name = "Anciennete")
     protected Integer anciennete;
 	@XmlElement(name = "Type_Structure")
-    protected String typeStructure;
+    protected String typeStructure = "";
     @XmlElement(name = "Num_et_voie")
-    protected String numEtVoie;
+    protected String numEtVoie = "";
     @XmlElement(name = "Email")
-    protected String email;
+    protected String email = "";
     @XmlElement(name = "Code_Postal")
-    protected String codePostal;
+    protected String codePostal = "";
     @XmlElement(name = "Ville")
-    protected String ville;
+    protected String ville = "";
     @XmlElement(name = "Pays")
-    protected String pays;
+    protected String pays = "";
     @XmlElement(name = "Tel")
-    protected String tel;
+    protected String tel = "";
     @XmlElement(name = "RIB")
-    protected String rib;
+    protected String rib = "";
     @XmlElement(name = "Forme_Juridique")
-    protected String formeJuridique;
+    protected String formeJuridique = "";
     @XmlElement(name = "SIREN")
-    protected String siren;
+    protected String siren = "";
 	/** stat, allow to set at init but don't modify */
     @XmlElement(name = "Dot_Glob_APV_N")
     protected BigDecimal dotGlobAPVN;
@@ -147,9 +147,9 @@ public class Client extends GenericEntity<Client> {
     public Client(String identifiantClient, String raisonSociale, String siren, String email) {
         this();
         this.identifiantClient = identifiantClient;
-        this.raisonSociale = raisonSociale;
-        this.siren = siren;
-        this.email = email;
+        this.setRaisonSociale(raisonSociale);
+        this.setSIREN(siren);
+        this.setEmail(email);
     }    
     
     /**
@@ -205,7 +205,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public String getRaisonSociale() {
-        return raisonSociale;
+        if(this.raisonSociale != null){
+            return this.raisonSociale;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -217,7 +221,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public void setRaisonSociale(String value) {
-        this.raisonSociale = value;
+        if(value != null){
+            this.raisonSociale = value;
+        } else {
+            this.raisonSociale = "";
+        }
     }
 
     /**
@@ -229,7 +237,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public String getTypeStructure() {
-        return typeStructure;
+        if(this.typeStructure != null){
+            return this.typeStructure;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -241,7 +253,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public void setTypeStructure(String value) {
-        this.typeStructure = value;
+        if(value != null){
+            this.typeStructure = value;
+        } else {
+            this.typeStructure = "";
+        }        
     }
 
     /**
@@ -253,7 +269,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public Integer getAnciennete() {
-        return anciennete;
+        if(this.anciennete != null){
+            return this.anciennete;
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -265,7 +285,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public void setAnciennete(Integer value) {
-        this.anciennete = value;
+        if(value != null){
+            this.anciennete = value;
+        } else {
+            this.anciennete = 0;
+        }        
     }
 
     /**
@@ -277,7 +301,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public String getNumEtVoie() {
-        return numEtVoie;
+        if(this.numEtVoie != null){
+            return this.numEtVoie;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -289,7 +317,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public void setNumEtVoie(String value) {
-        this.numEtVoie = value;
+        if(value != null){
+            this.numEtVoie = value;
+        } else {
+            this.numEtVoie = "";
+        }        
     }
 
     /**
@@ -301,7 +333,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public String getEmail() {
-        return email;
+        if(this.email != null){
+            return this.email;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -313,7 +349,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public void setEmail(String value) {
-        this.email = value;
+        if(value != null){
+            this.email = value;
+        } else {
+            this.email = "";
+        }        
     }
 
     /**
@@ -325,7 +365,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public String getCodePostal() {
-        return codePostal;
+        if(this.codePostal != null){
+            return this.codePostal;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -337,7 +381,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public void setCodePostal(String value) {
-        this.codePostal = value;
+        if(value != null){
+            this.codePostal = value;
+        } else {
+            this.codePostal = "";
+        }        
     }
 
     /**
@@ -349,7 +397,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public String getVille() {
-        return ville;
+        if(this.ville != null){
+            return this.ville;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -361,7 +413,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public void setVille(String value) {
-        this.ville = value;
+        if(value != null){
+            this.ville = value;
+        } else {
+            this.ville = "";
+        }        
     }
 
     /**
@@ -373,7 +429,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public String getPays() {
-        return pays;
+        if(this.pays != null){
+            return this.pays;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -385,7 +445,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public void setPays(String value) {
-        this.pays = value;
+        if(value != null){
+            this.pays = value;
+        } else {
+            this.pays = "";
+        }        
     }
 
     /**
@@ -397,7 +461,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public String getTel() {
-        return tel;
+        if(this.tel != null){
+            return this.tel;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -409,7 +477,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public void setTel(String value) {
-        this.tel = value;
+        if(value != null){
+            this.tel = value;
+        } else {
+            this.tel = "";
+        }        
     }
 
     /**
@@ -421,7 +493,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public String getRIB() {
-        return rib;
+        if(this.rib != null){
+            return this.rib;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -433,7 +509,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public void setRIB(String value) {
-        this.rib = value;
+        if(value != null){
+            this.rib = value;
+        } else {
+            this.rib = "";
+        }
     }
 
     /**
@@ -445,7 +525,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public String getFormeJuridique() {
-        return formeJuridique;
+        if(this.formeJuridique != null){
+            return this.formeJuridique;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -457,7 +541,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public void setFormeJuridique(String value) {
-        this.formeJuridique = value;
+        if(value != null){
+            this.formeJuridique = value;
+        } else {
+            this.formeJuridique = "";
+        }
     }
 
     /**
@@ -469,7 +557,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public String getSIREN() {
-        return siren;
+        if(this.siren != null){
+            return this.siren;
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -481,7 +573,11 @@ public class Client extends GenericEntity<Client> {
      *     
      */
     public void setSIREN(String value) {
-        this.siren = value;
+        if(value != null){
+            this.siren = value;
+        } else {
+            this.siren = "";
+        }
     }
 
     /**

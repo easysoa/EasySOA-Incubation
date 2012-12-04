@@ -28,7 +28,9 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
         
         ArrayOfString arrayOfString = new ArrayOfString();
         // TODO To complete
-        Client client = clientService.createClient(identifiantClient, raisonSociale, siren, email);
+        Client client = clientService.createClient(identifiantClient, raisonSociale, anciennete, typeStructure, numEtVoie, email, codePostal, ville, pays,
+                tel, rib, formeJuridique, siren, dotGlobAPVN, dontReliquatN1, dontDotN, nbBenefPrevN, montantUtiliseN,
+                nbBenefN);
         arrayOfString.getString().add(client.getIdentifiantClient());
         return arrayOfString;
     }

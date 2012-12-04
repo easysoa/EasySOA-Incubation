@@ -1,5 +1,6 @@
 package fr.axxx.pivotal.client.api;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.osoa.sca.annotations.Service;
@@ -26,9 +27,21 @@ public interface ClientService {
 	 * @param raisonSociale
 	 * @param siren
 	 * @param email
+	 * @param telephone
+	 * @param anciennete
+	 * @param formeJuridique
+	 * @param numEtVoie
+	 * @param codePostal
+	 * @param ville
+	 * @param pays
+	 * @param RIB
+	 * @param typeStructure
 	 * @return The new client
 	 */
-    Client createClient(String identifiantClient, String raisonSociale, String siren, String email);
+    Client createClient(String identifiantClient, String raisonSociale, Integer anciennete, 
+            String typeStructure, String numEtVoie, String email, String codePostal, String ville, String pays,
+            String tel, String rib, String formeJuridique, String siren, BigDecimal dotGlobAPVN, BigDecimal dontReliquatN1, 
+            BigDecimal dontDotN, BigDecimal nbBenefPrevN, BigDecimal montantUtiliseN, BigDecimal nbBenefN);
 
     /**
      * Remove a client
@@ -65,7 +78,9 @@ public interface ClientService {
      * @param email
      * @return The updated client
      */
-    Client updateClient(String identifiantClient, String raisonSociale, String siren, String email);
+    Client updateClient(String identifiantClient, String raisonSociale, Integer anciennete, 
+            String typeStructure, String numEtVoie, String email, String codePostal, String ville, String pays,
+            String tel, String rib, String formeJuridique, String siren);
 	
     /**
      * Call the web service creerPrecompte

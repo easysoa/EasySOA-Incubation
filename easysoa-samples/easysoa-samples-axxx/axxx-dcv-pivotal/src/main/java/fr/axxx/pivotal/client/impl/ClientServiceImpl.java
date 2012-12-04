@@ -1,5 +1,6 @@
 package fr.axxx.pivotal.client.impl;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,11 +48,23 @@ public class ClientServiceImpl implements ClientService {
      * @see ClientService#createClient(String, String, String, String)
      */
     @Override
-    public Client createClient(String identifiantClient, String raisonSociale, String siren, String email){
+    public Client createClient(String identifiantClient, String raisonSociale, Integer anciennete, 
+            String typeStructure, String numEtVoie, String email, String codePostal, String ville, String pays,
+            String tel, String rib, String formeJuridique, String siren, BigDecimal dotGlobAPVN, BigDecimal dontReliquatN1, 
+            BigDecimal dontDotN, BigDecimal nbBenefPrevN, BigDecimal montantUtiliseN, BigDecimal nbBenefN){
         EntityManager entityManager = database.get();
         Client client = null;
         try{
             client = new Client(identifiantClient, raisonSociale, siren,  email);
+            client.setAnciennete(anciennete);
+            client.setCodePostal(codePostal);
+            client.setFormeJuridique(formeJuridique);
+            client.setNumEtVoie(numEtVoie);
+            client.setPays(pays);
+            client.setRIB(rib);
+            client.setTel(tel);
+            client.setTypeStructure(typeStructure);
+            client.setVille(ville);
             entityManager.getTransaction().begin();
             entityManager.persist(client);
             entityManager.getTransaction().commit();
@@ -67,7 +80,9 @@ public class ClientServiceImpl implements ClientService {
      * @see ClientService#updateClient(String, String, String, String)
      */
     @Override
-    public Client updateClient(String identifiantClient, String raisonSociale, String siren, String email){
+    public Client updateClient(String identifiantClient, String raisonSociale, Integer anciennete, 
+            String typeStructure, String numEtVoie, String email, String codePostal, String ville, String pays,
+            String tel, String rib, String formeJuridique, String siren){
         EntityManager entityManager = database.get();
         Client client = null;
         try{
@@ -75,6 +90,16 @@ public class ClientServiceImpl implements ClientService {
             client.setRaisonSociale(raisonSociale);
             client.setSIREN(siren);
             client.setEmail(email);
+            client.setAnciennete(anciennete);
+            client.setTypeStructure(typeStructure);
+            client.setNumEtVoie(numEtVoie);
+            client.setCodePostal(codePostal);
+            client.setVille(ville);
+            client.setPays(pays);
+            client.setTel(tel);
+            client.setRIB(rib);
+            client.setFormeJuridique(formeJuridique);
+            client.setSIREN(siren);
             entityManager.getTransaction().begin();
             entityManager.persist(client);
             entityManager.getTransaction().commit();

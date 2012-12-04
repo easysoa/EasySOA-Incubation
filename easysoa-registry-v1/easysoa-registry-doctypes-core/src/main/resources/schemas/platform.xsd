@@ -4,10 +4,25 @@
   xmlns:nxs="http://www.nuxeo.org/ecm/schemas/platform/">
   
   <!-- or shared facets ?? not if OPT multiple options -->
-  <xs:element name="language" type="xs:string"/><!-- OPT multiple options (consistency handled in logic) -->
-  <xs:element name="build" type="xs:string"/>
-  <xs:element name="serviceLanguage" type="xs:string"/><!-- OPT multiple options (consistency handled in logic) -->
-  <xs:element name="deliverableNature" type="xs:string"/>
+  <xs:element name="language" type="xs:string"/><!-- Java, JavaScript ; OPT multiple options (consistency handled in logic) -->
+  <xs:element name="build" type="xs:string"/><!-- Maven, FraSCAtiStudio, TalendStudio? (, Ivy) -->
+  <xs:element name="ide" type="xs:string"/><!-- Eclipse, FraSCAtiStudio, TalendStudio (, Netbeans, GenericJavaIde, ScarboModeler) -->
+  <xs:element name="serviceLanguage" type="xs:string"/><!-- JAWS, JAXRS ; OPT multiple options (consistency handled in logic) -->
+  
+  <xs:element name="deliverableNature" type="xs:string"/><!-- Maven ; TODO OSGi ?? -->
   <xs:element name="deliverableRepositoryUrl" type="xs:string"/><!-- acts as id if any -->
+  
+  <xs:element name="serviceProtocol" type="xs:string" /><!-- SOAP, XML or JSON (or AtomPub...) for REST... -->
+  <xs:element name="transportProtocol" type="xs:string" /><!-- HTTP (HTTPS ?)... -->
+  <xs:element name="serviceRuntime" type="xs:string" /><!-- CXF (, Axis2...) -->
+  <xs:element name="appServerRuntime" type="xs:string" /><!-- ApacheTomcat, Jetty... -->
+  
+  <xs:element name="serviceSecurity" type="xs:string" /><!-- ?? SSL/TLS, WSSEC... -->
+  <xs:element name="serviceSecurityManagerUrl" type="xs:string" /><!-- acts as id if any... -->
+  <!-- NB. extracted or managed (or embedded) configuration has to be provided on Component (Q or IS ??) -->
+  
+  <xs:element name="serviceMonitoring" type="xs:string" /><!-- TalendSAM, EasySOATalendSAMWithJasmine, EasySOAProxy... -->
+  <xs:element name="serviceMonitoringManagerUrl" type="xs:string" /><!-- TalendSAM, EasySOATalendSAMWithJasmine, EasySOAProxy... -->
+  <!-- NB. extracted or managed (or embedded) configuration has to be provided on Component (Q or IS ??) -->
   
 </xs:schema>

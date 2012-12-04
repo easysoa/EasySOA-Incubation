@@ -4,7 +4,6 @@
 package fr.axxx.pivotal;
 
 import java.math.BigDecimal;
-import javax.jws.WebService;
 import org.osoa.sca.annotations.Reference;
 import org.osoa.sca.annotations.Scope;
 import fr.axxx.pivotal.client.api.ClientService;
@@ -30,7 +29,7 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
         ArrayOfString arrayOfString = new ArrayOfString();
         // TODO To complete
         Client client = clientService.createClient(identifiantClient, raisonSociale, siren, email);
-        arrayOfString.string.add(client.getIdentifiantClient());
+        arrayOfString.getString().add(client.getIdentifiantClient());
         return arrayOfString;
     }
 
@@ -39,7 +38,7 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
         ArrayOfString arrayOfString = new ArrayOfString();
         // TODO To complete
         InformationAPV informationApv = clientService.createInformationApv(identifiantClient, bilanLibelle, nombre, bilanAnnee);
-        arrayOfString.string.add(informationApv.getIdentifiantClient());
+        arrayOfString.getString().add(informationApv.getIdentifiantClient());
         return arrayOfString;
     }
 
@@ -49,7 +48,7 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
         ArrayOfString arrayOfString = new ArrayOfString();
         // TODO To complete
         ContactClient contactClient = clientService.createContactClient(identifiantClient, nomContact, prenomContact, fonctionContact, telephone, email, numEtVoie, codePostal, ville, pays);
-        arrayOfString.string.add(contactClient.getIdentifiantClient());
+        arrayOfString.getString().add(contactClient.getIdentifiantClient());
         return arrayOfString;
     }
 

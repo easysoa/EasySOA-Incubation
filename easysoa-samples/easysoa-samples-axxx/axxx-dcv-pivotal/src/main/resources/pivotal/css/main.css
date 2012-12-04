@@ -244,6 +244,7 @@ body { /*background-color:#959595;*/
 #rounded-div-content {
 	padding-top: 30px;
 	width: 100%;
+	height: auto;
 }
 
 .rounded-div-padding {

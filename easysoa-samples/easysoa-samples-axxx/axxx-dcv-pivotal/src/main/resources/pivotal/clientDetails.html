@@ -1,9 +1,10 @@
+#parse("banner.html")
 #parse("header.html")
 #parse("roundedDiv.html")
 #set($user = $request.getSession().getAttribute("user"))
 #set($client = $clientService.getClient($identifiantClient))
 <div id="welcome-title">Welcome $user.getLogin()</div>
-<div id="rounded-div-content">
+<div id="rounded-div-content" >
 	<div id="friendsView">
 		Client details
 	
@@ -62,6 +63,65 @@
 				</tbody>
 			</table>
 		</form>
+	</div>		
+		
+	<div id="friendsView">
+
+		Informations APV
+
+		<p/>		
+	    <table id="catalogServices">
+			<colgroup>
+		       	<col width="200px">
+		       	<col width="500px">
+		      	<col width="300px">
+	        </colgroup>
+		    <tbody>
+	            <tr>
+	                <td><label for="Ann&eacute;e bilan">Ann&eacute;e bilan :</label></td>
+	                <td><label for="Libell&eacute; bilan">Libell&eacute; bilan :</label></td>
+	                <td><label for="Nombre">Nombre :</label></td>
+	            </tr>
+	            #foreach($i in $clientService.getInformationAPV($identifiantClient))
+	            <tr>
+	                <td>$i.getBilanAnnee()</td>
+	                <td>$i.getBilanLibelle()</td>
+					<td>$i.getNombre()</td>
+	            </tr>
+				#end
+	        </tbody>
+	    </table>		
+	</div>
+	
+	<div id="friendsView">
+		Contact client
+
+		<p/>		
+	    <table id="catalogServices">
+			<colgroup>
+		       	<col width="300px">
+		       	<col width="300px">
+		       	<col width="200px">
+		      	<col width="200px">
+	        </colgroup>
+		    <tbody>
+	            <tr>
+	                <td><label for="Nom">Nom :</label></td>
+	                <td><label for="Pr&eacute;nom">Pr&eacute;nom:</label></td>
+	                <td><label for="T&eacute;l&eacute;phone">T&eacute;l&eacute;phone :</label></td>
+	                <td><label for="Email">Email :</label></td>
+	            </tr>
+	            #foreach($c in $clientService.getContactClient($identifiantClient))
+	            <tr>
+	                <td>$c.getNomContact()</td>
+	                <td>$c.getPrenomContact()</td>
+					<td>$c.getTelephone()</td>
+					<td>$c.getEmail()</td>
+	            </tr>
+				#end
+	        </tbody>
+	    </table>		
+		
     </div>
 </div>
 

@@ -4,10 +4,11 @@
 #set($user = $request.getSession().getAttribute("user"))
 <div id="welcome-title">Welcome $user.getLogin()</div>
 <div id="rounded-div-content">
-	<div id="homePage">
-	New client
+	<div id="friendsView">
+		Nouveau client :
 
-    	<form method="POST" action="/pivotal/action/newClient" id="formCreationClient">
+		<p/>
+		<form method="POST" action="/pivotal/action/newClient" id="formCreationClient">
 
         	<table style="margin-left:auto;margin-right:auto;">
 	            <colgroup>
@@ -17,39 +18,27 @@
             	</colgroup>
 	            <tbody>
 		            <tr>
-		                <td>Identifiant client :
-		                </td>
-		                <td><input class="validate[required,custom[onlyLetter]] text-input" type="text" name="identifiantClient" id="identifiantClient">
-		                </td>
-		                <td id="identifiantClientError" class="error">
-		                </td>
+		                <td><label for="Identifiant client">Identifiant client :</label></td>
+		                <td><input class="validate[required,custom[onlyLetter]] text-input" type="text" name="identifiantClient" id="identifiantClient"></td>
+		                <td id="identifiantClientError" class="error"></td>
 		            </tr>
 		            <tr>
-		                <td>Raison sociale :
-		                </td>
-		                <td><input class="validate[required,custom[onlyLetter]] text-input" type="text" name="raisonSociale" id="raisonSociale">
-		                </td>
-		                <td id="raisonSocialeError" class="error">
-		                </td>
+		                <td><label for="Raison sociale">Raison sociale :</label></td>
+		                <td><input class="validate[required,custom[onlyLetter]] text-input" type="text" name="raisonSociale" id="raisonSociale"></td>
+		                <td id="raisonSocialeError" class="error"></td>
 		            </tr>
 		            <tr>
-		                <td>Siren :
-		                </td>
-		                <td><input class="validate[required,custom[onlyNumber]] text-input" type="text" name="siren" id="siren">
-		                </td>
-		                <td id="sirenError" class="error">
-		                </td>
+		                <td><label for="Siren">Siren :</label></td>
+		                <td><input class="validate[required,custom[onlyNumber]] text-input" type="text" name="siren" id="siren"></td>
+		                <td id="sirenError" class="error"></td>
 		            </tr>		            
 		            <tr>
-		                <td>Email:
-		                </td>
-		                <td><input class="validate[required] text-input" type="text" name="email" id="email">
-		                </td>
-		                <td id="emailError" class="error">
-		                </td>
+		                <td><label for="Email">Email:</label></td>
+		                <td><input class="validate[required] text-input" type="text" name="email" id="email"></td>
+		                <td id="emailError" class="error"></td>
 		            </tr>
             		<tr>
-                		<td colspan="3" align="center"><input id="submitCreation" type="submit" class="orange button" value="Create client">
+                		<td colspan="3" align="center"><input id="submitCreation" type="submit" class="orange button" value="Cr&eacute;er client">
                 	</td>
             		</tr>		            
 		        </tbody>

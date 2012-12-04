@@ -4,9 +4,9 @@
   xmlns:nxs="http://www.nuxeo.org/ecm/schemas/platform/">
   
   <!-- or shared facets ?? not if OPT multiple options -->
+  <xs:element name="ide" type="xs:string"/><!-- OPT Eclipse, FraSCAtiStudio, TalendStudio (, Netbeans, GenericJavaIde, ScarboModeler) -->
   <xs:element name="language" type="xs:string"/><!-- Java, JavaScript ; OPT multiple options (consistency handled in logic) -->
   <xs:element name="build" type="xs:string"/><!-- Maven, FraSCAtiStudio, TalendStudio? (, Ivy) -->
-  <xs:element name="ide" type="xs:string"/><!-- Eclipse, FraSCAtiStudio, TalendStudio (, Netbeans, GenericJavaIde, ScarboModeler) -->
   <xs:element name="serviceLanguage" type="xs:string"/><!-- JAWS, JAXRS ; OPT multiple options (consistency handled in logic) -->
   
   <xs:element name="deliverableNature" type="xs:string"/><!-- Maven ; TODO OSGi ?? -->

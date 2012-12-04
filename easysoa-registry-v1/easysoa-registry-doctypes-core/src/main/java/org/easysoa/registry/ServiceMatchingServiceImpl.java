@@ -51,8 +51,8 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
     	String implSubProjectId = "AXXXRealisation";
     	//String matchingGuideComponentId = (String) impl.getPropertyValue(ServiceImplementation.XPATH_COMPONENT_ID); // TODO check existence at source disco start
 
-    	//String implIDE = "Eclipse"; // OPT
-    	String implLanguage = (String) impl.getPropertyValue(ServiceImplementation.XPATH_LANGUAGE); // "Java"; // TODO from source disco
+    	String implIde = (String) impl.getPropertyValue(ServiceImplementation.XPATH_IMPL_IDE); // OPT only set by ex. FraSCatiStudio, TalendStudio, ScarboModeler
+    	String implLanguage = (String) impl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LANGUAGE); // "Java"; // TODO from source disco
     	String implBuild = "Maven"; // MavenPom ?? or Ivy ; or in top-level deliverable ?? TODO from source disco or deduced from del:nature if possible
     	String implDeliverableNature = (String) impl.getPropertyValue(Deliverable.XPATH_NATURE); // "Maven" ; MavenArtifact ? copied from Deliverable
     	String implDeliverableRepositoryUrl = (String) impl.getPropertyValue(Deliverable.XPATH_REPOSITORY_URL); // "http://maven.nuxeo.org/nexus/content/groups/public" ; acts as id, copied from Deliverable TODO add in source disco
@@ -61,6 +61,7 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
 
     	if (!skipPlatformMatching) {
+	    	query.addConstraintMatchCriteriaIfSet("platform:ide", implIde);
 	    	query.addConstraintMatchCriteriaIfSet("platform:language", implLanguage);
 	    	query.addConstraintMatchCriteriaIfSet("platform:build", implBuild);
 	    	query.addConstraintMatchCriteriaIfSet("platform:deliverableNature", implDeliverableNature);

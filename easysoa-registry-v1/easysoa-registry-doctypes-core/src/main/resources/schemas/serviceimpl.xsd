@@ -4,7 +4,8 @@
   xmlns:nxs="http://www.nuxeo.org/ecm/schemas/impl/">
 
   <!-- platform criteria : -->
-  <xs:element name="language" type="xs:string" /><!-- Java, JavaScript ; has to match platform:language? -->
+  <xs:element name="ide" type="xs:string" /><!-- OPT only set by ex. FraSCatiStudio, TalendStudio, ScarboModeler ; has to match platform:ide -->
+  <xs:element name="language" type="xs:string" /><!-- Java, JavaScript ; has to match platform:language -->
   <!-- xs:element name="build" type="xs:string" / --><!-- Q on top-level deliverable only ?? -->
   <xs:element name="technology" type="xs:string" /><!-- JAWS, JAXRS ; has to match platform:serviceLanguage -->
   <!-- NB. deliverable-type criteria are on deliverable and copied on impl -->

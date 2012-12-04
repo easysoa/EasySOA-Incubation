@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.matching.MatchingQuery;
 import org.easysoa.registry.types.Component;
+import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.Platform;
@@ -39,8 +40,9 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		DocumentService documentService = getDocumentService();
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE);
 
-    	// Match platform properties
-    	// TODO IF A LINKED PLATFORM HAS BEEN PROVIDED FOR THE ENDPOINT BY THE PROBE EX. WEB DISCO
+    	// Match platform properties :
+    	
+    	// 1. IF A LINKED PLATFORM HAS BEEN PROVIDED FOR THE ENDPOINT BY THE PROBE EX. WEB DISCO
     	if (!skipPlatformMatching && endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM) != null) {
     		DocumentModel platformDocument = documentManager.getDocument(
     				new IdRef((String) endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM)));
@@ -52,9 +54,44 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		    	query.addConstraintMatchCriteriaIfSet(property,
 		    			platformDocument.getPropertyValue(property));
     		}
+			
+			// TODO rather match platform ID (if any) than criteria
+	    	//query.addConstraintMatchCriteriaWithAltIfSet("iserv:linkedPlatform", "impl:platform",
+	    	//		endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM));
     	}
     	
-    	// TODO ELSE MATCH DISCOVERED PLATFORM CRITERIA OF THE ENDPOINT AGAINST THE IMPL'S SERVICE'S PLATFORM
+    	// TODO ELSE MATCH DISCOVERED PLATFORM CRITERIA OF THE ENDPOINT
+    	// AGAINST THE IMPL'S SERVICE'S PLATFORM IF ANY ELSE AGAINST THE IMPL'S DISCOVERED PLATFORM CRITERIA
+    	// TODO make it possible in disco (?) & model (yes)
+    	else if (!skipPlatformMatching) {
+	    	query.addConstraintMatchCriteriaWithAltIfSet("platform:ide",
+	    			"impl:ide",
+	    			endpoint.getPropertyValue("impl:ide"));
+	    	query.addConstraintMatchCriteriaWithAltIfSet(Platform.XPATH_LANGUAGE,
+	    			ServiceImplementation.XPATH_IMPL_LANGUAGE,
+	    			endpoint.getPropertyValue(ServiceImplementation.XPATH_IMPL_LANGUAGE));
+	    	query.addConstraintMatchCriteriaWithAltIfSet(Platform.XPATH_BUILD,
+	    			ServiceImplementation.XPATH_IMPL_BUILD,
+	    			endpoint.getPropertyValue(ServiceImplementation.XPATH_IMPL_BUILD));
+	    	query.addConstraintMatchCriteriaWithAltIfSet(Platform.XPATH_DELIVERABLE_NATURE,
+	    			Deliverable.XPATH_NATURE,
+	    			endpoint.getPropertyValue(Deliverable.XPATH_NATURE));
+	    	query.addConstraintMatchCriteriaWithAltIfSet(Platform.XPATH_DELIVERABLE_REPOSITORY_URL,
+	    			Deliverable.XPATH_REPOSITORY_URL,
+	    			endpoint.getPropertyValue(Deliverable.XPATH_REPOSITORY_URL));
+    		
+    		// endpoint platform criteria : match those provided on the endpoint against required platform
+    		String endpointServiceProtocol = (String) endpoint.getPropertyValue("endp:serviceProtocol");
+    		String endpointTansportProtocol = (String) endpoint.getPropertyValue("endp:transportProtocol");
+    		String endpointServiceRuntime = (String) endpoint.getPropertyValue("endp:serviceRuntime");
+    		String endpointAppServerRuntime = (String) endpoint.getPropertyValue("endp:appServerRuntime");
+	    	query.addConstraintMatchCriteriaIfSet("platform:serviceProtocol", endpointServiceProtocol); // SOAP, XML or JSON (or AtomPub...) for REST...
+	    	query.addConstraintMatchCriteriaIfSet("platform:transportProtocol", endpointTansportProtocol); // HTTP (HTTPS ?)...
+	    	query.addConstraintMatchCriteriaIfSet("platform:serviceRuntime", endpointServiceRuntime); // CXF (, Axis2...)
+	    	query.addConstraintMatchCriteriaIfSet("platform:appServerRuntime", endpointAppServerRuntime); // ApacheTomcat, Jetty...
+    	}
+    	
+    	// TODO IF FOUND PLATFORM LINK TO IT ?????
     	
     	// Match endpoint properties
     	boolean isWsdl = endpoint.hasFacet(Endpoint.FACET_WSDLINFO) && endpoint.getPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME) != null;
@@ -73,27 +110,21 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
         			//OPT " AND " ServiceImplementation.XPATH_REST_MEDIA_TYPE + "='" + endpointMediaType + "'" +
     	}
 
-    	/*
-    	//////////////////////////////////////////////////////////
-		// only for discovery in web or message monitoring :
-    	String endpointServiceTransport = "HTTP"; // if WS extracted from WSDL binding/transport=="http://schemas.xmlsoap.org/soap/http"
-    	// NB. endpointServiceProtocol=WS|REST is implied by platform:serviceDefinition=WSDL|JAXRS
+    	// TODO UPDATE
+    	/*String endpointServiceProtocol= "SOAP"; // REST/XML
+    	String endpointTransportProtocol = "HTTP"; // if WS extracted from WSDL binding/transport=="http://schemas.xmlsoap.org/soap/http"
+    	// NB. endpointServiceProtocol=WS|REST is implied by platform:serviceDefinition=WSDL|JAXRS, though SOAP spec includes also ex. HTTP binding
     	
 		infoServiceQueryString +=
-				" AND platform:serviceTransport='" + endpointServiceTransport + "'"; // if any
-		boolean isHttp = "HTTP".equals(endpointServiceTransport);
+				" AND platform:transportProtocol='" + endpointTransportProtocol + "'"; // if any
+		boolean isHttp = "HTTP".equals(endpointTransportProtocol);
 		if (isHttp) { // consistency logic
         	String endpointServiceTransportHttpContentType = "application/json+nxautomation";
         	String endpointServiceTransportHttpContentKind = "XML"; // deduced from ContentType if possible, else from message monitoring
     		infoServiceQueryString +=
-    				" AND platform:serviceTransport='" + endpointServiceTransportHttpContentType + "'" +
-    				" AND platform:serviceTransport='" + endpointServiceTransportHttpContentKind + "'"; // if any
-		}
-		
-		// OPT String endpointServiceRuntime = "CXF";
-		// OPT appServer=Apache Tomcat|Jetty
-		// NB. endpointProtocolServer (Apache Tomcat, Jetty) is different but not as interesting
-		*/
+    				" AND platform:transportProtocol='" + endpointServiceTransportHttpContentType + "'" +
+    				" AND platform:transportProtocol='" + endpointServiceTransportHttpContentKind + "'"; // if any
+		}*/
 
     	// Filter by component
     	appendComponentFilterToQuery(documentManager, query, filterComponent, endpoint);
@@ -127,6 +158,10 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		    	query.addConstraintMatchCriteriaIfSet(property,
 		    			platformDocument.getPropertyValue(property));
     		}
+			
+			// TODO rather match platform ID (if any) than criteria
+	    	//query.addConstraintMatchCriteriaIfSet("iserv:linkedPlatform",
+	    	//		endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM));
     	}
     	
     	boolean isWsdl = endpoint.hasFacet(Endpoint.FACET_WSDLINFO) && endpoint.getPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME) != null;

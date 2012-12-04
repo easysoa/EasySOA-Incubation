@@ -6,6 +6,11 @@
 * TODO in ClientServiceImpl, (like in UserServiceImpl) at init if table empty fill with default data (ask MDU)
 * TODO Client details page : button "Créer précompte" that calls TdrService.creerPrecompte() (ask MDU)
 * TODO expose ContactSvc.asmx.wsdl WS using FraSCAti (and already gen'd source) and implement it on top of ClientService
+* TODO OW enrich Pivotal's ContactSvc.asmx.wsdl's XML with :
+.getClient(id) returns Client
+.getRepartitionTypeStructure() returns [{ typeStructure, clientCount }]
+then regenerate the Java classes, and implement them
+
 * TODO UI : more MS-y, display partner logos that are in pivotal/images/logos and pivotal/css/images.css, remove unused images & js
 * TODO deploy in production (notably doc ; see FStudio)
 
@@ -22,6 +27,7 @@ AXXX is a use case of the [EasySOA project](http://www.easysoa.org) and develope
 * [Nuxeo](http://www.nuxeo.org)
 * [Bull](http://www.bull.com)
 * [Open Wide](http://www.openwide.fr)
+
 
 ### How to install :
 

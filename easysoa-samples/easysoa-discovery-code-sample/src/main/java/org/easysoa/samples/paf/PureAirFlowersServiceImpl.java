@@ -25,12 +25,18 @@ import javax.jws.WebService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Test class documentation
+ */
 @WebService(endpointInterface = "org.easysoa.samples.paf.PureAirFlowersService", serviceName = "PureAirFlowers")
 public class PureAirFlowersServiceImpl implements PureAirFlowersService {
     
     private Hashtable<String, Integer> inventory =  new Hashtable<String, Integer>();
     private final static Logger logger = LoggerFactory.getLogger(PureAirFlowersServer.class);
     
+    /**
+     * Test method documentation
+     */
     @Override
     public int getOrdersNumber(String clientName) {
         

@@ -40,10 +40,11 @@ import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.types.adapters.SoaNodeAdapter;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -77,7 +78,7 @@ public class ServiceDocumentationController extends ModuleRoot {
         DocumentModelList services = session.query("SELECT " + SERVICE_LIST_PROPS + " FROM " + InformationService.DOCTYPE + IndicatorProvider.NXQL_WHERE_NO_PROXY);
         DocumentModelList tags = session.query("SELECT " + "*" + " FROM " + TaggingFolder.DOCTYPE + IndicatorProvider.NXQL_WHERE_NO_PROXY);
         DocumentModelList serviceProxies = session.query("SELECT " + "*" + " FROM " + InformationService.DOCTYPE + IndicatorProvider.NXQL_WHERE_PROXY
-                + IndicatorProvider.NXQL_AND + IndicatorProvider.NXQL_PATH_STARTSWITH + "/default-domain/repository" + TaggingFolder.DOCTYPE + "'");
+                + IndicatorProvider.NXQL_AND + IndicatorProvider.NXQL_PATH_STARTSWITH + "/default-domain/repository/" + TaggingFolder.DOCTYPE + "'");
         //DocumentModelList serviceProxyIds = session.query("SELECT " + "ecm:uuid, ecm:parentid" + " FROM " + Service.DOCTYPE + IndicatorProvider.NXQL_WHERE_PROXY
         //        + IndicatorProvider.NXQL_AND + IndicatorProvider.NXQL_PATH_STARTSWITH + "/default-domain/repository" + TaggingFolder.DOCTYPE + "'");
         
@@ -131,18 +132,15 @@ public class ServiceDocumentationController extends ModuleRoot {
     }
     
     @GET
-    @Path("path/{servicePath:.+}") // TODO encoding
+    @Path("path/{serviceName:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetByPathHTML(@PathParam("servicePath") String servicePath) throws Exception {
+    public Object doGetByPathHTML(@PathParam("serviceName") String serviceName) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
-        
-        DocumentModelList services = session.query(IndicatorProvider.NXQL_SELECT_FROM + InformationService.DOCTYPE
-                + IndicatorProvider.NXQL_WHERE_NO_PROXY + IndicatorProvider.NXQL_AND
-                + "ecm:path='/" + servicePath + "'");
+        DocumentService docService = Framework.getService(DocumentService.class);
+        DocumentModel service = docService.find(session, new SoaNodeId(InformationService.DOCTYPE, serviceName));
         
         Template view = getView("servicedoc");
-        if (!services.isEmpty()) {
-            DocumentModel service = services.get(0);
+        if (service != null) {
             // WARNING IS NULL DOESN'T WORK IN RELEASE BUT IN JUNIT OK
             List<DocumentModel> actualImpls = session.query(IndicatorProvider.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
                     + IndicatorProvider.NXQL_WHERE_NO_PROXY
@@ -175,42 +173,34 @@ public class ServiceDocumentationController extends ModuleRoot {
     }
 
     @GET
-    @Path("tag/{tagPath:.+}") // TODO encoding
+    @Path("tag/{tagName:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetByTagHTML(@PathParam("tagPath") String tagPath) throws Exception {
+    public Object doGetByTagHTML(@PathParam("tagName") String tagName) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
- 
-        DocumentModel tag = session.getWorkingCopy(new PathRef("/" + tagPath)); // unwrapping
+        DocumentService docService = Framework.getService(DocumentService.class);
         
-        DocumentModelList tagServices = session.query(IndicatorProvider.NXQL_SELECT_FROM + InformationService.DOCTYPE
-                + IndicatorProvider.NXQL_WHERE_NO_PROXY + IndicatorProvider.NXQL_AND + "ecm:uuid IN "
-                + SoftwareComponentIndicatorProvider.getProxiedIdLiteralList(session,
-                        session.query(IndicatorProvider.NXQL_SELECT_FROM + InformationService.DOCTYPE
-                /*+ IndicatorProvider.NXQL_WHERE_PROXY + " AND "*/ + IndicatorProvider.NXQL_WHERE
-                + IndicatorProvider.NXQL_PATH_STARTSWITH + tag.getPathAsString() + IndicatorProvider.NXQL_QUOTE)));
+        String query = IndicatorProvider.NXQL_SELECT_FROM
+        		+ InformationService.DOCTYPE + IndicatorProvider.NXQL_WHERE
+        		+ InformationService.XPATH_PARENTSIDS + "/* = '" + TaggingFolder.DOCTYPE + ":" + tagName + "'";
+        DocumentModelList tagServices = docService.query(session, query, true, false);
         
         Template view = getView("tagServices");
         return view
-                .arg("tag", tag) 
+                .arg("tag", docService.find(session, new SoaNodeId(TaggingFolder.DOCTYPE, tagName)))
                 .arg("tagServices", tagServices); 
     }
     
     @GET
-    @Path("{servicePath:.+}/tags") // TODO encoding
+    @Path("{serviceName:.+}/tags") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetTagsHTML(@PathParam("servicePath") String servicePath) throws Exception {
+    public Object doGetTagsHTML(@PathParam("serviceName") String serviceName) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
-
+        DocumentService docService = Framework.getService(DocumentService.class);
+        DocumentModel service = docService.find(session, new SoaNodeId(InformationService.DOCTYPE, serviceName));
         DocumentModelList tags = session.query("SELECT " + "*" + " FROM " + TaggingFolder.DOCTYPE + IndicatorProvider.NXQL_WHERE_NO_PROXY);
         
-        DocumentModelList services = session.query(IndicatorProvider.NXQL_SELECT_FROM + InformationService.DOCTYPE
-                + IndicatorProvider.NXQL_WHERE_NO_PROXY + IndicatorProvider.NXQL_AND
-                + "ecm:path='/" + servicePath + "'");
-        
         Template view = getView("servicetags");
-        if (!services.isEmpty()) {
-            DocumentModel service = services.get(0);
-            
+        if (service != null) {
             view.arg("service", service);
         }
         return view
@@ -218,45 +208,36 @@ public class ServiceDocumentationController extends ModuleRoot {
     }
     
     @POST
-    @Path("{servicePath:.+}/tags") // TODO encoding
+    @Path("{serviceName:.+}/tags") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
-    public Object doPostTagsHTML(@PathParam("servicePath") String servicePath, @FormParam("tagPath") String tagPath) throws Exception {
+    public Object doPostTagsHTML(@PathParam("serviceName") String serviceName, @FormParam("tagId") String tagId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
+        DocumentService docService = Framework.getService(DocumentService.class);
         
-        DocumentModelList services = session.query(IndicatorProvider.NXQL_SELECT_FROM + InformationService.DOCTYPE
-                + IndicatorProvider.NXQL_WHERE_NO_PROXY + IndicatorProvider.NXQL_AND
-                + "ecm:path='/" + servicePath + "'");
-        DocumentModelList tags = session.query(IndicatorProvider.NXQL_SELECT_FROM + TaggingFolder.DOCTYPE
-                + IndicatorProvider.NXQL_WHERE_NO_PROXY + IndicatorProvider.NXQL_AND
-                + "ecm:path='" + tagPath + "'");
+        DocumentModel service = docService.find(session, new SoaNodeId(InformationService.DOCTYPE, serviceName));
+        DocumentModel tag = session.getDocument(new IdRef(tagId));
         
-        if (!services.isEmpty() && !tags.isEmpty()) {
-            DocumentModel service = services.get(0);
-            DocumentModel tag = tags.get(0);
+        if (service != null && tag != null) {
             DocumentService documentService = Framework.getService(DocumentService.class);
             documentService.create(session, documentService.createSoaNodeId(service), tag.getPathAsString());
             session.save();
         }
-        return doGetTagsHTML(servicePath);
+        return doGetTagsHTML(serviceName);
     }
     
     //@DELETE // doesn't work from browser
     @POST
-    @Path("proxy/{serviceProxyPath:.+}") // TODO encoding
+    @Path("proxy/{documentId:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
-    public Object doDeleteProxyHTML(@PathParam("serviceProxyPath") String serviceProxyPath, @FormParam("delete") String delete) throws Exception {
+    public Object doDeleteProxyHTML(@PathParam("documentId") String documentId, @FormParam("delete") String delete) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
+        DocumentModel serviceProxy = session.getDocument(new IdRef(documentId));
         
-        DocumentModelList services = session.query(IndicatorProvider.NXQL_SELECT_FROM + InformationService.DOCTYPE
-                + IndicatorProvider.NXQL_WHERE_PROXY + IndicatorProvider.NXQL_AND
-                + "ecm:path='/" + serviceProxyPath + "'");
-        
-        if (!services.isEmpty()) {
-            DocumentModel serviceProxy = services.get(0);
-            DocumentModel proxiedService = session.getWorkingCopy(services.get(0).getRef());
+        if (serviceProxy != null) {
+            DocumentModel proxiedService = session.getWorkingCopy(serviceProxy.getRef());
             session.removeDocument(serviceProxy.getRef());
             session.save();
-            return doGetTagsHTML(proxiedService.getPathAsString().substring(1)); // removing lead slash
+            return doGetTagsHTML((String) proxiedService.getPropertyValue(InformationService.XPATH_SOANAME)); // removing lead slash
         }
         return doGetHTML(); //TODO better
     }

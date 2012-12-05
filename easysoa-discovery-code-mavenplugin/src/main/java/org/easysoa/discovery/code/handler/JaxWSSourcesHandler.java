@@ -82,7 +82,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
             if (isWsInterface(c)) {
             	String wsName = getWsName(c);
             	String wsNamespace = getWsNamespace(c);
-            	List<OperationInformation> operations = getOperationsInformation(c);
+            	Map<String, OperationInformation> operations = getOperationsInformation(c, null);
                 wsInjectableTypeSet.put(c.getFullyQualifiedName(), 
                         new JavaServiceInterfaceInformation(mavenDeliverable.getGroupId(),
                                 mavenDeliverable.getArtifactId(),
@@ -99,7 +99,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
         if (isWsClass(c)) {
         	String wsName = getWsName(c);
         	String wsNamespace = getWsNamespace(c);
-        	List<OperationInformation> operations = getOperationsInformation(c);
+        	Map<String, OperationInformation> operations = getOperationsInformation(c);
             return new JavaServiceInterfaceInformation(mavenDeliverable.getGroupId(),
                     mavenDeliverable.getArtifactId(),
                     c.getName(), wsNamespace, wsName, operations);
@@ -144,15 +144,14 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                         discoveredNodes.add(informationService);
                         
                         // Extract operations info
-                        List<OperationInformation> itfOperationsInfo = interfaceInfo.getOperations();
-                        List<OperationInformation> implOperationsInfo = getOperationsInformation(c);
-                        for (OperationInformation implOperation : implOperationsInfo) {
-                        	int itfOperationIndex;
-                        	if ((itfOperationIndex = itfOperationsInfo.indexOf(implOperation)) != -1) {
-                        		itfOperationsInfo.get(itfOperationIndex).mergeWith(implOperation);
+                        Map<String, OperationInformation> itfOperationsInfo = interfaceInfo.getOperations();
+                        Map<String, OperationInformation> implOperationsInfo = getOperationsInformation(c, itfOperationsInfo);
+                        for (Entry<String, OperationInformation> implOperation : implOperationsInfo.entrySet()) {
+                        	if (itfOperationsInfo.containsKey(implOperation.getKey())) {
+                        		itfOperationsInfo.get(implOperation.getKey()).mergeWith(implOperation.getValue());
                         	}
                         }
-                        serviceImpl.setOperations(itfOperationsInfo);
+                        serviceImpl.setOperations(new ArrayList<OperationInformation>(itfOperationsInfo.values()));
                     }
                     
                     discoveredNodes.add(serviceImpl);
@@ -272,10 +271,12 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 		return serviceName;
 	}
 
-	private List<OperationInformation> getOperationsInformation(JavaClass c) {
-        List<OperationInformation> operations = new ArrayList<OperationInformation>();
+	private Map<String, OperationInformation> getOperationsInformation(JavaClass c,
+			Map<String, OperationInformation> existingOperationsInfo) {
+        Map<String, OperationInformation> operations = new HashMap<String, OperationInformation>();
         for (JavaMethod method : c.getMethods()) {
         	String webResultName = null;
+        	
 			if (ParsingUtils.hasAnnotation(method, ANN_WEBRESULT)) {
                 Annotation webResultAnn = ParsingUtils.getAnnotation(method, ANN_WEBRESULT);
                 webResultName = webResultAnn.getProperty("name").toString();
@@ -284,16 +285,26 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
         		Annotation webResultAnn = ParsingUtils.getAnnotation(method, ANN_WEBMETHOD);
                 webResultName = webResultAnn.getProperty("operationName").toString();
             }
+        	if (webResultName == null && existingOperationsInfo != null) {
+        		for (Entry<String, OperationInformation> operation : existingOperationsInfo.entrySet()) {
+        			if (operation.getKey().equals(method.getName())) {
+        				webResultName = operation.getValue().getName();
+        			}
+        		}
+        	}
+        	
             if (webResultName != null) {
                 // Extract parameters info
                 StringBuilder parametersInfo = new StringBuilder();
                 for (JavaParameter parameter : method.getParameters()) {
                     Annotation webParamAnn = ParsingUtils.getAnnotation(parameter, ANN_WEBPARAM);
-                    parametersInfo.append(webParamAnn.getProperty("name").getParameterValue()
-                            + "=" + parameter.getType().toString() + ", ");
+                    if (webParamAnn != null) {
+	                    parametersInfo.append(webParamAnn.getProperty("name").getParameterValue()
+	                            + "=" + parameter.getType().toString() + ", ");
+                    }
                 }
-                operations.add(new OperationInformation(webResultName,
-                        parametersInfo.delete(parametersInfo.length()-2, parametersInfo.length()).toString(),
+                operations.put(method.getName(), new OperationInformation(webResultName, 
+                        (parametersInfo.length() > 2) ? parametersInfo.delete(parametersInfo.length()-2, parametersInfo.length()).toString() : null,
                         method.getComment()));
             }
         }
@@ -392,8 +403,8 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 		        || ParsingUtils.hasAnnotation(c, ANN_XML_WSPROVIDER);
 	}
 
-	private List<OperationInformation> getOperationsInformation(Class<?> c) {
-        List<OperationInformation> operations = new ArrayList<OperationInformation>();
+	private Map<String, OperationInformation> getOperationsInformation(Class<?> c) {
+		Map<String, OperationInformation> operations = new HashMap<String, OperationInformation>();
         for (Method method : c.getMethods()) {
         	String webResultName = null;
         	if (ParsingUtils.hasAnnotation(method, ANN_WEBRESULT)) {
@@ -424,7 +435,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                     parametersInfo.append(webParamName + "=" + parameter.getName() + ", ");
                 	
                 }
-                operations.add(new OperationInformation(webResultName,
+                operations.put(method.getName(), new OperationInformation(webResultName, 
                         parametersInfo.delete(parametersInfo.length()-2, parametersInfo.length()).toString(),
                         null));
             }

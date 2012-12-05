@@ -6,6 +6,7 @@ import java.util.Set;
 import org.easysoa.registry.rest.marshalling.JsonMessageReader;
 import org.easysoa.registry.rest.marshalling.JsonMessageWriter;
 import org.easysoa.registry.dashboard.rest.MatchingDashboard;
+import org.easysoa.registry.dbb.rest.ServiceFinderRest;
 import org.easysoa.registry.documentation.rest.ServiceDocumentationController;
 import org.easysoa.registry.indicators.rest.IndicatorsController;
 import org.easysoa.registry.integration.SimpleRegistryServiceImpl;
@@ -33,7 +34,8 @@ public class EasySOAModule extends WebEngineModule {
                 SimpleRegistryServiceImpl.class,
                 IndicatorsController.class,
                 ServiceDocumentationController.class,
-                MatchingDashboard.class
+                MatchingDashboard.class,
+                ServiceFinderRest.class
                 };
     }
 

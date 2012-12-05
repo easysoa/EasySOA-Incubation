@@ -149,7 +149,7 @@ td:first-child {
 		<#list service['proxies'] as serviceProxy>
 			<#if serviceProxy['parent'].type = 'TaggingFolder'>
 					<li><@displayTagShort serviceProxy['parent']/> -
-					<form method="POST" action="${Root.path}/proxy${serviceProxy.path}">
+					<form method="POST" action="${Root.path}/proxy${serviceProxy['soan:name']}">
 						<input name="delete" type="hidden" value=""/>
 						<a href="##" onClick="this.parentNode.submit();">Untag</a>
 					</form>
@@ -164,8 +164,8 @@ td:first-child {
 
 		<#list tags as tag>
 			<#if !currentTagIds?seq_contains(tag.id)>
-			<form method="POST" action="${Root.path}${service.path}/tags">
-				<input name="tagPath" type="hidden" value="${tag.path}"/>
+			<form method="POST" action="${Root.path}${service['soan:name']}/tags">
+				<input name="tagName" type="hidden" value="${tag['soan:name']}"/>
 				<a href="##" onClick="this.parentNode.submit();">Tag</a> in <@displayTagShort tag/>
 			</form>
 			</#if>

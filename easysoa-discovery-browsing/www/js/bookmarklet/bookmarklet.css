@@ -1,0 +1,99 @@
+div.easysoa-frame {
+	position: fixed;
+	padding: 10px;
+	left: 20px;
+	top: 20px;
+	width: 300px;
+	border: 2px solid darkblue;
+	background-color: white;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 14pt;
+	display: none;
+	z-index: 1000;
+	text-align: left;
+	max-height: 600px;
+	overflow: auto;
+	color: black;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
+.easysoa-doc {
+	font-size: 10pt;
+	color: grey;
+}
+
+.easysoa-frame input {
+	width: 150px;
+	font-size: 14pt;
+	margin: 3px;
+	background-color: #EEE;
+	border: 1px solid black;
+	border-style: inset;
+	padding: 2px;
+}
+
+.easysoa-frame input[type=submit] {
+	width: 200px;
+	border: 2px solid grey;
+	border-style: outset;
+}
+
+div.easysoa-form-label {
+	width: 100px;
+	float: left;
+	padding-top: 3px;
+	margin-bottom: 5px;
+}
+
+div#easysoa-login-error {
+	color: darkred;
+	padding: 5px;
+}
+
+div.easysoa-wsdl-result {
+	font-size: 10pt;
+	float: left;
+	width: 282px;
+	display: block;
+	border: 1px solid grey;
+	margin: 5px;
+	padding: 5px;
+}
+
+div.easysoa-wsdl-result:hover {
+	background-color: #FFD;
+	cursor: pointer;
+}
+
+span.easysoa-wsdl-name {
+	font-weight: bold;
+}
+
+a.easysoa-wsdl-link {
+	font-style: italic;
+	color: darkblue;
+}
+
+div.easysoa-exit {
+	background: url('http://localhost:8083/easysoa/core/dbb/img/close.png');
+	width: 16px;
+	height: 16px;
+	float: right;
+	margin: 8px;
+	cursor: pointer;
+}
+
+div.easysoa-title {
+	border: 1px solid #AAC;
+	background-color: #F0F0FA;
+	border-left-width: 5px;
+	padding: 5px;
+	width: 288px;
+	cursor: move;
+	margin-bottom: 5px;
+}

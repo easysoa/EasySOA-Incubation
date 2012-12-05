@@ -178,13 +178,13 @@ td:first-child {
 		<ul>
 		<#list service['proxies'] as serviceProxy>
 			<#if serviceProxy['parent'].type = 'TaggingFolder'>
-					<li><@displayTagShort serviceProxy/></li>
+					<li><@displayTagShort serviceProxy['parent']/></li>
 			</#if>
 		</#list>
 		</ul>
 		</#if>
 
-		<br/><a href="${Root.path}${service.path}/tags">Also tag in...</a>
+		<br/><a href="${Root.path}/${service['soan:name']?xml}/tags">Also tag in...</a>
 
 		<br/>exemples d'appel
 

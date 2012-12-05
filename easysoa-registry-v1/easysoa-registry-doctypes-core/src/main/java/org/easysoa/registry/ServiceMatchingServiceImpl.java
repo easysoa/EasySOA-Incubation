@@ -29,15 +29,15 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 	 */
 	public DocumentModelList findInformationServices(CoreSession documentManager, DocumentModel impl,
 			DocumentModel filterComponent, boolean skipPlatformMatching) throws ClientException {
-		
-    	// impl :
-    	// 1. find IS on IS req itf (portType) in provided component if anyand whose component's platform match the impl's platform (criteria) if any ;
+
+        // how should work matching in discovery & dashboard for :
+        
+    	// endpoint : if has no impl,
+    	// find impl : on IS req itf (portType), and whose IS is in provided component if any,
+        // and whose impl platform (criteria) match the endpoint's discovered impl platform (criteria) if any ;
+    	// if single matched link to it
     	// (if more than one result, use matching dashboard)
-    	// if single result, link impl to IS and to component (that it fills)
-    	// 2. if none, find IS on IS req itf (portType) in provided component (i.e. this impl is not the actual one) ;
-    	// (if more than one result, use matching dashboard)
-    	// if single result, link impl to IS, then attempt to find platform (single query result) to link to else go to matching dashboard 
-    	// 3. if none ("technical" service), create service (?) and attempt to find platform (single query result) to link to else go to matching dashboard
+    	// if none, create impl and do as for in ServiceMatchingImpl : 1. and fill component, else 2. and link to platform, else 3.
  
 		DocumentService documentService;
 		try {
@@ -51,8 +51,8 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
     	String implSubProjectId = "AXXXRealisation";
     	//String matchingGuideComponentId = (String) impl.getPropertyValue(ServiceImplementation.XPATH_COMPONENT_ID); // TODO check existence at source disco start
 
-    	//String implIDE = "Eclipse"; // OPT
-    	String implLanguage = (String) impl.getPropertyValue(ServiceImplementation.XPATH_LANGUAGE); // "Java"; // TODO from source disco
+    	String implIde = (String) impl.getPropertyValue(ServiceImplementation.XPATH_IMPL_IDE); // OPT only set by ex. FraSCatiStudio, TalendStudio, ScarboModeler
+    	String implLanguage = (String) impl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LANGUAGE); // "Java"; // TODO from source disco
     	String implBuild = "Maven"; // MavenPom ?? or Ivy ; or in top-level deliverable ?? TODO from source disco or deduced from del:nature if possible
     	String implDeliverableNature = (String) impl.getPropertyValue(Deliverable.XPATH_NATURE); // "Maven" ; MavenArtifact ? copied from Deliverable
     	String implDeliverableRepositoryUrl = (String) impl.getPropertyValue(Deliverable.XPATH_REPOSITORY_URL); // "http://maven.nuxeo.org/nexus/content/groups/public" ; acts as id, copied from Deliverable TODO add in source disco
@@ -61,6 +61,7 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
 
     	if (!skipPlatformMatching) {
+	    	query.addConstraintMatchCriteriaIfSet("platform:ide", implIde);
 	    	query.addConstraintMatchCriteriaIfSet("platform:language", implLanguage);
 	    	query.addConstraintMatchCriteriaIfSet("platform:build", implBuild);
 	    	query.addConstraintMatchCriteriaIfSet("platform:deliverableNature", implDeliverableNature);
@@ -118,28 +119,6 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
         			//OPT " AND " InformationService.XPATH_REST_MEDIA_TYPE + "='" + implMediaType + "'" +
         			
     	}
-
-    	/*
-    	//////////////////////////////////////////////////////////
-		// only for discovery in web or message monitoring :
-    	String endpointServiceTransport = "HTTP"; // if WS extracted from WSDL binding/transport=="http://schemas.xmlsoap.org/soap/http"
-    	// NB. endpointServiceProtocol=WS|REST is implied by platform:serviceDefinition=WSDL|JAXRS
-    	
-		infoServiceQueryString +=
-				" AND platform:serviceTransport='" + endpointServiceTransport + "'"; // if any
-		boolean isHttp = "HTTP".equals(endpointServiceTransport);
-		if (isHttp) { // consistency logic
-        	String endpointServiceTransportHttpContentType = "application/json+nxautomation";
-        	String endpointServiceTransportHttpContentKind = "XML"; // deduced from ContentType if possible, else from message monitoring
-    		infoServiceQueryString +=
-    				" AND platform:serviceTransport='" + endpointServiceTransportHttpContentType + "'" +
-    				" AND platform:serviceTransport='" + endpointServiceTransportHttpContentKind + "'"; // if any
-		}
-		
-		// OPT String endpointServiceRuntime = "CXF";
-		// OPT appServer=Apache Tomcat|Jetty
-		// NB. endpointProtocolServer (Apache Tomcat, Jetty) is different but not as interesting
-		*/
     	
     	String infoServiceQuery = query.build();
     	DocumentModelList foundInfoServices = documentService.query(documentManager,

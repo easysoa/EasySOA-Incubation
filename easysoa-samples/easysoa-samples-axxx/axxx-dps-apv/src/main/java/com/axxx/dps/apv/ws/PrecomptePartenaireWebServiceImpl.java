@@ -7,6 +7,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 
+/**
+ * TODO doc
+ * @author mdutoo
+ *
+ */
 @WebService(name="PrecomptePartenaire", // service interface name (portType), else defaults to java interface
 	targetNamespace="http://www.axxx.com/dps/apv", // else defaults to java package ex. http://ws.apv.dps.axxx.com/
 	serviceName="PrecomptePartenaireServiceImpl") // service implementation name (used for binding & port), else default to java impl

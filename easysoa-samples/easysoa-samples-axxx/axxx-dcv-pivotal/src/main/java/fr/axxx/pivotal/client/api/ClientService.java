@@ -2,6 +2,7 @@ package fr.axxx.pivotal.client.api;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import org.osoa.sca.annotations.Service;
 
@@ -118,5 +119,10 @@ public interface ClientService {
      */
     ContactClient createContactClient(String identifiantClient, String nomContact, String prenomContact, String fonctionContact, String telephone, String email, String numEtVoie, String codePostal,
             String ville, String pays);
+
+    /**
+     * 
+     */
+    Map<String, Long> getRepartitionTypeStructure();
     
 }

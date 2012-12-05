@@ -27,10 +27,9 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
             BigDecimal nbBenefN) {
         
         ArrayOfString arrayOfString = new ArrayOfString();
-        // TODO To complete
-        Client client = clientService.createClient(identifiantClient, raisonSociale, anciennete, typeStructure, numEtVoie, email, codePostal, ville, pays,
-                tel, rib, formeJuridique, siren, dotGlobAPVN, dontReliquatN1, dontDotN, nbBenefPrevN, montantUtiliseN,
-                nbBenefN);
+        Client client = clientService.updateClient(identifiantClient, raisonSociale, 
+                anciennete, typeStructure, numEtVoie, email, codePostal, 
+                ville, pays, tel, rib, formeJuridique, siren);
         arrayOfString.getString().add(client.getIdentifiantClient());
         return arrayOfString;
     }
@@ -38,7 +37,8 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
     @Override
     public ArrayOfString informationAPV(String identifiantClient, String bilanLibelle, Integer nombre, Integer bilanAnnee) {
         ArrayOfString arrayOfString = new ArrayOfString();
-        // TODO To complete
+        // TODO change called method to createOrUpdate
+        // Problem : how to get the good line with provided info
         InformationAPV informationApv = clientService.createInformationApv(identifiantClient, bilanLibelle, nombre, bilanAnnee);
         arrayOfString.getString().add(informationApv.getIdentifiantClient());
         return arrayOfString;
@@ -48,7 +48,8 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
     public ArrayOfString contactClient(String identifiantClient, String nomContact, String prenomContact, String fonctionContact, String telephone, String email, String numEtVoie, String codePostal,
             String ville, String pays) {
         ArrayOfString arrayOfString = new ArrayOfString();
-        // TODO To complete
+        // TODO change called method to createOrUpdate
+        // Problem : how to get the good line with provided info
         ContactClient contactClient = clientService.createContactClient(identifiantClient, nomContact, prenomContact, fonctionContact, telephone, email, numEtVoie, codePostal, ville, pays);
         arrayOfString.getString().add(contactClient.getIdentifiantClient());
         return arrayOfString;

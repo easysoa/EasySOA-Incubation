@@ -78,7 +78,8 @@ import fr.axxx.pivotal.persistence.GenericEntity;
     "dontDotN",
     "nbBenefPrevN",
     "montantUtiliseN",
-    "nbBenefN"
+    "nbBenefN",
+    "creerPrecompteDone"
 })
 @XmlRootElement(name = "Client")
 public class Client extends GenericEntity<Client> {
@@ -130,6 +131,8 @@ public class Client extends GenericEntity<Client> {
 	/** stat, allow to set at init but don't modify */
     @XmlElement(name = "Nb_Benef_N")
     protected BigDecimal nbBenefN;
+    @XmlElement(name = "creerPrecompteDone")
+    protected Boolean creerPrecompteDone;
 
     /**
      * Default constructor
@@ -724,4 +727,22 @@ public class Client extends GenericEntity<Client> {
         this.nbBenefN = value;
     }
 
+    /**
+     * @return the creerPrecompteDone
+     */
+    public Boolean isCreerPrecompteDone() {
+        if(creerPrecompteDone != null){
+            return creerPrecompteDone;
+        } else {
+            return new Boolean(false);
+        }
+    }
+
+    /**
+     * @param creerPrecompteDone the creerPrecompteDone to set
+     */
+    public void setCreerPrecompteDone(Boolean creerPrecompteDone) {
+        this.creerPrecompteDone = creerPrecompteDone;
+    }
+    
 }

@@ -33,8 +33,17 @@
 		                <td><input class="validate[required, custom[onlyNumber]] text-input" type="text" name="anciennete" id="anciennete"></td>
 		                <td id="ancienneteError" class="error"></td>
 		                <td><label for="Type structure">Type structure :</label></td>
-		                <td><input class="validate[custom[onlyLetter]] text-input" type="text" name="typeStructure" id="typeStructure"></td>
-		                <td id="typeStructureError" class="error"></td>		            	
+		                <!--<td><input class="text-input" type="" name="typeStructure" id="typeStructure"></td>-->
+		                <td>
+							<select class="text-input" name="typeStructure" id="typeStructure" size="1">
+								<option>Association nat.</option>
+								<option>Mission locale</option>
+								<option>D&eacute;legation Territoriale Associative</option>
+								<option>Centre social ou socio-culturel</option>
+								<option>Autre</option>
+							</select>
+		                </td>
+		                <td></td>		            	
 		            </tr>
 		            <tr>
 		                <td><label for="Num et voie">Num et voie :</label></td>

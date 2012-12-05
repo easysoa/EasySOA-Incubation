@@ -32,8 +32,16 @@
 			                <td><input class="validate[custom[onlyNumber]] text-input" type="text" name="anciennete" id="anciennete" value="$client.getAnciennete()"></td>
 			                <td id="ancienneteError" class="error"></td>
 			                <td><label for="Type structure">Type structure :</label></td>
-			                <td><input class="validate[] text-input" type="text" name="typeStructure" id="typeStructure" value="$client.getTypeStructure()"></td>
-			                <td id="typeStructureError" class="error"></td>		            	
+			                <!--<td><input class="validate[] text-input" type="text" name="typeStructure" id="typeStructure" value="$client.getTypeStructure()"></td>-->
+			                <td>
+			                	<select class="text-input" name="typeStructure" id="typeStructure" size="1">
+									<option #if($client.getTypeStructure() == "Association nat.")selected="selected"#end>Association nat.</option>
+									<option #if($client.getTypeStructure() == "Mission locale")selected="selected"#end>Mission locale</option>
+									<option #if($client.getTypeStructure() == "D&eacute;legation Territoriale Associative")selected="selected"#end>D&eacute;legation Territoriale Associative</option>
+									<option #if($client.getTypeStructure() == "Centre social ou socio-culturel")selected="selected"#end>Centre social ou socio-culturel</option>
+									<option #if($client.getTypeStructure() == "Autre")selected="selected"#end>Autre</option>
+								</select>
+			                </td>
 			            </tr>
 			            <tr>
 			                <td><label for="Num et voie">Num et voie :</label></td>

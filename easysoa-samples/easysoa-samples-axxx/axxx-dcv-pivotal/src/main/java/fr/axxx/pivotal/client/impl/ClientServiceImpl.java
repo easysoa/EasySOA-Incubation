@@ -1,7 +1,9 @@
 package fr.axxx.pivotal.client.impl;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -339,6 +341,21 @@ public class ClientServiceImpl implements ClientService {
             return null;
         }
         return contactClient;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Map<String, Long> getRepartitionTypeStructure() {
+        Map<String, Long> map = new HashMap<String, Long>();
+        Query query = this.database.get().createQuery("SELECT DISTINCT c.typeStructure FROM Client c");
+        List<String> resultList = (List<String>)query.getResultList();
+        for(String type : resultList){
+            query = this.database.get().createQuery("SELECT count(c) FROM Client c WHERE c.typeStructure = :type");    
+            query.setParameter("type", type);
+            Long count = (Long)query.getSingleResult();
+            map.put(type, count);
+        }
+        return map;
     }
     
 }

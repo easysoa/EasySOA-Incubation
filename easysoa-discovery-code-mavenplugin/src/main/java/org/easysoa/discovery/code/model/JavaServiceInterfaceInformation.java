@@ -1,6 +1,9 @@
 package org.easysoa.discovery.code.model;
 
+import java.util.List;
+
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
+import org.easysoa.registry.types.OperationInformation;
 import org.easysoa.registry.types.ids.SoaNodeId;
 
 public class JavaServiceInterfaceInformation {
@@ -13,9 +16,12 @@ public class JavaServiceInterfaceInformation {
 
 	private String wsName;
 
+	private List<OperationInformation> operations;
+
     public JavaServiceInterfaceInformation(String mavenGroupId, String mavenArtifactId, String interfaceName,
-    		String wsNamespace, String wsName) throws Exception {
-        this.mavenDeliverableId = new MavenDeliverableInformation(mavenGroupId, mavenArtifactId).getSoaNodeId();
+    		String wsNamespace, String wsName, List<OperationInformation> operations) throws Exception {
+        this.operations = operations;
+		this.mavenDeliverableId = new MavenDeliverableInformation(mavenGroupId, mavenArtifactId).getSoaNodeId();
         this.interfaceName = interfaceName;
 		this.wsNamespace = wsNamespace;
 		this.wsName = wsName;
@@ -35,6 +41,10 @@ public class JavaServiceInterfaceInformation {
     
     public String getWsNamespace() {
 		return wsNamespace;
+	}
+    
+    public List<OperationInformation> getOperations() {
+		return operations;
 	}
     
     @Override

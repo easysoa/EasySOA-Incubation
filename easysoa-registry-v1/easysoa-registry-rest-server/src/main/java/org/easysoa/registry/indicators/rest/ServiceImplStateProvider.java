@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.easysoa.registry.DocumentService;
-import org.easysoa.registry.types.OperationImplementation;
+import org.easysoa.registry.types.OperationInformation;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -49,7 +49,7 @@ public class ServiceImplStateProvider implements IndicatorProvider {
                 if (documentation != null && !documentation.isEmpty()) {
                     documentationLines += computeLines(documentation);
                     
-                    for (OperationImplementation operation : serviceImpl.getOperations()) {
+                    for (OperationInformation operation : serviceImpl.getOperations()) {
                         String operationDocumentation = operation.getDocumentation();
                         documentationLines += computeLines(operationDocumentation);
                     }

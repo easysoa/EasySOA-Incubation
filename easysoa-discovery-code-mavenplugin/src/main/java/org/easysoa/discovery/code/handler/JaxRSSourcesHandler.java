@@ -15,7 +15,7 @@ import org.easysoa.discovery.code.model.JavaServiceInterfaceInformation;
 import org.easysoa.registry.rest.client.types.InformationServiceInformation;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
-import org.easysoa.registry.types.OperationImplementation;
+import org.easysoa.registry.types.OperationInformation;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
 
 import com.thoughtworks.qdox.model.JavaClass;
@@ -61,7 +61,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
             		  // TODO target wsName[space]
                       wsInjectableTypeSet.put(c.getFullyQualifiedName(), new JavaServiceInterfaceInformation(
                               mavenDeliverable.getGroupId(), mavenDeliverable.getArtifactId(),
-                              c.getFullyQualifiedName(), null, null));
+                              c.getFullyQualifiedName(), null, null, null));
                 }
             }
         }
@@ -83,7 +83,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
         		// TODO target wsName[space]
              return new JavaServiceInterfaceInformation(
                       mavenDeliverable.getGroupId(), mavenDeliverable.getArtifactId(),
-                      candidateClass.getName(), null, null);
+                      candidateClass.getName(), null, null, null);
         }
         else {
             return null;
@@ -140,7 +140,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                         }
                         
                         // Extract operations info
-                        List<OperationImplementation> operations = serviceImpl.getOperations();
+                        List<OperationInformation> operations = serviceImpl.getOperations();
                         if (pathMethods != null) {
                             for (JavaMethod method : c.getMethods()) {
                                 if (ParsingUtils.hasAnnotation(method, ANN_PATH)) {
@@ -156,7 +156,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                                         }
                                     }
                                     
-                                    operations.add(new OperationImplementation(
+                                    operations.add(new OperationInformation(
                                             method.getName(),
                                             null,
                                             "Method: " + httpMethod + ", Path: " + path + ", Description: " + method.getComment()));

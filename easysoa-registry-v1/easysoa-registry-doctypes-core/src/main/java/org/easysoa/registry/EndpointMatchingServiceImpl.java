@@ -122,8 +122,8 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     	
     	// Run query
     	String isQuery = query.build();
-    	DocumentModelList foundImpls = documentService.query(documentManager, isQuery, true, false);
-    	return foundImpls;
+    	DocumentModelList foundIs = documentService.query(documentManager, isQuery, true, false);
+    	return foundIs;
 	}
 
 	@Override

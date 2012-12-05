@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.easysoa.registry.InvalidDoctypeException;
-import org.easysoa.registry.types.OperationImplementation;
+import org.easysoa.registry.types.OperationInformation;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.ids.ServiceImplementationId;
 import org.easysoa.registry.utils.ListUtils;
@@ -38,13 +38,13 @@ public class ServiceImplementationAdapter extends SoaNodeAdapter implements Serv
     }
 
     @Override
-    public List<OperationImplementation> getOperations() throws PropertyException, ClientException {
+    public List<OperationInformation> getOperations() throws PropertyException, ClientException {
         // Proper-ish conversion from List<Map<String, Serializable>> hidden behind Serializable, to List<OperationImplementation>
         List<?> operationUnknowns = (List<?>) documentModel.getPropertyValue(XPATH_OPERATIONS);
-        List<OperationImplementation> operations = new ArrayList<OperationImplementation>();
+        List<OperationInformation> operations = new ArrayList<OperationInformation>();
         for (Object operationUnknown : operationUnknowns) {
             Map<?, ?> operationMap = (Map<?, ?>) operationUnknown;
-            operations.add(new OperationImplementation(
+            operations.add(new OperationInformation(
                     (String) operationMap.get(OPERATION_NAME),
                     (String) operationMap.get(OPERATION_PARAMETERS),
                     (String) operationMap.get(OPERATION_DOCUMENTATION)));
@@ -53,10 +53,10 @@ public class ServiceImplementationAdapter extends SoaNodeAdapter implements Serv
     }
     
     @Override
-    public void setOperations(List<OperationImplementation> operations) throws PropertyException, ClientException {
+    public void setOperations(List<OperationInformation> operations) throws PropertyException, ClientException {
         // Conversion from List<OperationImplementation> to List<Map<String, Serializable>>
         List<Map<String, Serializable>> operationsSerializable = new ArrayList<Map<String, Serializable>>();
-        for (OperationImplementation operation : operations) {
+        for (OperationInformation operation : operations) {
             Map<String, Serializable> operationSerializable = new HashMap<String, Serializable>();
             operationSerializable.put(OPERATION_NAME, operation.getName());
             operationSerializable.put(OPERATION_DOCUMENTATION, operation.getDocumentation());

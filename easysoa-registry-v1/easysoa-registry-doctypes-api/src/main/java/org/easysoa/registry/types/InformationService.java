@@ -20,6 +20,4 @@ public interface InformationService extends SoaNode, WsdlInfoFacet, Architecture
 
     static final String XPATH_LINKED_BUSINESS_SERVICE = "iserv:linkedBusinessService";
     
-    static final String XPATH_LINKED_PLATFORM = "iserv:linkedPlatform";
-    
 }

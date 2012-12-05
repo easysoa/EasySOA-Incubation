@@ -25,9 +25,9 @@ public interface ServiceImplementation extends SoaNode, RestInfoFacet, WsdlInfoF
     
     ServiceImplementationId getParsedSoaName() throws Exception;
 
-    List<OperationImplementation> getOperations() throws Exception;
+    List<OperationInformation> getOperations() throws Exception;
     
-    void setOperations(List<OperationImplementation> operations) throws Exception;
+    void setOperations(List<OperationInformation> operations) throws Exception;
 
     List<String> getTests() throws Exception;
 

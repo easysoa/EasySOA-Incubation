@@ -11,7 +11,7 @@ import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.EndpointConsumption;
 import org.easysoa.registry.types.IntelligentSystem;
 import org.easysoa.registry.types.IntelligentSystemTreeRoot;
-import org.easysoa.registry.types.OperationImplementation;
+import org.easysoa.registry.types.OperationInformation;
 import org.easysoa.registry.types.Repository;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
@@ -91,8 +91,8 @@ public class DoctypesTest extends AbstractRegistryTest {
         
         // Use adapter to manipulate operations
         ServiceImplementation serviceImpl = serviceImplModel.getAdapter(ServiceImplementation.class);
-        List<OperationImplementation> operations = serviceImpl.getOperations();
-        operations.add(new OperationImplementation("Yo", "Param1, Param2", "This does something"));
+        List<OperationInformation> operations = serviceImpl.getOperations();
+        operations.add(new OperationInformation("Yo", "Param1, Param2", "This does something"));
         serviceImpl.setOperations(operations);
         List<String> tests = new ArrayList<String>();
         tests.add("org.easysoa.TestClass1");

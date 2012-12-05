@@ -246,7 +246,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                                 }
                                 operations.add(new OperationImplementation(
                                         webResultAnn.getProperty("name").toString(),
-                                        parametersInfo.delete(parametersInfo.length()-2, parametersInfo.length()).toString(),
+                                        (parametersInfo.length() > 2) ? parametersInfo.delete(parametersInfo.length()-2, parametersInfo.length()).toString() : null,
                                         method.getComment()));
                             }
                         }

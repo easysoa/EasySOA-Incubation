@@ -4,7 +4,7 @@
 #set($user = $request.getSession().getAttribute("user"))
 #set($client = $clientService.getClient($identifiantClient))
 <div id="welcome-title">Bienvenue $user.getLogin()</div>
-<div id="a_tabbar" class="dhtmlxTabBar" imgpath="/pivotal/images/" style="width:1000px; height:700px;">
+<div id="a_tabbar" class="dhtmlxTabBar" imgpath="/pivotal/images/" tabstyle="silver" skinColors="#FFFFFF,#FFFFFF" style="width:1000px; height:700px;">
 	<div id="detailsClient" class="rounded-div-content" name="D&eacute;tails client">
 	<!--<div id="rounded-div-content" class="rounded-div-content" name="D&eacute;tails client">-->
 		<form method="POST" action="/pivotal/action/updateClient" id="formUpdateClient">

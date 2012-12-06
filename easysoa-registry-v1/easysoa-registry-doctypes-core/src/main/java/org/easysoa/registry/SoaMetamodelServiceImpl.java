@@ -224,8 +224,8 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 		return null;
 	}
 	
-	public void validateWriteRightsOnProperties(String doctype, Map<String, Object> properties) throws ModelIntegrityException {
-		SoaNodeTypeDescriptor soaNodeTypeDescriptor = soaNodeTypes.get(doctype);
+	public void validateWriteRightsOnProperties(DocumentModel model, Map<String, Object> properties) throws ModelIntegrityException, ClientException {
+		SoaNodeTypeDescriptor soaNodeTypeDescriptor = soaNodeTypes.get(model.getType());
 		if (properties != null && soaNodeTypeDescriptor != null) {
 			List<String> immutableProperties = new ArrayList<String>();
 			immutableProperties.add(SoaNode.XPATH_SOANAME);
@@ -234,7 +234,8 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 				immutableProperties.addAll(doctypeImmutableProperties);
 			}
 			for (String immutableProperty : immutableProperties) {
-				if (properties.containsKey(immutableProperty)) {
+				if (properties.containsKey(immutableProperty)
+						&& !properties.get(immutableProperty).equals(model.getPropertyValue(immutableProperty))) {
 					throw new ModelIntegrityException("Property '" + immutableProperty + "' cannot be changed");
 				}
 			}

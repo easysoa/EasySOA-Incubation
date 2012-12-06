@@ -38,7 +38,7 @@ $(function() {
 			              'name': environmentName + ':' + url
 			            },
 			            'properties': {
-			              'dc:title': this.getServiceName()
+			              'dc:title': environmentName + ': ' + this.getServiceName()
 			            }
 			          },
 			        success: function (data) {

@@ -49,7 +49,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
             documentModel = documentService.newSoaNodeDocument(documentManager, identifier);
         }
         else {
-            metamodelService.validateWriteRightsOnProperties(identifier.getType(), properties);
+            metamodelService.validateWriteRightsOnProperties(documentModel, properties);
         }
         
         // Set properties

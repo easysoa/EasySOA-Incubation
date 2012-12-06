@@ -30,7 +30,8 @@ var ready = false;
 //================ I/O =================
 
 exports.configure = function(webServer) {
-	webServer.get('/nuxeo/discovery*', forwardToNuxeo);
+	webServer.get('/nuxeo/registry/post*', forwardBookmarkletPosts);
+	webServer.get('/nuxeo/registry*', forwardToNuxeo);
 	webServer.get('/nuxeo/servicefinder*', forwardToNuxeo);
 	webServer.all('/nuxeo/dashboard*', forwardToNuxeo);
 };
@@ -41,6 +42,16 @@ forwardToNuxeo = function(request, response, next) {
 			EASYSOA_ROOT_URL_PARSED.hostname,
 			EASYSOA_ROOT_URL_PARSED.port,
 			EASYSOA_ROOT_URL_PARSED.path + parsedUrl.path.replace('/nuxeo', ''));
+};
+
+forwardBookmarkletPosts = function(request, response, next) {
+	request.headers['content-type'] = 'application/json';
+  runRestRequest(request.session, 'easysoa/registry',
+		  'POST', request.headers, request.query,
+		  function(responseData) {
+		    response.end(responseData);
+		  }
+  );
 };
 
 exports.runRestRequest = runRestRequest = function(session, path, method, headers, body, callback) {

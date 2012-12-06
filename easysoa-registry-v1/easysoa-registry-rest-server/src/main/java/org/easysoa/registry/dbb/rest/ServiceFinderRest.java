@@ -68,7 +68,7 @@ import com.sun.jersey.api.core.HttpContext;
  * 
  */
 @Path("easysoa/servicefinder")
-@Produces({"application/json", "application/x-javascript"})
+@Produces("application/x-javascript")
 @WebObject(type = "servicefinder")
 public class ServiceFinderRest extends ModuleRoot {
 
@@ -113,7 +113,7 @@ public class ServiceFinderRest extends ModuleRoot {
     		environmentsNamesCache = environmentsNames;
     	}
     	
-		return new JSONArray(environmentsNamesCache).toString();
+		return new JSONArray(environmentsNamesCache);
     }
     
     @GET

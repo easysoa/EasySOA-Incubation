@@ -30,9 +30,9 @@ function loadCSS(url) {
 	document.getElementsByTagName('head')[0].appendChild(linkTag);
 }
 
-loadJS(EASYSOA_WEB + '/easysoa/lib/jquery.js');
-loadJS(EASYSOA_WEB + '/easysoa/lib/underscore.js');
-loadCSS(EASYSOA_WEB + '/easysoa/core/dbb/js/bookmarklet/bookmarklet.css');
+loadJS(EASYSOA_WEB + '/lib/jquery.js');
+loadJS(EASYSOA_WEB + '/lib/underscore.js');
+loadCSS(EASYSOA_WEB + '/js/bookmarklet/bookmarklet.css');
 
 /**
  * Core functions
@@ -106,7 +106,7 @@ function findWSDLs() {
 function runServiceFinder(theUrl) {
 	// Send request to Nuxeo
 	jQuery.ajax({
-		url : EASYSOA_WEB + '/nuxeo/servicefinder/' + theUrl,
+		url : EASYSOA_WEB + '/nuxeo/servicefinder/find/' + theUrl,
 		dataType : 'jsonp',
 		success : function(data) {
 			if (data.foundLinks) {
@@ -125,7 +125,7 @@ function runServiceFinder(theUrl) {
 }
 
 function appendWSDLs(data) {
-	var resultsDiv = jQuery('#easysoa-tpl-results');
+	var $resultsDiv = jQuery('#easysoa-tpl-results');
 	var wsdlEntryTpl = templates['wsdl'];
 	for (key in data.foundLinks) {
 		var newWSDL = {
@@ -135,7 +135,8 @@ function appendWSDLs(data) {
 			serviceURL: data.foundLinks[key]
 		};
 		wsdls.push(newWSDL);
-		resultsDiv.append(wsdlEntryTpl(newWSDL));
+		$resultsDiv.append(wsdlEntryTpl(newWSDL));
+		$resultsDiv.append(templates['afterWsdls'](null));
 	}
 }
 
@@ -143,16 +144,23 @@ function sendWSDL(domElement) {
 	var $domElement = jQuery(domElement);
 	var wsdlToSend = wsdls[$domElement.attr('id')];
 	$domElement.animate({opacity:0.5}, 'fast', function() {
+	  var environmentName = jQuery('#easysoa-environment').attr('value');
 		jQuery.ajax({
-			url : EASYSOA_WEB + '/nuxeo/discovery/service/jsonp',
-			dataType : 'jsonp',
+			url : EASYSOA_WEB + '/nuxeo/registry/post',
+			dataType : 'json',
 			data : {
-				'title': wsdlToSend.serviceName,
-				'url': wsdlToSend.serviceURL,
-				'discoveryTypeBrowsing': 'Discovered by ' + username + ' (via bookmarklet)'
-			},
+        'id': {
+          'type': 'Endpoint',
+          'name': environmentName + ':' + wsdlToSend.serviceURL // TODO Environment should not be hardcoded
+        },
+        'properties': {
+          'endp:url': wsdlToSend.serviceURL,
+          'env:environment': environmentName,
+          'dc:title': environmentName + ': ' + wsdlToSend.serviceName
+        }
+      },
 			success : function(data) {
-				if (data.result == "ok") {
+				if (data.result == "success") {
 					jQuery(domElement).css({ 'background-color': '#CD5', 'opacity' : 1 });
 				}
 				else {
@@ -203,6 +211,10 @@ function initTemplates() {
       <span class="easysoa-wsdl-name"><%= serviceName %></span><br />\
 	  <a href="<%= serviceURL %>" onclick="sendWSDL(this.parentNode); return false;" class="easysoa-wsdl-link"><%= serviceURL %></a>\
     </div>');
+    
+	templates['afterWsdls'] = underscore.template(
+	'<div class="easysoa-doc">Environment name: <input type="text" id="easysoa-environment" value="Production" /></div>'
+	);
 }
 
 function runTemplate(name, data) {

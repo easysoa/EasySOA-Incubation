@@ -51,8 +51,8 @@ public interface SoaMetamodelService {
 	String validateIntegrity(DocumentModel model, boolean returnExpectedNameIfNull)
 			throws ModelIntegrityException, ClientException;
 
-	void validateWriteRightsOnProperties(String doctype,
-			Map<String, Object> properties) throws ModelIntegrityException;
+	void validateWriteRightsOnProperties(DocumentModel documentModel,
+			Map<String, Object> properties) throws ModelIntegrityException, ClientException;
 
 	
 }

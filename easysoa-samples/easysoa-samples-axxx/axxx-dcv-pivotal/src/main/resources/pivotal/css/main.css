@@ -193,6 +193,18 @@ body { /*background-color:#959595;*/
 	
 }
 
+.grey {
+	color: #fef4e9;
+	border: solid 1px #da7c0c;
+	background: #9c9c9c;
+	/*background: -webkit-gradient(linear, left top, left bottom, from(#faa51a),
+		to(#f47a20) );*/
+	/*background: -moz-linear-gradient(top, #faa51a, #f47a20);*/
+	/*filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#faa51a',
+		endColorstr='#f47a20' );*/
+	margin-top: 15px;	
+}
+
 .orange {
 	color: #fef4e9;
 	border: solid 1px #da7c0c;
@@ -244,6 +256,7 @@ body { /*background-color:#959595;*/
 #rounded-div-content {
 	padding-top: 30px;
 	width: 100%;
+	height: auto;
 }
 
 .rounded-div-padding {

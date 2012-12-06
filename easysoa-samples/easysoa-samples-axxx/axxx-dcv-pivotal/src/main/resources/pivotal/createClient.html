@@ -2,54 +2,99 @@
 #parse("header.html")
 #parse("roundedDiv.html")
 #set($user = $request.getSession().getAttribute("user"))
-<div id="welcome-title">Welcome $user.getLogin()</div>
+<div id="welcome-title">Bienvenue $user.getLogin()</div>
 <div id="rounded-div-content">
-	<div id="homePage">
-	New client
+	<div id="friendsView">
+		Nouveau client :
 
-    	<form method="POST" action="/pivotal/action/newClient" id="formCreationClient">
+		<p/>
+		<form method="POST" action="/pivotal/action/newClient" id="formCreationClient">
 
         	<table style="margin-left:auto;margin-right:auto;">
 	            <colgroup>
-	            	<col width="450px">
-	            	<col width="320px">
-	            	<col width="230px">
+			       	<col width="200px">
+			       	<col width="200px">
+			      	<col width="100px">
+			       	<col width="200px">
+			       	<col width="200px">
+			      	<col width="100px">			      	
             	</colgroup>
 	            <tbody>
 		            <tr>
-		                <td>Identifiant client :
-		                </td>
-		                <td><input class="validate[required,custom[onlyLetter]] text-input" type="text" name="identifiantClient" id="identifiantClient">
-		                </td>
-		                <td id="identifiantClientError" class="error">
-		                </td>
+		                <td><label for="Identifiant client">Identifiant client :</label></td>
+		                <td><input class="validate[required] text-input" type="text" name="identifiantClient" id="identifiantClient"></td>
+		                <td id="identifiantClientError" class="error"></td>
+		                <td><label for="Raison sociale">Raison sociale :</label></td>
+		                <td><input class="validate[required] text-input" type="text" name="raisonSociale" id="raisonSociale"></td>
+		                <td id="raisonSocialeError" class="error"></td>
 		            </tr>
 		            <tr>
-		                <td>Raison sociale :
+		                <td><label for="Anciennet&eacute;">Anciennet&eacute :</label></td>
+		                <td><input class="validate[required, custom[onlyNumber]] text-input" type="text" name="anciennete" id="anciennete"></td>
+		                <td id="ancienneteError" class="error"></td>
+		                <td><label for="Type structure">Type structure :</label></td>
+		                <!--<td><input class="text-input" type="" name="typeStructure" id="typeStructure"></td>-->
+		                <td>
+							<select class="text-input" name="typeStructure" id="typeStructure" size="1">
+								<option>Association nat.</option>
+								<option>Mission locale</option>
+								<option>D&eacute;legation Territoriale Associative</option>
+								<option>Centre social ou socio-culturel</option>
+								<option>Autre</option>
+							</select>
 		                </td>
-		                <td><input class="validate[required,custom[onlyLetter]] text-input" type="text" name="raisonSociale" id="raisonSociale">
-		                </td>
-		                <td id="raisonSocialeError" class="error">
-		                </td>
+		                <td></td>		            	
 		            </tr>
 		            <tr>
-		                <td>Siren :
-		                </td>
-		                <td><input class="validate[required,custom[onlyNumber]] text-input" type="text" name="siren" id="siren">
-		                </td>
-		                <td id="sirenError" class="error">
-		                </td>
-		            </tr>		            
+		                <td><label for="Num et voie">Num et voie :</label></td>
+		                <td><input class="validate[] text-input" type="text" name="numEtVoie" id="numEtVoie"></td>
+		                <td id="numEtVoieError" class="error"></td>
+		                <td><label for="Email">Email :</label></td>
+		                <td><input class="validate[required] text-input" type="text" name="email" id="email"></td>
+		                <td id="emailError" class="error"></td>
+		            </tr>
+					<tr>
+		                <td><label for="Codepostal">Code postal :</label></td>
+		                <td><input class="validate[custom[onlyNumber]] text-input" type="text" name="codePostal" id="codePostal"></td>
+		                <td id="codePostalError" class="error"></td>
+		                <td><label for="T&eacute;l&eacute;phone">T&eacute;l&eacute;phone :</label></td>
+		                <td><input class="validate[custom[onlyNumber]] text-input" type="text" name="tel" id="tel"></td>
+		                <td id="telephoneError" class="error"></td>
+					</tr>
+					<tr>
+		                <td><label for="Ville">Ville :</label></td>
+		                <td><input class="validate[] text-input" type="text" name="ville" id="ville"></td>
+		                <td id="villeError" class="error"></td>
+		                <td><label for="RIB">RIB :</label></td>
+		                <td><input class="validate[custom[onlyNumber]] text-input" type="text" name="rib" id="rib"></td>
+		                <td id="ribError" class="error"></td>
+					</tr>
+					<tr>
+		                <td><label for="Pays">Pays :</label></td>
+		                <td><input class="validate[] text-input" type="text" name="pays" id="pays"></td>
+		                <td id="paysError" class="error"></td>
+		                <td><label for="Forme juridique">Forme juridique :</label></td>
+		                <td><input class="validate[required] text-input" type="text" name="formeJuridique" id="formeJuridique"></td>
+		                <td id="formeJuridiqueError" class="error"></td>
+		            </tr>
 		            <tr>
-		                <td>Email:
-		                </td>
-		                <td><input class="validate[required] text-input" type="text" name="email" id="email">
-		                </td>
-		                <td id="emailError" class="error">
-		                </td>
+		            	<td>
+		            		<input type="hidden" name="dotGlobAPVN" value="0">
+		            		<input type="hidden" name=dontReliquatN1 value="0">
+		            		<input type="hidden" name="dontDotN" value="0">
+		            		<input type="hidden" name="nbBenefPrevN" value="0">
+		            		<input type="hidden" name="montantUtiliseN" value="0">
+		            		<input type="hidden" name="nbBenefN" value="0">
+		            	</td>
+		            	<td></td>
+		            	<td></td>
+		                <td><label for="Siren">Siren :</label></td>
+		                <td><input class="validate[required,custom[onlyNumber]] text-input" type="text" name="siren" id="siren"></td>
+		                <td id="sirenError" class="error"></td>
 		            </tr>
             		<tr>
-                		<td colspan="3" align="center"><input id="submitCreation" type="submit" class="orange button" value="Create client">
+                		<td colspan="3" align="center"><input id="cancelCreation" type="button" class="orange button" onclick="cancel()" value="Annuler">
+                		<td colspan="3" align="center"><input id="submitCreation" type="submit" class="orange button" value="Cr&eacute;er client">
                 	</td>
             		</tr>		            
 		        </tbody>
@@ -58,4 +103,14 @@
             
     </div>
 </div>
+
+<script type="text/javascript">
+
+	function cancel(){
+		if(confirm("Confirmer l'annulation ?")){ 
+			window.location='/pivotal/clients.html';
+		}
+	}
+</script>
+
 #parse("footpage.html")

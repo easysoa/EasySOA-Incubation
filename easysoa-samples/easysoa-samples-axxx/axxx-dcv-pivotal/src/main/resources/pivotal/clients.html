@@ -2,7 +2,7 @@
 #parse("header.html")
 #parse("roundedDiv.html")
 #set($user = $request.getSession().getAttribute("user"))
-<div id="welcome-title">Welcome $user.getLogin()</div>
+<div id="welcome-title">Bienvenue $user.getLogin()</div>
 <div id="rounded-div-content">
 	<div id="friendsView">
 	Clients
@@ -30,14 +30,14 @@
 	    		<td>$u.getRaisonSociale()</td>
 	    		<td>$u.getSIREN()</td>
 	    		<td>$u.getEmail()</td>
-	    		<td><button class="removeClientButton" id="removeClientButton" title="Remove" onclick="removeClient('$u.getIdentifiantClient()')">Remove</button></td>
+	    		<td><button class="removeClientButton" id="removeClientButton" title="Supprimer" onclick="removeClient('$u.getIdentifiantClient()')">Supprimer</button></td>
 	    	</tr>
 	    	#end
     	</tbody>
     </table>
     
     <p/>
-	<button class="orange button" onclick="openNewClientPage()">New client</button>
+	<button class="orange button" onclick="openNewClientPage()" name="Nouveau client">Nouveau client</button>
     </div>
 </div>
 

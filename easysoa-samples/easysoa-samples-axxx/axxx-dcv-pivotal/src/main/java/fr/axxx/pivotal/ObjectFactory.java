@@ -38,19 +38,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link InformationAPVResponse }
+     * Create an instance of {@link ArrayOfTypeStructureCount }
      * 
      */
-    public InformationAPVResponse createInformationAPVResponse() {
-        return new InformationAPVResponse();
+    public ArrayOfTypeStructureCount createArrayOfTypeStructureCount() {
+        return new ArrayOfTypeStructureCount();
     }
 
     /**
-     * Create an instance of {@link ArrayOfString }
+     * Create an instance of {@link TypeStructureCount }
      * 
      */
-    public ArrayOfString createArrayOfString() {
-        return new ArrayOfString();
+    public TypeStructureCount createTypeStructureCount() {
+        return new TypeStructureCount();
     }
 
     /**
@@ -62,11 +62,27 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GetClientResponse }
+     * 
+     */
+    public GetClientResponse createGetClientResponse() {
+        return new GetClientResponse();
+    }
+
+    /**
      * Create an instance of {@link Client }
      * 
      */
     public Client createClient() {
         return new Client();
+    }
+
+    /**
+     * Create an instance of {@link GetClient }
+     * 
+     */
+    public GetClient createGetClient() {
+        return new GetClient();
     }
 
     /**
@@ -78,11 +94,35 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ArrayOfString }
+     * 
+     */
+    public ArrayOfString createArrayOfString() {
+        return new ArrayOfString();
+    }
+
+    /**
      * Create an instance of {@link InformationAPV }
      * 
      */
     public InformationAPV createInformationAPV() {
         return new InformationAPV();
+    }
+
+    /**
+     * Create an instance of {@link GetRepartitionTypeStructureResponse }
+     * 
+     */
+    public GetRepartitionTypeStructureResponse createGetRepartitionTypeStructureResponse() {
+        return new GetRepartitionTypeStructureResponse();
+    }
+
+    /**
+     * Create an instance of {@link InformationAPVResponse }
+     * 
+     */
+    public InformationAPVResponse createInformationAPVResponse() {
+        return new InformationAPVResponse();
     }
 
 }

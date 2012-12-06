@@ -1,6 +1,9 @@
 package fr.axxx.pivotal.client.impl;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
@@ -47,11 +50,23 @@ public class ClientServiceImpl implements ClientService {
      * @see ClientService#createClient(String, String, String, String)
      */
     @Override
-    public Client createClient(String identifiantClient, String raisonSociale, String siren, String email){
+    public Client createClient(String identifiantClient, String raisonSociale, Integer anciennete, 
+            String typeStructure, String numEtVoie, String email, String codePostal, String ville, String pays,
+            String tel, String rib, String formeJuridique, String siren, BigDecimal dotGlobAPVN, BigDecimal dontReliquatN1, 
+            BigDecimal dontDotN, BigDecimal nbBenefPrevN, BigDecimal montantUtiliseN, BigDecimal nbBenefN){
         EntityManager entityManager = database.get();
         Client client = null;
         try{
             client = new Client(identifiantClient, raisonSociale, siren,  email);
+            client.setAnciennete(anciennete);
+            client.setCodePostal(codePostal);
+            client.setFormeJuridique(formeJuridique);
+            client.setNumEtVoie(numEtVoie);
+            client.setPays(pays);
+            client.setRIB(rib);
+            client.setTel(tel);
+            client.setTypeStructure(typeStructure);
+            client.setVille(ville);
             entityManager.getTransaction().begin();
             entityManager.persist(client);
             entityManager.getTransaction().commit();
@@ -67,7 +82,9 @@ public class ClientServiceImpl implements ClientService {
      * @see ClientService#updateClient(String, String, String, String)
      */
     @Override
-    public Client updateClient(String identifiantClient, String raisonSociale, String siren, String email){
+    public Client updateClient(String identifiantClient, String raisonSociale, Integer anciennete, 
+            String typeStructure, String numEtVoie, String email, String codePostal, String ville, String pays,
+            String tel, String rib, String formeJuridique, String siren){
         EntityManager entityManager = database.get();
         Client client = null;
         try{
@@ -75,6 +92,16 @@ public class ClientServiceImpl implements ClientService {
             client.setRaisonSociale(raisonSociale);
             client.setSIREN(siren);
             client.setEmail(email);
+            client.setAnciennete(anciennete);
+            client.setTypeStructure(typeStructure);
+            client.setNumEtVoie(numEtVoie);
+            client.setCodePostal(codePostal);
+            client.setVille(ville);
+            client.setPays(pays);
+            client.setTel(tel);
+            client.setRIB(rib);
+            client.setFormeJuridique(formeJuridique);
+            client.setSIREN(siren);
             entityManager.getTransaction().begin();
             entityManager.persist(client);
             entityManager.getTransaction().commit();
@@ -84,6 +111,13 @@ public class ClientServiceImpl implements ClientService {
             return null;
         }
         return client;        
+    }
+    
+    private void updateClient(Client client) {
+        EntityManager entityManager = database.get();
+        entityManager.getTransaction().begin();
+        entityManager.persist(client);
+        entityManager.getTransaction().commit();        
     }
     
     /**
@@ -175,17 +209,55 @@ public class ClientServiceImpl implements ClientService {
                 this.database.get().getTransaction().begin();
                 
                 // Default value for clients
-                Client c1 = new Client("AssociationVacances", "Association vacances", "1254365", "vacances@assovac.fr");
+                Client c1 = new Client("AssociationVacances", "Association vacances familles", "32681744200022", "vacances@assovac.fr");
+                c1.setAnciennete(0);
+                c1.setNumEtVoie("4 PLACE DE NAVARRE");
+                c1.setVille("SARCELLES");
+                c1.setCodePostal("95200");
+                c1.setPays("FR");
+                c1.setCreerPrecompteDone(false);
                 this.database.get().persist(c1);
                 
+                // Default value for clients
+                Client c2 = new Client("CaisseSecoursFrancais", "Caisse secours francais", "78471981700024", "contact@caissesecours.fr");
+                c2.setAnciennete(2);
+                c2.setNumEtVoie("19 RUE DE L'ABONDANCE");
+                c2.setVille("LYON");
+                c2.setCodePostal("69003");
+                c2.setPays("FR");
+                c2.setCreerPrecompteDone(false);
+                this.database.get().persist(c2);
+
+                // Default value for clients
+                Client c3 = new Client("FondationSolidarite", "Fondation solidarité", "21950585600019", "contact@fsolidarite.org");
+                c3.setAnciennete(1);
+                c3.setNumEtVoie("26 AVENUE DE L'OBSERVATOIRE");
+                c3.setVille("PARIS");
+                c3.setCodePostal("75014");
+                c3.setPays("FR");
+                c3.setCreerPrecompteDone(false);
+                this.database.get().persist(c3);                
+
                 // Default values for ContactClient
-                ContactClient contactClient = new ContactClient();
-                contactClient.setIdentifiantClient("AssociationVacances");
-                contactClient.setEmail("f.martin@assovac.fr");
-                contactClient.setNomContact("Martin");
-                contactClient.setNumEtVoie("120 AVENUE DU GENERAL LECLERC");
-                contactClient.setVille("Paris");
-                contactClient.setPays("France");
+                ContactClient contactClient1 = new ContactClient();
+                contactClient1.setIdentifiantClient("AssociationVacances");
+                contactClient1.setEmail("f.martin@assovac.fr");
+                contactClient1.setNomContact("Martin");
+                contactClient1.setPrenomContact("Fred");
+                contactClient1.setNumEtVoie("4 PLACE DE NAVARRE");
+                contactClient1.setVille("SARCELLES");
+                contactClient1.setPays("FR");
+                this.database.get().persist(contactClient1);
+                
+                ContactClient contactClient2 = new ContactClient();
+                contactClient2.setIdentifiantClient("CaisseSecoursFrancais");
+                contactClient2.setEmail("jdupont@caissesecours.fr");
+                contactClient2.setNomContact("Dupont");
+                contactClient2.setPrenomContact("Jacques");
+                contactClient2.setNumEtVoie("19 RUE DE L'ABONDANCE");
+                contactClient2.setVille("LYON");
+                contactClient2.setPays("FR");                
+                this.database.get().persist(contactClient2);
                 
                 // Default values for InformationsAPV
                 InformationAPV informationAPV = new InformationAPV();
@@ -203,14 +275,23 @@ public class ClientServiceImpl implements ClientService {
     }
     
     @Override
-    public String creerPrecompte(String identifiantClient) throws Exception {
-        Client client = this.getClient(identifiantClient);
-        PrecomptePartenaire precomptePartenaire = new PrecomptePartenaire();
-        precomptePartenaire.setIdentifiantClientPivotal(identifiantClient);
-        precomptePartenaire.setSirenSiret(client.getSIREN());
-        precomptePartenaire.setEmail(client.getEmail());
-        precomptePartenaireService.creerPrecompte(precomptePartenaire);
-        return "Précompte succesfully created";
+    public String creerPrecompte(String identifiantClient) {
+        String message = "";
+        try{
+            Client client = this.getClient(identifiantClient);
+            PrecomptePartenaire precomptePartenaire = new PrecomptePartenaire();
+            precomptePartenaire.setIdentifiantClientPivotal(identifiantClient);
+            precomptePartenaire.setSirenSiret(client.getSIREN());
+            precomptePartenaire.setEmail(client.getEmail());
+            precomptePartenaireService.creerPrecompte(precomptePartenaire);
+            client.setCreerPrecompteDone(true);
+            this.updateClient(client);
+        }
+        catch(Exception ex){
+            LOG.log(Level.SEVERE, "Error trying to create precompte : " + ex.getMessage(), ex);
+            message = ex.getMessage();
+        }
+        return message;
     }
 
     @Override
@@ -260,6 +341,21 @@ public class ClientServiceImpl implements ClientService {
             return null;
         }
         return contactClient;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Map<String, Long> getRepartitionTypeStructure() {
+        Map<String, Long> map = new HashMap<String, Long>();
+        Query query = this.database.get().createQuery("SELECT DISTINCT c.typeStructure FROM Client c");
+        List<String> resultList = (List<String>)query.getResultList();
+        for(String type : resultList){
+            query = this.database.get().createQuery("SELECT count(c) FROM Client c WHERE c.typeStructure = :type");    
+            query.setParameter("type", type);
+            Long count = (Long)query.getSingleResult();
+            map.put(type, count);
+        }
+        return map;
     }
     
 }

@@ -3,49 +3,236 @@
 #parse("roundedDiv.html")
 #set($user = $request.getSession().getAttribute("user"))
 #set($client = $clientService.getClient($identifiantClient))
-<div id="welcome-title">Welcome $user.getLogin()</div>
-<div id="rounded-div-content">
-	<div id="homePage">
-		Client details
-	
-		<p/>
+<div id="welcome-title">Bienvenue $user.getLogin()</div>
+<div id="a_tabbar" class="dhtmlxTabBar" imgpath="/pivotal/images/" tabstyle="silver" skinColors="#FFFFFF,#FFFFFF" style="width:1000px; height:700px;">
+	<div id="detailsClient" class="rounded-div-content" name="D&eacute;tails client">
+	<!--<div id="rounded-div-content" class="rounded-div-content" name="D&eacute;tails client">-->
 		<form method="POST" action="/pivotal/action/updateClient" id="formUpdateClient">
-		    <table style="margin-left:auto;margin-right:auto;">
+			<div id="friendsView">
+			    <table id="catalogServices">
+					<colgroup> <!-- 1000 -->
+				       	<col width="200px">
+				       	<col width="200px">
+				      	<col width="100px">
+				       	<col width="200px">
+				       	<col width="200px">
+				      	<col width="100px">			      	
+			        </colgroup>
+				    <tbody>
+			            <tr>
+			                <td><label for="Identifiant client">Identifiant client :</label></td>
+			                <td>$client.getIdentifiantClient()<input type="hidden" name="identifiantClient" value="$client.getIdentifiantClient()"></td>
+			                <td></td>
+			                <td><label for="Raison sociale">Raison sociale :</label></td>
+			                <td><input class="validate[required] text-input" type="text" name="raisonSociale" id="raisonSociale" value="$client.getRaisonSociale()"></td>
+			                <td id="raisonSocialeError" class="error"></td>
+			            </tr>
+			            <tr>
+			                <td><label for="Anciennet&eacute;">Anciennet&eacute :</label></td>
+			                <td><input class="validate[custom[onlyNumber]] text-input" type="text" name="anciennete" id="anciennete" value="$client.getAnciennete()"></td>
+			                <td id="ancienneteError" class="error"></td>
+			                <td><label for="Type structure">Type structure :</label></td>
+			                <!--<td><input class="validate[] text-input" type="text" name="typeStructure" id="typeStructure" value="$client.getTypeStructure()"></td>-->
+			                <td>
+			                	<select class="text-input" name="typeStructure" id="typeStructure" size="1">
+									<option #if($client.getTypeStructure() == "Association nat.")selected="selected"#end>Association nat.</option>
+									<option #if($client.getTypeStructure() == "Mission locale")selected="selected"#end>Mission locale</option>
+									<option #if($client.getTypeStructure() == "D&eacute;legation Territoriale Associative")selected="selected"#end>D&eacute;legation Territoriale Associative</option>
+									<option #if($client.getTypeStructure() == "Centre social ou socio-culturel")selected="selected"#end>Centre social ou socio-culturel</option>
+									<option #if($client.getTypeStructure() == "Autre")selected="selected"#end>Autre</option>
+								</select>
+			                </td>
+			            </tr>
+			            <tr>
+			                <td><label for="Num et voie">Num et voie :</label></td>
+			                <td><input class="validate[] text-input" type="text" name="numEtVoie" id="numEtVoie" value="$client.getNumEtVoie()"></td>
+			                <td id="numEtVoieError" class="error"></td>
+			                <td><label for="Email">Email :</label></td>
+			                <td><input class="validate[required] text-input" type="text" name="email" id="email" value="$client.getEmail()"></td>
+			                <td id="emailError" class="error"></td>
+			            </tr>
+						<tr>
+			                <td><label for="Codepostal">Code postal :</label></td>
+			                <td><input class="validate[] text-input" type="text" name="codePostal" id="codePostal" value="$client.getCodePostal()"></td>
+			                <td id="codePostalError" class="error"></td>
+			                <td><label for="T&eacute;l&eacute;phone">T&eacute;l&eacute;phone :</label></td>
+			                <td><input class="validate[] text-input" type="text" name="tel" id="tel" value="$client.getTel()"></td>
+			                <td id="telephoneError" class="error"></td>
+						</tr>
+						<tr>
+			                <td><label for="Ville">Ville :</label></td>
+			                <td><input class="validate[] text-input" type="text" name="ville" id="ville" value="$client.getVille()"></td>
+			                <td id="villeError" class="error"></td>
+			                <td><label for="RIB">RIB :</label></td>
+			                <td><input class="validate[] text-input" type="text" name="rib" id="rib" value="$client.getRIB()"></td>
+			                <td id="ribError" class="error"></td>
+						</tr>
+						<tr>
+			                <td><label for="Pays">Pays :</label></td>
+			                <td><input class="validate[] text-input" type="text" name="pays" id="pays" value="$client.getPays()"></td>
+			                <td id="paysError" class="error"></td>
+			                <td><label for="Forme juridique">Forme juridique :</label></td>
+			                <td><input class="validate[] text-input" type="text" name="formeJuridique" id="formeJuridique" value="$client.getFormeJuridique()"></td>
+			                <td id="formeJuridiqueError" class="error"></td>
+			            </tr>
+			            <tr>
+			            	<td></td>
+			            	<td></td>
+			            	<td></td>
+			                <td><label for="Siren">Siren :</label></td>
+			                <td><input class="validate[required,custom[onlyNumber]] text-input" type="text" name="siren" id="siren" value="$client.getSIREN()"></td>
+			                <td id="sirenError" class="error"></td>
+			            </tr>
+			          	<tr>
+			            	<td colspan="3"><input id="cancelCreation" type="button" class="orange button" onclick="cancel()" value="Annuler">
+			            	<td colspan="3"><input id="submitUpdate" name="submitUpdate" type="submit" class="orange button" value="Enregistrer"></td>
+			          	</tr>
+			        </tbody>
+			    </table>
+			</div>			            
+		</form>
+		
+		<div id="friendsView">
+		    <table id="statFields">
+				<colgroup> <!-- 1000 -->
+			       	<col width="200px">
+			       	<col width="200px">
+			      	<col width="100px">
+			       	<col width="200px">
+			       	<col width="200px">
+			      	<col width="100px">			      	
+		        </colgroup>
+			    <tbody>
+					<tr>
+		            	<td><label for="dotGlobAPVN">dotGlobAPVN :</label></td>
+		            	<td>#if($client.getDotGlobAPVN())$client.getDotGlobAPVN()#end</td>
+		            	<td></td>
+		                <td><label for="dontReliquatN1">dontReliquatN1 :</label></td>
+		                <td>#if($client.getDontReliquatN1())$client.getDontReliquatN1()#end</td>
+		                <td></td>							
+					</tr>
+					<tr>
+		            	<td><label for="dontDotN">dontDotN :</label></td>
+		            	<td>#if($client.getDontDotN())$client.getDontDotN()#end</td>
+		            	<td></td>
+		                <td><label for="nbBenefPrevN">nbBenefPrevN :</label></td>
+		                <td>#if($client.getNbBenefPrevN())$client.getNbBenefPrevN()#end</td>
+		                <td></td>							
+					</tr>
+					<tr>
+		            	<td><label for="montantUtiliseN">montantUtiliseN :</label></td>
+		            	<td>#if($client.getMontantUtiliseN())$client.getMontantUtiliseN()#end</td>
+		            	<td></td>
+		                <td><label for="nbBenefN">nbBenefN :</label></td>
+		                <td>#if($client.getNbBenefN())$client.getNbBenefN()#end</td>
+		                <td></td>							
+					</tr>
+		        </tbody>
+		    </table>
+		</div>
+		
+		<form method="POST" action="/pivotal/action/creerPrecompte" id="formCreerPrecompte">
+			<div id="friendsView">
+			    <table style="margin-left:auto;margin-right:auto;">
+					<colgroup>
+				       	<col width="500px">
+				       	<col width="500px">
+			        </colgroup>
+			        <tbody>
+			            <tr>
+							<td>
+								#if($client.isCreerPrecompteDone())
+            					<input id="submitCreerPrecompte" name="submitCreerPrecompte" type="submit" class="grey button" value="Cr&eacute;er pr&eacute;compte" disabled="disabled">
+								#else
+								<input id="submitCreerPrecompte" name="submitCreerPrecompte" type="submit" class="orange button" value="Cr&eacute;er pr&eacute;compte">								
+								#end
+								<input type="hidden" name="identifiantClient" value="$client.getIdentifiantClient()">
+							</td>
+							<td>
+							#if($client.isCreerPrecompteDone())
+								Pr&eacute;compte cr&eacute;&eacute; avec succ&egrave;s
+							#else
+								#if($creerPrecompteSubmitted)
+									#if($creerPrecompteResponse == "")
+										Pr&eacute;compte cr&eacute;&eacute; avec succ&egrave;s
+									#else
+										Probl&egrave; lors de la cr&eacute;ation du Pr&eacute;compte : $creerPrecompteResponse
+									#end
+								#end
+							#end
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</form>
+		
+		<div id="friendsView">
+			Informations APV
+			<div id="catalogServicesTableHolder" style="overflow: auto; max-height: 125px;">
+		    	<table id="catalogServices" >
+					<colgroup>
+				       	<col width="200px">
+				       	<col width="500px">
+				      	<col width="300px">
+			        </colgroup>
+				    <tbody>
+			            <tr>
+			                <td><label for="Ann&eacute;e bilan">Ann&eacute;e bilan :</label></td>
+			                <td><label for="Libell&eacute; bilan">Libell&eacute; bilan :</label></td>
+			                <td><label for="Nombre">Nombre :</label></td>
+			            </tr>
+			            #foreach($i in $clientService.getInformationAPV($identifiantClient))
+			            <tr>
+			                <td>$i.getBilanAnnee()</td>
+			                <td>$i.getBilanLibelle()</td>
+							<td>$i.getNombre()</td>
+			            </tr>
+						#end
+			        </tbody>
+			    </table>
+			</div>		
+		</div>		
+	</div>
+	
+	<div id="contactsClient" class="rounded-div-content" name="Contacts client">
+	<!--<div id="rounded-div-content" name="Contacts client">-->
+		<div id="friendsView">
+		    <table id="catalogServices">
 				<colgroup>
-			       	<col width="450px">
-			       	<col width="320px">
-			      	<col width="230px">
+			       	<col width="300px">
+			       	<col width="300px">
+			       	<col width="200px">
+			      	<col width="200px">
 		        </colgroup>
 			    <tbody>
 		            <tr>
-		                <td>Identifiant client :</td>
-		                <td>$client.getIdentifiantClient()<input type="hidden" name="identifiantClient" value="$client.getIdentifiantClient()"></td>
-		                <td></td>
+		                <td><label for="Nom">Nom :</label></td>
+		                <td><label for="Pr&eacute;nom">Pr&eacute;nom:</label></td>
+		                <td><label for="T&eacute;l&eacute;phone">T&eacute;l&eacute;phone :</label></td>
+		                <td><label for="Email">Email :</label></td>
 		            </tr>
+		            #foreach($c in $clientService.getContactClient($identifiantClient))
 		            <tr>
-		                <td>Raison sociale :</td>
-		                <td><input class="validate[required,custom[onlyLetter]] text-input" type="text" name="raisonSociale" id="raisonSociale" value="$client.getRaisonSociale()"></td>
-		                <td id="raisonSocialeError" class="error"></td>
+		                <td>$c.getNomContact()</td>
+		                <td>$c.getPrenomContact()</td>
+						<td>$c.getTelephone()</td>
+						<td>$c.getEmail()</td>
 		            </tr>
-		            <tr>
-		                <td>Siren :</td>
-		                <td><input class="validate[required,custom[onlyNumber]] text-input" type="text" name="siren" id="siren" value="$client.getSIREN()"></td>
-		                <td id="sirenError" class="error"></td>
-		            </tr>		            
-		            <tr>
-		                <td>Email:</td>
-		                <td><input class="validate[required] text-input" type="text" name="email" id="email" value="$client.getEmail()"></td>
-		                <td id="emailError" class="error"></td>
-		            </tr>
-		          	<tr>
-		            	<td><input id="cancelUpdate" name="cancelUpdate" type="submit" class="orange button" value="cancel update"></td>
-		            	<td><input id="submitUpdate" name="submitUpdate" type="submit" class="orange button" value="update client"></td>
-		            	<td><input id="submitCreationPrecompte" name="creationPrecompte" type="submit" class="orange button" value="Cr&eacute;er pr&eacute;compte"></td>
-		          	</tr>
+					#end
 		        </tbody>
-		    </table>
-		</form>
-	
-    </div>
+		    </table>		
+			
+	    </div>
+	</div>
 </div>
+<script type="text/javascript">
+
+	function cancel(){
+		if(confirm("Confirmer l'annulation ?")){ 
+			window.location='/pivotal/clients.html';
+		}
+	}
+</script>
+
 #parse("footpage.html")

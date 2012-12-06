@@ -103,7 +103,7 @@
       <schema name="informationservice" />
       <facet name="PlatformData" />
       <facet name="ComponentData" /><!-- TODO MDU not necessary if PlatformData ?! does not comprise Component id where impl has been successfully classified which is required-->
-      <facet name="WsdlInfo" /><!-- schema name="wsdlinfo" / --><!-- TODO dynamic -->
+      <facet name="WsdlInfo" />
     </doctype>
 
     <!-- Implementation level -->
@@ -117,15 +117,16 @@
     </doctype>
     <facet name="ServiceImplementationData">
       <schema name="serviceimpl" />
+      <schema name="deliverabletype" />
     </facet>
     <doctype extends="SoaNode" name="ServiceImplementation">
-      <facet name="WsdlInfo" /><!-- schema name="wsdlinfo" / --><!-- TODO dynamic -->
+      <facet name="Folderish" /><!-- to put endpoints in -->
+      <facet name="WsdlInfo" /><!-- TODO different than iserv & endp's ?? TODO RestInfo -->
       <facet name="ServiceImplementationData" />
-      <facet name="Folderish" />
+      <!-- NB. schemas to be inherited are in ServiceImplementationData : DeliverableType -->
       <facet name="ComponentData" /><!-- TODO MDU not necessary ?! does not comprise Component id where impl has been successfully classified which is required-->
-      <facet name="DeliverableType" />
+      <!-- facet name="DeliverableType" / -->
       <facet name="PlatformData" />
-      <!-- dynamic : wsdlinfo, restinfo -->
     </doctype>
     <doctype extends="SoaNode" name="ServiceConsumption">
     </doctype>
@@ -139,7 +140,7 @@
     <doctype extends="SoaNode" name="Endpoint">
       <schema name="environment" />
       <schema name="endpoint" />
-      <facet name="WsdlInfo" /><!-- schema name="wsdlinfo" / --><!-- TODO dynamic -->
+      <facet name="WsdlInfo" /><!-- TODO different than iserv & impl's ??  TODO RestInfo -->
       <facet name="ServiceImplementationData" />
       <facet name="ComponentData" /><!-- TODO MDU not necessary ?! does not comprise Component id where impl has been successfully classified which is required-->
     </doctype>

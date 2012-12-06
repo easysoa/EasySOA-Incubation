@@ -3,8 +3,14 @@ package org.easysoa.registry.facets;
 public interface ServiceImplementationDataFacet {
 
     static final String FACET_SERVICEIMPLEMENTATIONDATA = "ServiceImplementationData";
+
+    static final String XPATH_IMPL_IDE = "impl:ide";
+    
+    static final String XPATH_IMPL_LANGUAGE = "impl:language";
     
     static final String XPATH_TECHNOLOGY = "impl:technology";
+
+    static final String XPATH_IMPL_BUILD = "impl:build";
     
     static final String XPATH_OPERATIONS = "impl:operations";
     

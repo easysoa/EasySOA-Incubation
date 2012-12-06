@@ -5,7 +5,8 @@
 <div id="welcome-title">Welcome $user.getLogin()</div>
 <div id="rounded-div-content">
 	<div id="homePage">
-	<a href="clients.html">Clients</a>
+    
+    <button class="orange button" onclick="openClientPage()">Clients</button>
     
     <p/>
     
@@ -16,5 +17,14 @@
     #end
     </ul>
     </div>
+    
+    <script type="text/javascript">
+    	
+    function openClientPage(){
+    	document.location = "clients.html";
+    }
+    
+    </script>
+    
 </div>
 #parse("footpage.html")

@@ -57,6 +57,7 @@
       <artifact:resolveFile key="com.ebmwebsourcing.easycommons:easycommons.uri::jar" />
       <artifact:resolveFile key="org.jvnet.jaxb2_commons:runtime:0.4.1.5:jar" />
       <artifact:resolveFile key="com.sun.jersey:jersey-client:1.11:jar" />
+      <artifact:resolveFile key="net.sourceforge.htmlcleaner:htmlcleaner:2.2:jar" />
     </copy>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${easysoa.registry.marketplace.version}.zip"

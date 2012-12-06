@@ -18,36 +18,26 @@
  * Contact : easysoa-dev@googlegroups.com
  */
 
-package org.easysoa.registry.dbb.rest;
+package org.easysoa.registry.dbb;
 
-public class FoundService {
+import java.net.MalformedURLException;
+import java.net.URL;
 
-    private String name;
-    
-    private String url;
-    
-    private String applicationName;
+/**
+ * 
+ * @author mkalam-alami
+ *
+ */
+public class HttpDownloaderServiceImpl implements HttpDownloaderService {
 
-    public FoundService(String name, String url, String applicationName) {
-        this(name, url);
-        this.applicationName = applicationName;
-    }
-    
-    public FoundService(String name, String url) {
-        this.name = name;
-        this.url = url;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public String getURL() {
-        return url;
-    }
-    
-    public String getApplicationName() {
-        return applicationName;
-    }
+	@Override
+	public HttpDownloader createHttpDownloader(URL url) {
+		return new HttpDownloaderImpl(url);
+	}
+	
+	@Override
+	public HttpDownloader createHttpDownloader(String url) throws MalformedURLException {
+		return new HttpDownloaderImpl(url);
+	}
 
 }

@@ -85,7 +85,7 @@
       </rows>
       <widget name="component_componentCategory" type="text">
         <labels>
-          <label mode="any">label.easysoa.layout.component.componentCategory</label>
+          <label mode="any">label.easysoa.layout.component.componentcategory</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -94,7 +94,7 @@
       </widget>
       <widget name="component_linkedInformationService" type="template">
         <labels>
-          <label mode="any">label.easysoa.layout.component.linkedInformationService</label>
+          <label mode="any">label.easysoa.layout.component.linkedinformationservice</label>
         </labels>
         <translated>true</translated>
         <fields>
@@ -372,7 +372,7 @@
       </templates>
       <rows>
         <row>
-          <widget>serviceimpl_linkedInformationService</widget>
+          <widget>serviceimpl_providedInformationService</widget>
         </row>
         <row>
           <widget>serviceimpl_technology</widget>
@@ -390,13 +390,13 @@
           <widget>serviceimpl_tests</widget>
         </row>
       </rows>
-      <widget name="serviceimpl_linkedInformationService" type="template">
+      <widget name="serviceimpl_providedInformationService" type="template">
         <labels>
-          <label mode="any">label.easysoa.layout.serviceimpl.linkedinformationservice</label>
+          <label mode="any">label.easysoa.layout.serviceimpl.providedinformationservice</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>impl:linkedInformationService</field>
+          <field>impl:providedInformationService</field>
         </fields>
         <properties widgetMode="view">
           <property name="template">/widgets/document_id_link_template.xhtml</property>

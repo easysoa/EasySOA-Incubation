@@ -18,15 +18,24 @@
  * Contact : easysoa-dev@googlegroups.com
  */
 
-package org.easysoa.registry.dbb.rest;
+package org.easysoa.registry.dbb;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import org.nuxeo.common.xmap.annotation.XContent;
+import org.nuxeo.common.xmap.annotation.XNode;
+import org.nuxeo.common.xmap.annotation.XObject;
 
-public interface HttpDownloaderService {
+/**
+ * 
+ * @author mkalam-alami
+ *
+ */
+@XObject("strategy")
+public class ServiceFinderStrategyDescriptor {
 
-	HttpDownloader createHttpDownloader(URL url);
+    @XContent
+    protected String implementation;
 
-	HttpDownloader createHttpDownloader(String url) throws MalformedURLException;
-	
+    @XNode("@enabled")
+    protected boolean enabled = true;
+
 }

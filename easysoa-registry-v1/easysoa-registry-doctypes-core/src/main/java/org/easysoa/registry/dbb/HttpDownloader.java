@@ -18,7 +18,7 @@
  * Contact : easysoa-dev@googlegroups.com
  */
 
-package org.easysoa.registry.dbb.rest;
+package org.easysoa.registry.dbb;
 
 import java.io.File;
 import java.io.IOException;

@@ -18,9 +18,12 @@
  * Contact : easysoa-dev@googlegroups.com
  */
 
-package org.easysoa.registry.dbb.rest;
+package org.easysoa.registry.dbb;
 
 import java.util.List;
+
+import org.easysoa.registry.dbb.BrowsingContext;
+import org.easysoa.registry.dbb.FoundService;
 
 public interface ServiceFinderStrategy {
 

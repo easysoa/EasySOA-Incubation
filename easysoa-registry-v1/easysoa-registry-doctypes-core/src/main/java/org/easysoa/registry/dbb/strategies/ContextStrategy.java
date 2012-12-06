@@ -18,15 +18,15 @@
  * Contact : easysoa-dev@googlegroups.com
  */
 
-package org.easysoa.registry.dbb.rest.strategies;
+package org.easysoa.registry.dbb.strategies;
 
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.easysoa.registry.dbb.rest.BrowsingContext;
-import org.easysoa.registry.dbb.rest.FoundService;
-import org.easysoa.registry.dbb.rest.ServiceFinderStrategy;
+import org.easysoa.registry.dbb.ServiceFinderStrategy;
+import org.easysoa.registry.dbb.BrowsingContext;
+import org.easysoa.registry.dbb.FoundService;
 
 /**
  * 

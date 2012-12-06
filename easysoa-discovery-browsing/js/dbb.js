@@ -32,6 +32,10 @@ var io = null;
 var foundWSDLs = [];
 
 saveWSDLs = function(data) {
+  if (typeof data == 'string') {
+    data = JSON.parse(data);
+  } 
+  
 	if (data.foundLinks) {
 		try {
 			for (name in data.foundLinks) {
@@ -113,7 +117,7 @@ isIgnoredUrl = function(url) {
 findWSDLs = function(url) {
 	nuxeo.runRestRequest(
 		{username: 'Administrator', password: 'Administrator'},
-		settings.EASYSOA_SERVICE_FINDER_PATH + '/' + url,
+		settings.EASYSOA_SERVICE_FINDER_PATH + '/find/' + url,
 		'GET',
 		null,
 		null,
@@ -129,16 +133,12 @@ findWSDLs = function(url) {
 };
 
 sendWSDL = function(request, response, next) {
-	body = 'url='+request.query.url+
-	    '&environment='+request.query.environment+
-	    '&title='+request.query.servicename+
-	    '&discoveryTypeBrowsing=Discovered by '+request.session.username;
 	nuxeo.runRestRequest(
 		request.session,
 		settings.EASYSOA_DISCOVERY_PATH,
 		'POST',
-		{'Content-Type':'application/x-www-form-urlencoded'},
-		body,
+		{'Content-Type':'application/json'},
+		request.query,
 		function(data, error) {
 			if (data) {
 				response.end('ok');

@@ -18,17 +18,15 @@
  * Contact : easysoa-dev@googlegroups.com
  */
 
-package org.easysoa.registry.dbb.rest;
+package org.easysoa.registry.dbb;
 
 import java.io.InvalidClassException;
 import java.util.ConcurrentModificationException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.nuxeo.runtime.model.ComponentInstance;
-import org.nuxeo.runtime.model.ComponentName;
 import org.nuxeo.runtime.model.DefaultComponent;
 
 /**
@@ -36,13 +34,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
  * @author mkalam-alami
  * 
  */
-public class ServiceFinderComponent extends DefaultComponent {
-
-    public static final ComponentName NAME = new ComponentName(
-            ComponentName.DEFAULT_TYPE, "org.easysoa.rest.service.ServiceFinderComponent");
+public class ServiceFinderServiceImpl extends DefaultComponent implements ServiceFinderService {
+	
     public static final String EXTENSTION_POINT_STRATEGIES = "strategies";
 
-    private static Log log = LogFactory.getLog(ServiceFinderComponent.class);
+    private static Logger log = Logger.getLogger(ServiceFinderServiceImpl.class);
     
     private List<ServiceFinderStrategy> strategies = new LinkedList<ServiceFinderStrategy>();
 

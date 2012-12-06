@@ -8,7 +8,7 @@
   <xs:element name="technology" type="xs:string" />
   <xs:element name="documentation" type="xs:string" />
   <xs:element name="ismock" type="xs:string" />
-  <xs:element name="linkedInformationService" type="xs:string" />
+  <xs:element name="providedInformationService" type="xs:string" />
   
   <xs:element name="component" type="xs:string" /><!-- nuxeo id ; component that this impl fills ; TODO rather candidate also ? -->
   <xs:element name="platform" type="xs:string" /><!-- nuxeo id ; this impl's dev platform ; TODO rather candidate also ? -->

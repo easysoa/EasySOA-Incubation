@@ -22,6 +22,7 @@ package org.easysoa.registry.dbb.rest;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,8 +39,20 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.easysoa.registry.DocumentService;
+import org.easysoa.registry.dbb.BrowsingContext;
+import org.easysoa.registry.dbb.FoundService;
+import org.easysoa.registry.dbb.ServiceFinderService;
+import org.easysoa.registry.dbb.ServiceFinderStrategy;
+import org.easysoa.registry.types.Endpoint;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
+import org.nuxeo.ecm.webengine.model.WebObject;
+import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.jersey.api.core.HttpContext;
@@ -55,24 +68,65 @@ import com.sun.jersey.api.core.HttpContext;
  * 
  */
 @Path("easysoa/servicefinder")
-@Produces("application/x-javascript")
-public class ServiceFinderRest {
+@Produces({"application/json", "application/x-javascript"})
+@WebObject(type = "servicefinder")
+public class ServiceFinderRest extends ModuleRoot {
 
+	private DocumentModelList endpointsCache = null;
+	
+	private List<String> environmentsNamesCache = null;
+	
     @GET
-    public Object doGet() {
+    public Object getDefault() {
         return "Invalid use (please append an address to explore to the URL)";
     }
 
+    /**
+     * Computes a list of all existing environments, by analysing the endpoints properties.
+     * @return
+     * @throws Exception
+     */
     @GET
-    @Path("/{url:.*}")
-    public Object doGet(@Context UriInfo uriInfo) throws Exception {
+    @Path("/environments")
+    public Object getEnvironmentList() throws Exception {
+    	CoreSession session = SessionFactory.getSession(request);
+    	DocumentService docService = Framework.getService(DocumentService.class);
+    	DocumentModelList allEndpoints = docService.query(session, "SELECT * FROM " + Endpoint.DOCTYPE, true, false);
+    	
+    	// Use a cache for performance
+    	boolean computeEnvList = true;
+    	if (environmentsNamesCache != null) {
+    		if (endpointsCache != null && endpointsCache.equals(allEndpoints)) {
+    			computeEnvList = false;
+    		}
+    	}
+    	
+    	if (computeEnvList) {
+    		List<String> environmentsNames = new ArrayList<String>();
+    		for (DocumentModel endpoint : allEndpoints) {
+    			String environmentName = (String) endpoint.getPropertyValue(Endpoint.XPATH_ENVIRONMENT);
+    			if (environmentName != null && !environmentsNames.contains(environmentName)) {
+    				environmentsNames.add(environmentName);
+    			}
+    		}
+    		endpointsCache = allEndpoints;
+    		environmentsNamesCache = environmentsNames;
+    	}
+    	
+		return new JSONArray(environmentsNamesCache).toString();
+    }
+    
+    @GET
+    @Path("/find/{url:.*}")
+    public Object findServices(@Context UriInfo uriInfo) throws Exception {
 
         URL url = null;
         String callback = null;
         try {
             // Retrieve URL
-        	String restServiceURL = uriInfo.getBaseUri().toString()+"easysoa/servicefinder/";
+        	String restServiceURL = uriInfo.getBaseUri().toString()+"easysoa/servicefinder/find/";
         	url = new URL(uriInfo.getRequestUri().toString().substring(restServiceURL.length()));
+        	
         	if (url.getQuery() != null && url.getQuery().contains("callback=")) {
         		List<NameValuePair> queryTokens = URLEncodedUtils.parse(url.toURI(), "UTF-8");
         		for (NameValuePair token : queryTokens) {
@@ -88,17 +142,17 @@ public class ServiceFinderRest {
         
         // Find WSDLs
         if (callback != null) {
-        	return callback + '(' + findWSDls(new BrowsingContext(url)) + ')';
+        	return callback + '(' + findServices(new BrowsingContext(url)) + ')';
         }
         else {
-        	return findWSDls(new BrowsingContext(url));
+        	return findServices(new BrowsingContext(url));
         }
     }
     
 
     @POST
     @Path("/")
-    public Object doPost(@Context HttpContext httpContext, @Context HttpServletRequest request) throws Exception {
+    public Object findServices(@Context HttpContext httpContext, @Context HttpServletRequest request) throws Exception {
     	
     	// Retrieve params
     	@SuppressWarnings("unchecked")
@@ -106,20 +160,10 @@ public class ServiceFinderRest {
     	
     	// Find WSDLs
     	BrowsingContext browsingContext = new BrowsingContext(new URL(formValues.get("url")), formValues.get("data"));
-        return findWSDls(browsingContext);
+        return findServices(browsingContext);
     }
 
-	private static Map<String, String> getFirstValues(Map<String, String[]> multivaluedMap) {
-	    Map<String, String> map = new HashMap<String, String>();
-	    for (Entry<String, String[]> entry : multivaluedMap.entrySet()) {
-	    	if (entry.getValue().length > 0) {
-	    		map.put(entry.getKey(), entry.getValue()[0]);
-	    	}
-	    }
-	    return map;
-	}
-	
-    public String findWSDls(BrowsingContext context) throws Exception {
+	public String findServices(BrowsingContext context) throws Exception {
 
         JSONArray errors = new JSONArray();
         JSONObject result = new JSONObject();
@@ -128,8 +172,7 @@ public class ServiceFinderRest {
         // Run finders
         List<FoundService> foundServices = new LinkedList<FoundService>();
         if (context.getURL() != null && context.getData() != null) {
-            ServiceFinderComponent finderComponent = (ServiceFinderComponent) Framework
-                    .getRuntime().getComponent(ServiceFinderComponent.NAME);
+        	ServiceFinderService finderComponent = Framework.getService(ServiceFinderService.class);
             List<ServiceFinderStrategy> strategies = finderComponent.getStrategies();
 
             for (ServiceFinderStrategy strategy : strategies) {
@@ -168,7 +211,17 @@ public class ServiceFinderRest {
          
     }
 
-    private String formatError(Exception e, String message) {
+    private static Map<String, String> getFirstValues(Map<String, String[]> multivaluedMap) {
+	    Map<String, String> map = new HashMap<String, String>();
+	    for (Entry<String, String[]> entry : multivaluedMap.entrySet()) {
+	    	if (entry.getValue().length > 0) {
+	    		map.put(entry.getKey(), entry.getValue()[0]);
+	    	}
+	    }
+	    return map;
+	}
+
+	private String formatError(Exception e, String message) {
         return e.getClass().getSimpleName()+": "+message+" (cause: "+e.getMessage()+")";
     }
     

@@ -79,7 +79,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         foundInfoServ = documentService.find(documentManager, INFORMATIONSERVICE_ID);
         DocumentModel foundImpl = documentService.find(documentManager, FIRST_SERVICEIMPL_ID);
         Assert.assertEquals("Created information service must be linked to existing matching impls", foundInfoServ.getId(),
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     	
     	// Discover another impl
         implProperties.put(ServiceImplementation.XPATH_ISMOCK, "1");
@@ -88,7 +88,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // check
         foundImpl = documentService.find(documentManager, SECOND_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must be linked to existing matching information service", foundInfoServ.getId(),
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     	
     	// Discover a non matching impl
     	HashMap<String, Object> impl3Properties = new HashMap<String, Object>();
@@ -98,13 +98,13 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // check
         foundImpl = documentService.find(documentManager, THIRD_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must not be linked to existing matching information service", null,
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
 
     	// Rediscover known is then impl
         foundInfoServ  = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_ID, isProperties, null);
         foundImpl = discoveryService.runDiscovery(documentManager, SECOND_SERVICEIMPL_ID, implProperties, null);
         Assert.assertEquals("Created impl must still be linked to existing matching information service", foundInfoServ.getId(),
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     }
     
     @Test
@@ -165,7 +165,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         foundInfoServ = documentService.find(documentManager, INFORMATIONSERVICE_ID);
         DocumentModel foundImpl = documentService.find(documentManager, FIRST_SERVICEIMPL_ID);
         Assert.assertEquals("Created information service must be linked to existing matching impls", foundInfoServ.getId(),
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     	
     	// Discover another impl
         discoveryService.runDiscovery(documentManager, SECOND_SERVICEIMPL_ID, implProperties, null);
@@ -173,7 +173,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // check
         foundImpl = documentService.find(documentManager, SECOND_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must be linked to existing matching information service", foundInfoServ.getId(),
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     	
     	// Discover a non matching impl
     	HashMap<String, Object> impl3Properties = new HashMap<String, Object>();
@@ -186,19 +186,19 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // check
         foundImpl = documentService.find(documentManager, THIRD_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must not be linked to existing matching information service", null,
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
 
     	// Discover another is, then impl that has 2 matches
         foundInfoServ = discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE, "nsxxx:namexxx" + "P1KO"), isProperties, null);
         foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx" + "P1KO"), implProperties, null);
         Assert.assertEquals("Created impl must not be linked because there is too much matching information services", null,
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     	
         // Discover endpoint that matches no is or impl (use matching dashboard TODO mka)
         HashMap<String, Object> epProperties = new HashMap<String, Object>();
         DocumentModel foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("Production", "staging:http://localhost:8080/cxf/WS1"), epProperties, null);
         Assert.assertEquals("Created endpoint must not be linked to existing matching information service", null,
-        		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
 
         
         // TODO LATER Discover endpoint that matches is (on url-extracted service name), but no impl LATER
@@ -211,12 +211,12 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         epProperties.put(Endpoint.XPATH_COMPONENT_ID, foundComponent.getId());
         foundEndpoint = discoveryService.runDiscovery(documentManager,  new EndpointId("staging", "http://localhost:8080/cxf/WS2"), epProperties, null);
         Assert.assertNotNull("Created endpoint must be linked to existing matching information service",
-        		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
         
         // Discover endpoint that matches impl (TODO how, by parent ?? matching ?? component / platform ?)
         foundEndpoint = discoveryService.runDiscovery(documentManager,  new EndpointId("staging", "http://localhost:8080/cxf/WS3"), epProperties, null);
         Assert.assertNotNull("Created endpoint must be linked to existing matching information service",
-        		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
 
         
     	// Discover a non matching impl because of provided component id and check
@@ -226,13 +226,13 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	implProperties.put(ServiceImplementation.XPATH_COMPONENT_ID, "id-that-doesnt-exist");
     	foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nszzz:namezzz=servicenamezzz" + "C1KO"), implProperties, null);
         Assert.assertEquals("Created impl must not be linked to existing matching information service because of provided component id", null,
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
 
     	// Discover a matching impl because of provided component id and check
         implProperties.put(ServiceImplementation.XPATH_COMPONENT_ID, foundComponent.getId());
     	foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nszzz:namezzz=servicenamezzz" + "C1OK"), implProperties, null);
         Assert.assertNotNull("Created impl must be linked to existing matching information service because of provided component id",
-        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
         
         // Discover an information service, then and endpoint that matches no impl but matches the IS.
         // A link should be made through a placeholder
@@ -244,7 +244,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         epProperties.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, "{www}www");
     	foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("Prod", "www.com"), epProperties, null);
         Assert.assertEquals("Created endpoint must be linked to matching information service", foundInfoServ.getId(),
-        		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE));
+        		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
         SoaNodeId implId = foundEndpoint.getAdapter(SoaNode.class).getParentOfType(ServiceImplementation.DOCTYPE);
         Assert.assertNotNull("Created endpoint must be linked to an impl", implId);
         foundImpl = documentService.find(documentManager, implId);

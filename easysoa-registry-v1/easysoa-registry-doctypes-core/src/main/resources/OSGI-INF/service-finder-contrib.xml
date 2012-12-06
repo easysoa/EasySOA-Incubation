@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.easysoa.registry.doctypes.core.contrib.servicefinder" version="1.0">
+
+  <extension target="org.easysoa.registry.dbb.ServiceFinderService" point="strategies">
+    <strategy>org.easysoa.registry.dbb.strategies.ScrapingStrategy</strategy>
+    <strategy>org.easysoa.registry.dbb.strategies.DirectAccessStrategy</strategy>
+    <strategy>org.easysoa.registry.dbb.strategies.ContextStrategy</strategy>
+  </extension>
+
+</component>

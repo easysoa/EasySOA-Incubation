@@ -222,10 +222,10 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 	 */
 	public void linkInformationService(CoreSession documentManager, DocumentModel serviceImplModel,
 			String informationServiceUuid, boolean save) throws ClientException {
-		Object previousLinkValue = serviceImplModel.getPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE);
+		Object previousLinkValue = serviceImplModel.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE);
 		if (informationServiceUuid == null && previousLinkValue != null
 				|| informationServiceUuid != null && !informationServiceUuid.equals(previousLinkValue)) {
-	    	serviceImplModel.setPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE, informationServiceUuid);
+	    	serviceImplModel.setPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE, informationServiceUuid);
 			if (save) {
 				documentManager.saveDocument(serviceImplModel);
 				documentManager.save();

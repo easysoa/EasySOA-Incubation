@@ -52,7 +52,7 @@
   <#list matchedImpls as matchedImpl>
     <tr>
     	<td>
-    	  <#assign document = infoServicesById[matchedImpl['impl:linkedInformationService']]>
+    	  <#assign document = infoServicesById[matchedImpl['impl:providedInformationService']]>
     	  <#include "/views/dashboard/document.ftl">
     	</td>
     	<td><b>&gt;</b></td>

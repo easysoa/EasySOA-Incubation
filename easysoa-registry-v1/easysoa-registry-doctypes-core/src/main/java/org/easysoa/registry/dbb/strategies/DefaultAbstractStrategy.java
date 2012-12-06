@@ -18,16 +18,16 @@
  * Contact : easysoa-dev@googlegroups.com
  */
 
-package org.easysoa.registry.dbb.rest.strategies;
+package org.easysoa.registry.dbb.strategies;
 
 import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.easysoa.registry.dbb.rest.HttpDownloader;
-import org.easysoa.registry.dbb.rest.HttpDownloaderService;
-import org.easysoa.registry.dbb.rest.HttpDownloaderServiceImpl;
-import org.easysoa.registry.dbb.rest.ServiceFinderStrategy;
+import org.easysoa.registry.dbb.ServiceFinderStrategy;
+import org.easysoa.registry.dbb.HttpDownloader;
+import org.easysoa.registry.dbb.HttpDownloaderService;
+import org.easysoa.registry.dbb.HttpDownloaderServiceImpl;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 

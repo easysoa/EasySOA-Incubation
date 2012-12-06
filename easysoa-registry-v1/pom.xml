@@ -289,6 +289,13 @@
         <artifactId>easycommons.uri</artifactId>
         <version>${easycommons.version}</version>
       </dependency>
+      
+      <!-- HTML Cleaner (web scraping) -->
+      <dependency>
+        <groupId>net.sourceforge.htmlcleaner</groupId>
+        <artifactId>htmlcleaner</artifactId>
+        <version>2.2</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

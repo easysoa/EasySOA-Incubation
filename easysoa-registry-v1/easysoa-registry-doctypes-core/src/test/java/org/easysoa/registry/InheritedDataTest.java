@@ -145,7 +145,7 @@ public class InheritedDataTest extends AbstractRegistryTest {
 	public void testUuidSelectors() throws Exception {
 		// Link comp > infoservice < serviceimpl by UUIDs
 		DocumentModel infoServModel = documentService.create(documentManager, MYIS_ID);
-		myServiceImplModel.setPropertyValue(ServiceImplementation.XPATH_IMPL_LINKED_INFORMATION_SERVICE, infoServModel.getId());
+		myServiceImplModel.setPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE, infoServModel.getId());
 		documentManager.saveDocument(myServiceImplModel);
 		DocumentModel componentModel = documentService.create(documentManager, new SoaNodeId(Component.DOCTYPE, "mycomp"));
 		componentModel.setPropertyValue(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE, infoServModel.getId());

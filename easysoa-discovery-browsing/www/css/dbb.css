@@ -175,7 +175,7 @@ li {
 	float: right;
 	width: 16px;
 	height: 18px;
-	background: url('img/trash.png');
+	background: url('/img/trash.png');
 }
 
 #newEnvironment {

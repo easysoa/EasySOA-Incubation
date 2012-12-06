@@ -18,10 +18,14 @@
  * Contact : easysoa-dev@googlegroups.com
  */
 
-package org.easysoa.registry.dbb.rest;
+package org.easysoa.registry.dbb;
 
 import java.io.FileInputStream;
 import java.net.URL;
+
+import org.easysoa.registry.dbb.HttpDownloader;
+import org.easysoa.registry.dbb.HttpDownloaderService;
+import org.easysoa.registry.dbb.HttpDownloaderServiceImpl;
 
 public class BrowsingContext {
 

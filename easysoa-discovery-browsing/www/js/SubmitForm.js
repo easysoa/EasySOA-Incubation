@@ -28,12 +28,18 @@ $(function() {
 		submit: function() {
 			if (this.getURL() != '') {
           this.view.info("Sending request...");
+          var environmentName = $('#environmentSelect option').filter(":selected").attr('value');
+          var url = this.getURL();
 			    jQuery.ajax({
 			        url: '/dbb/send',
 			        data: {
-			            'url': this.getURL(),
-			            'servicename': $('#submitService').attr('value'),
-			            'environment': $('#environmentSelect option').filter(":selected").attr('value')
+			            'id': {
+			              'type': 'Endpoint',
+			              'name': environmentName + ':' + url
+			            },
+			            'properties': {
+			              'dc:title': this.getServiceName()
+			            }
 			          },
 			        success: function (data) {
 			            if (data == 'ok') {
@@ -93,19 +99,17 @@ $(function() {
 			SubmitForm.bind('change', this.render);
 			
       // Init environment list
-      this.environmentSelect.append('<option value="Master">Master</option>');
+      this.environmentSelect.append('<option value="Production">Production</option>');
       var view = this;
-      $.ajax({
-        url: '/nuxeo/discovery/environments',
-        success: function(data, textStatus, jqXHR) {
-            var environments = jQuery.parseJSON(jqXHR.responseText);
+      $.getJSON('/nuxeo/servicefinder/environments',
+        function(data, textStatus, jqXHR) {
+            var environments = jQuery.parseJSON(data);
             for (i in environments) {
-              if (environments[i] != 'Master') {
+              if (environments[i] != 'Production') {
                 view.environmentSelect.append('<option value="' + environments[i] + '">' + environments[i] + '</option>');
               }
             }
-        }
-      });
+        });
 		},
 	
 		render: function() {

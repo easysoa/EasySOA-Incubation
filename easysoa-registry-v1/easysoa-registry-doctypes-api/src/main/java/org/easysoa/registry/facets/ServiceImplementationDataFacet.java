@@ -14,7 +14,7 @@ public interface ServiceImplementationDataFacet {
 
     static final String XPATH_TESTS = "impl:tests";
 
-    static final String XPATH_IMPL_LINKED_INFORMATION_SERVICE = "impl:linkedInformationService";
+    static final String XPATH_PROVIDED_INFORMATION_SERVICE = "impl:providedInformationService";
 
     static final String XPATH_PLATFORM = "impl:linkedPlatform"; // nuxeo id ; this impl's dev platform ; TODO rather candidate also ?
 

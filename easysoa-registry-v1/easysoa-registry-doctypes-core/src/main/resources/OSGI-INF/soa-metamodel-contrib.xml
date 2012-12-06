@@ -53,7 +53,6 @@
       </transfer>
     </inheritedFacet>
     
-    <!-- TODO Implement facet ComponentData and attach it to all doctypes below -->
     <inheritedFacet facetName="ComponentData">
       <transfer>
         <from>Component</from>
@@ -73,6 +72,28 @@
         <from>ServiceImplementation</from>
         <to>Endpoint</to>
         <selector type="children" />
+      </transfer>
+    </inheritedFacet>
+    
+    <inheritedFacet facetName="PlatformData">
+      <transfer>
+        <from>Platform</from>
+        <to>Component</to>
+        <selector type="children" />
+      </transfer>
+      <transfer>
+        <from>Component</from>
+        <to>InformationService</to>
+        <selector type="uuidInSource">
+          <parameter name="metadata">acomp:linkedInformationService</parameter>
+        </selector>
+      </transfer>
+      <transfer>
+        <from>InformationService</from>
+        <to>ServiceImplementation</to>
+        <selector type="uuidInTarget">
+          <parameter name="metadata">impl:providedInformationService</parameter>
+        </selector>
       </transfer>
     </inheritedFacet>
   </extension>

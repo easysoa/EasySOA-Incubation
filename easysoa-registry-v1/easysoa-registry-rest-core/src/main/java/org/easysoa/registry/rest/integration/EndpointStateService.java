@@ -30,16 +30,20 @@ public interface EndpointStateService {
 
 	/**
 	 * Creates (OPT or udpdates) each of the given indicator, for the given endpointId, levelName and timestamp.
-	 * NB. endpointId et slaOrOlaName sont à récupérer du modèle EasySOA des Specifications et mettre dans la configuration de la plateforme de monitoring (d'abord manuellement puis récupérés automatiquement au démarrage étant donné l'id du sous-projet de déploiement versionné) 
+	 * NB. endpointId et slaOrOlaName sont à récupérer du modèle EasySOA des Specifications et mettre dans la configuration de la plateforme de monitoring
+	 *  (d'abord manuellement puis récupérés automatiquement au démarrage étant donné l'id du sous-projet de déploiement versionné) 
 	 * @param SlaOrOlaIndicators : array of SlaOrOlaIndicator
 	 * {endpointId, slaOrOlaName, timestamp, serviceLevelHealth=gold/silver/bronze, serviceLevelViolation=true/false})
 	 * where endpointId is the nuxeo id of the endpoint
 	 * @throws Exception
 	 */
-	public void updateSlaOlaIndicators(Object SlaOrOlaIndicators) throws Exception;
+	public void updateSlaOlaIndicators(SlaOrOlaIndicator[] SlaOrOlaIndicators) throws Exception;
 	
 	/**
 	 * Returns level indicators, in the given period (default : daily)
+	 * TODO add criteria as required by UI :
+	 * * endpointId & slaOrOlaName
+	 * * or wider : at least environment and subprojectId (or only global environment) ; possibly componentId... 
 	 * OPT paginated navigation
      * @param periodStart : if null day start, if both null returns all in the current day
      * @param periodEnd : if null now, if both null returns all in the current day
@@ -47,6 +51,6 @@ public interface EndpointStateService {
      * @param pageStart OPT pagination : index of the first indicator to return (starts with 0)
 	 * @return SlaOrOlaIndicators array of SlaOrOlaIndicator
 	 */
-	public Object getSlaOrOlaIndicators(Date periodStart, Date periodEnd, int pageSize, int pageStart);
+	public SlaOrOlaIndicator[] getSlaOrOlaIndicators(Date periodStart, Date periodEnd, int pageSize, int pageStart);
 	
 }

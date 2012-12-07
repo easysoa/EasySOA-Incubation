@@ -28,9 +28,7 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
     //TODO : How to get nuxeo base url ?
     public final static String NUXEO_BASE_URL = "http://localhost:8080/nuxeo/";
     
-    /**
-     * 
-     */
+    //
     @Context HttpServletRequest request;
     
     /**

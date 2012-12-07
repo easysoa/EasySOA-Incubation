@@ -113,7 +113,7 @@ public class ServiceFinderRest extends ModuleRoot {
     		environmentsNamesCache = environmentsNames;
     	}
     	
-		return new JSONArray(environmentsNamesCache);
+		return new JSONArray(environmentsNamesCache).toString();
     }
     
     @GET

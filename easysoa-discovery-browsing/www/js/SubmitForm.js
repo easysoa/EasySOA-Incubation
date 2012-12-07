@@ -31,36 +31,30 @@ $(function() {
           var environmentName = $('#environmentSelect option').filter(":selected").attr('value');
           var url = this.getURL();
 			    jQuery.ajax({
-			        url: '/dbb/send',
+			        url: '/dbb/send?token=' + Math.random(), // avoids caching
 			        data: {
 			            'id': {
 			              'type': 'Endpoint',
 			              'name': environmentName + ':' + url
 			            },
 			            'properties': {
-			              'dc:title': environmentName + ': ' + this.getServiceName()
+			              'endp:url': url,
+			              'env:environment': environmentName,
+			              'dc:title': environmentName + ': ' + $('#submitService').attr('value') //FIXME Better property sync with getServiceName()
 			            }
 			          },
 			        success: function (data) {
 			            if (data == 'ok') {
-                           SubmitForm.view.success();
-                        }
-                        else {
-                           SubmitForm.view.failure(data);
-                        }
-                      },
-                    error: function (data) {
-                        SubmitForm.view.failure(data);
-                      }
+                     SubmitForm.view.success();
+                  }
+                  else {
+                     SubmitForm.view.failure(data);
+                  }
+                },
+              error: function (data) {
+                  SubmitForm.view.failure(data);
+                }
 			      });
-			    // Couldn't make it work through the proxy
-			    // TODO Fix socket.io requests
-			  /*window.socket.send(JSON.stringify({
-			    'url': this.getURL(),
-			    'servicename': $('#submitService').attr('value'),
-			    'applicationname': $('#submitApp').attr('value'),
-			    'authToken': window.authToken
-			  }));*/
 			}
 		},
 		

@@ -133,6 +133,7 @@ findWSDLs = function(url) {
 };
 
 sendWSDL = function(request, response, next) {
+  delete request.query.token; // filter random query addition to avoid browser cache
 	nuxeo.runRestRequest(
 		request.session,
 		settings.EASYSOA_DISCOVERY_PATH,

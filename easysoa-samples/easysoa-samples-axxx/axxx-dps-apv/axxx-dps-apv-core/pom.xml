@@ -1,31 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.axxx.dps.apv</groupId>
-  <artifactId>axxx-dps-apv-parent</artifactId>
-  <packaging>pom</packaging>
-  <name>AXXX DPS APV web application parent</name>
-  <version>1.0-SNAPSHOT</version>
+
+  <parent>
+    <groupId>com.axxx.dps.apv</groupId>
+    <artifactId>axxx-dps-apv-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>axxx-dps-apv-core</artifactId>
+  <packaging>jar</packaging>
+  <name>AXXX DPS APV web application</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-    <axxx-dps-apv.version>1.0-SNAPSHOT</axxx-dps-apv.version>
-
-    <spring.version>3.1.2.RELEASE</spring.version>
-    <cxf.version>2.5.2</cxf.version>
   </properties>
 
-  <modules>
-    <module>axxx-dps-apv-core</module>
-    <module>axxx-dps-apv-web</module>
-  </modules>
-
-  <scm>
-    <connection>scm:git:git://github.com/easysoa/EasySOA-Incubation.git</connection>
-    <url>scm:git:https://github.com/easysoa/EasySOA-Incubation.git</url>
-  </scm>
-   
   <dependencies>
     <!-- dependency>
       <groupId>org.easysoa.sample</groupId>
@@ -105,7 +96,6 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.10</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.sun.jersey</groupId>
@@ -209,26 +199,5 @@
   </build>
   
   <repositories>
-    <repository>
-      <id>public</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>public-snapshot</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public-snapshot</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <updatePolicy>always</updatePolicy>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
   </repositories>
 </project>

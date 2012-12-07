@@ -3,47 +3,30 @@
  */
 package org.easysoa.registry.rest.integration;
 
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
 /**
- * Common informations about WSDL service and endpoints registered in Nuxeo registry
- * 
  * @author jguillemotte
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE, setterVisibility=Visibility.NONE)
-public abstract class WSDLInformation {
-    
-    // Returned by queryWSDLInformation
-    //returns : (sub)projectId, (nuxeo id,) name(title), description, soaname, objectType=InformationService(Endpoint), wsdlDownloadUrl=attachedFileUrl
-    //OPT EasySOA id stored as component (service ??) name in composite (so it is available at SCA discovery time), OPT EasySOA id is a "pretty" versioned id
+public class EndpointInformation/* extends WSDLInformation */{
 
-    // Returned by queryEndpoints
-    //returns : (sub)projectId, (nuxeo id,) name(title), description, soaname, environment, objectType=Endpoint, endpointUrl [, endpointWsdlUrl=deduced, wsdlDownloadUrl=attachedFileUrl]
-    //endpointUrl is enough to identify it in EasySOA. OPT store EasySOA id anyway in binding name in composite.
+    private String environment;
     
-    protected String projectID;
+    private String endpointUrl;    
     
-    protected String nuxeoID;
-    
-    protected String name;
-   
-    protected String description;
-
-    protected String soaName;
-
-    protected String objectType;
-    
-    protected String wsdlDownloadUrl;
-
-    /**
-     * Default constructor
-     */
-    public WSDLInformation(){
+    public EndpointInformation(){
+        //super();
+        this.environment = "";
+        this.endpointUrl = "";
+        
+        ////////////////////
         this.description = "";
         this.name = "";
         this.nuxeoID = "";
@@ -51,7 +34,63 @@ public abstract class WSDLInformation {
         this.projectID = "";
         this.soaName = "";
         this.wsdlDownloadUrl = "";
+        
     }
+
+    /**
+     * @return the endpoint
+     */
+    public String getEndpointUrl() {
+        return endpointUrl;
+    }
+
+    /**
+     * @param endpoint the endpoint to set
+     */
+    public void setEndpointUrl(String endpointUrl) {
+        this.endpointUrl = checkNotNull(endpointUrl);
+    }
+    
+    /**
+     * @return the environment
+     */
+    public String getEnvironment() {
+        return environment;
+    }
+
+    /**
+     * @param environment the environment to set
+     */
+    public void setEnvironment(String environment) {
+        this.environment = checkNotNull(environment);
+    }    
+    
+    private String projectID;
+    
+    private String nuxeoID;
+    
+    private String name;
+   
+    private String description;
+
+    private String soaName;
+
+    private String objectType;
+    
+    private String wsdlDownloadUrl;
+
+    /**
+     * Default constructor
+     */
+    /*public WSDLInformation(){
+        this.description = "";
+        this.name = "";
+        this.nuxeoID = "";
+        this.objectType = "";
+        this.projectID = "";
+        this.soaName = "";
+        this.wsdlDownloadUrl = "";
+    }*/
     
     /**
      * @return the projectID
@@ -156,11 +195,12 @@ public abstract class WSDLInformation {
      * @param param The parameter to check
      * @return The param avlue or empty string if the param is null
      */
-    protected String checkNotNull(String param){
+    private String checkNotNull(String param){
         if(param != null){
             return param;
         } else {
             return "";
         }        
-    }
+    }    
+    
 }

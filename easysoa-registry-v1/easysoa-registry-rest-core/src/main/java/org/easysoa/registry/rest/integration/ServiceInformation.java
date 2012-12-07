@@ -3,28 +3,64 @@
  */
 package org.easysoa.registry.rest.integration;
 
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 
 /**
- * Common informations about WSDL service and endpoints registered in Nuxeo registry
- * 
  * @author jguillemotte
  *
  */
+@XmlRootElement // TODO rm
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE, setterVisibility=Visibility.NONE)
-public abstract class WSDLInformation {
-    
-    // Returned by queryWSDLInformation
-    //returns : (sub)projectId, (nuxeo id,) name(title), description, soaname, objectType=InformationService(Endpoint), wsdlDownloadUrl=attachedFileUrl
-    //OPT EasySOA id stored as component (service ??) name in composite (so it is available at SCA discovery time), OPT EasySOA id is a "pretty" versioned id
+public class ServiceInformation /*extends WSDLInformation*/ {
 
-    // Returned by queryEndpoints
-    //returns : (sub)projectId, (nuxeo id,) name(title), description, soaname, environment, objectType=Endpoint, endpointUrl [, endpointWsdlUrl=deduced, wsdlDownloadUrl=attachedFileUrl]
-    //endpointUrl is enough to identify it in EasySOA. OPT store EasySOA id anyway in binding name in composite.
+    @XmlElement
+    private EndpointInformations endpoints;
+    
+    /**
+     * Default constructor
+     */
+    public ServiceInformation(){
+        //super();
+        endpoints = new EndpointInformations();
+        
+        ///////////////////
+        this.description = "";
+        this.name = "";
+        this.nuxeoID = "";
+        this.objectType = "";
+        this.projectID = "";
+        this.soaName = "";
+        this.wsdlDownloadUrl = "";        
+        
+        
+    }
+    
+    /**
+     * Returns the endpoints for the service
+     * @return
+     */
+    public EndpointInformations getEndpoints(){
+        return this.endpoints;
+    }
+    
+    /**
+     * Set the endpoints associated with the service
+     * @param endpoints
+     */
+    public void setEndpoints(EndpointInformations endpoints){
+        if(endpoints != null){
+            this.endpoints = endpoints;
+        } else {
+            this.endpoints = new EndpointInformations(); 
+        }
+    }
     
     protected String projectID;
     
@@ -43,7 +79,7 @@ public abstract class WSDLInformation {
     /**
      * Default constructor
      */
-    public WSDLInformation(){
+    /*public WSDLInformation(){
         this.description = "";
         this.name = "";
         this.nuxeoID = "";
@@ -51,7 +87,7 @@ public abstract class WSDLInformation {
         this.projectID = "";
         this.soaName = "";
         this.wsdlDownloadUrl = "";
-    }
+    }*/
     
     /**
      * @return the projectID
@@ -162,5 +198,6 @@ public abstract class WSDLInformation {
         } else {
             return "";
         }        
-    }
+    }    
+    
 }

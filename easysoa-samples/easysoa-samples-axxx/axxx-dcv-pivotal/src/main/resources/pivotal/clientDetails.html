@@ -198,11 +198,13 @@
 	<div id="contactsClient" class="rounded-div-content" name="Contacts client">
 	<!--<div id="rounded-div-content" name="Contacts client">-->
 		<div id="friendsView">
+		    <!--<table id="catalogServices" class="dhtmlxGrid" gridHeight="400px" name="catalogServices" imgpath="/pivotal/images/" style="width:900px" lightnavigation="true">-->
 		    <table id="catalogServices">
 				<colgroup>
-			       	<col width="300px">
-			       	<col width="300px">
 			       	<col width="200px">
+			       	<col width="200px">
+			       	<col width="200px">
+			      	<col width="200px">
 			      	<col width="200px">
 		        </colgroup>
 			    <tbody>
@@ -211,6 +213,7 @@
 		                <td><label for="Pr&eacute;nom">Pr&eacute;nom:</label></td>
 		                <td><label for="T&eacute;l&eacute;phone">T&eacute;l&eacute;phone :</label></td>
 		                <td><label for="Email">Email :</label></td>
+		                <td><label for="Fonction">Fonction :</label></td>
 		            </tr>
 		            #foreach($c in $clientService.getContactClient($identifiantClient))
 		            <tr>
@@ -218,6 +221,7 @@
 		                <td>$c.getPrenomContact()</td>
 						<td>$c.getTelephone()</td>
 						<td>$c.getEmail()</td>
+						<td>$c.getFonctionContact</td>
 		            </tr>
 					#end
 		        </tbody>

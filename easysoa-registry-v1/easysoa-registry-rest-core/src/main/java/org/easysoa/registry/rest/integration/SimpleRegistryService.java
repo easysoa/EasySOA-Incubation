@@ -61,7 +61,7 @@ public interface SimpleRegistryService {
     @GET
     @Path("/queryWSDLInterfaces")
     @Produces(MediaType.APPLICATION_JSON)
-    public WSDLInformations queryWSDLInterfaces(
+    public ServiceInformations queryWSDLInterfaces(
             @QueryParam("search") String search, 
             @QueryParam("subProjectId") String subProjectId/*,
             @QueryParam("platformServiceStandard") String platformServiceStandard,
@@ -78,8 +78,7 @@ public interface SimpleRegistryService {
     @GET
     @Path("/queryEndpoints")
     @Produces(MediaType.APPLICATION_JSON)
-    // TODO : change return type for EndpointInformation or common type
-    public WSDLInformations queryEndpoints(@QueryParam("search") String search, 
+    public EndpointInformations queryEndpoints(@QueryParam("search") String search, 
             @QueryParam("subProjectId") String subProjectId/*,
             @QueryParam("platformServiceStandard") String platformServiceStandard,
             @QueryParam("wsBindingTransport") String wsBindingTransport,
@@ -103,11 +102,17 @@ public interface SimpleRegistryService {
      *  
      * @search if null, returns all of them
      */
-    /*@GET
+    @GET
     @Path("/queryServicesWithEndpoints")
     @Produces(MediaType.APPLICATION_JSON)
+    public ServiceInformations queryServicesWithEndpoints(@QueryParam("search") String search, 
+            @QueryParam("subProjectId") String subProjectId ) throws Exception;
+            
+    /*
+    @GET
+    @Path("/queryServicesWithEndpointTest")
+    @Produces(MediaType.APPLICATION_JSON)
     // TODO : change return type for EndpointInformation or common type
-    public WSDLInformations queryServicesWithEndpoints(@QueryParam("search") String search, 
-            @QueryParam("subProjectId") String subProjectId ) throws Exception;*/
+    public ServiceInformation queryServicesWithEndpointTest() throws Exception;*/
    
 }

@@ -40,6 +40,13 @@ FOR NOW ONLY PrecomptePartenaireWebService !!
 
 TODO then in your browser open http://
 
+Debugging :
+
+Either
+* from Eclipse : right-click > Debug as Java application
+* for tests (or code discovery maven plugin), from Maven : add ```-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8002,server=y,suspend=y``` in the MAVEN_OPTS environment variable (```export MAVEN_OPTS="..."``` in command line shell or in your $HOME/.bashrc )
+* for Tomcat webapp : 
+
 
 ### Creating database with PostgreSQL :
 

@@ -3,8 +3,9 @@
  */
 package org.easysoa.registry.integration;
 
+import org.easysoa.registry.rest.integration.EndpointInformations;
 import org.easysoa.registry.rest.integration.SimpleRegistryService;
-import org.easysoa.registry.rest.integration.WSDLInformations;
+import org.easysoa.registry.rest.integration.ServiceInformations;
 import org.osoa.sca.annotations.Reference;
 
 /**
@@ -18,20 +19,24 @@ public class TestClient implements TestClientItf {
     private SimpleRegistryService service;
     
     /**
-     * 
-     * @return
-     * @throws Exception
+     * @see
      */
-    public WSDLInformations testQueryWSDLInterfaces(String search, String subProjectId) throws Exception {
+    public ServiceInformations testQueryWSDLInterfaces(String search, String subProjectId) throws Exception {
         return service.queryWSDLInterfaces(search, subProjectId);
     }
     
     /**
-     * 
-     * @return
+     * @see 
      */
-    public WSDLInformations testQueryEndpoints(String search, String subProjectId) throws Exception {
+    public EndpointInformations testQueryEndpoints(String search, String subProjectId) throws Exception {
         return service.queryEndpoints(search, subProjectId);        
+    }
+    
+    /**
+     * @see
+     */
+    public ServiceInformations testQueryServicesWithEndpoints(String search, String subProjectId) throws Exception {
+        return service.queryServicesWithEndpoints(search, subProjectId);
     }
     
 }

@@ -5,6 +5,8 @@ import java.lang.reflect.AnnotatedElement;
 
 import com.thoughtworks.qdox.model.AbstractBaseJavaEntity;
 import com.thoughtworks.qdox.model.JavaClass;
+import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.annotation.AnnotationValue;
 
 public class ParsingUtils {
 
@@ -16,6 +18,17 @@ public class ParsingUtils {
         for (com.thoughtworks.qdox.model.Annotation annotation : entity.getAnnotations()) {
             if (fullyQualifiedAnnotationName.equals(annotation.getType().getFullyQualifiedName())) {
                 return annotation;
+            }
+        }
+        return null;
+    }
+
+    public static String getAnnotationPropertyString(JavaMethod method, String annotation, String property) {
+        if (ParsingUtils.hasAnnotation(method, annotation)) {
+            com.thoughtworks.qdox.model.Annotation webResultAnn = ParsingUtils.getAnnotation(method, annotation);
+            AnnotationValue operationNameValue = webResultAnn.getProperty(property);
+            if (operationNameValue != null) {
+                return operationNameValue.toString();
             }
         }
         return null;

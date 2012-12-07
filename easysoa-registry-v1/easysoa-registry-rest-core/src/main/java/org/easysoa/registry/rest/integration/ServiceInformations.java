@@ -19,43 +19,43 @@ import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
  */
 @XmlRootElement
 @JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE, setterVisibility=Visibility.NONE)
-public class WSDLInformations {
-
+public class ServiceInformations {
+    
     @XmlElement
-    private List<WSDLInformation> wsdlInformations;
+    private List<ServiceInformation> serviceInformations;
 
     /**
      * 
      */
-    public WSDLInformations(){
-        wsdlInformations = new ArrayList<WSDLInformation>();
+    public ServiceInformations(){
+        serviceInformations = new ArrayList<ServiceInformation>();
     }
     
     /**
      * 
      * @param information
      */
-    public void addWsdlInformation(WSDLInformation information){
-        this.wsdlInformations.add(information);
+    public void addServiceInformation(ServiceInformation information){
+        this.serviceInformations.add(information);
     }
 
     /**
      * 
      * @return
      */
-    public List<WSDLInformation> getWsdlInformationList() {
-        return wsdlInformations;
+    public List<ServiceInformation> getServiceInformationList() {
+        return serviceInformations;
     }
 
     /**
      * 
      * @param wsdlInformationList
      */
-    public void setWsdlInformationList(List<WSDLInformation> wsdlInformations) {
+    public void setServiceInformationList(List<ServiceInformation> wsdlInformations) {
         if(wsdlInformations != null){
-            this.wsdlInformations = wsdlInformations;
+            this.serviceInformations = wsdlInformations;
         } else {
-            this.wsdlInformations = new ArrayList<WSDLInformation>();    
+            this.serviceInformations = new ArrayList<ServiceInformation>();    
         }
     }    
     

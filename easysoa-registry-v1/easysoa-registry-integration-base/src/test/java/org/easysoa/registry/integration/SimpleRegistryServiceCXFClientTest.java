@@ -3,9 +3,9 @@
  */
 package org.easysoa.registry.integration;
 
+import org.easysoa.registry.rest.integration.ServiceInformation;
 import org.easysoa.registry.rest.integration.SimpleRegistryService;
-import org.easysoa.registry.rest.integration.WSDLInformation;
-import org.easysoa.registry.rest.integration.WSDLInformations;
+import org.easysoa.registry.rest.integration.ServiceInformations;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
@@ -35,10 +35,10 @@ public class SimpleRegistryServiceCXFClientTest {
     @Test
     public void cxfClientTest() throws Exception {
         SimpleRegistryService client = (SimpleRegistryService) context.getBean("simpleRegistryServiceCXFTestClient");
-        WSDLInformations result = client.queryWSDLInterfaces(null, null);
+        ServiceInformations result = client.queryWSDLInterfaces(null, null);
         Assert.assertNotNull(result);
-        Assert.assertEquals(3, result.getWsdlInformationList().size());
-        WSDLInformation information = result.getWsdlInformationList().get(0);
+        Assert.assertEquals(3, result.getServiceInformationList().size());
+        ServiceInformation information = result.getServiceInformationList().get(0);
         Assert.assertEquals("TdrService",information.getName());
         Assert.assertEquals("InformationService", information.getObjectType());
     }

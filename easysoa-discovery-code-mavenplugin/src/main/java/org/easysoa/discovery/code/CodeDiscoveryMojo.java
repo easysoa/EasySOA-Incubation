@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -69,14 +71,48 @@ public class CodeDiscoveryMojo extends AbstractMojo {
      * @parameter expression="${buildNumber}"
      */
     private String buildNumber;
-    
-    
-    private Map<String, SourcesHandler> availableHandlers = new HashMap<String, SourcesHandler>();
-    
+
+    /**
+     * The regex to match by group:artifact id where interfaces have to be
+     * looked up. By default look up interfaces in top-level pom project group
+     * (if no parent, means to project's group id).
+     * 
+     * @parameter
+     */
+    private String interfaceLookupMavenIdRegex = null;
+
+	private Map<String, SourcesHandler> availableHandlers = new HashMap<String, SourcesHandler>();
+
+    /** Cached compiled pattern of interfaceLookupMavenIdRegex, inited in getter */
+    private Pattern interfaceLookupMavenIdRegexPattern = null;
+
     public void execute() throws MojoExecutionException {
         Log log = getLog();
 
         try {
+            if ("pom".equals(this.getMavenProject().getArtifact().getType())) {
+                log.info("Skipping project " + this.getMavenProject().getArtifact().getId() + " (pom so no source)");
+                return;
+            }
+
+            if (interfaceLookupMavenIdRegex == null) {
+                // By default look up interfaces in top-level pom project group
+                // (so if no parent, by default look up interfaces in the same
+                // group)
+                MavenProject topLevelMavenProject = getTopLevelMavenProject(this.getMavenProject());
+                interfaceLookupMavenIdRegex = topLevelMavenProject.getArtifact().getGroupId() + ":.*";
+            }
+            try {
+                this.interfaceLookupMavenIdRegexPattern = Pattern.compile(this.interfaceLookupMavenIdRegex);
+                // compiling the regex to match by group:artifact id where
+                // interfaces have to be looked up
+            } catch (Throwable error) {
+                log.info("Error compiling pattern " + this.interfaceLookupMavenIdRegex
+                        + ", should be a valid regex, aborting.");
+                log.debug(error);
+                return;
+            }
+
         // Init registry client
         ClientBuilder clientBuilder = new ClientBuilder();
         clientBuilder.setCredentials(username, password);
@@ -156,8 +192,26 @@ public class CodeDiscoveryMojo extends AbstractMojo {
         
     }
 
-    public MavenProject getMavenProject() {
+	public MavenProject getMavenProject() {
         return project;
     }
-    
+
+    public boolean shouldLookupInterfaces(Artifact dependency) {
+        if (this.interfaceLookupMavenIdRegexPattern == null) {
+            return true;
+        }
+
+        return this.interfaceLookupMavenIdRegexPattern.matcher(dependency.getId()).matches();
+    }
+
+    private MavenProject getTopLevelMavenProject(MavenProject mavenProject) {
+        MavenProject parentMavenProject = mavenProject.getParent();
+        while (parentMavenProject != null && parentMavenProject.getModules().contains(mavenProject.getArtifactId())) { // ex.
+                                                                                                                       // "axxx-dps-apv-core"
+            mavenProject = parentMavenProject;
+            parentMavenProject = mavenProject.getParent();
+        }
+        return mavenProject;
+    }
+
 }

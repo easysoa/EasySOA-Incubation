@@ -3,9 +3,11 @@
  */
 package org.easysoa.registry.integration;
 
+import org.easysoa.registry.rest.integration.EndpointInformation;
+import org.easysoa.registry.rest.integration.EndpointInformations;
+import org.easysoa.registry.rest.integration.ServiceInformation;
 import org.easysoa.registry.rest.integration.SimpleRegistryService;
-import org.easysoa.registry.rest.integration.WSDLInformation;
-import org.easysoa.registry.rest.integration.WSDLInformations;
+import org.easysoa.registry.rest.integration.ServiceInformations;
 
 /**
  * Simple registry service mock server implementation
@@ -16,58 +18,111 @@ import org.easysoa.registry.rest.integration.WSDLInformations;
 public class SimpleRegistryServiceServerImpl implements SimpleRegistryService {
 
     @Override
-    public WSDLInformations queryWSDLInterfaces(String search, String subProjectId) throws Exception {
+    public ServiceInformations queryWSDLInterfaces(String search, String subProjectId) throws Exception {
 
-        WSDLInformations wsdlInformations = new WSDLInformations();
-        WSDLInformation wsdlInformation1 = new WSDLInformation();
-        WSDLInformation wsdlInformation2 = new WSDLInformation();
-        WSDLInformation wsdlInformation3 = new WSDLInformation();
+        ServiceInformations serviceInformations = new ServiceInformations();
+        ServiceInformation serviceInformation1 = new ServiceInformation();
+        ServiceInformation serviceInformation2 = new ServiceInformation();
+        ServiceInformation serviceInformation3 = new ServiceInformation();
         
-        wsdlInformation1.setSoaName("\"http://www.pureairflowers.com/services/\":TdrService");
-        wsdlInformation1.setProjectID("");
-        wsdlInformation1.setName("TdrService");  
-        wsdlInformation1.setDescription("");            
-        wsdlInformation1.setNuxeoID("61739c9d-6308-4618-a547-769f20c8f51b");
-        wsdlInformation1.setObjectType("InformationService");
-        wsdlInformation1.setWsdlDownloadUrl("http://localhost:8080/nuxeo/nxfile/default/61739c9d-6308-4618-a547-769f20c8f51b/files:files/0/file/WeatherService.wsdl");
-        wsdlInformations.addWsdlInformation(wsdlInformation1);
+        serviceInformation1.setSoaName("\"http://www.pureairflowers.com/services/\":TdrService");
+        serviceInformation1.setProjectID("");
+        serviceInformation1.setName("TdrService");  
+        serviceInformation1.setDescription("");            
+        serviceInformation1.setNuxeoID("61739c9d-6308-4618-a547-769f20c8f51b");
+        serviceInformation1.setObjectType("InformationService");
+        serviceInformation1.setWsdlDownloadUrl("http://localhost:8080/nuxeo/nxfile/default/61739c9d-6308-4618-a547-769f20c8f51b/files:files/0/file/WeatherService.wsdl");
+        serviceInformations.addServiceInformation(serviceInformation1);
         
-        wsdlInformation2.setSoaName("http://www.pureairflowers.com/services/:PureAirFlowersService");
-        wsdlInformation2.setProjectID("");
-        wsdlInformation2.setName("PureAirFlowersService");  
-        wsdlInformation2.setDescription("Pure Air Flowers service description");            
-        wsdlInformation2.setNuxeoID("f20fa784-7ece-4b20-abe0-a28b3c73bb1e");
-        wsdlInformation2.setObjectType("InformationService");        
-        wsdlInformations.addWsdlInformation(wsdlInformation2);
+        serviceInformation2.setSoaName("http://www.pureairflowers.com/services/:PureAirFlowersService");
+        serviceInformation2.setProjectID("");
+        serviceInformation2.setName("PureAirFlowersService");  
+        serviceInformation2.setDescription("Pure Air Flowers service description");            
+        serviceInformation2.setNuxeoID("f20fa784-7ece-4b20-abe0-a28b3c73bb1e");
+        serviceInformation2.setObjectType("InformationService");        
+        serviceInformations.addServiceInformation(serviceInformation2);
 
-        wsdlInformation3.setSoaName("http://www.pureairflowers.com/services/:PureAirFlowersService");
-        wsdlInformation3.setProjectID("");
-        wsdlInformation3.setName("PureAirFlowersService");  
-        wsdlInformation3.setDescription("Pure Air Flowers service description");            
-        wsdlInformation3.setNuxeoID("cc7ac06a-08fe-484f-b1cf-542506b90beb");
-        wsdlInformation3.setObjectType("InformationService");        
-        wsdlInformations.addWsdlInformation(wsdlInformation3);        
+        serviceInformation3.setSoaName("http://www.pureairflowers.com/services/:PureAirFlowersService");
+        serviceInformation3.setProjectID("");
+        serviceInformation3.setName("PureAirFlowersService");  
+        serviceInformation3.setDescription("Pure Air Flowers service description");            
+        serviceInformation3.setNuxeoID("cc7ac06a-08fe-484f-b1cf-542506b90beb");
+        serviceInformation3.setObjectType("InformationService");        
+        serviceInformations.addServiceInformation(serviceInformation3);        
 
-        return wsdlInformations;
+        return serviceInformations;
     }
 
     @Override
-    public WSDLInformations queryEndpoints(String search, String subProjectId) throws Exception {
-        WSDLInformations wsdlInformations = new WSDLInformations();
-        WSDLInformation wsdlInformation1 = new WSDLInformation();
+    public EndpointInformations queryEndpoints(String search, String subProjectId) throws Exception {
+        EndpointInformations endpointInformations = new EndpointInformations();
+        EndpointInformation endpointInformation1 = new EndpointInformation();
 
-        wsdlInformation1.setSoaName("Test:http://localhost:8785/Test");
-        wsdlInformation1.setProjectID("");
-        wsdlInformation1.setName("TestEndpoint");  
-        wsdlInformation1.setDescription("");            
-        wsdlInformation1.setNuxeoID("d634451a-be48-4162-9a91-ad69ac69d25a");
-        wsdlInformation1.setObjectType("Endpoint");
-        wsdlInformation1.setWsdlDownloadUrl("http://localhost:8080/nuxeo/nxfile/default/61739c9d-6308-4618-a547-769f20c8f51b/files:files/0/file/WeatherService.wsdl");
-        wsdlInformation1.setEnvironment("Test");
-        wsdlInformation1.setEndpointUrl("http://localhost:8785/Test");
-        wsdlInformations.addWsdlInformation(wsdlInformation1);        
+        endpointInformation1.setSoaName("Test:http://localhost:8785/Test");
+        endpointInformation1.setProjectID("");
+        endpointInformation1.setName("TestEndpoint");  
+        endpointInformation1.setDescription("");            
+        endpointInformation1.setNuxeoID("d634451a-be48-4162-9a91-ad69ac69d25a");
+        endpointInformation1.setObjectType("Endpoint");
+        endpointInformation1.setWsdlDownloadUrl("http://localhost:8080/nuxeo/nxfile/default/61739c9d-6308-4618-a547-769f20c8f51b/files:files/0/file/WeatherService.wsdl");
+        endpointInformation1.setEnvironment("Test");
+        endpointInformation1.setEndpointUrl("http://localhost:8785/Test");
+        endpointInformations.addEndpointInformation(endpointInformation1);        
 
-        return wsdlInformations;
+        return endpointInformations;
+    }
+
+    @Override
+    public ServiceInformations queryServicesWithEndpoints(String search, String subProjectId) throws Exception {
+
+        ServiceInformations serviceInformations = new ServiceInformations();
+        ServiceInformation serviceInformation1 = new ServiceInformation();
+        ServiceInformation serviceInformation2 = new ServiceInformation();
+        ServiceInformation serviceInformation3 = new ServiceInformation();
+        
+        serviceInformation1.setSoaName("\"http://www.pureairflowers.com/services/\":TdrService");
+        serviceInformation1.setProjectID("");
+        serviceInformation1.setName("TdrService");  
+        serviceInformation1.setDescription("");            
+        serviceInformation1.setNuxeoID("61739c9d-6308-4618-a547-769f20c8f51b");
+        serviceInformation1.setObjectType("InformationService");
+        serviceInformation1.setWsdlDownloadUrl("http://localhost:8080/nuxeo/nxfile/default/61739c9d-6308-4618-a547-769f20c8f51b/files:files/0/file/WeatherService.wsdl");
+        serviceInformations.addServiceInformation(serviceInformation1);
+        
+        serviceInformation2.setSoaName("http://www.pureairflowers.com/services/:PureAirFlowersService");
+        serviceInformation2.setProjectID("");
+        serviceInformation2.setName("PureAirFlowersService");  
+        serviceInformation2.setDescription("Pure Air Flowers service description");            
+        serviceInformation2.setNuxeoID("f20fa784-7ece-4b20-abe0-a28b3c73bb1e");
+        serviceInformation2.setObjectType("InformationService");        
+        serviceInformations.addServiceInformation(serviceInformation2);
+
+        serviceInformation3.setSoaName("http://www.pureairflowers.com/services/:PureAirFlowersService");
+        serviceInformation3.setProjectID("");
+        serviceInformation3.setName("PureAirFlowersService");  
+        serviceInformation3.setDescription("Pure Air Flowers service description");            
+        serviceInformation3.setNuxeoID("cc7ac06a-08fe-484f-b1cf-542506b90beb");
+        serviceInformation3.setObjectType("InformationService");        
+        serviceInformations.addServiceInformation(serviceInformation3);        
+
+        EndpointInformations endpointInformations = new EndpointInformations();
+        EndpointInformation endpointInformation1 = new EndpointInformation();
+
+        endpointInformation1.setSoaName("Test:http://localhost:8785/Test");
+        endpointInformation1.setProjectID("");
+        endpointInformation1.setName("TestEndpoint");  
+        endpointInformation1.setDescription("");            
+        endpointInformation1.setNuxeoID("d634451a-be48-4162-9a91-ad69ac69d25a");
+        endpointInformation1.setObjectType("Endpoint");
+        endpointInformation1.setWsdlDownloadUrl("http://localhost:8080/nuxeo/nxfile/default/61739c9d-6308-4618-a547-769f20c8f51b/files:files/0/file/WeatherService.wsdl");
+        endpointInformation1.setEnvironment("Test");
+        endpointInformation1.setEndpointUrl("http://localhost:8785/Test");
+        endpointInformations.addEndpointInformation(endpointInformation1);        
+        
+        // Associate endpoint with service information 3
+        serviceInformation3.setEndpoints(endpointInformations);
+        
+        return serviceInformations;
     }
 
 }

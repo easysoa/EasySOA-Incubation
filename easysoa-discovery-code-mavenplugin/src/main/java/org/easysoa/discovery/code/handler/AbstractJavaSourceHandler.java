@@ -104,7 +104,8 @@ public abstract class AbstractJavaSourceHandler implements SourcesHandler {
             MavenProject mavenProject = codeDiscovery.getMavenProject();
             for (Object dependencyObject : mavenProject.getDependencyArtifacts()) {
                 Artifact dependency = (Artifact) dependencyObject;
-                if (dependency.getGroupId().contains("easysoa")) { // TODO Configuration
+                if (codeDiscovery.shouldLookupInterfaces(dependency)
+                		&& dependency.getFile() != null) { // happens in pom projects (but should be skipped before)
                     URLClassLoader jarClassloader = new URLClassLoader(
                             new URL[] { dependency.getFile().toURI().toURL() },
                             this.getClass().getClassLoader());

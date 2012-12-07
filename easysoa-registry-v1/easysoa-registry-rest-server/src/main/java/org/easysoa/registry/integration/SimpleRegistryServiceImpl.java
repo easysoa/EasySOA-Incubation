@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-
 import org.easysoa.registry.facets.WsdlInfoFacet;
+import org.easysoa.registry.rest.integration.EndpointInformations;
+import org.easysoa.registry.rest.integration.ServiceInformation;
 import org.easysoa.registry.rest.integration.SimpleRegistryService;
-import org.easysoa.registry.rest.integration.WSDLInformations;
+import org.easysoa.registry.rest.integration.ServiceInformations;
 import org.easysoa.registry.types.SoaNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -36,7 +37,7 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
      * 
      */
     @Override
-    public WSDLInformations queryWSDLInterfaces(String search, String subProjectId) throws Exception {
+    public ServiceInformations queryWSDLInterfaces(String search, String subProjectId) throws Exception {
         
         CoreSession documentManager = SessionFactory.getSession(request);
 
@@ -91,22 +92,18 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
         DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);        
         
         // Write response
-        //WSDLInformation[] wsdlInformations = new WSDLInformation[soaNodeModelList.size()];
-        WSDLInformations wsdlInformations = new WSDLInformations();
-        //int index = 0;
+        ServiceInformations serviceInformations = new ServiceInformations();
         for (DocumentModel soaNodeModel : soaNodeModelList) {
-            //wsdlInformations[index] = SoaNodeInformationToWSDLInformationMapper.mapToWSDLInformation(soaNodeModel, NUXEO_BASE_URL);
-            wsdlInformations.addWsdlInformation(SoaNodeInformationToWSDLInformationMapper.mapToWSDLInformation(soaNodeModel, NUXEO_BASE_URL));
-            //index++;
+            serviceInformations.addServiceInformation(SoaNodeInformationToWSDLInformationMapper.mapToServiceInformation(soaNodeModel, NUXEO_BASE_URL));
         }
-        return wsdlInformations;
+        return serviceInformations;
     }
 
     /**
      * 
      */
     @Override
-    public WSDLInformations queryEndpoints(String search, String subProjectId) throws Exception {
+    public EndpointInformations queryEndpoints(String search, String subProjectId) throws Exception {
 
         CoreSession documentManager = SessionFactory.getSession(request);
 
@@ -137,15 +134,53 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
         DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);        
         
         // Write response
-        //WSDLInformation[] wsdlInformations = new WSDLInformation[soaNodeModelList.size()];
-        WSDLInformations wsdlInformations = new WSDLInformations();
-        //int index = 0;
+        EndpointInformations endpointInformations = new EndpointInformations();
         for (DocumentModel soaNodeModel : soaNodeModelList) {
-            //wsdlInformations[index] = SoaNodeInformationToWSDLInformationMapper.mapToWSDLInformation(soaNodeModel, NUXEO_BASE_URL);
-            wsdlInformations.addWsdlInformation(SoaNodeInformationToWSDLInformationMapper.mapToWSDLInformation(soaNodeModel, NUXEO_BASE_URL));
-            //index++;
+            endpointInformations.addEndpointInformation(SoaNodeInformationToWSDLInformationMapper.mapToEndpointInformation(soaNodeModel, NUXEO_BASE_URL));
         }
-        return wsdlInformations;
+        return endpointInformations;
     }
 
+    @Override
+    public ServiceInformations queryServicesWithEndpoints(String search, String subProjectId) throws Exception {
+        
+        // Get services 
+        ServiceInformations serviceInformations = this.queryWSDLInterfaces(search, subProjectId);
+
+        // For each service, get the corresponding endpoints
+        for(ServiceInformation serviceInformation : serviceInformations.getServiceInformationList()){
+            EndpointInformations endpoints = this.queryServiceEndpoints(serviceInformation.getNuxeoID());
+            serviceInformation.setEndpoints(endpoints);
+        }
+
+        return serviceInformations;
+    }
+    
+    /**
+     * Returns the endpoints associated with the service
+     * @param serviceId The service Nuxeo UUID
+     * @throws Exception If a problem occurs
+     */
+    private EndpointInformations queryServiceEndpoints(String serviceId) throws Exception {
+        CoreSession documentManager = SessionFactory.getSession(request);
+
+        EndpointInformations endpoints = new EndpointInformations();
+        
+        // Fetch SoaNode list
+        ArrayList<String> parameters = new ArrayList<String>(); 
+        StringBuffer query = new StringBuffer(); 
+        query.append("SELECT * FROM Endpoint WHERE impl:linkedInformationService = '?'");
+        parameters.add(serviceId);
+
+        String nxqlQuery = NXQLQueryBuilder.getQuery(query.toString(), parameters.toArray(), false, true);
+        DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);        
+    
+        for (DocumentModel soaNodeModel : soaNodeModelList) {
+            endpoints.addEndpointInformation(SoaNodeInformationToWSDLInformationMapper.mapToEndpointInformation(soaNodeModel, NUXEO_BASE_URL));
+        }        
+    
+        return endpoints;
+        
+    }
+    
 }

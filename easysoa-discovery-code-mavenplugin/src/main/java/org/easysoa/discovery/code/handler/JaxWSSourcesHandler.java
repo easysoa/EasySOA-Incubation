@@ -276,16 +276,13 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
         Map<String, OperationInformation> operations = new HashMap<String, OperationInformation>();
         for (JavaMethod method : c.getMethods()) {
         	String webResultName = null;
-        	
-			if (ParsingUtils.hasAnnotation(method, ANN_WEBRESULT)) {
-                Annotation webResultAnn = ParsingUtils.getAnnotation(method, ANN_WEBRESULT);
-                webResultName = webResultAnn.getProperty("name").toString();
+
+            webResultName = ParsingUtils.getAnnotationPropertyString(method, ANN_WEBMETHOD, "operationName"); // overrides
+            if (webResultName == null) {
+                webResultName = ParsingUtils.getAnnotationPropertyString(method, ANN_WEBRESULT, "name");
             }
-        	if (ParsingUtils.hasAnnotation(method, ANN_WEBMETHOD)) {
-        		Annotation webResultAnn = ParsingUtils.getAnnotation(method, ANN_WEBMETHOD);
-                webResultName = webResultAnn.getProperty("operationName").toString();
-            }
-        	if (webResultName == null && existingOperationsInfo != null) {
+
+			if (webResultName == null && existingOperationsInfo != null) {
         		for (Entry<String, OperationInformation> operation : existingOperationsInfo.entrySet()) {
         			if (operation.getKey().equals(method.getName())) {
         				webResultName = operation.getValue().getName();

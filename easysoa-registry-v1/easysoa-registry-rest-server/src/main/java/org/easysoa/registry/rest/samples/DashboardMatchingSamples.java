@@ -12,9 +12,12 @@ import org.easysoa.registry.rest.marshalling.JsonMessageReader;
 import org.easysoa.registry.rest.marshalling.JsonMessageWriter;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.Component;
+import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.Platform;
+import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.InformationServiceName;
 import org.easysoa.registry.types.ids.ServiceNameType;
 import org.easysoa.registry.types.ids.SoaNodeId;
@@ -53,7 +56,6 @@ public class DashboardMatchingSamples {
     	p.put(Platform.XPATH_LANGUAGE, "Java");
     	p.put(Platform.XPATH_BUILD, "Maven");
     	p.put(Platform.XPATH_SERVICE_LANGUAGE, "JAXRS");
-    	p.put(Platform.XPATH_DELIVERABLE_NATURE, "Maven");
 		SoaNodeId javaPlatformId = new SoaNodeId(Platform.DOCTYPE, "Java Platform");
 		postSoaNode(javaPlatformId, p);
 
@@ -61,6 +63,7 @@ public class DashboardMatchingSamples {
 		SoaNodeId serviceId = null;
 		for (int i = 0; i < 3; i++) {
 			p.put(InformationService.XPATH_TITLE, "Java Service #" + i);
+			p.put(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{namespace}portType" + i);
 			serviceId = new SoaNodeId(InformationService.DOCTYPE, 
 					new InformationServiceName(ServiceNameType.WEB_SERVICE, "namespace", "itf" + i).toString());
 			postSoaNode(serviceId, p);
@@ -68,23 +71,43 @@ public class DashboardMatchingSamples {
 		
 		// Components
 		p.put(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE, (String) getSoaNode(serviceId).getProperty(SoaNode.XPATH_UUID));
-		postSoaNode(new SoaNodeId(Component.DOCTYPE, "Service 1 Component"), p, javaPlatformId);
+		postSoaNode(new SoaNodeId(Component.DOCTYPE, "Service 2 Component"), p, javaPlatformId);
 		
 		// Create service impl that matches an IS
-		// TODO
+        p.put(ServiceImplementation.XPATH_LANGUAGE, "Java");
+        p.put(ServiceImplementation.XPATH_BUILD, "Maven");
+        p.put(ServiceImplementation.XPATH_SERVICE_LANGUAGE, "JAXRS");
+        p.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}portType2");
+        postSoaNode(new SoaNodeId(ServiceImplementation.DOCTYPE, "Java Service Impl 2"), p);
 
-        // Create service impl that doesn't match an IS
-        // TODO
+        // Create service impls that doesn't match an IS
+        p.put(ServiceImplementation.XPATH_LANGUAGE, "Java");
+        p.put(ServiceImplementation.XPATH_BUILD, "Maven");
+        p.put(ServiceImplementation.XPATH_SERVICE_LANGUAGE, "JAXRS");
+        p.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}portType3");
+        postSoaNode(new SoaNodeId(ServiceImplementation.DOCTYPE, "Java Service Impl 3"), p);
+
+        p.put(ServiceImplementation.XPATH_SERVICE_LANGUAGE, "JAXWS");
+        p.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}portTypeJaxWs");
+        p.put(ServiceImplementation.XPATH_WSDL_SERVICE_NAME, "{namespace}serviceJaxWs");
+        postSoaNode(new SoaNodeId(ServiceImplementation.DOCTYPE, "Java Service Impl JAXWS"), p);
 		
         // Create endpoint that matches an impl
-        // TODO
+        p.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, "{namespace}portTypeJaxWs");
+        p.put(Endpoint.XPATH_WSDL_SERVICE_NAME, "{namespace}serviceJaxWs");
+        postSoaNode(new EndpointId("Production", "http://www.endpoint.com/serviceJaxWs"), p);
 
         // Create endpoint that matches no impl but matches an IS (placeholder impl)
-        // TODO
+        p.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, "{namespace}portType0");
+        p.put(Endpoint.XPATH_WSDL_SERVICE_NAME, "{namespace}service0");
+        postSoaNode(new EndpointId("Production", "http://www.endpoint.com/service0"), p);
 
         // Create endpoint that matches nothing
-        // TODO
+        p.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, "{namespace}portType9");
+        p.put(Endpoint.XPATH_WSDL_SERVICE_NAME, "{namespace}service9");
+        postSoaNode(new EndpointId("Production", "http://www.endpoint.com/service9"), p);
 		
+        // TODO Better coverage
 	}
 	
 	public Client createAuthenticatedHTTPClient() {

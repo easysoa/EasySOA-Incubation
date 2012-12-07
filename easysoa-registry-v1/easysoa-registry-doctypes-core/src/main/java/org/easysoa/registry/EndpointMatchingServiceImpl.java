@@ -224,6 +224,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		String portTypeName = (String) endpoint.getPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME);
 		DocumentModel implModel = docService.create(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, portTypeName));
 		implModel.setPropertyValue(ServiceImplementation.XPATH_ISPLACEHOLDER, true);
+        implModel.setPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
 		documentManager.saveDocument(implModel);
 		
 		// Attach placeholder impl to information service

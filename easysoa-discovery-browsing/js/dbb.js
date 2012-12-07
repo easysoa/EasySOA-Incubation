@@ -59,10 +59,10 @@ saveWSDLs = function(data) {
 
 // ================ I/O =================
 
-exports.configure = function(webServer) {
+exports.configure = function(app, webServer) {
 	// Router configuration
-	webServer.get('/dbb/clear', clearWSDLs);
-	webServer.get('/dbb/send', sendWSDL);
+	app.get('/dbb/clear', clearWSDLs);
+	app.get('/dbb/send', sendWSDL);
 
 	// SocketIO init
 	io = socketio.listen(webServer);

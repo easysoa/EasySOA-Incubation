@@ -21,10 +21,10 @@ SCAFFOLDING_SERVER_PARSED_URL = url.parse(settings.SCAFFOLDING_SERVER_URL);
 
 // ================ I/O =================
 
-exports.configure = function(webServer) {
+exports.configure = function(app) {
 	// Router configuration
-	webServer.get('/light/serviceList', serviceList);
-	webServer.get('/scaffoldingProxy', forwardToScaffolder);
+	app.get('/light/serviceList', serviceList);
+	app.get('/scaffoldingProxy', forwardToScaffolder);
 };
 
 forwardToScaffolder = function(request, response, next) {

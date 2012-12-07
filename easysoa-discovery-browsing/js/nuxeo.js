@@ -29,11 +29,11 @@ var ready = false;
 
 //================ I/O =================
 
-exports.configure = function(webServer) {
-	webServer.get('/nuxeo/registry/post*', forwardBookmarkletPosts);
-	webServer.get('/nuxeo/registry*', forwardToNuxeo);
-	webServer.get('/nuxeo/servicefinder*', forwardToNuxeo);
-	webServer.all('/nuxeo/dashboard*', forwardToNuxeo);
+exports.configure = function(app) {
+	app.get('/nuxeo/registry/post*', forwardBookmarkletPosts);
+	app.get('/nuxeo/registry*', forwardToNuxeo);
+	app.get('/nuxeo/servicefinder*', forwardToNuxeo);
+	app.all('/nuxeo/dashboard*', forwardToNuxeo);
 };
 
 forwardToNuxeo = function(request, response, next) {

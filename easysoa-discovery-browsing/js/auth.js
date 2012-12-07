@@ -28,15 +28,15 @@ NO_AUTH_NEEDED_REGEXP = utils.strToRegexp(noAuthNeeded);
 
 //================ I/O =================
 
-exports.configure = function(webServer) {
+exports.configure = function(app) {
 	// Authentication filter
-	webServer.use(authFilter);
+	app.use(authFilter);
 
 	// Router configuration
-	webServer.get('/login', login);
-	webServer.post('/login', login);
-	webServer.get('/logout', logout);
-	webServer.get('/userdata', getUserdata);
+	app.get('/login', login);
+	app.post('/login', login);
+	app.get('/logout', logout);
+	app.get('/userdata', getUserdata);
 };
 
 authFilter = function(request, response, next) {

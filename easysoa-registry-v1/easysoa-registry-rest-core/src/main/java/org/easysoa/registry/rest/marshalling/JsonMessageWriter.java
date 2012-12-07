@@ -17,7 +17,7 @@ import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
 
 @Provider
-@Produces(MediaType.APPLICATION_JSON)
+@Produces({MediaType.APPLICATION_JSON, "application/x-javascript"})
 public class JsonMessageWriter implements MessageBodyWriter<Object> {
 
     private JsonFactory factory;
@@ -29,7 +29,8 @@ public class JsonMessageWriter implements MessageBodyWriter<Object> {
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType) {
-        return MediaType.APPLICATION_JSON_TYPE.isCompatible(mediaType); // && (type.isArray() || type.getPackage().equals("org.easysoa.registry.rest.marshalling"))
+        return MediaType.APPLICATION_JSON_TYPE.isCompatible(mediaType)
+                || "application/x-javascript".equals(mediaType.toString());
     }
 
     @Override

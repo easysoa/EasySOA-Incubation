@@ -1,6 +1,7 @@
 package org.easysoa.registry.rest.samples;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,14 +12,11 @@ import org.easysoa.registry.rest.marshalling.JsonMessageReader;
 import org.easysoa.registry.rest.marshalling.JsonMessageWriter;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.Component;
-import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.Platform;
-import org.easysoa.registry.types.ServiceImplementation;
-import org.easysoa.registry.types.ids.EndpointId;
-import org.easysoa.registry.types.ids.InformationServiceId;
-import org.easysoa.registry.types.ids.ServiceIdentifierType;
-import org.easysoa.registry.types.ids.ServiceImplementationId;
+import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.ids.InformationServiceName;
+import org.easysoa.registry.types.ids.ServiceNameType;
 import org.easysoa.registry.types.ids.SoaNodeId;
 
 import com.sun.jersey.api.client.Client;
@@ -47,65 +45,49 @@ public class DashboardMatchingSamples {
         Client client = createAuthenticatedHTTPClient();
 		registryApi = client.resource(nuxeoUrl).path("nuxeo/site/easysoa/registry");
 	}
-	
+
 	public void run() throws Exception {
+		Map<String, Serializable> p = new HashMap<String, Serializable>(); // will be cleared after each post
+
+		// Platforms
+    	p.put(Platform.XPATH_LANGUAGE, "Java");
+    	p.put(Platform.XPATH_BUILD, "Maven");
+    	p.put(Platform.XPATH_SERVICE_LANGUAGE, "JAXRS");
+    	p.put(Platform.XPATH_DELIVERABLE_NATURE, "Maven");
+		SoaNodeId javaPlatformId = new SoaNodeId(Platform.DOCTYPE, "Java Platform");
+		postSoaNode(javaPlatformId, p);
+
 		// Create information services
-		Map<String, Serializable> properties = new HashMap<String, Serializable>();
-		for (int i = 0; i < 5; i++) {
-			properties.clear();
-			properties.put(InformationService.XPATH_TITLE, "My Information Service " + i);
-			registryApi.type(MediaType.APPLICATION_JSON_TYPE).post(new SoaNodeInformation(new SoaNodeId(InformationService.DOCTYPE, 
-					new InformationServiceId(ServiceIdentifierType.WEB_SERVICE, "namespace", "itf" + i).toString()),
-					properties, null));
-			logger.info("Information service " + i);
+		SoaNodeId serviceId = null;
+		for (int i = 0; i < 3; i++) {
+			p.put(InformationService.XPATH_TITLE, "Java Service #" + i);
+			serviceId = new SoaNodeId(InformationService.DOCTYPE, 
+					new InformationServiceName(ServiceNameType.WEB_SERVICE, "namespace", "itf" + i).toString());
+			postSoaNode(serviceId, p);
 		}
 		
-		// Create platforms
-		properties.clear();
-		properties.put(Platform.XPATH_TITLE, "FraSCAti");
-		properties.put(Platform.XPATH_DELIVERABLE_NATURE, "FraSCAti Studio");
-		new SoaNodeInformation(new SoaNodeId(Platform.DOCTYPE, "FraSCAti"), properties, null);
+		// Components
+		p.put(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE, (String) getSoaNode(serviceId).getProperty(SoaNode.XPATH_UUID));
+		postSoaNode(new SoaNodeId(Component.DOCTYPE, "Service 1 Component"), p, javaPlatformId);
 		
-		properties.clear();
-		properties.put(Platform.XPATH_TITLE, "Java");
-		properties.put(Platform.XPATH_DELIVERABLE_NATURE, "Maven");
-		new SoaNodeInformation(new SoaNodeId(Platform.DOCTYPE, "Java"), properties, null);
+		// Create service impl that matches an IS
+		// TODO
+
+        // Create service impl that doesn't match an IS
+        // TODO
 		
-		// Create service impls
-		for (int i = 3; i < 6; i++) {
-			properties.clear();
-			properties.put(ServiceImplementation.XPATH_TITLE, "My Service Impl " + i);
-			properties.put(ServiceImplementation.XPATH_DELIVERABLE_NATURE, (i < 5) ? "Maven" : "FraSCAti Studio");
-			registryApi.type(MediaType.APPLICATION_JSON_TYPE).post(new SoaNodeInformation(new SoaNodeId(ServiceImplementation.DOCTYPE, 
-					new ServiceImplementationId(ServiceIdentifierType.WEB_SERVICE, "namespace", "itf" + i, "impl" + i).toString()),
-					properties, null)); // The informationService will be set automatically
-			logger.info("Service impl. " + i);
-		}
-		
-		// Create component
-		SoaNodeInformation infoServiceInformation = registryApi.path(InformationService.DOCTYPE)
-			.path(new InformationServiceId(ServiceIdentifierType.WEB_SERVICE, "namespace", "itf0").toString())
-			.type(MediaType.APPLICATION_JSON_TYPE)
-			.get(SoaNodeInformation.class);
-		properties.clear();
-		properties.put(InformationService.XPATH_TITLE, "My component");
-		properties.put(InformationService.XPATH_COMP_LINKED_INFORMATION_SERVICE, infoServiceInformation.getUuid());
-		registryApi.type(MediaType.APPLICATION_JSON_TYPE).post(
-				new SoaNodeInformation(new SoaNodeId(Component.DOCTYPE, "My component"),
-				properties, null));
-		logger.info("My component");
-		
-		// Create Endpoint
-		properties.clear();
-		properties.put(Endpoint.XPATH_TITLE, "My endpoint");
-		registryApi.type(MediaType.APPLICATION_JSON_TYPE).post(
-				new SoaNodeInformation(new EndpointId("Production", "http://www.endpoint.com"),
-				properties, null));
-		logger.info("My endpoint");
+        // Create endpoint that matches an impl
+        // TODO
+
+        // Create endpoint that matches no impl but matches an IS (placeholder impl)
+        // TODO
+
+        // Create endpoint that matches nothing
+        // TODO
 		
 	}
 	
-    private Client createAuthenticatedHTTPClient() {
+	public Client createAuthenticatedHTTPClient() {
         DefaultClientConfig clientConfig = new DefaultClientConfig();
         clientConfig.getSingletons().add(new JsonMessageReader());
         clientConfig.getSingletons().add(new JsonMessageWriter());
@@ -113,6 +95,21 @@ public class DashboardMatchingSamples {
         client.addFilter(new HTTPBasicAuthFilter("Administrator", "Administrator"));
         return client;
     }
+
+	public SoaNodeInformation getSoaNode(SoaNodeId id) {
+		return registryApi.path(id.getType())
+			.path(id.getName())
+			.type(MediaType.APPLICATION_JSON_TYPE)
+			.get(SoaNodeInformation.class);
+	}
+
+	public void postSoaNode(SoaNodeId id, Map<String, Serializable> properties, SoaNodeId... parents) {
+		registryApi
+			.type(MediaType.APPLICATION_JSON_TYPE)
+			.post(new SoaNodeInformation(id, properties, Arrays.asList(parents)));
+		logger.info("> " + id.toString());
+		properties.clear();
+	}
     
 	
 }

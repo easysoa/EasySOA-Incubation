@@ -7,7 +7,7 @@ import org.easysoa.registry.facets.PlatformDataFacet;
 import org.easysoa.registry.facets.RestInfoFacet;
 import org.easysoa.registry.facets.ServiceImplementationDataFacet;
 import org.easysoa.registry.facets.WsdlInfoFacet;
-import org.easysoa.registry.types.ids.ServiceImplementationId;
+import org.easysoa.registry.types.ids.ServiceImplementationName;
 
 
 /**
@@ -23,7 +23,7 @@ public interface ServiceImplementation extends SoaNode, RestInfoFacet, WsdlInfoF
 	
     static final String DOCTYPE = "ServiceImplementation";
     
-    ServiceImplementationId getParsedSoaName() throws Exception;
+    ServiceImplementationName getParsedSoaName() throws Exception;
 
     List<OperationInformation> getOperations() throws Exception;
     

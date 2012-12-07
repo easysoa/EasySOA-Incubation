@@ -11,9 +11,9 @@ import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
-import org.easysoa.registry.types.ids.InformationServiceId;
-import org.easysoa.registry.types.ids.ServiceIdentifierType;
-import org.easysoa.registry.types.ids.ServiceImplementationId;
+import org.easysoa.registry.types.ids.InformationServiceName;
+import org.easysoa.registry.types.ids.ServiceNameType;
+import org.easysoa.registry.types.ids.ServiceImplementationName;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -52,7 +52,7 @@ public class WSDLParsingListener implements EventListener {
         // Extract metadata from soaname
         if (InformationService.DOCTYPE.equals(sourceDocument.getType())) {
         	if (sourceDocument.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME) == null) {
-        		InformationServiceId parsedSoaName = InformationServiceId.fromName(
+        		InformationServiceName parsedSoaName = InformationServiceName.fromName(
         				(String) sourceDocument.getPropertyValue(InformationService.XPATH_SOANAME));
             	if (parsedSoaName != null) {
 	        		String portTypeName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getInterfaceName();
@@ -62,7 +62,7 @@ public class WSDLParsingListener implements EventListener {
         	}
         }
         else if (ServiceImplementation.DOCTYPE.equals(sourceDocument.getType())) {
-        	ServiceImplementationId parsedSoaName = ServiceImplementationId.fromName(
+        	ServiceImplementationName parsedSoaName = ServiceImplementationName.fromName(
     				(String) sourceDocument.getPropertyValue(ServiceImplementation.XPATH_SOANAME));
         	if (parsedSoaName != null) {
 	        	if (sourceDocument.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME) == null) {
@@ -115,7 +115,7 @@ public class WSDLParsingListener implements EventListener {
 						String wsdlVersion = wsdl.getVersion().name();
 						if (InformationService.DOCTYPE.equals(sourceDocument.getType())) {
 							sourceDocument.setPropertyValue(InformationService.XPATH_SOANAME,
-									new InformationServiceId(ServiceIdentifierType.WEB_SERVICE,
+									new InformationServiceName(ServiceNameType.WEB_SERVICE,
 											portTypeName.getNamespaceURI(), portTypeName.getLocalPart()).toString());
 							sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString());
 							sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_SERVICE_NAME, serviceName.toString());

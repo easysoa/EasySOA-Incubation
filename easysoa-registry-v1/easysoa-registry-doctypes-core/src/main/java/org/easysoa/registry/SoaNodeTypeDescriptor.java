@@ -36,7 +36,8 @@ public class SoaNodeTypeDescriptor {
     	if (soaNameFormat != null) {
     		for (String property : idProperties) {
     			if (model.getPropertyValue(property) == null) {
-    				throw new ModelIntegrityException("Can't build SOA name, property " + property + " is missing");
+    				throw new ModelIntegrityException("Can't build SOA name, property " + property + " is not set. " +
+    						"Make sure the required properties of this doctype are initialized during document creation.");
     			}
     		}
 	    	elEvaluator.set("document", model);

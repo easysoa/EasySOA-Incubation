@@ -3,12 +3,17 @@
   
   <extension target="org.easysoa.registry.SoaMetamodelService" point="types">
     <soaNodeType name="TaggingFolder">
+        <subtype>Platform</subtype>
         <subtype>SoftwareComponent</subtype>
         <subtype>InformationService</subtype>
         <subtype>Deliverable</subtype>
         <subtype>ServiceImplementation</subtype>
         <subtype>DeployedDeliverable</subtype>
         <subtype>Endpoint</subtype>
+    </soaNodeType>
+    
+    <soaNodeType name="Platform">
+        <subtype>Component</subtype>
     </soaNodeType>
     
     <soaNodeType name="SoftwareComponent">

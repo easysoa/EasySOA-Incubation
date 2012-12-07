@@ -1,11 +1,11 @@
 package org.easysoa.registry.types.ids;
 
 
-public class ServiceImplementationId {
+public class ServiceImplementationName {
 	
 	private String fullName;
 	
-	private ServiceIdentifierType type;
+	private ServiceNameType type;
 
 	private String namespace;
 
@@ -13,11 +13,11 @@ public class ServiceImplementationId {
 
 	private String implementationName;
 
-	public ServiceImplementationId(ServiceIdentifierType type, String namespace,
+	public ServiceImplementationName(ServiceNameType type, String namespace,
 			String interfaceName, String implementationName) {
 		switch (type) {
-		case WEB_SERVICE: this.fullName = InformationServiceId.WS; break;
-		case JAVA_INTERFACE: this.fullName = InformationServiceId.JAVA; break;
+		case WEB_SERVICE: this.fullName = InformationServiceName.WS; break;
+		case JAVA_INTERFACE: this.fullName = InformationServiceName.JAVA; break;
 		default: this.fullName = "???";
 		}
 		this.fullName += ":" + namespace + ":" + interfaceName + "=" + implementationName;
@@ -27,30 +27,30 @@ public class ServiceImplementationId {
 		this.implementationName = implementationName;
 	}
 	
-	public static ServiceImplementationId fromName(String name) {
+	public static ServiceImplementationName fromName(String name) {
 		String[] splitName = name.split("[:=]");
 		
 		if (splitName.length == 4) {
 			// Namespace
-			ServiceIdentifierType type;
-			if (InformationServiceId.WS.equals(splitName[0])) {
-				type = ServiceIdentifierType.WEB_SERVICE;
+			ServiceNameType type;
+			if (InformationServiceName.WS.equals(splitName[0])) {
+				type = ServiceNameType.WEB_SERVICE;
 			}
-			else if (InformationServiceId.JAVA.equals(splitName[0])) {
-				type = ServiceIdentifierType.JAVA_INTERFACE;
+			else if (InformationServiceName.JAVA.equals(splitName[0])) {
+				type = ServiceNameType.JAVA_INTERFACE;
 			}
 			else {
-				type = ServiceIdentifierType.UNKNOWN;
+				type = ServiceNameType.UNKNOWN;
 			}
 			
-			return new ServiceImplementationId(type, splitName[1], splitName[2], splitName[3]);
+			return new ServiceImplementationName(type, splitName[1], splitName[2], splitName[3]);
 		}
 		else {
 			return null;
 		}
 	}
 	
-	public ServiceIdentifierType getType() {
+	public ServiceNameType getType() {
 		return type;
 	}
 	

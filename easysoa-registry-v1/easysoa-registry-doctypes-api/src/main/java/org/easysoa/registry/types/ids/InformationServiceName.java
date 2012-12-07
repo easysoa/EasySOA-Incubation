@@ -1,7 +1,7 @@
 package org.easysoa.registry.types.ids;
 
 
-public class InformationServiceId {
+public class InformationServiceName {
 
 	protected static final String JAVA = "java";
 	
@@ -9,13 +9,13 @@ public class InformationServiceId {
 
 	private String fullName;
 	
-	private ServiceIdentifierType type;
+	private ServiceNameType type;
 
 	private String namespace;
 
 	private String interfaceName;
 
-	public InformationServiceId(ServiceIdentifierType type, String namespace,
+	public InformationServiceName(ServiceNameType type, String namespace,
 			String interfaceName) {
 		switch (type) {
 		case WEB_SERVICE: this.fullName = WS; break;
@@ -28,30 +28,30 @@ public class InformationServiceId {
 		this.interfaceName = interfaceName;
 	}
 	
-	public static InformationServiceId fromName(String name) {
+	public static InformationServiceName fromName(String name) {
 		String[] splitName = name.split(":");
 		
 		if (splitName.length == 3) {
 			// Namespace
-			ServiceIdentifierType type;
+			ServiceNameType type;
 			if (WS.equals(splitName[0])) {
-				type = ServiceIdentifierType.WEB_SERVICE;
+				type = ServiceNameType.WEB_SERVICE;
 			}
 			else if (JAVA.equals(splitName[0])) {
-				type = ServiceIdentifierType.JAVA_INTERFACE;
+				type = ServiceNameType.JAVA_INTERFACE;
 			}
 			else {
-				type = ServiceIdentifierType.UNKNOWN;
+				type = ServiceNameType.UNKNOWN;
 			}
 			
-			return new InformationServiceId(type, splitName[1], splitName[2]);
+			return new InformationServiceName(type, splitName[1], splitName[2]);
 		}
 		else {
 			return null;
 		}
 	}
 	
-	public ServiceIdentifierType getType() {
+	public ServiceNameType getType() {
 		return type;
 	}
 	

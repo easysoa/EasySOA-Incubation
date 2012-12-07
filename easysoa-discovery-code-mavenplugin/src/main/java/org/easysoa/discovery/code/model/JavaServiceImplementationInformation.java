@@ -5,8 +5,8 @@ import javax.xml.namespace.QName;
 import org.easysoa.registry.rest.client.types.ServiceImplementationInformation;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.Deliverable;
-import org.easysoa.registry.types.ids.ServiceIdentifierType;
-import org.easysoa.registry.types.ids.ServiceImplementationId;
+import org.easysoa.registry.types.ids.ServiceNameType;
+import org.easysoa.registry.types.ids.ServiceImplementationName;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
 
@@ -15,7 +15,7 @@ public class JavaServiceImplementationInformation extends ServiceImplementationI
 
     public JavaServiceImplementationInformation(SoaNodeId deliverable, String implementationClass,
             String implementedInterface, String implementedInterfaceLocation) {
-        this(new ServiceImplementationId(ServiceIdentifierType.JAVA_INTERFACE,
+        this(new ServiceImplementationName(ServiceNameType.JAVA_INTERFACE,
         		deliverable.getName(), implementedInterface, implementationClass).toString());
         this.properties.put(XPATH_IMPLEMENTATIONCLASS, implementationClass);
         this.properties.put(XPATH_IMPLEMENTEDINTERFACE, implementedInterface);
@@ -23,7 +23,7 @@ public class JavaServiceImplementationInformation extends ServiceImplementationI
     }
     
     public JavaServiceImplementationInformation(String namespace, String name, String servicename) {
-    	this(new ServiceImplementationId(ServiceIdentifierType.WEB_SERVICE, namespace, name, servicename).toString());
+    	this(new ServiceImplementationName(ServiceNameType.WEB_SERVICE, namespace, name, servicename).toString());
         this.properties.put(XPATH_WSDL_PORTTYPE_NAME, new QName(namespace, name).toString());
         this.properties.put(XPATH_WSDL_SERVICE_NAME, new QName(namespace, servicename).toString());
     }

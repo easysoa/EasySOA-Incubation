@@ -39,6 +39,7 @@
     </facet>
     <doctype extends="SoaNode" name="Platform">
       <facet name="PlatformData" />
+      <facet name="Folderish" />
     </doctype>
     
     <facet name="WsdlInfo" >

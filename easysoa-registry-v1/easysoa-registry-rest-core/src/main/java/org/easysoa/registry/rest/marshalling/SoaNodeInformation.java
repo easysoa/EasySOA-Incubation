@@ -3,7 +3,6 @@ package org.easysoa.registry.rest.marshalling;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,7 +34,7 @@ public class SoaNodeInformation implements SoaNode {
         this.id = id;
         this.properties = (properties == null) ? new HashMap<String, Serializable>() : properties;
         this.properties.putAll(id.getDefaultPropertyValues());
-        this.parentDocuments = (parentDocuments == null) ? new LinkedList<SoaNodeId>() : parentDocuments;
+        this.parentDocuments = (parentDocuments == null) ? new ArrayList<SoaNodeId>() : parentDocuments;
     }
 
     @Override

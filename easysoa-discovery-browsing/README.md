@@ -1,3 +1,7 @@
+# Documentation
+
+See [Discovery by browsing maintenance](https://github.com/easysoa/EasySOA-Incubation/wiki/Discovery-by-browsing-maintenance)
+
 # About this web server
 
 This web server contains various web components used by EasySOA. The server is run using [node.js][2] and the [Connect][2] framework. EasySOA contents are under the `www` folder:

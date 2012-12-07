@@ -4,14 +4,15 @@
 package org.easysoa.registry.integration;
 
 import java.util.HashMap;
-
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.facets.WsdlInfoFacet;
 import org.easysoa.registry.rest.AbstractRestApiTest;
-import org.easysoa.registry.rest.integration.WSDLInformation;
-import org.easysoa.registry.rest.integration.WSDLInformations;
+import org.easysoa.registry.rest.integration.EndpointInformation;
+import org.easysoa.registry.rest.integration.EndpointInformations;
+import org.easysoa.registry.rest.integration.ServiceInformation;
+import org.easysoa.registry.rest.integration.ServiceInformations;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.ids.EndpointId;
@@ -23,7 +24,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
-
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -75,11 +75,6 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         // Fill repository for all tests
         if(!initDone){
             // Add information service
-            /*for (int i = 0; i < SERVICE_COUNT; i++) {
-                discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE,
-                        "MyService" + i), null, null);
-            }*/
-    
             HashMap<String, Object> isProperties = new HashMap<String, Object>();
             
             discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_TEST_WITHOUT_POPRTTYPE_ID, isProperties, null);
@@ -102,15 +97,17 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
             /*StringBlob blob = new StringBlob("test blob content");
             blob.setFilename("testFile.wsdl");
             infoService.setPropertyValue("file", blob);*/
-            documentManager.saveDocument(infoService);
+            infoService = documentManager.saveDocument(infoService);
             
             // Add endpoint
             isProperties = new HashMap<String, Object>();
             isProperties.put("dc:title", "ns:endpointTest");
+            // Associate endpoint with information service
+            isProperties.put("impl:linkedInformationService", infoService.getId());
             discoveryService.runDiscovery(documentManager, ENDPOINT_TEST, isProperties, null);
             
             documentManager.save();
-            initDone = true;            
+            initDone = true;
         }
     }
     
@@ -124,34 +121,34 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         // Run first test request
         Client client = createAuthenticatedHTTPClient();
         WebResource discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryWSDLInterfaces").queryParam("search", "test").queryParam("subProjectId", "test");
-        WSDLInformations wsdlInformations = discoveryRequest.get(WSDLInformations.class);
+        ServiceInformations serviceInformations = discoveryRequest.get(ServiceInformations.class);
         // Check a result is returned
-        Assert.assertNotNull(wsdlInformations);
+        Assert.assertNotNull(serviceInformations);
 
         // Check result
-        WSDLInformation firstWSDLInformation = wsdlInformations.getWsdlInformationList().get(0);
-        Assert.assertEquals("ns:testWithoutWsdl", firstWSDLInformation.getSoaName());
+        ServiceInformation firstServiceInformation = serviceInformations.getServiceInformationList().get(0);
+        Assert.assertEquals("ns:testWithoutWsdl", firstServiceInformation.getSoaName());
        
-        WSDLInformation secondWSDLInformation = wsdlInformations.getWsdlInformationList().get(1);
-        Assert.assertEquals("ns:test", secondWSDLInformation.getSoaName());
+        ServiceInformation secondServiceInformation = serviceInformations.getServiceInformationList().get(1);
+        Assert.assertEquals("ns:test", secondServiceInformation.getSoaName());
 
         // Run second test request
         discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryWSDLInterfaces").queryParam("search", "another");
-        wsdlInformations = discoveryRequest.get(WSDLInformations.class);
+        serviceInformations = discoveryRequest.get(ServiceInformations.class);
         // Check a result is returned
-        Assert.assertNotNull(wsdlInformations);        
+        Assert.assertNotNull(serviceInformations);        
 
         // Check result
-        firstWSDLInformation = wsdlInformations.getWsdlInformationList().get(0);
-        Assert.assertEquals("anotherName", firstWSDLInformation.getSoaName());
-        Assert.assertEquals("anotherDescription", firstWSDLInformation.getDescription());
+        firstServiceInformation = serviceInformations.getServiceInformationList().get(0);
+        Assert.assertEquals("anotherName", firstServiceInformation.getSoaName());
+        Assert.assertEquals("anotherDescription", firstServiceInformation.getDescription());
         
         // Run third test request
         discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryWSDLInterfaces");
-        wsdlInformations = discoveryRequest.get(WSDLInformations.class);
+        serviceInformations = discoveryRequest.get(ServiceInformations.class);
         
-        Assert.assertNotNull(wsdlInformations);
-        Assert.assertEquals(3, wsdlInformations.getWsdlInformationList().size()); // 3 Informations services should be returned
+        Assert.assertNotNull(serviceInformations);
+        Assert.assertEquals(3, serviceInformations.getServiceInformationList().size()); // 3 Informations services should be returned
     }
     
     /**
@@ -164,14 +161,35 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         // Run request
         Client client = createAuthenticatedHTTPClient();
         WebResource discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryEndpoints");
-        WSDLInformations wsdlInformations = discoveryRequest.get(WSDLInformations.class);
+        EndpointInformations endpointInformations = discoveryRequest.get(EndpointInformations.class);
         
-        Assert.assertNotNull(wsdlInformations);
+        Assert.assertNotNull(endpointInformations);
 
-        WSDLInformation firstWSDLInformation = wsdlInformations.getWsdlInformationList().get(0);
-        Assert.assertEquals("ns:endpointTest", firstWSDLInformation.getName());
-        Assert.assertEquals("Test", firstWSDLInformation.getEnvironment());
-        Assert.assertEquals("http://localhost:8659/Test", firstWSDLInformation.getEndpointUrl());
-    }    
+        EndpointInformation firstEndpointInformation = endpointInformations.getEndpointInformationList().get(0);
+        Assert.assertEquals("ns:endpointTest", firstEndpointInformation.getName());
+        Assert.assertEquals("Test", firstEndpointInformation.getEnvironment());
+        Assert.assertEquals("http://localhost:8659/Test", firstEndpointInformation.getEndpointUrl());
+    }
+    
+    @Test
+    public void queryServicesWithEndpointTest(){
+        logTestName(logger);
+        
+        // Run request
+        Client client = createAuthenticatedHTTPClient();
+        WebResource discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryServicesWithEndpoints");
+        ServiceInformations serviceInformations = discoveryRequest.get(ServiceInformations.class);
+        
+        Assert.assertNotNull(serviceInformations);
+        
+        ServiceInformation firstServiceInformation = serviceInformations.getServiceInformationList().get(2);
+        Assert.assertEquals("anotherTitle", firstServiceInformation.getName());
+       
+        EndpointInformations endpointInformations = firstServiceInformation.getEndpoints();
+        Assert.assertNotNull(endpointInformations);
+        EndpointInformation firstEndpointInformation = endpointInformations.getEndpointInformationList().get(0);
+        Assert.assertEquals("ns:endpointTest", firstEndpointInformation.getName());
+        
+    }
     
 }

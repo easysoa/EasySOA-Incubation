@@ -6,10 +6,12 @@ package org.easysoa.registry.integration;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
-import org.easysoa.registry.rest.integration.WSDLInformations;
+import org.easysoa.registry.rest.integration.EndpointInformation;
+import org.easysoa.registry.rest.integration.EndpointInformations;
+import org.easysoa.registry.rest.integration.ServiceInformation;
+import org.easysoa.registry.rest.integration.ServiceInformations;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.objectweb.fractal.api.Component;
 import org.ow2.frascati.FraSCAti;
@@ -21,7 +23,7 @@ import org.testng.Assert;
  * @author jguillemotte
  * 
  */
-@Ignore // until Juliac is fixed
+//@Ignore // until Juliac is fixed
 public class SimpleRegistryServiceFraSCAtiTest {
 
     /**
@@ -45,17 +47,31 @@ public class SimpleRegistryServiceFraSCAtiTest {
     @Test
     public void restQueryWSDLInformationsService() throws Exception {
         TestClientItf testClient = frascati.getService(componentList.get(0), "simpleRegistryServiceTestClient", TestClientItf.class);
-        WSDLInformations result = testClient.testQueryWSDLInterfaces(null, null);
+        ServiceInformations result = testClient.testQueryWSDLInterfaces(null, null);
         Assert.assertNotNull(result);
-        Assert.assertEquals(3,result.getWsdlInformationList().size());
+        Assert.assertEquals(3,result.getServiceInformationList().size());
     }
 
     @Test
     public void restQueryEndpointsService() throws Exception {
         TestClientItf testClient =  frascati.getService(componentList.get(0), "simpleRegistryServiceTestClient", TestClientItf.class);
-        WSDLInformations result = testClient.testQueryEndpoints(null, null);
+        EndpointInformations result = testClient.testQueryEndpoints(null, null);
         Assert.assertNotNull(result);
     }    
+    
+    @Test
+    public void restQueryServicesWithEndpointsService() throws Exception {
+        TestClientItf testClient =  frascati.getService(componentList.get(0), "simpleRegistryServiceTestClient", TestClientItf.class);
+        ServiceInformations result = testClient.testQueryServicesWithEndpoints(null, null);
+        Assert.assertNotNull(result);
+        ServiceInformation service = result.getServiceInformationList().get(2);
+        Assert.assertNotNull(service);
+        Assert.assertEquals("PureAirFlowersService", service.getName());
+        EndpointInformations endpoints = service.getEndpoints();
+        Assert.assertNotNull(endpoints);
+        EndpointInformation endpoint = endpoints.getEndpointInformationList().get(0);
+        Assert.assertEquals("TestEndpoint", endpoint.getName());
+    }
     
     @AfterClass
     public static void endTest() throws FrascatiException {

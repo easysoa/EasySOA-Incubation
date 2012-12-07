@@ -17,7 +17,8 @@ import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.easysoa.registry.rest.integration.WSDLInformations;
+import org.easysoa.registry.rest.integration.EndpointInformations;
+import org.easysoa.registry.rest.integration.ServiceInformations;
 
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
@@ -47,8 +48,11 @@ public class JsonMessageReader implements MessageBodyReader<Object> {
             else if (jsonNode.has("result")) {
                 return mapper.readValue(jsonNode, OperationResult.class);
             }
-            else if(jsonNode.has("wsdlInformations")) {
-                return mapper.readValue(jsonNode, WSDLInformations.class);
+            else if(jsonNode.has("serviceInformations")) {
+                return mapper.readValue(jsonNode, ServiceInformations.class);
+            }
+            else if(jsonNode.has("endpointInformations")) {
+                return mapper.readValue(jsonNode, EndpointInformations.class);
             }
             else {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();

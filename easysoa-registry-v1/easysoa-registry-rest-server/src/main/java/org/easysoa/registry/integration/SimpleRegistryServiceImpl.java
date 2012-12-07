@@ -169,7 +169,7 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
         // Fetch SoaNode list
         ArrayList<String> parameters = new ArrayList<String>(); 
         StringBuffer query = new StringBuffer(); 
-        query.append("SELECT * FROM Endpoint WHERE impl:linkedInformationService = '?'");
+        query.append("SELECT * FROM Endpoint WHERE impl:providedInformationService = '?'");
         parameters.add(serviceId);
 
         String nxqlQuery = NXQLQueryBuilder.getQuery(query.toString(), parameters.toArray(), false, true);

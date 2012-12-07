@@ -103,7 +103,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
             isProperties = new HashMap<String, Object>();
             isProperties.put("dc:title", "ns:endpointTest");
             // Associate endpoint with information service
-            isProperties.put("impl:linkedInformationService", infoService.getId());
+            isProperties.put("impl:providedInformationService", infoService.getId());
             discoveryService.runDiscovery(documentManager, ENDPOINT_TEST, isProperties, null);
             
             documentManager.save();

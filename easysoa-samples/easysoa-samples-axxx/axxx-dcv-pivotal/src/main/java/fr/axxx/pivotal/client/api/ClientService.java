@@ -95,13 +95,14 @@ public interface ClientService {
 
     /**
      * 
-     * @param identifiantClient
+     * @param id InformationAPV id
+     * @param identifiantClient Client id
      * @param bilanLibelle
      * @param nombre
      * @param bilanAnnee
      * @return
      */
-    InformationAPV createInformationApv(String identifiantClient, String bilanLibelle, Integer nombre, Integer bilanAnnee);
+    InformationAPV createOrUpdateInformationApv(Long id, String identifiantClient, String bilanLibelle, Integer nombre, Integer bilanAnnee);
 
     /**
      * 
@@ -117,7 +118,7 @@ public interface ClientService {
      * @param pays
      * @return
      */
-    ContactClient createContactClient(String identifiantClient, String nomContact, String prenomContact, String fonctionContact, String telephone, String email, String numEtVoie, String codePostal,
+    ContactClient createOrUpdateContactClient(Long id, String identifiantClient, String nomContact, String prenomContact, String fonctionContact, String telephone, String email, String numEtVoie, String codePostal,
             String ville, String pays);
 
     /**

@@ -30,27 +30,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ContactClient }
-     * 
-     */
-    public ContactClient createContactClient() {
-        return new ContactClient();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfTypeStructureCount }
-     * 
-     */
-    public ArrayOfTypeStructureCount createArrayOfTypeStructureCount() {
-        return new ArrayOfTypeStructureCount();
-    }
-
-    /**
      * Create an instance of {@link TypeStructureCount }
      * 
      */
     public TypeStructureCount createTypeStructureCount() {
         return new TypeStructureCount();
+    }
+
+    /**
+     * Create an instance of {@link InformationAPV }
+     * 
+     */
+    public InformationAPV createInformationAPV() {
+        return new InformationAPV();
     }
 
     /**
@@ -78,35 +70,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link GetClient }
+     * Create an instance of {@link ArrayOfTypeStructureCount }
      * 
      */
-    public GetClient createGetClient() {
-        return new GetClient();
+    public ArrayOfTypeStructureCount createArrayOfTypeStructureCount() {
+        return new ArrayOfTypeStructureCount();
     }
 
     /**
-     * Create an instance of {@link ContactClientResponse }
+     * Create an instance of {@link ContactClient }
      * 
      */
-    public ContactClientResponse createContactClientResponse() {
-        return new ContactClientResponse();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfString }
-     * 
-     */
-    public ArrayOfString createArrayOfString() {
-        return new ArrayOfString();
-    }
-
-    /**
-     * Create an instance of {@link InformationAPV }
-     * 
-     */
-    public InformationAPV createInformationAPV() {
-        return new InformationAPV();
+    public ContactClient createContactClient() {
+        return new ContactClient();
     }
 
     /**
@@ -118,11 +94,35 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link GetClient }
+     * 
+     */
+    public GetClient createGetClient() {
+        return new GetClient();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfString }
+     * 
+     */
+    public ArrayOfString createArrayOfString() {
+        return new ArrayOfString();
+    }
+
+    /**
      * Create an instance of {@link InformationAPVResponse }
      * 
      */
     public InformationAPVResponse createInformationAPVResponse() {
         return new InformationAPVResponse();
+    }
+
+    /**
+     * Create an instance of {@link ContactClientResponse }
+     * 
+     */
+    public ContactClientResponse createContactClientResponse() {
+        return new ContactClientResponse();
     }
 
 }

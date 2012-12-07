@@ -89,6 +89,9 @@ public class ClientServiceImpl implements ClientService {
         Client client = null;
         try{
             client = this.getClient(identifiantClient);
+            if(client == null){
+                throw new Exception("Unable to find client with the following identifiant : " + identifiantClient);
+            }
             client.setRaisonSociale(raisonSociale);
             client.setSIREN(siren);
             client.setEmail(email);
@@ -152,8 +155,8 @@ public class ClientServiceImpl implements ClientService {
         try {
             Query query = this.database.get().createQuery("SELECT c FROM Client c WHERE c.identifiantClient = :identifiantClient");
             query.setParameter("identifiantClient", identifiantClient);
-            List<Client> clients = (List<Client>) query.getResultList();
-            return clients.get(0);
+            Client client = (Client) query.getSingleResult();
+            return client;
         }
         catch(Exception ex){
             LOG.log(Level.SEVERE, "Error trying to get client : " + ex.getMessage(), ex);
@@ -295,7 +298,60 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public InformationAPV createInformationApv(String identifiantClient, String bilanLibelle, Integer nombre, Integer bilanAnnee) {
+    public InformationAPV createOrUpdateInformationApv(Long id, String identifiantClient, String bilanLibelle, Integer nombre, Integer bilanAnnee) {
+        EntityManager entityManager = database.get();
+        InformationAPV informationAPV = null;
+        if(id != null){
+            informationAPV = this.getInformationAPV(id);
+        }
+        if(informationAPV == null){
+            informationAPV = new InformationAPV();
+        }
+        // Fill informationAPV
+        try{
+            informationAPV.setIdentifiantClient(identifiantClient);
+            informationAPV.setBilanLibelle(bilanLibelle);
+            informationAPV.setNombre(nombre);
+            informationAPV.setBilanAnnee(bilanAnnee);
+            entityManager.getTransaction().begin();
+            entityManager.persist(informationAPV);
+            entityManager.getTransaction().commit();
+        } catch (Exception ex) {
+            entityManager.getTransaction().rollback();
+            LOG.log(Level.SEVERE, "Error trying to create client: " + ex.getMessage(), ex);
+            return null;
+        }
+        return informationAPV; 
+    }
+
+    /**
+     * Get the InformationAPV with corresponding id
+     * @param id
+     * @return The informationAPV or null
+     */
+    public InformationAPV getInformationAPV(Long id){
+        try {
+            Query query = this.database.get().createQuery("SELECT i FROM InformationAPV i WHERE i.id = :id");
+            query.setParameter("id", id);
+            InformationAPV informationAPV = (InformationAPV) query.getSingleResult();
+            return informationAPV;
+        }
+        catch(Exception ex){
+            LOG.log(Level.SEVERE, "Error trying to get information APV with id : " + ex.getMessage(), ex);
+            return null;
+        }        
+    }
+    
+    /**
+     * Create an InformationAPV in database
+     * @param identifiantClient
+     * @param bilanLibelle
+     * @param nombre
+     * @param bilanAnnee
+     * @return
+     */
+    private InformationAPV createInformationAPV(String identifiantClient, String bilanLibelle, Integer nombre, Integer bilanAnnee){
+        // Create new Information APV
         EntityManager entityManager = database.get();
         InformationAPV informationAPV = null;
         try{
@@ -312,16 +368,23 @@ public class ClientServiceImpl implements ClientService {
             LOG.log(Level.SEVERE, "Error trying to create client: " + ex.getMessage(), ex);
             return null;
         }
-        return informationAPV;
+        return informationAPV;        
     }
-
+    
     @Override
-    public ContactClient createContactClient(String identifiantClient, String nomContact, String prenomContact, String fonctionContact, String telephone, String email, String numEtVoie,
+    public ContactClient createOrUpdateContactClient(Long id, String identifiantClient, String nomContact, String prenomContact, String fonctionContact, String telephone, String email, String numEtVoie,
             String codePostal, String ville, String pays) {
         EntityManager entityManager = database.get();
         ContactClient contactClient = null;
-        try{
+        if(id != null){
+            // Get contact client to update
+            contactClient = this.getContactCLient(id); 
+        }
+        if(contactClient == null){
+            // Create new contact client
             contactClient = new ContactClient();
+        }
+        try{
             contactClient.setIdentifiantClient(identifiantClient);
             contactClient.setNomContact(nomContact);
             contactClient.setPrenomContact(prenomContact);
@@ -343,6 +406,24 @@ public class ClientServiceImpl implements ClientService {
         return contactClient;
     }
 
+    /**
+     * Get the InformationAPV with corresponding id
+     * @param id
+     * @return The informationAPV or null
+     */
+    public ContactClient getContactCLient(Long id){
+        try {
+            Query query = this.database.get().createQuery("SELECT c FROM ContactClient c WHERE c.id = :id");
+            query.setParameter("id", id);
+            ContactClient contactClient = (ContactClient) query.getSingleResult();
+            return contactClient;
+        }
+        catch(Exception ex){
+            LOG.log(Level.SEVERE, "Error trying to get contact client with id : " + ex.getMessage(), ex);
+            return null;
+        }        
+    }    
+    
     @Override
     @SuppressWarnings("unchecked")
     public Map<String, Long> getRepartitionTypeStructure() {

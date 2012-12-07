@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project activeEnvironment="Default" name="ContactSvcServiceTest" resourceRoot="" soapui-version="4.5.1" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="ContactSvcSoapServiceSoapBinding" type="wsdl" bindingName="{http://pivotal.axxx.fr/}ContactSvcSoapServiceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:18001/WS/ContactSvc.asmx?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:18001/WS/ContactSvc.asmx?wsdl"><con:part><con:url>http://localhost:18001/WS/ContactSvc.asmx?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="ContactSvcSoapService" targetNamespace="http://pivotal.axxx.fr/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://pivotal.axxx.fr/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+    <xs:schema elementFormDefault="qualified" targetNamespace="http://pivotal.axxx.fr/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="Client">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="Identifiant_Client" type="xs:string"/>
+            <xs:element minOccurs="0" name="Raison_Sociale" type="xs:string"/>
+            <xs:element minOccurs="0" name="Anciennete" type="xs:int"/>
+            <xs:element minOccurs="0" name="Type_Structure" type="xs:string"/>
+            <xs:element minOccurs="0" name="Num_et_voie" type="xs:string"/>
+            <xs:element minOccurs="0" name="Email" type="xs:string"/>
+            <xs:element minOccurs="0" name="Code_Postal" type="xs:string"/>
+            <xs:element minOccurs="0" name="Ville" type="xs:string"/>
+            <xs:element minOccurs="0" name="Pays" type="xs:string"/>
+            <xs:element minOccurs="0" name="Tel" type="xs:string"/>
+            <xs:element minOccurs="0" name="RIB" type="xs:string"/>
+            <xs:element minOccurs="0" name="Forme_Juridique" type="xs:string"/>
+            <xs:element minOccurs="0" name="SIREN" type="xs:string"/>
+            <xs:element minOccurs="0" name="Dot_Glob_APV_N" type="xs:decimal"/>
+            <xs:element minOccurs="0" name="Dont_Reliquat_N_1" type="xs:decimal"/>
+            <xs:element minOccurs="0" name="Dont_Dot_N" type="xs:decimal"/>
+            <xs:element minOccurs="0" name="Nb_Benef_Prev_N" type="xs:decimal"/>
+            <xs:element minOccurs="0" name="Montant_Utilise_N" type="xs:decimal"/>
+            <xs:element minOccurs="0" name="Nb_Benef_N" type="xs:decimal"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="ClientResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="ClientResult" type="tns:ArrayOfString"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Contact_Client">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="Id" type="xs:long"/>
+            <xs:element minOccurs="0" name="Identifiant_Client" type="xs:string"/>
+            <xs:element minOccurs="0" name="Nom_Contact" type="xs:string"/>
+            <xs:element minOccurs="0" name="Prenom_Contact" type="xs:string"/>
+            <xs:element minOccurs="0" name="Fonction_Contact" type="xs:string"/>
+            <xs:element minOccurs="0" name="Telephone" type="xs:string"/>
+            <xs:element minOccurs="0" name="Email" type="xs:string"/>
+            <xs:element minOccurs="0" name="Num_et_voie" type="xs:string"/>
+            <xs:element minOccurs="0" name="Code_postal" type="xs:string"/>
+            <xs:element minOccurs="0" name="Ville" type="xs:string"/>
+            <xs:element minOccurs="0" name="Pays" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Contact_ClientResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="Contact_ClientResult" type="tns:ArrayOfString"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Information_APV">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="Id" type="xs:long"/>
+            <xs:element minOccurs="0" name="Identifiant_Client" type="xs:string"/>
+            <xs:element minOccurs="0" name="Bilan_Libelle" type="xs:string"/>
+            <xs:element minOccurs="0" name="Nombre" type="xs:int"/>
+            <xs:element minOccurs="0" name="Bilan_Annee" type="xs:int"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Information_APVResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="Information_APVResult" type="tns:ArrayOfString"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getClient">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="Identifiant_Client" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getClientResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="Information_APVResult" type="tns:ArrayOfString"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getRepartitionTypeStructureResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element minOccurs="0" name="getClientResult" type="tns:ArrayOfTypeStructureCount"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:complexType name="ArrayOfTypeStructureCount">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="typeStructureCount" nillable="true" type="tns:TypeStructureCount"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="TypeStructureCount">
+        <xs:sequence>
+          <xs:element name="typeStructure" type="xs:string"/>
+          <xs:element name="clientCount" type="xs:long"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ArrayOfString">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" minOccurs="0" name="string" nillable="true" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="Contact_Client">
+    <wsdl:part element="tns:Contact_Client" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getRepartitionTypeStructure"></wsdl:message>
+  <wsdl:message name="Information_APVResponse">
+    <wsdl:part element="tns:Information_APVResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ClientResponse">
+    <wsdl:part element="tns:ClientResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getClientResponse">
+    <wsdl:part element="tns:getClientResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getClient">
+    <wsdl:part element="tns:getClient" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="Contact_ClientResponse">
+    <wsdl:part element="tns:Contact_ClientResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="Information_APV">
+    <wsdl:part element="tns:Information_APV" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getRepartitionTypeStructureResponse">
+    <wsdl:part element="tns:getRepartitionTypeStructureResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="Client">
+    <wsdl:part element="tns:Client" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ContactSvcSoap">
+    <wsdl:operation name="getRepartitionTypeStructure">
+      <wsdl:input message="tns:getRepartitionTypeStructure" name="getRepartitionTypeStructure"></wsdl:input>
+      <wsdl:output message="tns:getRepartitionTypeStructureResponse" name="getRepartitionTypeStructureResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Client">
+      <wsdl:input message="tns:Client" name="Client"></wsdl:input>
+      <wsdl:output message="tns:ClientResponse" name="ClientResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Information_APV">
+      <wsdl:input message="tns:Information_APV" name="Information_APV"></wsdl:input>
+      <wsdl:output message="tns:Information_APVResponse" name="Information_APVResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getClient">
+      <wsdl:input message="tns:getClient" name="getClient"></wsdl:input>
+      <wsdl:output message="tns:getClientResponse" name="getClientResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Contact_Client">
+      <wsdl:input message="tns:Contact_Client" name="Contact_Client"></wsdl:input>
+      <wsdl:output message="tns:Contact_ClientResponse" name="Contact_ClientResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ContactSvcSoapServiceSoapBinding" type="tns:ContactSvcSoap">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="Client">
+      <soap:operation soapAction="http://pivotal.axxx.fr/Client" style="document"/>
+      <wsdl:input name="Client">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="ClientResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getRepartitionTypeStructure">
+      <soap:operation soapAction="http://pivotal.axxx.fr/getRepartitionTypeStructure" style="document"/>
+      <wsdl:input name="getRepartitionTypeStructure">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getRepartitionTypeStructureResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Information_APV">
+      <soap:operation soapAction="http://pivotal.axxx.fr/Information_APV" style="document"/>
+      <wsdl:input name="Information_APV">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="Information_APVResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="Contact_Client">
+      <soap:operation soapAction="http://pivotal.axxx.fr/Contact_Client" style="document"/>
+      <wsdl:input name="Contact_Client">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="Contact_ClientResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="getClient">
+      <soap:operation soapAction="http://pivotal.axxx.fr/getClient" style="document"/>
+      <wsdl:input name="getClient">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getClientResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ContactSvcSoapService">
+    <wsdl:port binding="tns:ContactSvcSoapServiceSoapBinding" name="ContactSvcSoapPort">
+      <soap:address location="http://localhost:18001/WS/ContactSvc.asmx"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:18001/WS/ContactSvc.asmx</con:endpoint></con:endpoints><con:operation isOneWay="false" action="http://pivotal.axxx.fr/Client" name="Client" bindingOperationName="Client" type="Request-Response" outputName="ClientResponse" inputName="Client" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="UpdateClientRequest"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:18001/WS/ContactSvc.asmx</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:piv="http://pivotal.axxx.fr/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <piv:Client>
+         <!--Optional:-->
+         <piv:Identifiant_Client>AssociationVacances</piv:Identifiant_Client>
+         <!--Optional:-->
+         <piv:Raison_Sociale>Association Vacances Familles</piv:Raison_Sociale>
+         <!--Optional:-->
+         <piv:Anciennete>1</piv:Anciennete>
+         <!--Optional:-->
+         <piv:Type_Structure>Mission locale</piv:Type_Structure>
+         <!--Optional:-->
+         <piv:Num_et_voie>4 PLACE DE NAVARRE</piv:Num_et_voie>
+         <!--Optional:-->
+         <piv:Email>contact@avr.org</piv:Email>
+         <!--Optional:-->
+         <piv:Code_Postal>95200</piv:Code_Postal>
+         <!--Optional:-->
+         <piv:Ville>SARCELLES</piv:Ville>
+         <!--Optional:-->
+         <piv:Pays>FR</piv:Pays>
+         <!--Optional:-->
+         <piv:Tel>0075985214</piv:Tel>
+         <!--Optional:-->
+         <piv:RIB>12365896</piv:RIB>
+         <!--Optional:-->
+         <piv:Forme_Juridique></piv:Forme_Juridique>
+         <!--Optional:-->
+         <piv:SIREN>5582696654</piv:SIREN>
+         <!--Optional:-->
+         <piv:Dot_Glob_APV_N>0</piv:Dot_Glob_APV_N>
+         <!--Optional:-->
+         <piv:Dont_Reliquat_N_1>0</piv:Dont_Reliquat_N_1>
+         <!--Optional:-->
+         <piv:Dont_Dot_N>0</piv:Dont_Dot_N>
+         <!--Optional:-->
+         <piv:Nb_Benef_Prev_N>0</piv:Nb_Benef_Prev_N>
+         <!--Optional:-->
+         <piv:Montant_Utilise_N>0</piv:Montant_Utilise_N>
+         <!--Optional:-->
+         <piv:Nb_Benef_N>0</piv:Nb_Benef_N>
+      </piv:Client>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://pivotal.axxx.fr/Client"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="http://pivotal.axxx.fr/Contact_Client" name="Contact_Client" bindingOperationName="Contact_Client" type="Request-Response" outputName="Contact_ClientResponse" inputName="Contact_Client" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="NewContactClientRequestFor_AssociationVacances"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:18001/WS/ContactSvc.asmx</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:piv="http://pivotal.axxx.fr/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <piv:Contact_Client>
+         <!--Optional: in case of update-->
+         <!--<piv:Id>?</piv:Id>-->
+         <!--Optional:-->
+         <piv:Identifiant_Client>AssociationVacances</piv:Identifiant_Client>
+         <!--Optional:-->
+         <piv:Nom_Contact>John</piv:Nom_Contact>
+         <!--Optional:-->
+         <piv:Prenom_Contact>Kruger</piv:Prenom_Contact>
+         <!--Optional:-->
+         <piv:Fonction_Contact>Responsable</piv:Fonction_Contact>
+         <!--Optional:-->
+         <piv:Telephone>0059684521</piv:Telephone>
+         <!--Optional:-->
+         <piv:Email>jkruger@assovac.org</piv:Email>
+         <!--Optional:-->
+         <piv:Num_et_voie>4 PLACE DE NAVARRE</piv:Num_et_voie>
+         <!--Optional:-->
+         <piv:Code_postal>95200</piv:Code_postal>
+         <!--Optional:-->
+         <piv:Ville>SARCELLES</piv:Ville>
+         <!--Optional:-->
+         <piv:Pays>FR</piv:Pays>
+      </piv:Contact_Client>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://pivotal.axxx.fr/Contact_Client"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="http://pivotal.axxx.fr/getClient" name="getClient" bindingOperationName="getClient" type="Request-Response" outputName="getClientResponse" inputName="getClient" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="GetClientRequest"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:18001/WS/ContactSvc.asmx</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:piv="http://pivotal.axxx.fr/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <piv:getClient>
+         <!--Optional:-->
+         <piv:Identifiant_Client>AssociationVacances</piv:Identifiant_Client>
+      </piv:getClient>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://pivotal.axxx.fr/getClient"/><con:wsrmConfig version="1.2"/></con:call></con:operation><con:operation isOneWay="false" action="http://pivotal.axxx.fr/getRepartitionTypeStructure" name="getRepartitionTypeStructure" bindingOperationName="getRepartitionTypeStructure" type="Request-Response" outputName="getRepartitionTypeStructureResponse" inputName="getRepartitionTypeStructure" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="GetRepartionTypeStructureRequest"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:18001/WS/ContactSvc.asmx</con:endpoint><con:request>&lt;soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+   &lt;soapenv:Header/>
+   &lt;soapenv:Body/>
+&lt;/soapenv:Envelope></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://pivotal.axxx.fr/getRepartitionTypeStructure"/></con:call></con:operation><con:operation isOneWay="false" action="http://pivotal.axxx.fr/Information_APV" name="Information_APV" bindingOperationName="Information_APV" type="Request-Response" outputName="Information_APVResponse" inputName="Information_APV" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="NewInformationAPVfor_AssociationVacances"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:18001/WS/ContactSvc.asmx</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:piv="http://pivotal.axxx.fr/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <piv:Information_APV>
+         <!--Optional: in case of update-->
+         <!--<piv:Id>?</piv:Id>-->
+         <!--Optional:-->
+         <piv:Identifiant_Client>AssociationVacances</piv:Identifiant_Client>
+         <!--Optional:-->
+         <piv:Bilan_Libelle>Entretien</piv:Bilan_Libelle>
+         <!--Optional:-->
+         <piv:Nombre>50</piv:Nombre>
+         <!--Optional:-->
+         <piv:Bilan_Annee>2012</piv:Bilan_Annee>
+      </piv:Information_APV>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://pivotal.axxx.fr/Information_APV"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/></con:soapui-project>

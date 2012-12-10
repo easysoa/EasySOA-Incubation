@@ -5,13 +5,15 @@ package org.easysoa.registry.integration;
 
 import java.util.ArrayList;
 import java.util.Date;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
+import org.easysoa.registry.DiscoveryService;
+import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.rest.integration.EndpointStateService;
 import org.easysoa.registry.rest.integration.ServiceLevelHealth;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
+import org.easysoa.registry.rest.integration.SlaOrOlaIndicators;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -19,29 +21,82 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
+import com.google.inject.Inject;
+
 /**
+ * Endpoint state service implementation
+ * 
  * @author jguillemotte
- *
+ * 
  */
 public class EndpointStateServiceImpl implements EndpointStateService {
 
-    //
-    @Context HttpServletRequest request;    
+    // Servlet context
+    @Context
+    HttpServletRequest request;
+
+    // Nuxeo document service
+    @Inject
+    DocumentService documentService;
+
+    @Inject
+    DiscoveryService discoveryService;
     
     /**
-     * @see
+     * @see org.easysoa.registry.rest.integration.EndpointStateService#updateSlaOlaIndicators(SlaOrOlaIndicator[])
      */
     @Override
-    public void updateSlaOlaIndicators(SlaOrOlaIndicator[] SlaOrOlaIndicators) throws Exception {
-        // TODO Auto-generated method stub
-        
+    public void updateSlaOlaIndicators(SlaOrOlaIndicators slaOrOlaIndicators) throws Exception {
+        CoreSession documentManager = SessionFactory.getSession(request);
+        if(slaOrOlaIndicators != null){
+            for(SlaOrOlaIndicator indicator : slaOrOlaIndicators.getSlaOrOlaIndicatorList()){
+                
+                // get the indicator
+                ArrayList<String> parameters = new ArrayList<String>();
+                StringBuffer query = new StringBuffer(); 
+                query.append("SELECT * FROM SLA, OLA WHERE soan:name = '?'");
+                parameters.add(indicator.getSlaOrOlaName());
+                // name is enough to find the good sla or ola ??
+                //indicator.getEndpointId()
+                
+                try{
+                    String nxqlQuery = NXQLQueryBuilder.getQuery(query.toString(), parameters.toArray(), false, true);
+                    DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);
+                    
+                    if(soaNodeModelList != null){
+                        // Get the indicator
+                        DocumentModel indicatorModel = soaNodeModelList.get(0);
+                        // Update
+                        indicatorModel.setPropertyValue("", indicator.getServiceLevelHealth());
+                        indicatorModel.setPropertyValue("", indicator.getTimestamp());
+                        // Save
+                        //documentService.
+                    }
+                }
+               catch(Exception ex){
+                   // Return the exception and cancel the transaction
+                   throw new Exception("Failed to update SLA or OLA indicators ", ex);                   
+               }
+                
+                
+                // Update
+                // To update indicators ???
+                //discoveryService.runDiscovery(documentManager, identifier, properties, parentDocuments);
+                
+                //documentService.
+                
+            }
+        }
     }
 
     /**
-     * @see 
+     * @see org.easysoa.registry.rest.integration.EndpointStateService#getSlaOrOlaIndicators(Date,
+     *      Date, int, int)
      */
     @Override
-    public SlaOrOlaIndicator[] getSlaOrOlaIndicators(Date periodStart, Date periodEnd, int pageSize, int pageStart) {
+    public SlaOrOlaIndicators getSlaOrOlaIndicators(String endpointId, 
+            String slaOrOlaName, String environment, String projectId,
+            Date periodStart, Date periodEnd, int pageSize, int pageStart) throws Exception {
         
         CoreSession documentManager = SessionFactory.getSession(request);
 
@@ -60,27 +115,61 @@ public class EndpointStateServiceImpl implements EndpointStateService {
         */
         
         // TODO : Add parameters
-        if(periodStart == null){
+        if(endpointId != null){
+            
+            // check if there is a WHERE keyword
+            // can be done if parameters == 0
+            // else if parameters > 0 => add a AND keyword
+            query.append(addQueryKeyWord(parameters.size()));
+            //query.append("dc:title = '?'");
+            parameters.add(endpointId);
+        }
         
+        if(slaOrOlaName != null){
+            query.append(addQueryKeyWord(parameters.size()));
+            query.append("soan:name = '?'");
+            parameters.add(slaOrOlaName);
+        }
+        
+        if(environment != null){
+            query.append(addQueryKeyWord(parameters.size()));
+            
+            parameters.add(environment);
+        } else {
+            
+        }
+        
+        if(projectId != null){
+            query.append(addQueryKeyWord(parameters.size()));
+            
+            parameters.add(projectId);
+        } else {
+            
+        }
+        
+        if(periodStart == null){
+            query.append(addQueryKeyWord(parameters.size()));
+            
+            parameters.add(String.valueOf(periodStart));
         } else {
         
         }
         
         if(periodEnd == null){
-        
+            query.append(addQueryKeyWord(parameters.size()));
+            
+            parameters.add(String.valueOf(periodEnd));
         } else {
         
         }
         
-        SlaOrOlaIndicator[] indicatorArray = new SlaOrOlaIndicator[0];     
+        SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();
+        ArrayList<SlaOrOlaIndicator> indicatorList = new ArrayList<SlaOrOlaIndicator>();
         // Execute query        
         try {
             String nxqlQuery = NXQLQueryBuilder.getQuery(query.toString(), parameters.toArray(), false, true);
             DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);            
-            //indicatorArray = new SlaOrOlaIndicator[soaNodeModelList.size()];
-            
             SlaOrOlaIndicator indicator;
-            ArrayList<SlaOrOlaIndicator> indicatorList = new ArrayList<SlaOrOlaIndicator>();
             for(DocumentModel model : soaNodeModelList){
                 indicator = new SlaOrOlaIndicator();
                 indicator.setEndpointId("");
@@ -89,16 +178,33 @@ public class EndpointStateServiceImpl implements EndpointStateService {
                 indicator.setSlaOrOlaName((String)model.getPropertyValue("soan:name"));
                 indicator.setTimestamp(0);
                 indicatorList.add(indicator);
+
             }
-            indicatorArray = indicatorList.toArray(indicatorArray);
-        } catch (ClientException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (ClientException ex) {
+            ex.printStackTrace();
+            throw ex;
+            
         }
         
         // TODO : add pagination
-        
-        return indicatorArray;
-    }
+        int itemStartIndex = pageSize * pageStart;
+        slaOrOlaIndicators.setSlaOrOlaIndicatorList(indicatorList.subList(itemStartIndex, itemStartIndex + pageSize)) ;                
 
+        return slaOrOlaIndicators;
+    }
+    
+    /**
+     * 
+     * @param parameterListSize
+     * @return
+     */
+    private String addQueryKeyWord(int parameterListSize){
+        if(parameterListSize <= 0){
+            return "WHERE";
+        } else {
+            return "AND";
+        }
+        
+    }
+    
 }

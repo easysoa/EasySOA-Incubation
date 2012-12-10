@@ -228,43 +228,38 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 	}
 
 	private String getWsNamespace(JavaClass c) {
-		if (ParsingUtils.hasAnnotation(c, ANN_WS)) {
-			Annotation wsAnnotation = ParsingUtils.getAnnotation(c, ANN_WS);
-			return (String) wsAnnotation.getNamedParameter("targetNamespace");
-		}
-		else if (ParsingUtils.hasAnnotation(c, ANN_XML_WSCLIENT)) {
-			Annotation wsAnnotation = ParsingUtils.getAnnotation(c, ANN_XML_WSCLIENT);
-			return (String) wsAnnotation.getNamedParameter("targetNamespace");
-		}
-		else if (ParsingUtils.hasAnnotation(c, ANN_XML_WSPROVIDER)) {
-			Annotation wsAnnotation = ParsingUtils.getAnnotation(c, ANN_XML_WSPROVIDER);
-			return (String) wsAnnotation.getNamedParameter("targetNamespace");
-		}
-		return null;
+	    String wsNamespace = null; 
+        wsNamespace = ParsingUtils.getAnnotationPropertyString(c, ANN_WS, "targetNamespace");
+        if (wsNamespace == null) {
+            wsNamespace = ParsingUtils.getAnnotationPropertyString(c, ANN_XML_WSCLIENT, "targetNamespace");
+        }
+        if (wsNamespace == null) {
+            wsNamespace = ParsingUtils.getAnnotationPropertyString(c, ANN_XML_WSPROVIDER, "targetNamespace");
+        }
+        return wsNamespace;
 	}
 
 	private String getWsName(JavaClass c) {	
-		if (ParsingUtils.hasAnnotation(c, ANN_WS)) {
-			Annotation wsAnnotation = ParsingUtils.getAnnotation(c, ANN_WS);
-			return (String) wsAnnotation.getNamedParameter("name");
-		}
-		else if (ParsingUtils.hasAnnotation(c, ANN_XML_WSCLIENT)) {
-			Annotation wsAnnotation = ParsingUtils.getAnnotation(c, ANN_XML_WSCLIENT);
-			return (String) wsAnnotation.getNamedParameter("name");
-		}
-		else if (ParsingUtils.hasAnnotation(c, ANN_XML_WSPROVIDER)) {
-			Annotation wsAnnotation = ParsingUtils.getAnnotation(c, ANN_XML_WSPROVIDER);
-			return (String) wsAnnotation.getNamedParameter("serviceName");
-		}
-		return c.getName();
+        String wsName = null; 
+        wsName = ParsingUtils.getAnnotationPropertyString(c, ANN_WS, "name");
+        if (wsName == null) {
+            wsName = ParsingUtils.getAnnotationPropertyString(c, ANN_XML_WSCLIENT, "name");
+        }
+        if (wsName == null) {
+            wsName = ParsingUtils.getAnnotationPropertyString(c, ANN_XML_WSPROVIDER, "serviceName");
+        }
+        if (wsName == null) {
+            wsName = c.getName();
+        }
+		return wsName;
 	}
 
-	private String getWsServiceName(JavaClass c) {	
-		String serviceName = null;
-		if (ParsingUtils.hasAnnotation(c, ANN_WS)) {
-			Annotation wsAnnotation = ParsingUtils.getAnnotation(c, ANN_WS);
-			serviceName = (String) wsAnnotation.getNamedParameter("serviceName");
-		}
+	private String getWsServiceName(JavaClass c) {	    
+        String serviceName = null; 
+        serviceName = ParsingUtils.getAnnotationPropertyString(c, ANN_WS, "serviceName");
+        if (serviceName == null) {
+            serviceName = ParsingUtils.getAnnotationPropertyString(c, ANN_XML_WSCLIENT, "name");
+        }
 		if (serviceName == null) {
 			serviceName = c.getName();
 		}
@@ -277,7 +272,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
         for (JavaMethod method : c.getMethods()) {
         	String webResultName = null;
 
-            webResultName = ParsingUtils.getAnnotationPropertyString(method, ANN_WEBMETHOD, "operationName"); // overrides
+            webResultName = ParsingUtils.getAnnotationPropertyString(method, ANN_WEBMETHOD, "operationName");
             if (webResultName == null) {
                 webResultName = ParsingUtils.getAnnotationPropertyString(method, ANN_WEBRESULT, "name");
             }
@@ -294,10 +289,9 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                 // Extract parameters info
                 StringBuilder parametersInfo = new StringBuilder();
                 for (JavaParameter parameter : method.getParameters()) {
-                    Annotation webParamAnn = ParsingUtils.getAnnotation(parameter, ANN_WEBPARAM);
-                    if (webParamAnn != null) {
-	                    parametersInfo.append(webParamAnn.getProperty("name").getParameterValue()
-	                            + "=" + parameter.getType().toString() + ", ");
+                    String webParameterName = ParsingUtils.getAnnotationPropertyString(parameter, ANN_WEBPARAM, "name");
+                    if (webParameterName != null) {
+	                    parametersInfo.append(webParameterName + "=" + parameter.getType().toString() + ", ");
                     }
                 }
                 operations.put(method.getName(), new OperationInformation(webResultName, 

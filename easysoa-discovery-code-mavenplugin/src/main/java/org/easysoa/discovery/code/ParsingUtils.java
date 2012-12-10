@@ -23,12 +23,19 @@ public class ParsingUtils {
         return null;
     }
 
-    public static String getAnnotationPropertyString(JavaMethod method, String annotation, String property) {
+    public static String getAnnotationPropertyString(AbstractBaseJavaEntity method, String annotation, String property) {
         if (ParsingUtils.hasAnnotation(method, annotation)) {
             com.thoughtworks.qdox.model.Annotation webResultAnn = ParsingUtils.getAnnotation(method, annotation);
             AnnotationValue operationNameValue = webResultAnn.getProperty(property);
             if (operationNameValue != null) {
-                return operationNameValue.toString();
+                String stringValue = operationNameValue.toString();
+                if (stringValue != null) {
+                    // removing parsed but useless double quotes :
+                    if (stringValue.charAt(0) == '"' && stringValue.charAt(stringValue.length() - 1) == '"') {
+                        stringValue = stringValue.substring(1, stringValue.length() - 1);
+                    }
+                    return stringValue;
+                }
             }
         }
         return null;

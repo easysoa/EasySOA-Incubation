@@ -145,7 +145,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                             for (JavaMethod method : c.getMethods()) {
                                 if (ParsingUtils.hasAnnotation(method, ANN_PATH)) {
                                     // Extract service path
-                                    Object path = ParsingUtils.getAnnotation(method, ANN_PATH).getProperty("value");
+                                    Object path = ParsingUtils.getAnnotationPropertyString(method, ANN_PATH, "value");
                                     
                                     // Extract HTTP method
                                     String httpMethod = "???";

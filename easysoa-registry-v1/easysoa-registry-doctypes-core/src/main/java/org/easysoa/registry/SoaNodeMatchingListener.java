@@ -8,10 +8,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -70,13 +72,17 @@ public class SoaNodeMatchingListener implements EventListener {
 
 	private void findAndMatchServiceImplementation(CoreSession documentManager,
 			DocumentService docService, EndpointMatchingService matchingService,
-			DocumentModel sourceDocument) throws ClientException {
+			DocumentModel endpointDocument) throws ClientException {
+	    if (isEndpointAlreadyMatched(endpointDocument, documentManager)) {
+	        return;
+	    }
+	    
 		DocumentModelList foundImpls = matchingService.findServiceImpls(
-				documentManager, sourceDocument, null, false);
+				documentManager, endpointDocument, null, false);
 		if (foundImpls.size() == 1) {
-			try {
+			try { // TODO IMPROVE THAT called 4 times when links endpoints : endpoint created, impl modified, ..., endpoint proxy created
 				matchingService.linkServiceImplementation(documentManager,
-						docService.createSoaNodeId(sourceDocument),
+						docService.createSoaNodeId(endpointDocument),
 						docService.createSoaNodeId(foundImpls.get(0)), true);
 			}
 			catch (Exception e) {
@@ -85,11 +91,11 @@ public class SoaNodeMatchingListener implements EventListener {
 		}
 		else if (foundImpls.size() == 0) {
 			DocumentModelList foundIS = matchingService.findInformationServices(
-					documentManager, sourceDocument, null);
+					documentManager, endpointDocument, null);
 			if (foundIS.size() == 1) {
 				try {
 					matchingService.linkInformationServiceThroughPlaceholder(documentManager,
-							sourceDocument, foundIS.get(0), true);
+					        endpointDocument, foundIS.get(0), true);
 				}
 				catch (Exception e) {
 					logger.error(e);
@@ -99,15 +105,34 @@ public class SoaNodeMatchingListener implements EventListener {
 		
 	}
 
-	private void findAndMatchInformationService(CoreSession documentManager,
-			ServiceMatchingService matchingService, DocumentModel sourceDocument)
+	private boolean isEndpointAlreadyMatched(DocumentModel endpointDocument,
+	        CoreSession documentManager) throws ClientException {
+        // NB. %ServiceImplementation to also handle JavaServiceImplementations
+        return !documentManager.query("SELECT * FROM " + Endpoint.DOCTYPE
+                + " WHERE " + NXQL.ECM_ISPROXY + " = 0 AND "
+                + NXQL.ECM_UUID + "='" + endpointDocument.getId() + "' AND "
+                + Endpoint.XPATH_PARENTSIDS + "/* LIKE '%ServiceImplementation%'").isEmpty();
+    }
+
+    private void findAndMatchInformationService(CoreSession documentManager,
+			ServiceMatchingService matchingService, DocumentModel implDocument)
 			throws ClientException {
+	    if (isServiceImplementationAlreadyMatched(implDocument)) {
+	        return;
+	    }
+	    
 		DocumentModelList foundInformationServices = matchingService.findInformationServices(
-				documentManager, sourceDocument, null, false);
+				documentManager, implDocument, null, false);
 		if (foundInformationServices.size() == 1) {
-			matchingService.linkInformationService(documentManager, sourceDocument,
+			matchingService.linkInformationService(documentManager, implDocument,
 					foundInformationServices.get(0).getId(), true);
 		}
 	}
+
+    private boolean isServiceImplementationAlreadyMatched(DocumentModel implDocument)
+            throws PropertyException, ClientException {
+        String providedIServId = (String) implDocument.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE);
+        return providedIServId != null && providedIServId.length() != 0;
+    }
 
 }

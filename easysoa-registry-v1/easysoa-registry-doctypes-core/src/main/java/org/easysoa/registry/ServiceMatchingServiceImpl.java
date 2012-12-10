@@ -99,25 +99,28 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
     			" AND platform:serviceLanguage='" + implServiceLanguage + "'"; // if any ; OPT multiple options (consistency handled in logic)
     	*/
     	
-    	boolean isWsdl = impl.hasFacet(ServiceImplementation.FACET_WSDLINFO)
+    	boolean isWsdl = impl.hasFacet(ServiceImplementation.FACET_WSDLINFO) // for now static facet so always
+    	        && "JAX-WS".equals(impl.getPropertyValue(ServiceImplementation.XPATH_TECHNOLOGY))
     			&& impl.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME) != null;// OPT dynamic if possible when setting props in DiscoveryService ??
-    	boolean isRest = impl.hasFacet(ServiceImplementation.FACET_RESTINFO)
+    	boolean isRest = impl.hasFacet(ServiceImplementation.FACET_RESTINFO) // for now static facet so always
+    	        && "JAX-RS".equals(impl.getPropertyValue(ServiceImplementation.XPATH_TECHNOLOGY))
     			&& impl.getPropertyValue(RestInfoFacet.XPATH_REST_PATH) != null;// OPT dynamic if possible when setting props in DiscoveryService ??
-    	// or platform:serviceDefinition=WSDL|JAXRS ?
     	
     	if (isWsdl) { // consistency logic
-        	String implPortTypeName = (String) impl.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME); // if JAXWS
-        	query.addCriteria("ecm:mixinType = 'WsdlInfo'");
+            //query.addCriteria("ecm:mixinType = '" + ServiceImplementation.FACET_WSDLINFO + "'"); // NO should be added dynamically but hard to do in DiscoveryServiceImpl
+    	    query.addCriteria(ServiceImplementation.XPATH_TECHNOLOGY , "JAX-WS");
+        	String implPortTypeName = (String) impl.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME);
         	query.addConstraintMatchCriteria(InformationService.XPATH_WSDL_PORTTYPE_NAME, implPortTypeName);
         			
     	} else if (isRest) {
-        	String implRestPath = (String) impl.getPropertyValue(RestInfoFacet.XPATH_REST_PATH); // if JAXRS
-        	//OPT String implMediaType = (String) impl.getPropertyValue(ServiceImplementation.XPATH_REST_MEDIA_TYPE); // if JAXRS
-    		//infoServiceQueryString +=
-					//" AND ecm:mixinType = 'RestInfo' AND " +
-        			//" AND " InformationService.XPATH_REST_PATH + "='" + implRestPath + "'" +
-        			//OPT " AND " InformationService.XPATH_REST_MEDIA_TYPE + "='" + implMediaType + "'" +
-        			
+            //query.addCriteria("ecm:mixinType = '" + ServiceImplementation.FACET_RESTINFO + "'"); // NO should be added dynamically but hard to do in DiscoveryServiceImpl
+            query.addCriteria(ServiceImplementation.XPATH_TECHNOLOGY , "JAX-RS");
+        	String implRestPath = (String) impl.getPropertyValue(ServiceImplementation.XPATH_REST_PATH);
+            //OPT String implRestAccepts = (String) impl.getPropertyValue(ServiceImplementation.XPATH_REST_ACCEPTS); // OPT
+            //OPT String implRestContentType = (String) impl.getPropertyValue(ServiceImplementation.XPATH_REST_CONTENT_TYPE); // OPT
+        	query.addConstraintMatchCriteria(InformationService.XPATH_REST_PATH, implRestPath);
+            //query.addConstraintMatchCriteria(InformationService.XPATH_REST_ACCEPTS, implRestAccepts); // OPT
+            //query.addConstraintMatchCriteria(InformationService.XPATH_REST_CONTENT_TYPE, implRestContentType); // OPT        			
     	}
     	
     	String infoServiceQuery = query.build();

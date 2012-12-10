@@ -9,6 +9,7 @@
   <!-- NB. platform criteria such as SOAP etc. are on impl, as well as deliverable-type ones -->
   <xs:element name="serviceProtocol" type="xs:string" /><!-- SOAP, XML or JSON (or AtomPub...) for REST... -->
   <xs:element name="transportProtocol" type="xs:string" /><!-- HTTP (HTTPS ?)... -->
+  <!-- xs:element name="contentType" type="xs:string"/ --><!-- TODO OPT conflicts with RestFacet's content (media) type ?? -->
   <xs:element name="serviceRuntime" type="xs:string" /><!-- CXF (, Axis2...) -->
   <xs:element name="appServerRuntime" type="xs:string" /><!-- ApacheTomcat, Jetty... -->
   

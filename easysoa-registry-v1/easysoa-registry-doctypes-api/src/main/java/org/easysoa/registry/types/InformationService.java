@@ -1,6 +1,7 @@
 package org.easysoa.registry.types;
 
 import org.easysoa.registry.facets.ArchitectureComponentFacet;
+import org.easysoa.registry.facets.RestInfoFacet;
 import org.easysoa.registry.facets.WsdlInfoFacet;
 
 
@@ -12,7 +13,7 @@ import org.easysoa.registry.facets.WsdlInfoFacet;
  * @author mkalam-alami
  *
  */
-public interface InformationService extends SoaNode, WsdlInfoFacet, ArchitectureComponentFacet {
+public interface InformationService extends SoaNode, WsdlInfoFacet, RestInfoFacet, ArchitectureComponentFacet {
 
     static final String DOCTYPE = "InformationService";
     

@@ -28,6 +28,9 @@
     <soaNodeType name="ServiceImplementation">
         <subtype>Endpoint</subtype>
     </soaNodeType>
+    <soaNodeType name="JavaServiceImplementation"><!-- explicitly handling inheritance -->
+        <subtype>Endpoint</subtype>
+    </soaNodeType>
     
     <soaNodeType name="DeployedDeliverable">
         <subtype>Endpoint</subtype>

@@ -33,14 +33,14 @@ body { /*background-color:#959595;*/
 #banner {
 	background-color: #DCF1FA;
 	border-bottom: 1px solid #555555;
-	height: 50px;
+	height: 72px;
 	width: 100%;
 }
 
 #banner #bannerElements {
 	float: left;
 	height: auto;
-	padding: 10px 0 0;
+	padding: 15px 0 0;
 	text-align: left;
 	width: 100%;
 }

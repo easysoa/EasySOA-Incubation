@@ -1,20 +1,19 @@
 ## AXXX Pivotal
 
-* login
- * logout
+Features :
+
+* login, logout
 * allow to list, remove & add Client
 * new Client page
-* Client details page allowing to modify it BUT NOT IDENTIFIANT_CLIENT OR , also listing ContactClients and InformationAVPs
- * unmodifiable summary fields, Information_APV below with lift
-* in ClientServiceImpl, (like in UserServiceImpl) at init if table empty fill with default data, including the 3 adresses of Uniserv mock and further from reporting SQL (lookup tdr_bloca and other field names) TO BE UNBRANDED
-* Client details page : button "Créer précompte" that calls TdrService.creerPrecompte() (ask MDU)
- * display OK or error message at the end of creerPrecompte
- * add creerPrecompteDone field and disable button if true
-* expose ContactSvc.asmx.wsdl WS using FraSCAti (and already gen'd source) and implement it (Client UPDATE ONLY, ContactClient, Information_APV) on top of ClientService
-* OW enrich Pivotal's ContactSvc.asmx.wsdl's XML with :
-.getClient(ididentifiantClient) returns Client
-.getRepartitionTypeStructure() returns [{ typeStructure, clientCount }]
-then regenerate the Java classes, and implement them
+* Client details page allowing to modify it (save identifiantClient & balance sheet summary fields), listing ContactClients in tabs, and InformationAVPs below in lift
+* in ClientServiceImpl, (like in UserServiceImpl) at init if table empty fill with default data, including the 3 adresses of Uniserv mock and further from unbranded reporting SQL data (lookup tdr_bloca and other field names)
+* Client details page : button "Créer précompte" that calls TdrService.creerPrecompte(), displays OK or error message at the end of creerPrecompte, when it is disabled
+ * TODO refer to locally stored APV WSDLs, Change localhost by vmapv and configure it int /etc/host file for re-routing
+* exposes ContactSvc.asmx.wsdl WS using FraSCAti and implements it on top of ClientService (Client only for updates, ContactClient & Information_APV also for updates)
+ * TODO remove added object ids from WSDL & regenerate source, use business fields as keys instead
+* Pivotal's ContactSvc.asmx.wsdl's additionally exposes (required for SLA monitoring) :
+ * .getClient(ididentifiantClient) returns Client
+ * .getRepartitionTypeStructure() returns [{ typeStructure, clientCount }]
 
 * TODO UI : more MS-y, display partner logos that are in pivotal/images/logos and pivotal/css/images.css, remove unused images & js
 * TODO deploy in production (notably doc ; see FStudio)

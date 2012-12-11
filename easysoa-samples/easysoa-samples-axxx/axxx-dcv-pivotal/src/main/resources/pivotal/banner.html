@@ -12,16 +12,18 @@
 #end
 <div id="banner">
    <div id="bannerElements">
-    	<div id="logo"></div>
-        <a href="homePage.html" id="homepageIcon" class="menu-icon" title="Go to the homepage"></a>
+    	<!--<div id="logo"></div>-->
+    	<div id="logo-axxx"></div>
+        <!--<a href="homePage.html" id="homepageIcon" class="menu-icon" title="Go to the homepage"></a>-->
+        <a href="clients.html" id="homepageIcon" class="menu-icon" title="Retour vers l'index"></a>
         
         #if($!user.getFriendRequests() && $user.getFriendRequests().size()>0)
             <a href="friendRequests.html">Friend Requests($user.getFriendRequests().size())</a>
         #end
         
-        <a href="myservices.html" id="applications" class=" menu-icon notSelected" title="Manage your applications or create a new"></a>
-        <a href="findService.html" id="findApplication" class="menu-icon notSelected" title="Find existing applications"></a>
-        <a href="friends.html" id="friendsMenu" class="menu-icon notSelected" title="Manage your friends or find news"></a>
+        <!--<a href="myservices.html" id="applications" class=" menu-icon notSelected" title="Manage your applications or create a new"></a>-->
+        <!--<a href="findService.html" id="findApplication" class="menu-icon notSelected" title="Find existing applications"></a>-->
+        <!--<a href="friends.html" id="friendsMenu" class="menu-icon notSelected" title="Manage your friends or find news"></a>-->
         <div class="arrow" id="arrow">
         
     </div>
@@ -33,11 +35,11 @@
     
 </div>
 <div id="divArrow">
-        <ul class="ulArrow">
+        <!--<ul class="ulArrow">
     		<li><a href="myspace.html">My space</a></li>
-    	</ul>
+    	</ul>-->
     	<ul class="ulArrow">
-    		<li class="last"><form name="disconnect" id="disconnect" action="/pivotal/action/disconnect"><a href="" onclick="logOut();">Log out</a></form></li>
+    		<li class="last"><form name="disconnect" id="disconnect" action="/pivotal/action/disconnect"><a href="" onclick="logOut();">D&eacuteconnexion</a></form></li>
     	</ul>
     	</div>
 <script type="text/javascript">

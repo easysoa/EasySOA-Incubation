@@ -3,7 +3,10 @@
  */
 package org.easysoa.registry.integration;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
@@ -13,17 +16,21 @@ import org.easysoa.registry.rest.integration.EndpointInformation;
 import org.easysoa.registry.rest.integration.EndpointInformations;
 import org.easysoa.registry.rest.integration.ServiceInformation;
 import org.easysoa.registry.rest.integration.ServiceInformations;
+import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
-import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
+
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -57,12 +64,27 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
     public static final SoaNodeId INFORMATIONSERVICE_TEST_WITH_PLATFORM_METAS_ID = 
             new SoaNodeId(InformationService.DOCTYPE, "ns:testWithPlatformMetas");
 
-    public static final SoaNodeId ENDPOINT_TEST = 
+    public static final EndpointId ENDPOINT_TEST_WITHOUT_POPRTTYPE_ID = 
+            new EndpointId("Test", "http://localhost:8658/Test");
+
+    public static final EndpointId ENDPOINT_TEST = 
             new EndpointId("Test", "http://localhost:8659/Test");
+
+    public static final EndpointId ENDPOINT_INTEGRATION = 
+            new EndpointId("Integration", "http://192.168.0.1:8659/Test");
+
+    public static final EndpointId ENDPOINT_PRODUCTION = 
+            new EndpointId("Production", "http://vmtest:8659/Test");
+
+    public static final EndpointId ENDPOINT_TEST_WITH_PLATFORM_METAS_ID = 
+            new EndpointId("Test", "http://localhost:8660/Test");
     
     public static final String anotherTitle = "anotherTitle";
     public static final String anotherName = "anotherName";
     public static final String anotherDescription = "anotherDescription";
+
+    private static final String TEST_PORT_TYPE = "{namespace}portType";
+    private static final String TEST_PORT_TYPE_WITH_PLATFORM_METAS = "{namespace}portTypeWithPlatformMetas";
     
     public static boolean initDone = false;
     
@@ -74,37 +96,52 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
     public void init() throws Exception {
         // Fill repository for all tests
         if(!initDone){
-            // Add information service
             HashMap<String, Object> isProperties = new HashMap<String, Object>();
-            
-            discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_TEST_WITHOUT_POPRTTYPE_ID, isProperties, null);
-            
-            isProperties.put(WsdlInfoFacet.XPATH_WSDL_PORTTYPE_NAME, "{namespace}portType");
-            discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_TEST_ID, isProperties, null);
-            
-            //isProperties.put(WsdlInfo.XPATH_WSDL_PORTTYPE_NAME, "{namespace}portType");
-            isProperties.put("platform:language", "Java");
-            isProperties.put("platform:build", "Maven");
-            isProperties.put("platform:serviceLanguage", "JAXWS");
+
+            // Add information service without wsdl
+            DocumentModel infoServiceWithoutWsdl = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_TEST_WITHOUT_POPRTTYPE_ID, isProperties, null);
+
+            // Add information service with wsdl
+            isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
+            isProperties.put(WsdlInfoFacet.XPATH_WSDL_PORTTYPE_NAME, TEST_PORT_TYPE);
+            DocumentModel infoService = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_TEST_ID, isProperties, null);
+
+            // Add information service with wsdl & file, platform & common metas
+            isProperties.put(WsdlInfoFacet.XPATH_WSDL_PORTTYPE_NAME, TEST_PORT_TYPE_WITH_PLATFORM_METAS);
+            isProperties.put(Platform.XPATH_LANGUAGE, Platform.LANGUAGE_JAVA);
+            isProperties.put("platform:build", "Maven"); // TODO
+            //isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
             isProperties.put("platform:deliverableNature", "Maven");
             isProperties.put("platform:deliverableRepositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
             //OPT FraSCAtiStudio platform
-            DocumentModel infoService = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_TEST_WITH_PLATFORM_METAS_ID, isProperties, null);
-            infoService.setPropertyValue(SoaNode.XPATH_SOANAME, anotherName);
-            infoService.setPropertyValue("dc:title", anotherTitle);
-            infoService.setPropertyValue("dc:description", anotherDescription);
+            // Add information service with wsdl & file, platform & common metas
+            DocumentModel infoServiceWithMetas = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_TEST_WITH_PLATFORM_METAS_ID, isProperties, null);
+            infoServiceWithMetas.setPropertyValue("dc:title", anotherTitle);
+            infoServiceWithMetas.setPropertyValue("dc:description", anotherDescription);
             // Add a associated wsdl file
-            /*StringBlob blob = new StringBlob("test blob content");
+            StringBlob blob = new StringBlob("test blob content");
             blob.setFilename("testFile.wsdl");
-            infoService.setPropertyValue("file", blob);*/
-            infoService = documentManager.saveDocument(infoService);
+            ArrayList<Serializable> fileMapList = new ArrayList<Serializable>();
+            HashMap<String, Blob> fileMap = new HashMap<String, Blob>();
+            fileMap.put("file", blob);
+            fileMapList.add(fileMap);
+            infoServiceWithMetas.setPropertyValue("files", fileMapList);
+            infoServiceWithMetas = documentManager.saveDocument(infoServiceWithMetas);
             
-            // Add endpoint
-            isProperties = new HashMap<String, Object>();
-            isProperties.put("dc:title", "ns:endpointTest");
+            // Add endpoints
+            HashMap<String, Object> epProperties = new HashMap<String, Object>();
+            //isProperties.put("dc:title", "ns:endpointTest"); // TODO
+            epProperties.put("dc:description", "this is an endpoint to be used...");
+            epProperties.put(Endpoint.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS); // TODO better ?!?
             // Associate endpoint with information service
-            isProperties.put("impl:providedInformationService", infoService.getId());
-            discoveryService.runDiscovery(documentManager, ENDPOINT_TEST, isProperties, null);
+            //isProperties.put("impl:providedInformationService", infoServiceWithMetas.getId()); // TODO matching should be done
+            discoveryService.runDiscovery(documentManager, ENDPOINT_TEST_WITHOUT_POPRTTYPE_ID, epProperties, null);
+            epProperties.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, TEST_PORT_TYPE);
+            discoveryService.runDiscovery(documentManager, ENDPOINT_TEST, epProperties, null);
+            discoveryService.runDiscovery(documentManager, ENDPOINT_INTEGRATION, epProperties, null);
+            discoveryService.runDiscovery(documentManager, ENDPOINT_PRODUCTION, epProperties, null);
+            epProperties.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, TEST_PORT_TYPE_WITH_PLATFORM_METAS);
+            discoveryService.runDiscovery(documentManager, ENDPOINT_TEST_WITH_PLATFORM_METAS_ID, epProperties, null);
             
             documentManager.save();
             initDone = true;
@@ -140,7 +177,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
 
         // Check result
         firstServiceInformation = serviceInformations.getServiceInformationList().get(0);
-        Assert.assertEquals("anotherName", firstServiceInformation.getSoaName());
+        Assert.assertEquals(INFORMATIONSERVICE_TEST_WITH_PLATFORM_METAS_ID.getName(), firstServiceInformation.getSoaName());
         Assert.assertEquals("anotherDescription", firstServiceInformation.getDescription());
         
         // Run third test request
@@ -166,9 +203,9 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         Assert.assertNotNull(endpointInformations);
 
         EndpointInformation firstEndpointInformation = endpointInformations.getEndpointInformationList().get(0);
-        Assert.assertEquals("ns:endpointTest", firstEndpointInformation.getName());
+        Assert.assertEquals(ENDPOINT_TEST_WITHOUT_POPRTTYPE_ID.getName(), firstEndpointInformation.getEnvironment() + ":" + firstEndpointInformation.getName());
         Assert.assertEquals("Test", firstEndpointInformation.getEnvironment());
-        Assert.assertEquals("http://localhost:8659/Test", firstEndpointInformation.getEndpointUrl());
+        Assert.assertEquals(ENDPOINT_TEST_WITHOUT_POPRTTYPE_ID.getUrl(), firstEndpointInformation.getEndpointUrl());
     }
     
     @Test
@@ -188,7 +225,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         EndpointInformations endpointInformations = firstServiceInformation.getEndpoints();
         Assert.assertNotNull(endpointInformations);
         EndpointInformation firstEndpointInformation = endpointInformations.getEndpointInformationList().get(0);
-        Assert.assertEquals("ns:endpointTest", firstEndpointInformation.getName());
+        Assert.assertEquals(ENDPOINT_TEST_WITH_PLATFORM_METAS_ID.getName(), firstEndpointInformation.getEnvironment() + ":" + firstEndpointInformation.getName());
         
     }
     

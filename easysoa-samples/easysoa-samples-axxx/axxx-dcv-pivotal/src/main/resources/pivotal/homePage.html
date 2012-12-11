@@ -6,16 +6,33 @@
 <div id="rounded-div-content">
 	<div id="homePage">
     
-    <button class="orange button" onclick="openClientPage()">Clients</button>
+		<table style="margin-left:auto;margin-right:auto;">
+	    	<colgroup>
+			 	<col width="500px">
+			   	<col width="500px">
+          	</colgroup>
+			<tbody>
+		            <tr>
+		                <td>
+		                    Utilisateurs
+    						<ul>
+    						#foreach($u in $connection.getAllUsers())
+    							<li>$u.getLogin()</li>
+    						#end
+    						</ul>
+		                </td>
+		                <td><button class="orange button" onclick="openClientPage()">Gestion des clients</button></td>
+		            </tr>
+		    </tbody>
+		</table>
     
-    <p/>
+    	<p/>
+    	Bienvenue sur Pivotal, la gestion de contacts de l'axxx (dans ecran de login) + Ajout logo modifié axxx (pour toute les pages) 
+    	Suppression de la page homepage et affichage direct de la page clients
+    	
     
-    Users
-    <ul>
-    #foreach($u in $connection.getAllUsers())
-    	<li>$u.getLogin()</li>
-    #end
-    </ul>
+	    Driven by a consortium of <a class="index-link" href="easysoa-consortium.html">major actors</a> of the Open Source community,
+
     </div>
     
     <script type="text/javascript">

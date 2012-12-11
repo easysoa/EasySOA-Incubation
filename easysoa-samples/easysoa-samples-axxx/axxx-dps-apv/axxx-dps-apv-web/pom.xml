@@ -31,19 +31,6 @@
       <version>${cxf.version}</version>
     </dependency>
     
-	<!-- for standalone starter -->
-	<!-- dependency>
-		<groupId>org.springframework</groupId>
-		<artifactId>spring-context</artifactId>
-		<version>${spring.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>org.springframework</groupId>
-		<artifactId>spring-test</artifactId>
-		<version>${spring.version}</version>
-	</dependency -->
-    
     <!-- easysoa tests -->
     <!-- dependency>
       <groupId>org.easysoa.discovery</groupId>

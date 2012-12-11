@@ -3,23 +3,31 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:cxf="http://cxf.apache.org/core"
 	xmlns:jaxws="http://cxf.apache.org/jaxws"
 	xmlns:http-conf="http://cxf.apache.org/transports/http/configuration"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
  	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+ 	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
 	http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
  	http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
  	http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
  	
  	
- 	<!-- AXXX APV DETAILED SPRING CONFIGURATION  -->
+ 	<!-- AXXX APV CORE SPRING CONFIGURATION  -->
  	<import resource="classpath:axxx-dps-apv-context.xml"/>
-
-
-	<!-- DEPLOYMENT TARGET SPECIFIC CONFIGURATION -->
-	
-	<!-- ws deployment : activating servlet for liferay -->
-	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+ 	
+ 	<!-- Enabling Spring beans auto-discovery FROM CORE -->
+ 	<!-- context:component-scan base-package="controller" / -->
+ 
+ 	<!-- Enabling Spring MVC configuration through annotations -->
+ 	<mvc:annotation-driven />
+ 
+ 	<!-- Defining which view resolver to use -->
+ 	<bean class= "org.springframework.web.servlet.view.InternalResourceViewResolver" >
+ 	 	<property name="prefix" value="/WEB-INF/views/" />
+ 	 	<property name="suffix" value=".jsp" />
+ 	</bean>
 	
 </beans> 

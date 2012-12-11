@@ -13,6 +13,7 @@
     <axxx-dps-apv.version>1.0-SNAPSHOT</axxx-dps-apv.version>
 
     <spring.version>3.1.2.RELEASE</spring.version>
+    <hibernate.version>3.6.0.Final</hibernate.version>
     <cxf.version>2.5.2</cxf.version>
   </properties>
 

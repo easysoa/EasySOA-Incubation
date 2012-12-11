@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- - WS context for the ancv-form application. -->
+<!-- Core context for the DPS APV Web application. -->
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
@@ -57,5 +57,63 @@
 	<jaxws:endpoint id="com.axxx.dps.apv.ws.projetWebServiceImplEndpoint"
 		implementor="#com.axxx.dps.apv.ws.projetWebServiceImpl"
 		address="${axxx.dps.apv.ws.baseUrl}/ProjetService" />
+	
+	
+	<!-- PERSISTENCE -->
+    
+	<bean id="com.axxx.dps.apv.datasource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		p:driverClass="${axxx.dps.apv.db.driverClass}"
+		p:jdbcUrl="${axxx.dps.apv.db.jdbcUrl}"
+		p:user="${axxx.dps.apv.db.user}"
+		p:password="${axxx.dps.apv.db.password}"
+		
+		p:initialPoolSize="${axxx.dps.apv.db.initialPoolSize}" p:minPoolSize="${axxx.dps.apv.db.minPoolSize}"
+		p:maxPoolSize="${axxx.dps.apv.db.maxPoolSize}" p:preferredTestQuery="SELECT 1"
+		p:testConnectionOnCheckin="true" p:idleConnectionTestPeriod="300"
+		p:unreturnedConnectionTimeout="${axxx.dps.apv.db.unreturnedConnectionTimeout}" 
+		p:debugUnreturnedConnectionStackTraces="${axxx.dps.apv.db.debugUnreturnedConnectionStackTraces}"
+		destroy-method="close" />
+		
+	<bean id="com.axxx.dps.apv.sessionFactory" autowire-candidate="false"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="com.axxx.dps.apv.datasource.hibernate" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${axxx.dps.apv.hibernate.dialect}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${axxx.dps.apv.hibernate.hbm2ddl.auto}</prop>
+				<prop key="hibernate.show_sql">false</prop>
+				<prop key="hibernate.format_sql">false</prop>
+				<!-- prop key="hibernate.connection.autocommit">false</prop -->
+				<!-- prop key="hibernate.bytecode.provider">cglib</prop --><!-- default javassist,  -->
+				
+				<prop key="hibernate.cache.provider_class">net.sf.ehcache.hibernate.SingletonEhCacheProvider</prop>
+				<!-- prop key="net.sf.ehcache.configurationResourceName">/ehcache.xml</prop>
+				<prop key="hibernate.cache.provider_configuration_file_resource_path">/ehcache.xml</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.use_query_cache">true</prop -->
+				<!-- prop key="hibernate.cache.region_prefix">ow.axxx.cache</prop-->
+			</props>
+		</property>
+		<property name="packagesToScan">
+			<list>
+				<value>com.axxx.dps.apv.model</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- bean id="com.axxx.dps.apv.cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+		<property name="shared" value="true" />
+  	</bean -->
+	
+	<bean id="com.axxx.dps.apv.transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager"
+		p:sessionFactory-ref="com.axxx.dps.apv.sessionFactory" 
+		p:hibernateManagedSession="true"/><!-- TODO or org.springframework.orm.hibernate3.LocalSessionFactoryBean ?? -->
+		
+	<tx:annotation-driven transaction-manager="com.axxx.dps.apv.transactionManager" />
+	
+	<!-- NB. session is opened and closed automatically
+	(rather than explicity in filter i.e. "session inview pattern") ????????????????????????????
+	see http://stackoverflow.com/questions/4699381/best-way-to-inject-hibernate-session-by-spring-3 -->
 	
 </beans>

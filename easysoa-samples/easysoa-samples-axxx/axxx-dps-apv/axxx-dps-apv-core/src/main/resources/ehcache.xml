@@ -1,0 +1,11 @@
+<ehcache>
+	<!-- NB. not used yet -->
+
+	<diskStore path="java.io.tmpdir"/>
+	
+	<defaultCache maxElementsInMemory="10000" eternal="true" overflowToDisk="false"/>
+	
+	<cache name="com.axxx.dps.apv.persistence.GenericEntity" maxElementsInMemory="250000" eternal="true" overflowToDisk="false"/>
+	<!-- cache name="com.axxx.dps.apv.persistence.Tdr.projects" maxElementsInMemory="20000" eternal="true" overflowToDisk="false"/ -->
+	
+</ehcache>

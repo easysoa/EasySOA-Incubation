@@ -12,7 +12,7 @@
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>/WEB-INF/axxx-dps-apv-web-context.xml</param-value>
+        <param-value>/WEB-INF/application-context.xml</param-value>
     </context-param>
  
     <servlet>

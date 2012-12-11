@@ -8,8 +8,8 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
-import org.easysoa.registry.DiscoveryService;
-import org.easysoa.registry.DocumentService;
+//import org.easysoa.registry.DiscoveryService;
+//import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.rest.integration.EndpointStateService;
 import org.easysoa.registry.rest.integration.ServiceLevelHealth;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
@@ -21,7 +21,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 
-import com.google.inject.Inject;
+//import com.google.inject.Inject;
 
 /**
  * Endpoint state service implementation
@@ -36,11 +36,11 @@ public class EndpointStateServiceImpl implements EndpointStateService {
     HttpServletRequest request;
 
     // Nuxeo document service
-    @Inject
-    DocumentService documentService;
+    /*@Inject
+    DocumentService documentService;*/
 
-    @Inject
-    DiscoveryService discoveryService;
+    /*@Inject
+    DiscoveryService discoveryService;*/
     
     /**
      * @see org.easysoa.registry.rest.integration.EndpointStateService#updateSlaOlaIndicators(SlaOrOlaIndicator[])

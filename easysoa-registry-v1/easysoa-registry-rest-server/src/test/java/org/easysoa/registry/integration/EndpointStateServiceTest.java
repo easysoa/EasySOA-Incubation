@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.rest.AbstractRestApiTest;
-import org.easysoa.registry.rest.integration.ServiceInformations;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;

@@ -250,6 +250,21 @@
         <artifactId>nuxeo-classification-web</artifactId>
         <version>${nuxeo.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-core</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-content</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-jsf</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
       
       <!-- JUNG (graph lib.) -->
       <dependency>

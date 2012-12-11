@@ -44,6 +44,11 @@
 
       <!-- Studio -->
       <artifact:resolveFile key="easysoa:easy-soa-open-wide::jar" />
+
+      <!-- Diff -->
+      <artifact:resolveFile key="org.nuxeo.ecm:nuxeo-diff-core::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm:nuxeo-diff-content::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm:nuxeo-diff-jsf::jar" />
     </copy>
     <!-- Whereas the marketplace build using an EAR is automatically downloading the
     required libraries, that simpler solution requires you explicitly list them -->
@@ -58,6 +63,11 @@
       <artifact:resolveFile key="org.jvnet.jaxb2_commons:runtime:0.4.1.5:jar" />
       <artifact:resolveFile key="com.sun.jersey:jersey-client:1.11:jar" />
       <artifact:resolveFile key="net.sourceforge.htmlcleaner:htmlcleaner:2.2:jar" />
+
+      <!-- Diff third-party libs -->
+      <artifact:resolveFile key="xmlunit:xmlunit::jar" />
+      <artifact:resolveFile key="org.outerj.daisy:daisydiff::jar" />
+      <artifact:resolveFile key="org.eclipse.core.runtime:eclipse-core-runtime::jar" />
     </copy>
 
     <zip destfile="${outdir}/${maven.project.artifactId}-${easysoa.registry.marketplace.version}.zip"

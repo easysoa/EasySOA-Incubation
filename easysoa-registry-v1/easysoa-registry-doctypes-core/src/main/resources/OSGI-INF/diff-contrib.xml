@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<component name="org.easysoa.registry.diff.widget">
+  <require>org.nuxeo.ecm.diff.widgets.contrib</require>
+
+  <!-- Diff action to displayed widget on summary tab -->
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+             point="actions">
+    <action id="summary_diff" type="widget" order="100">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">soanode_version_diff</property>
+      </properties>
+      <filter-id>versionable</filter-id>
+      <filter id="hasFacetWsdlOrRest">
+        <rule grant="true">
+          <facet>WsdlInfo</facet>
+          <facet>RestInfo</facet>
+        </rule>
+      </filter>
+    </action>
+  </extension>
+
+  <!-- diff widget based on version_diff widget template -->
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+             point="widgets">
+    <widget name="soanode_version_diff" type="version_diff">
+      <properties>
+        <property name="versionLabel"/>
+        <property name="height">400px</property>
+      </properties>
+    </widget>
+  </extension>
+
+</component>

@@ -57,11 +57,13 @@ public class IntelligentSystemTreeApiProxyImpl implements IntelligentSystemTreeA
             String[] parentSystems = classification.split("/");
             DocumentModel currentFolder = istModel;
             for (String parentSystem : parentSystems) {
-                String childPath = currentFolder.getPathAsString() + '/' + parentSystem;
-                if (!documentManager.exists(new PathRef(childPath))) {
+                PathRef childPathRef = new PathRef(currentFolder.getPathAsString() + '/' + parentSystem);
+                if (!documentManager.exists(childPathRef)) {
                     currentFolder = documentService.createDocument(documentManager,
                             IntelligentSystem.DOCTYPE, parentSystem,
                             currentFolder.getPathAsString(), parentSystem);
+                } else {
+                    currentFolder = documentManager.getDocument(childPathRef);
                 }
             }
         }

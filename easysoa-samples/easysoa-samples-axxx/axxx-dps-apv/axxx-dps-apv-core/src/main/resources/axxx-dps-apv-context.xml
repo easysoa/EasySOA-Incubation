@@ -3,11 +3,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:cxf="http://cxf.apache.org/core"
 	xmlns:jaxws="http://cxf.apache.org/jaxws"
 	xmlns:http-conf="http://cxf.apache.org/transports/http/configuration"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
- 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+ 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+ 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+ 	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/tx/spring-mvc-3.1.xsd
 	http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
  	http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
  	http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
@@ -74,9 +79,10 @@
 		p:debugUnreturnedConnectionStackTraces="${axxx.dps.apv.db.debugUnreturnedConnectionStackTraces}"
 		destroy-method="close" />
 		
-	<bean id="com.axxx.dps.apv.sessionFactory" autowire-candidate="false"
+	<!-- autowire-candidate="false" -->
+	<bean id="com.axxx.dps.apv.sessionFactory"
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
-		<property name="dataSource" ref="com.axxx.dps.apv.datasource.hibernate" />
+		<property name="dataSource" ref="com.axxx.dps.apv.datasource" />
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">${axxx.dps.apv.hibernate.dialect}</prop>
@@ -86,8 +92,8 @@
 				<!-- prop key="hibernate.connection.autocommit">false</prop -->
 				<!-- prop key="hibernate.bytecode.provider">cglib</prop --><!-- default javassist,  -->
 				
-				<prop key="hibernate.cache.provider_class">net.sf.ehcache.hibernate.SingletonEhCacheProvider</prop>
-				<!-- prop key="net.sf.ehcache.configurationResourceName">/ehcache.xml</prop>
+				<!-- prop key="hibernate.cache.provider_class">net.sf.ehcache.hibernate.SingletonEhCacheProvider</prop>
+				<prop key="net.sf.ehcache.configurationResourceName">/ehcache.xml</prop>
 				<prop key="hibernate.cache.provider_configuration_file_resource_path">/ehcache.xml</prop>
 				<prop key="hibernate.cache.use_second_level_cache">true</prop>
 				<prop key="hibernate.cache.use_query_cache">true</prop -->

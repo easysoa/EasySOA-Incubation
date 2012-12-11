@@ -4,6 +4,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 
 public interface ServiceMatchingService {
 	
@@ -45,5 +46,8 @@ public interface ServiceMatchingService {
 
 	DocumentModelList findPlatforms(CoreSession documentManager,
 			DocumentModel modelWithPlatformFacet) throws ClientException;
+
+    boolean isServiceImplementationAlreadyMatched(DocumentModel implDocument)
+            throws PropertyException, ClientException;
 
 }

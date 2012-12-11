@@ -24,7 +24,7 @@ public class EnvironmentClassifier implements IntelligentSystemTreeClassifier {
             return null;
         }
         
-        String environment = (String) model.getPropertyValue(Endpoint.XPATH_ENVIRONMENT);
+        String environment = (String) model.getPropertyValue(Endpoint.XPATH_ENDP_ENVIRONMENT);
         if (environment == null) {
             return DEFAULT_ENVIRONMENT;
         }

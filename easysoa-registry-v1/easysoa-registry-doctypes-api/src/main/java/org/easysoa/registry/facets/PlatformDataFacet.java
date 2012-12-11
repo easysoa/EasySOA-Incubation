@@ -24,5 +24,11 @@ public interface PlatformDataFacet {
     
     static final String XPATH_SERVICE_MONITORING = SCHEMA_PLATFORM_PREFIX + "serviceMonitoring";
     static final String XPATH_SERVICE_MONITORYING_MANAGER_URL = SCHEMA_PLATFORM_PREFIX + "serviceMonitoringManagerUrl";
+
+
+    static final String LANGUAGE_JAVA = "Java";
+    static final String LANGUAGE_JAVASCRIPT = "Javascript";
     
+    static final String SERVICE_LANGUAGE_JAXWS = "JAX-WS";
+    static final String SERVICE_LANGUAGE_JAXRS = "JAX-RS";
 }

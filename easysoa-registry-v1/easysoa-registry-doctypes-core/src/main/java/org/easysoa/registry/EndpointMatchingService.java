@@ -35,5 +35,7 @@ public interface EndpointMatchingService {
 			DocumentModel endpoint, DocumentModel informationService,
 			boolean save) throws ClientException, Exception;
 
+	boolean isEndpointAlreadyMatched(DocumentModel endpointDocument,
+            CoreSession documentManager) throws ClientException;
 
 }

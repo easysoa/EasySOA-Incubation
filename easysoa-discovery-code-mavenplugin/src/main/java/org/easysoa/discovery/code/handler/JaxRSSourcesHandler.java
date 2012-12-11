@@ -16,6 +16,7 @@ import org.easysoa.registry.rest.client.types.InformationServiceInformation;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.OperationInformation;
+import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
 
 import com.thoughtworks.qdox.model.JavaClass;
@@ -121,7 +122,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                         // Extract WS info
                         JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(c.getFullyQualifiedName());
                         serviceImpl.setTitle(c.getName());
-                        serviceImpl.setProperty(JavaServiceImplementation.XPATH_TECHNOLOGY, "JAX-RS");
+                        serviceImpl.setProperty(JavaServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXRS);
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_DOCUMENTATION, c.getComment());
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_ISMOCK, ParsingUtils.isTestClass(c));
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTATIONCLASS, c.getFullyQualifiedName());

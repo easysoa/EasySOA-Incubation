@@ -104,7 +104,7 @@ public class ServiceFinderRest extends ModuleRoot {
     	if (computeEnvList) {
     		List<String> environmentsNames = new ArrayList<String>();
     		for (DocumentModel endpoint : allEndpoints) {
-    			String environmentName = (String) endpoint.getPropertyValue(Endpoint.XPATH_ENVIRONMENT);
+    			String environmentName = (String) endpoint.getPropertyValue(Endpoint.XPATH_ENDP_ENVIRONMENT);
     			if (environmentName != null && !environmentsNames.contains(environmentName)) {
     				environmentsNames.add(environmentName);
     			}

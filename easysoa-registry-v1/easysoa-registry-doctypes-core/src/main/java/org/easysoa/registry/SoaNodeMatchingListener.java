@@ -8,12 +8,10 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -71,17 +69,17 @@ public class SoaNodeMatchingListener implements EventListener {
 	}
 
 	private void findAndMatchServiceImplementation(CoreSession documentManager,
-			DocumentService docService, EndpointMatchingService matchingService,
+			DocumentService docService, EndpointMatchingService endpointMatchingService,
 			DocumentModel endpointDocument) throws ClientException {
-	    if (isEndpointAlreadyMatched(endpointDocument, documentManager)) {
+	    if (endpointMatchingService.isEndpointAlreadyMatched(endpointDocument, documentManager)) {
 	        return;
 	    }
 	    
-		DocumentModelList foundImpls = matchingService.findServiceImpls(
+		DocumentModelList foundImpls = endpointMatchingService.findServiceImpls(
 				documentManager, endpointDocument, null, false);
 		if (foundImpls.size() == 1) {
-			try { // TODO IMPROVE THAT called 4 times when links endpoints : endpoint created, impl modified, ..., endpoint proxy created
-				matchingService.linkServiceImplementation(documentManager,
+			try { // endpointMatchingService IMPROVE THAT called 4 times when links endpoints : endpoint created, impl modified, ..., endpoint proxy created
+			    endpointMatchingService.linkServiceImplementation(documentManager,
 						docService.createSoaNodeId(endpointDocument),
 						docService.createSoaNodeId(foundImpls.get(0)), true);
 			}
@@ -89,12 +87,12 @@ public class SoaNodeMatchingListener implements EventListener {
 				logger.error(e);
 			}
 		}
-		else if (foundImpls.size() == 0) {
-			DocumentModelList foundIS = matchingService.findInformationServices(
+		else { //if (foundImpls.size() == 0) { // TODO better : find IS only among foundImpls if any
+			DocumentModelList foundIS = endpointMatchingService.findInformationServices(
 					documentManager, endpointDocument, null);
 			if (foundIS.size() == 1) {
 				try {
-					matchingService.linkInformationServiceThroughPlaceholder(documentManager,
+				    endpointMatchingService.linkInformationServiceThroughPlaceholder(documentManager,
 					        endpointDocument, foundIS.get(0), true);
 				}
 				catch (Exception e) {
@@ -105,34 +103,19 @@ public class SoaNodeMatchingListener implements EventListener {
 		
 	}
 
-	private boolean isEndpointAlreadyMatched(DocumentModel endpointDocument,
-	        CoreSession documentManager) throws ClientException {
-        // NB. %ServiceImplementation to also handle JavaServiceImplementations
-        return !documentManager.query("SELECT * FROM " + Endpoint.DOCTYPE
-                + " WHERE " + NXQL.ECM_ISPROXY + " = 0 AND "
-                + NXQL.ECM_UUID + "='" + endpointDocument.getId() + "' AND "
-                + Endpoint.XPATH_PARENTSIDS + "/* LIKE '%ServiceImplementation%'").isEmpty();
-    }
-
     private void findAndMatchInformationService(CoreSession documentManager,
-			ServiceMatchingService matchingService, DocumentModel implDocument)
+			ServiceMatchingService serviceMatchingService, DocumentModel implDocument)
 			throws ClientException {
-	    if (isServiceImplementationAlreadyMatched(implDocument)) {
+	    if (serviceMatchingService.isServiceImplementationAlreadyMatched(implDocument)) {
 	        return;
 	    }
 	    
-		DocumentModelList foundInformationServices = matchingService.findInformationServices(
+		DocumentModelList foundInformationServices = serviceMatchingService.findInformationServices(
 				documentManager, implDocument, null, false);
 		if (foundInformationServices.size() == 1) {
-			matchingService.linkInformationService(documentManager, implDocument,
+		    serviceMatchingService.linkInformationService(documentManager, implDocument,
 					foundInformationServices.get(0).getId(), true);
 		}
 	}
-
-    private boolean isServiceImplementationAlreadyMatched(DocumentModel implDocument)
-            throws PropertyException, ClientException {
-        String providedIServId = (String) implDocument.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE);
-        return providedIServId != null && providedIServId.length() != 0;
-    }
 
 }

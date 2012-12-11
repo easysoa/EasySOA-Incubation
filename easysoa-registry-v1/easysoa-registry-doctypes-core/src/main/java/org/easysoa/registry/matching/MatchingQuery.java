@@ -120,9 +120,11 @@ public class MatchingQuery {
 		querySbuf.append(")");
 	}
 	/**
-	 * If value not null, adds criteria that matches this constraint only
-	 * if it is present on the looked up documents.
-	 * See addConstraintMatch.
+	 * If value not null, adds criteria that matches this constraint only if it, or else its
+     * alternative constraint, is present on the looked up documents
+     * 
+	 * See addConstraintMatchCriteriaWithAlt.
+	 * 
 	 * @param xpath
 	 * @param value
 	 */

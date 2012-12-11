@@ -30,7 +30,7 @@ public class EndpointId extends SoaNodeId {
 	@Override
 	public Map<String, Serializable> getDefaultPropertyValues() {
 		Map<String, Serializable> properties = super.getDefaultPropertyValues();
-		properties.put(Endpoint.XPATH_ENVIRONMENT, environment);
+		properties.put(Endpoint.XPATH_ENDP_ENVIRONMENT, environment);
 		properties.put(Endpoint.XPATH_URL, url);
 		properties.put(Endpoint.XPATH_TITLE, url);
 		return properties;

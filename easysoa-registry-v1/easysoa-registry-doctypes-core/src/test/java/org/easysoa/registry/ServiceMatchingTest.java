@@ -9,6 +9,7 @@ import org.easysoa.registry.test.AbstractRegistryTest;
 import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
+import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.ids.EndpointId;
@@ -62,16 +63,20 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     public void testSimpleDiscovery() throws Exception {
     	// Discover service impl
     	HashMap<String, Object> implProperties = new HashMap<String, Object>();
+    	implProperties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
     	implProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
         discoveryService.runDiscovery(documentManager, FIRST_SERVICEIMPL_ID, implProperties, null);
         
     	// Discover information service
     	HashMap<String, Object> isProperties = new HashMap<String, Object>();
-    	isProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
+    	isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
+    	isProperties.put(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
     	DocumentModel foundInfoServ = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_ID, isProperties, null);
 
     	// Discover component
     	HashMap<String, Object> compProperties = new HashMap<String, Object>();
+    	// requires JAXWS (else would override IS's which would not be matched anymore ; TODO Q otherwise ??) :
+    	compProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
     	compProperties.put(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE, foundInfoServ.getId());
     	foundComponent = discoveryService.runDiscovery(documentManager, COMPONENT_ID, compProperties, null);
     	
@@ -92,6 +97,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	
     	// Discover a non matching impl
     	HashMap<String, Object> impl3Properties = new HashMap<String, Object>();
+    	impl3Properties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
     	impl3Properties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace2}name2");
         discoveryService.runDiscovery(documentManager, THIRD_SERVICEIMPL_ID, impl3Properties, null);
         
@@ -112,10 +118,11 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // Discover service impl that won't match platform criteria TODO SHOULD STILL MATCH AT IS LEVEL
     	HashMap<String, Object> implN1Properties = new HashMap<String, Object>();
     	implN1Properties.put(ServiceImplementation.XPATH_ISMOCK, "1");
+    	implN1Properties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
     	implN1Properties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
-    	implN1Properties.put("impl:language", "Javascript"); // differs
+    	implN1Properties.put(ServiceImplementation.XPATH_IMPL_LANGUAGE, Platform.LANGUAGE_JAVASCRIPT); // differs
     	//implN1Properties.put("impl:build", "Maven");
-    	implN1Properties.put("impl:technology", "JAXWS");
+    	implN1Properties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
     	implN1Properties.put("deltype:nature", "Maven");
     	implN1Properties.put("deltype:repositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
         discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx" + "N1KO"), implN1Properties, null);
@@ -123,9 +130,9 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	// Discover service impl
     	HashMap<String, Object> implProperties = new HashMap<String, Object>();
     	implProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
-    	implProperties.put("impl:language", "Java");
+    	implProperties.put(ServiceImplementation.XPATH_IMPL_LANGUAGE, Platform.LANGUAGE_JAVA);
     	//implProperties.put("impl:build", "Maven");
-    	implProperties.put("impl:technology", "JAXWS");
+    	implProperties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
     	implProperties.put("deltype:nature", "Maven");
     	implProperties.put("deltype:repositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
         discoveryService.runDiscovery(documentManager, FIRST_SERVICEIMPL_ID, implProperties, null);
@@ -133,30 +140,33 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	// Discover service impl that won't match platform criteria
     	HashMap<String, Object> implN2Properties = new HashMap<String, Object>();
     	implN2Properties.put(ServiceImplementation.XPATH_ISMOCK, "1");
+    	implN2Properties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
     	implN2Properties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
-    	implN2Properties.put("impl:language", "Java");
+    	implN2Properties.put(ServiceImplementation.XPATH_IMPL_LANGUAGE, Platform.LANGUAGE_JAVA);
     	//implN2Properties.put("impl:build", "Maven");
-    	implN2Properties.put("impl:technology", "JAXWS");
+    	implN2Properties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
     	implN2Properties.put("deltype:nature", "Maven");
     	implN2Properties.put("deltype:repositoryUrl", "http://maven.ow2.org/nexus/content/groups/public"); // differs
         discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx" + "N2KO"), implN2Properties, null);
 
     	// Discover information service that won't match platform criteria
     	HashMap<String, Object> isN1Properties = new HashMap<String, Object>();
+    	isN1Properties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
     	isN1Properties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
-    	isN1Properties.put("platform:language", "Java");
+    	isN1Properties.put(Platform.XPATH_LANGUAGE, Platform.LANGUAGE_JAVA);
     	isN1Properties.put("platform:build", "Maven");
-    	isN1Properties.put("platform:serviceLanguage", "JAXRS"); // differs
+    	isN1Properties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXRS); // differs
     	isN1Properties.put("platform:deliverableNature", "Maven");
     	isN1Properties.put("platform:deliverableRepositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
     	discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE, "nsxxx:namexxx" + "N1KO"), isN1Properties, null);
 
     	// Discover information service
     	HashMap<String, Object> isProperties = new HashMap<String, Object>();
+    	isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
     	isProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
-    	isProperties.put("platform:language", "Java");
+    	isProperties.put(Platform.XPATH_LANGUAGE, Platform.LANGUAGE_JAVA);
     	isProperties.put("platform:build", "Maven");
-    	isProperties.put("platform:serviceLanguage", "JAXWS");
+    	isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
     	isProperties.put("platform:deliverableNature", "Maven");
     	isProperties.put("platform:deliverableRepositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
     	DocumentModel foundInfoServ = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_ID, isProperties, null);
@@ -177,7 +187,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	
     	// Discover a non matching impl
     	HashMap<String, Object> impl3Properties = new HashMap<String, Object>();
-    	impl3Properties.put("impl:technology", "JAXWS"); // differs
+    	impl3Properties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS); // differs
     	impl3Properties.put("deltype:nature", "Maven");
     	impl3Properties.put("deltype:repositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
     	impl3Properties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace2}name2");
@@ -207,6 +217,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         //		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
 
         // Discover endpoint that matches is (on provided portType), but no impl
+        epProperties.put(Endpoint.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS); // TODO better ?!?
         epProperties.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
         epProperties.put(Endpoint.XPATH_COMPONENT_ID, foundComponent.getId());
         foundEndpoint = discoveryService.runDiscovery(documentManager,  new EndpointId("staging", "http://localhost:8080/cxf/WS2"), epProperties, null);
@@ -237,10 +248,12 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // Discover an information service, then and endpoint that matches no impl but matches the IS.
         // A link should be made through a placeholder
         isProperties.clear();
+        isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
         isProperties.put(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{www}www");
     	foundInfoServ = discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE, "nswww:namewww"), isProperties, null);
        
         epProperties.clear();
+        epProperties.put(Endpoint.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS); // TODO better ?!?
         epProperties.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, "{www}www");
     	foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("Prod", "www.com"), epProperties, null);
         Assert.assertEquals("Created endpoint must be linked to matching information service", foundInfoServ.getId(),

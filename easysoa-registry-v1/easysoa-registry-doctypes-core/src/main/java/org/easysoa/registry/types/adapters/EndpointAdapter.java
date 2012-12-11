@@ -25,6 +25,6 @@ public class EndpointAdapter extends SoaNodeAdapter implements Endpoint {
     }
     
     public String getEnvironment() throws PropertyException, ClientException {
-        return (String) documentModel.getPropertyValue(XPATH_ENVIRONMENT);
+        return (String) documentModel.getPropertyValue(XPATH_ENDP_ENVIRONMENT);
     }
 }

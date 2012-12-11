@@ -39,7 +39,7 @@ public class ModelIntegrityTests extends AbstractRegistryTest {
 		documentManager.save();
 		
 		// Check default values
-		Assert.assertEquals(endpointId.getEnvironment(), createdEndpoint.getPropertyValue(Endpoint.XPATH_ENVIRONMENT));
+		Assert.assertEquals(endpointId.getEnvironment(), createdEndpoint.getPropertyValue(Endpoint.XPATH_ENDP_ENVIRONMENT));
 		Assert.assertEquals(endpointId.getUrl(), createdEndpoint.getPropertyValue(Endpoint.XPATH_URL));
 	}
 
@@ -48,7 +48,7 @@ public class ModelIntegrityTests extends AbstractRegistryTest {
     	// Create endpoint without SOA name & make sure it has been generated
     	DocumentModel endpointModel = documentManager.createDocumentModel("/default-domain/workspaces",
     			"endpoint", Endpoint.DOCTYPE);
-    	endpointModel.setPropertyValue(Endpoint.XPATH_ENVIRONMENT, "Production");
+    	endpointModel.setPropertyValue(Endpoint.XPATH_ENDP_ENVIRONMENT, "Production");
     	endpointModel.setPropertyValue(Endpoint.XPATH_URL, "MyEndpointURL");
     	endpointModel = documentManager.createDocument(endpointModel);
     	Assert.assertEquals("Production:MyEndpointURL", endpointModel.getPropertyValue(Endpoint.XPATH_SOANAME));

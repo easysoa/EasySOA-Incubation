@@ -27,6 +27,7 @@ import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.OperationInformation;
+import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
 
 import com.thoughtworks.qdox.model.Annotation;
@@ -328,7 +329,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 				"{" + wsNamespace + "}" + wsName);
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_WSDL_SERVICE_NAME,
 				"{" + wsNamespace + "}" + serviceName);
-		serviceImpl.setProperty(JavaServiceImplementation.XPATH_TECHNOLOGY, "JAX-WS");
+		serviceImpl.setProperty(JavaServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_ISMOCK,
 		        c.getSource().getURL().getPath().contains("src/test/"));
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTATIONCLASS, c.getFullyQualifiedName());
@@ -348,6 +349,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 	    String wsNamespace = getWsNamespace(itfClass), wsName = getWsName(itfClass);
 	    String itfClassName = itfClass.getName();
 	    InformationServiceInformation informationService = new InformationServiceInformation(wsNamespace + ":" + wsName);
+	    informationService.setProperty(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
 	    informationService.setProperty(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{" + wsNamespace + "}" + wsName);
 	    informationService.setTitle(itfClassName.substring(itfClassName.lastIndexOf(".") + 1));
 	    return informationService;

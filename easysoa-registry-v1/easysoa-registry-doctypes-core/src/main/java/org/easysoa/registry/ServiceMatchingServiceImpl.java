@@ -13,6 +13,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -24,6 +25,14 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 
     private static Logger logger = Logger.getLogger(ServiceMatchingServiceImpl.class);
 	
+
+    public boolean isServiceImplementationAlreadyMatched(DocumentModel implDocument)
+            throws PropertyException, ClientException {
+        String providedIServId = (String) implDocument.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE);
+        return providedIServId != null && providedIServId.length() != 0;
+    }
+    
+    
 	/* (non-Javadoc)
 	 * @see org.easysoa.registry.ServiceMatchingService#findInformationServices(org.nuxeo.ecm.core.api.CoreSession, org.nuxeo.ecm.core.api.DocumentModel, org.nuxeo.ecm.core.api.DocumentModel, boolean)
 	 */
@@ -61,12 +70,12 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
 
     	if (!skipPlatformMatching) {
-	    	query.addConstraintMatchCriteriaIfSet("platform:ide", implIde);
-	    	query.addConstraintMatchCriteriaIfSet("platform:language", implLanguage);
-	    	query.addConstraintMatchCriteriaIfSet("platform:build", implBuild);
-	    	query.addConstraintMatchCriteriaIfSet("platform:deliverableNature", implDeliverableNature);
-	    	query.addConstraintMatchCriteriaIfSet("platform:deliverableRepositoryUrl", implDeliverableRepositoryUrl);
-	    	query.addConstraintMatchCriteriaIfSet("platform:serviceLanguage", implServiceLanguage);
+	    	query.addConstraintMatchCriteriaIfSet(Platform.XPATH_IDE, implIde);
+	    	query.addConstraintMatchCriteriaIfSet(Platform.XPATH_LANGUAGE, implLanguage);
+	    	query.addConstraintMatchCriteriaIfSet(Platform.XPATH_BUILD, implBuild);
+	    	query.addConstraintMatchCriteriaIfSet(Platform.XPATH_DELIVERABLE_NATURE, implDeliverableNature);
+	    	query.addConstraintMatchCriteriaIfSet(Platform.XPATH_DELIVERABLE_REPOSITORY_URL, implDeliverableRepositoryUrl);
+	    	query.addConstraintMatchCriteriaIfSet(Platform.XPATH_SERVICE_LANGUAGE, implServiceLanguage);
     	}
     	
     	// Filter by component
@@ -99,22 +108,15 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
     			" AND platform:serviceLanguage='" + implServiceLanguage + "'"; // if any ; OPT multiple options (consistency handled in logic)
     	*/
     	
-    	boolean isWsdl = impl.hasFacet(ServiceImplementation.FACET_WSDLINFO) // for now static facet so always
-    	        && "JAX-WS".equals(impl.getPropertyValue(ServiceImplementation.XPATH_TECHNOLOGY))
-    			&& impl.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME) != null;// OPT dynamic if possible when setting props in DiscoveryService ??
-    	boolean isRest = impl.hasFacet(ServiceImplementation.FACET_RESTINFO) // for now static facet so always
-    	        && "JAX-RS".equals(impl.getPropertyValue(ServiceImplementation.XPATH_TECHNOLOGY))
-    			&& impl.getPropertyValue(RestInfoFacet.XPATH_REST_PATH) != null;// OPT dynamic if possible when setting props in DiscoveryService ??
-    	
-    	if (isWsdl) { // consistency logic
-            //query.addCriteria("ecm:mixinType = '" + ServiceImplementation.FACET_WSDLINFO + "'"); // NO should be added dynamically but hard to do in DiscoveryServiceImpl
-    	    query.addCriteria(ServiceImplementation.XPATH_TECHNOLOGY , "JAX-WS");
+    	if (EndpointMatchingServiceImpl.isWsdlInfo(impl)) { // consistency logic
+            //query.addCriteria("ecm:mixinType = '" + InformationService.FACET_WSDLINFO + "'"); // not required unless added dynamically but hard to do in DiscoveryServiceImpl
+    	    query.addCriteria(Platform.XPATH_SERVICE_LANGUAGE , Platform.SERVICE_LANGUAGE_JAXWS); // TODO required ?
         	String implPortTypeName = (String) impl.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME);
         	query.addConstraintMatchCriteria(InformationService.XPATH_WSDL_PORTTYPE_NAME, implPortTypeName);
         			
-    	} else if (isRest) {
-            //query.addCriteria("ecm:mixinType = '" + ServiceImplementation.FACET_RESTINFO + "'"); // NO should be added dynamically but hard to do in DiscoveryServiceImpl
-            query.addCriteria(ServiceImplementation.XPATH_TECHNOLOGY , "JAX-RS");
+    	} else if (EndpointMatchingServiceImpl.isRestInfo(impl)) {
+            //query.addCriteria("ecm:mixinType = '" + InformationService.FACET_RESTINFO + "'"); // not required unless added dynamically but hard to do in DiscoveryServiceImpl
+    	    query.addCriteria(Platform.XPATH_SERVICE_LANGUAGE , Platform.SERVICE_LANGUAGE_JAXRS); // TODO required ?
         	String implRestPath = (String) impl.getPropertyValue(ServiceImplementation.XPATH_REST_PATH);
             //OPT String implRestAccepts = (String) impl.getPropertyValue(ServiceImplementation.XPATH_REST_ACCEPTS); // OPT
             //OPT String implRestContentType = (String) impl.getPropertyValue(ServiceImplementation.XPATH_REST_CONTENT_TYPE); // OPT
@@ -143,26 +145,24 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 			logger.error("Document service unavailable, aborting");
 			return null;
 		}
-		
-		boolean isWsdl = informationService.hasFacet("WsdlInfo"); // TODO impl.hasFacet("WsdlInfo");
-    	boolean isRest = informationService.hasFacet("RestInfo");// OPT dynamic
-    	// or platform:serviceDefinition=WSDL|JAXRS ?
-    	
+
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE);
     	
-    	if (isWsdl) { // consistency logic
-        	String implPortTypeName = (String) informationService.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME); // if JAXWS
-        	query.addCriteria("ecm:mixinType = 'WsdlInfo'");
-        	query.addConstraintMatchCriteria(InformationService.XPATH_WSDL_PORTTYPE_NAME, implPortTypeName);
+    	if (EndpointMatchingServiceImpl.isWsdlInfo(informationService)) { // consistency logic
+            //query.addCriteria("ecm:mixinType = '" + InformationService.FACET_WSDLINFO + "'"); // NO should be added dynamically but hard to do in DiscoveryServiceImpl
+            query.addCriteria(ServiceImplementation.XPATH_TECHNOLOGY , Platform.SERVICE_LANGUAGE_JAXWS);
+        	String iservPortTypeName = (String) informationService.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME); // if JAXWS
+            query.addConstraintMatchCriteria(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, iservPortTypeName);
         			
-    	} else if (isRest) {
-        	String implRestPath = (String) informationService.getPropertyValue(RestInfoFacet.XPATH_REST_PATH); // if JAXRS
-        	//OPT String implMediaType = (String) impl.getPropertyValue(ServiceImplementation.XPATH_REST_MEDIA_TYPE); // if JAXRS
-    		//infoServiceQueryString +=
-					//" AND ecm:mixinType = 'RestInfo' AND " +
-        			//" AND " InformationService.XPATH_REST_PATH + "='" + implRestPath + "'" +
-        			//OPT " AND " InformationService.XPATH_REST_MEDIA_TYPE + "='" + implMediaType + "'" +
-        			
+    	} else if (EndpointMatchingServiceImpl.isRestInfo(informationService)) {
+            //query.addCriteria("ecm:mixinType = '" + ServiceImplementation.FACET_RESTINFO + "'"); // NO should be added dynamically but hard to do in DiscoveryServiceImpl
+            query.addCriteria(ServiceImplementation.XPATH_TECHNOLOGY , Platform.SERVICE_LANGUAGE_JAXRS);
+            String iservRestPath = (String) informationService.getPropertyValue(InformationService.XPATH_REST_PATH);
+            //OPT String iservRestAccepts = (String) impl.getPropertyValue(InformationService.XPATH_REST_ACCEPTS); // OPT
+            //OPT String iservRestContentType = (String) impl.getPropertyValue(InformationService.XPATH_REST_CONTENT_TYPE); // OPT
+            query.addConstraintMatchCriteria(ServiceImplementation.XPATH_REST_PATH, iservRestPath);
+            //query.addConstraintMatchCriteria(ServiceImplementation.XPATH_REST_ACCEPTS, iservRestAccepts); // OPT
+            //query.addConstraintMatchCriteria(ServiceImplementation.XPATH_REST_CONTENT_TYPE, iservRestContentType); // OPT   
     	}
 
     	// TODO handle the case of IS-impl links that are now wrong i.e. SOA validation

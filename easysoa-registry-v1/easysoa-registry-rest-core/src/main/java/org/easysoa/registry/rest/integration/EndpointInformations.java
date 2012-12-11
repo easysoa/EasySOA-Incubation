@@ -17,7 +17,6 @@ import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
  *
  */
 @XmlRootElement
-//@XmlAccessorType(XmlAccessType.FIELD)
 @JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE, setterVisibility=Visibility.NONE)
 public class EndpointInformations {
 

@@ -2,6 +2,7 @@ package org.easysoa.registry.rest.integration;
 
 import java.util.Date;
 
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -37,7 +38,10 @@ public interface EndpointStateService {
 	 * where endpointId is the nuxeo id of the endpoint
 	 * @throws Exception
 	 */
-	public void updateSlaOlaIndicators(SlaOrOlaIndicator[] SlaOrOlaIndicators) throws Exception;
+    @POST
+    @Path("/updateSlaOlaIndicators")
+    @Produces(MediaType.APPLICATION_JSON)    
+	public void updateSlaOlaIndicators(@FormParam("SlaOrOlaIndicators") SlaOrOlaIndicators SlaOrOlaIndicators) throws Exception;
 	
 	/**
 	 * Returns level indicators, in the given period (default : daily)
@@ -50,7 +54,18 @@ public interface EndpointStateService {
      * @param pageSize OPT pagination : number of indicators per page
      * @param pageStart OPT pagination : index of the first indicator to return (starts with 0)
 	 * @return SlaOrOlaIndicators array of SlaOrOlaIndicator
+	 * @throws Exception 
 	 */
-	public SlaOrOlaIndicator[] getSlaOrOlaIndicators(Date periodStart, Date periodEnd, int pageSize, int pageStart);
-	
+    @GET
+    @Path("/getSlaOrOlaIndicators")
+    @Produces(MediaType.APPLICATION_JSON)	
+	public SlaOrOlaIndicators getSlaOrOlaIndicators(@QueryParam("endpointId") String endpointId, 
+	        @QueryParam("slaOrOlaName") String slaOrOlaName,
+	        @QueryParam("environment") String environment,
+	        @QueryParam("projectId") String projectId,
+	        @QueryParam("periodStart") Date periodStart, 
+	        @QueryParam("periodEnd")Date periodEnd, 
+	        @QueryParam("pageSize") int pageSize, 
+	        @QueryParam("pageStart") int pageStart) throws Exception;
+
 }

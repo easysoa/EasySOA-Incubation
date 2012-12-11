@@ -7,16 +7,16 @@ import org.easysoa.registry.rest.AbstractRestApiTest;
  * @author jguillemotte
  *
  */
-public class SimpleRegistryServiceHelper {
+public class EndpointStateServiceHelper {
 
     private final AbstractRestApiTest test;
 
-    public SimpleRegistryServiceHelper(AbstractRestApiTest test) {
+    public EndpointStateServiceHelper(AbstractRestApiTest test) {
         this.test = test;
     }
     
     public String getRootURL() {
-        return test.getURL(SimpleRegistryServiceImpl.class);
+        return test.getURL(EndpointStateServiceImpl.class);
     }
     
 }

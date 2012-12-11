@@ -1,17 +1,17 @@
 ## AXXX Pivotal
 
 * login
- * TODO logout
+ * logout
 * allow to list, remove & add Client
 * new Client page
 * Client details page allowing to modify it BUT NOT IDENTIFIANT_CLIENT OR , also listing ContactClients and InformationAVPs
- * TODO unmodifiable summary fields, Information_APV below with lift
-* TODO in ClientServiceImpl, (like in UserServiceImpl) at init if table empty fill with default data, including the 3 adresses of Uniserv mock and further from reporting SQL (lookup tdr_bloca and other field names) TO BE UNBRANDED
+ * unmodifiable summary fields, Information_APV below with lift
+* in ClientServiceImpl, (like in UserServiceImpl) at init if table empty fill with default data, including the 3 adresses of Uniserv mock and further from reporting SQL (lookup tdr_bloca and other field names) TO BE UNBRANDED
 * Client details page : button "Créer précompte" that calls TdrService.creerPrecompte() (ask MDU)
- * TODO display OK or error message at the end of creerPrecompte
- * TODO add creerPrecompteDone field and disable button if true
+ * display OK or error message at the end of creerPrecompte
+ * add creerPrecompteDone field and disable button if true
 * expose ContactSvc.asmx.wsdl WS using FraSCAti (and already gen'd source) and implement it (Client UPDATE ONLY, ContactClient, Information_APV) on top of ClientService
-* TODO OW enrich Pivotal's ContactSvc.asmx.wsdl's XML with :
+* OW enrich Pivotal's ContactSvc.asmx.wsdl's XML with :
 .getClient(ididentifiantClient) returns Client
 .getRepartitionTypeStructure() returns [{ typeStructure, clientCount }]
 then regenerate the Java classes, and implement them

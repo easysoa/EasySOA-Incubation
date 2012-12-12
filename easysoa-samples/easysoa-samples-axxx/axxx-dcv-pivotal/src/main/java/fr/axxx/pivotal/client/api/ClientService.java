@@ -101,8 +101,9 @@ public interface ClientService {
      * @param nombre
      * @param bilanAnnee
      * @return
+     * @throws Exception 
      */
-    InformationAPV createOrUpdateInformationApv(Long id, String identifiantClient, String bilanLibelle, Integer nombre, Integer bilanAnnee);
+    InformationAPV createOrUpdateInformationApv(String identifiantClient, String bilanLibelle, Integer nombre, Integer bilanAnnee) throws Exception;
 
     /**
      * 
@@ -118,11 +119,11 @@ public interface ClientService {
      * @param pays
      * @return
      */
-    ContactClient createOrUpdateContactClient(Long id, String identifiantClient, String nomContact, String prenomContact, String fonctionContact, String telephone, String email, String numEtVoie, String codePostal,
-            String ville, String pays);
+    ContactClient createOrUpdateContactClient(String identifiantClient, String nomContact, String prenomContact, String fonctionContact, String telephone, String email, String numEtVoie, String codePostal,
+            String ville, String pays) throws Exception;
 
     /**
-     * 
+     * Returns the repartion by type structure
      */
     Map<String, Long> getRepartitionTypeStructure();
     

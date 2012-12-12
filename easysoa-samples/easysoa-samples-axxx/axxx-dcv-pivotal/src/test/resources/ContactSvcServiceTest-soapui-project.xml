@@ -266,8 +266,6 @@
    <soapenv:Header/>
    <soapenv:Body>
       <piv:Contact_Client>
-         <!--Optional: in case of update-->
-         <!--<piv:Id>?</piv:Id>-->
          <!--Optional:-->
          <piv:Identifiant_Client>AssociationVacances</piv:Identifiant_Client>
          <!--Optional:-->
@@ -305,12 +303,10 @@
    <soapenv:Header/>
    <soapenv:Body>
       <piv:Information_APV>
-         <!--Optional: in case of update-->
-         <!--<piv:Id>?</piv:Id>-->
          <!--Optional:-->
          <piv:Identifiant_Client>AssociationVacances</piv:Identifiant_Client>
          <!--Optional:-->
-         <piv:Bilan_Libelle>Entretien</piv:Bilan_Libelle>
+         <piv:Bilan_Libelle>seniors</piv:Bilan_Libelle>
          <!--Optional:-->
          <piv:Nombre>50</piv:Nombre>
          <!--Optional:-->

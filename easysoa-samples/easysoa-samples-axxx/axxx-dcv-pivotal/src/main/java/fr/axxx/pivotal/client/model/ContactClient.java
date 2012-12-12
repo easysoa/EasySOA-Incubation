@@ -14,6 +14,8 @@ import fr.axxx.pivotal.persistence.GenericEntity;
 
 
 /**
+ * Unique per given Client & fonctionContact
+ * 
  * <p>Java class for anonymous complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -64,14 +66,16 @@ public class ContactClient extends GenericEntity<ContactClient> {
 
 	private static final long serialVersionUID = -5861146640772328879L;
 	
+	/** the Client this Contact is about */
 	@XmlElement(name = "Identifiant_Client")
     protected String identifiantClient;
+	/** the type of this Contact, unique per Client */
+    @XmlElement(name = "Fonction_Contact")
+    protected String fonctionContact;
     @XmlElement(name = "Nom_Contact")
     protected String nomContact;
     @XmlElement(name = "Prenom_Contact")
     protected String prenomContact;
-    @XmlElement(name = "Fonction_Contact")
-    protected String fonctionContact;
     @XmlElement(name = "Telephone")
     protected String telephone;
     @XmlElement(name = "Email")

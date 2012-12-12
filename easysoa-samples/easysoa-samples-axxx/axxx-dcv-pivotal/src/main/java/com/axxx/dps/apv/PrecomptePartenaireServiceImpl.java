@@ -14,9 +14,11 @@ import javax.xml.ws.Service;
  * Generated source version: 2.4.2
  * 
  */
+/*
 @WebServiceClient(name = "PrecomptePartenaireServiceImpl", 
                   wsdlLocation = "http://localhost:8076/services/PrecomptePartenaireService?wsdl",
-                  targetNamespace = "http://www.axxx.com/dps/apv") 
+                  targetNamespace = "http://www.axxx.com/dps/apv")
+*/ 
 public class PrecomptePartenaireServiceImpl extends Service {
 
     public final static URL WSDL_LOCATION;
@@ -26,11 +28,13 @@ public class PrecomptePartenaireServiceImpl extends Service {
     static {
         URL url = null;
         try {
-            url = new URL("http://localhost:8076/services/PrecomptePartenaireService?wsdl");
+            //url = new URL("http://localhost:8076/services/PrecomptePartenaireService?wsdl");
+            //url = new URL("file:///src/main/resources/api/PrecomptePartenaireService.wsdl");
+            url = new URL(new URL("file:"), "src/main/resources/api/PrecomptePartenaireService.wsdl");
         } catch (MalformedURLException e) {
             java.util.logging.Logger.getLogger(PrecomptePartenaireServiceImpl.class.getName())
-                .log(java.util.logging.Level.INFO, 
-                     "Can not initialize the default wsdl from {0}", "http://localhost:8076/services/PrecomptePartenaireService?wsdl");
+                //.log(java.util.logging.Level.INFO, "Can not initialize the default wsdl from {0}", "http://localhost:8076/services/PrecomptePartenaireService?wsdl");
+                .log(java.util.logging.Level.INFO, "Can not initialize the default wsdl from {0}", "file:///src/main/resources/api/PrecomptePartenaireService.wsdl");
         }
         WSDL_LOCATION = url;
     }

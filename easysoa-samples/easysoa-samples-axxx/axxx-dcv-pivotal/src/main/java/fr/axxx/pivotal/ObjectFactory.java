@@ -30,59 +30,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link TypeStructureCount }
+     * Create an instance of {@link InformationAPVResponse }
      * 
      */
-    public TypeStructureCount createTypeStructureCount() {
-        return new TypeStructureCount();
-    }
-
-    /**
-     * Create an instance of {@link InformationAPV }
-     * 
-     */
-    public InformationAPV createInformationAPV() {
-        return new InformationAPV();
-    }
-
-    /**
-     * Create an instance of {@link ClientResponse }
-     * 
-     */
-    public ClientResponse createClientResponse() {
-        return new ClientResponse();
-    }
-
-    /**
-     * Create an instance of {@link GetClientResponse }
-     * 
-     */
-    public GetClientResponse createGetClientResponse() {
-        return new GetClientResponse();
-    }
-
-    /**
-     * Create an instance of {@link Client }
-     * 
-     */
-    public Client createClient() {
-        return new Client();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfTypeStructureCount }
-     * 
-     */
-    public ArrayOfTypeStructureCount createArrayOfTypeStructureCount() {
-        return new ArrayOfTypeStructureCount();
-    }
-
-    /**
-     * Create an instance of {@link ContactClient }
-     * 
-     */
-    public ContactClient createContactClient() {
-        return new ContactClient();
+    public InformationAPVResponse createInformationAPVResponse() {
+        return new InformationAPVResponse();
     }
 
     /**
@@ -102,19 +54,35 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ArrayOfString }
+     * Create an instance of {@link ClientResponse }
      * 
      */
-    public ArrayOfString createArrayOfString() {
-        return new ArrayOfString();
+    public ClientResponse createClientResponse() {
+        return new ClientResponse();
     }
 
     /**
-     * Create an instance of {@link InformationAPVResponse }
+     * Create an instance of {@link GetClientResponse }
      * 
      */
-    public InformationAPVResponse createInformationAPVResponse() {
-        return new InformationAPVResponse();
+    public GetClientResponse createGetClientResponse() {
+        return new GetClientResponse();
+    }
+
+    /**
+     * Create an instance of {@link TypeStructureCount }
+     * 
+     */
+    public TypeStructureCount createTypeStructureCount() {
+        return new TypeStructureCount();
+    }
+
+    /**
+     * Create an instance of {@link Client }
+     * 
+     */
+    public Client createClient() {
+        return new Client();
     }
 
     /**
@@ -123,6 +91,38 @@ public class ObjectFactory {
      */
     public ContactClientResponse createContactClientResponse() {
         return new ContactClientResponse();
+    }
+
+    /**
+     * Create an instance of {@link InformationAPV }
+     * 
+     */
+    public InformationAPV createInformationAPV() {
+        return new InformationAPV();
+    }
+
+    /**
+     * Create an instance of {@link ContactClient }
+     * 
+     */
+    public ContactClient createContactClient() {
+        return new ContactClient();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfTypeStructureCount }
+     * 
+     */
+    public ArrayOfTypeStructureCount createArrayOfTypeStructureCount() {
+        return new ArrayOfTypeStructureCount();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfString }
+     * 
+     */
+    public ArrayOfString createArrayOfString() {
+        return new ArrayOfString();
     }
 
 }

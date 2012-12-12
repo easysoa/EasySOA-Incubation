@@ -18,7 +18,6 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="Id" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/>
  *         &lt;element name="Identifiant_Client" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="Nom_Contact" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="Prenom_Contact" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
@@ -39,7 +38,6 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "id",
     "identifiantClient",
     "nomContact",
     "prenomContact",
@@ -54,8 +52,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "Contact_Client")
 public class ContactClient {
 
-    @XmlElement(name = "Id")
-    protected Long id;
     @XmlElement(name = "Identifiant_Client")
     protected String identifiantClient;
     @XmlElement(name = "Nom_Contact")
@@ -76,30 +72,6 @@ public class ContactClient {
     protected String ville;
     @XmlElement(name = "Pays")
     protected String pays;
-
-    /**
-     * Gets the value of the id property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Long }
-     *     
-     */
-    public Long getId() {
-        return id;
-    }
-
-    /**
-     * Sets the value of the id property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Long }
-     *     
-     */
-    public void setId(Long value) {
-        this.id = value;
-    }
 
     /**
      * Gets the value of the identifiantClient property.

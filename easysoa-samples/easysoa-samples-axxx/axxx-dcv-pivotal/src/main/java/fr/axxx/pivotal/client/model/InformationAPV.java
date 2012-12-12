@@ -14,6 +14,8 @@ import fr.axxx.pivotal.persistence.GenericEntity;
 
 
 /**
+ * Unique per given Client, Bilan_Libelle & Bilan_Annee
+ * 
  * <p>Java class for anonymous complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -50,14 +52,23 @@ public class InformationAPV extends GenericEntity<InformationAPV> {
 
 	private static final long serialVersionUID = 7633271562728451845L;
 	
+	// List of bilan libelle values
+	public static final String BILAN_LIBELLE_JEUNES = "jeunes";
+	public static final String BILAN_LIBELLE_SENIORS = "seniors";
+	public static final String BILAN_LIBELLE_FAMILLES = "familles";
+	public static final String BILAN_LIBELLE_ADULTESISOLES = "adultesisoles"; 
+
+    /** the Client this InformationAPV is about */
 	@XmlElement(name = "Identifiant_Client")
     protected String identifiantClient;
+    /** the "public" (target) of this InformationAPV, unique per Client & Bilan_Annee (TODO values : jeunes, seniors, familles, adultesisoles) */
     @XmlElement(name = "Bilan_Libelle")
     protected String bilanLibelle;
-    @XmlElement(name = "Nombre")
-    protected Integer nombre;
+    /** the year of this InformationAPV, unique per Client & Bilan_Annee */
     @XmlElement(name = "Bilan_Annee")
     protected Integer bilanAnnee;
+    @XmlElement(name = "Nombre")
+    protected Integer nombre;
 
     /**
      * Gets the value of the identifiantClient property.
@@ -153,6 +164,19 @@ public class InformationAPV extends GenericEntity<InformationAPV> {
      */
     public void setBilanAnnee(Integer value) {
         this.bilanAnnee = value;
+    }
+
+    /**
+     * Check if the value of bilan libelle can be used
+     * @param bilanLibelle
+     * @return ture if the value can be used, false otherwise
+     */
+    public static boolean checkBilanLibelleValue(String bilanLibelle) {
+        if(BILAN_LIBELLE_ADULTESISOLES.equals(bilanLibelle) || BILAN_LIBELLE_FAMILLES.equals(bilanLibelle) || BILAN_LIBELLE_JEUNES.equals(bilanLibelle) || BILAN_LIBELLE_SENIORS.equals(bilanLibelle)){
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

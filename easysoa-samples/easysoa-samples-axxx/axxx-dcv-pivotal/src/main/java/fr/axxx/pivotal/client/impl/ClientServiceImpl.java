@@ -150,7 +150,6 @@ public class ClientServiceImpl implements ClientService {
      * @see ClientService#getClient(String)
      */    
     @Override
-    @SuppressWarnings("unchecked")
     public Client getClient(String identifiantClient){
         try {
             Query query = this.database.get().createQuery("SELECT c FROM Client c WHERE c.identifiantClient = :identifiantClient");
@@ -250,6 +249,7 @@ public class ClientServiceImpl implements ClientService {
                 contactClient1.setNumEtVoie("4 PLACE DE NAVARRE");
                 contactClient1.setVille("SARCELLES");
                 contactClient1.setPays("FR");
+                contactClient1.setFonctionContact("directeur");
                 this.database.get().persist(contactClient1);
                 
                 ContactClient contactClient2 = new ContactClient();
@@ -259,15 +259,25 @@ public class ClientServiceImpl implements ClientService {
                 contactClient2.setPrenomContact("Jacques");
                 contactClient2.setNumEtVoie("19 RUE DE L'ABONDANCE");
                 contactClient2.setVille("LYON");
-                contactClient2.setPays("FR");                
+                contactClient2.setPays("FR");
+                contactClient2.setFonctionContact("tresorier");
                 this.database.get().persist(contactClient2);
                 
                 // Default values for InformationsAPV
                 InformationAPV informationAPV = new InformationAPV();
                 informationAPV.setIdentifiantClient("AssociationVacances");
-                informationAPV.setBilanLibelle("Bilan");
+                informationAPV.setBilanLibelle(InformationAPV.BILAN_LIBELLE_JEUNES);
                 informationAPV.setBilanAnnee(2012);
                 informationAPV.setNombre(1200);
+                this.database.get().persist(informationAPV);
+                
+                // Default values for InformationsAPV
+                InformationAPV informationAPV2 = new InformationAPV();
+                informationAPV2.setIdentifiantClient("AssociationVacances");
+                informationAPV2.setBilanLibelle(InformationAPV.BILAN_LIBELLE_SENIORS);
+                informationAPV2.setBilanAnnee(2012);
+                informationAPV2.setNombre(2640);                
+                this.database.get().persist(informationAPV2);
                 
                 this.database.get().getTransaction().commit();
             } catch (Exception e) {
@@ -298,12 +308,22 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public InformationAPV createOrUpdateInformationApv(Long id, String identifiantClient, String bilanLibelle, Integer nombre, Integer bilanAnnee) {
+    public InformationAPV createOrUpdateInformationApv(String identifiantClient, String bilanLibelle, Integer nombre, Integer bilanAnnee) throws Exception {
+        if(!InformationAPV.checkBilanLibelleValue(bilanLibelle)){
+            throw new IllegalArgumentException("The value of bilanLibelle must be one of the following values : " 
+                    + InformationAPV.BILAN_LIBELLE_ADULTESISOLES + ", " 
+                    + InformationAPV.BILAN_LIBELLE_FAMILLES + ", " 
+                    + InformationAPV.BILAN_LIBELLE_JEUNES + ", "
+                    + InformationAPV.BILAN_LIBELLE_SENIORS);
+        }
+        // Check if client exists        
+        if(getClient(identifiantClient) == null){
+            throw new IllegalArgumentException("The value of identifiantClient must match with a registred client in database");
+        }
+        // Get the information APV to update
         EntityManager entityManager = database.get();
         InformationAPV informationAPV = null;
-        if(id != null){
-            informationAPV = this.getInformationAPV(id);
-        }
+        informationAPV = this.getInformationAPV(identifiantClient, bilanLibelle, String.valueOf(bilanAnnee));
         if(informationAPV == null){
             informationAPV = new InformationAPV();
         }
@@ -319,7 +339,7 @@ public class ClientServiceImpl implements ClientService {
         } catch (Exception ex) {
             entityManager.getTransaction().rollback();
             LOG.log(Level.SEVERE, "Error trying to create client: " + ex.getMessage(), ex);
-            return null;
+            throw ex;
         }
         return informationAPV; 
     }
@@ -329,10 +349,12 @@ public class ClientServiceImpl implements ClientService {
      * @param id
      * @return The informationAPV or null
      */
-    public InformationAPV getInformationAPV(Long id){
+    private InformationAPV getInformationAPV(String identifiantClient, String bilanLibelle, String bilanAnnee){
         try {
-            Query query = this.database.get().createQuery("SELECT i FROM InformationAPV i WHERE i.id = :id");
-            query.setParameter("id", id);
+            Query query = this.database.get().createQuery("SELECT i FROM InformationAPV i WHERE i.identifiantclient = :identifiantclient AND i.bilanlibelle = :bilanlibelle AND i.bilanannee = : bilanannee");
+            query.setParameter("identifiantclient", identifiantClient);
+            query.setParameter("bilanlibelle", bilanLibelle);
+            query.setParameter("bilanannee", bilanAnnee);
             InformationAPV informationAPV = (InformationAPV) query.getSingleResult();
             return informationAPV;
         }
@@ -350,7 +372,7 @@ public class ClientServiceImpl implements ClientService {
      * @param bilanAnnee
      * @return
      */
-    private InformationAPV createInformationAPV(String identifiantClient, String bilanLibelle, Integer nombre, Integer bilanAnnee){
+    /*private InformationAPV createInformationAPV(String identifiantClient, String bilanLibelle, Integer nombre, Integer bilanAnnee){
         // Create new Information APV
         EntityManager entityManager = database.get();
         InformationAPV informationAPV = null;
@@ -369,17 +391,19 @@ public class ClientServiceImpl implements ClientService {
             return null;
         }
         return informationAPV;        
-    }
+    }*/
     
     @Override
-    public ContactClient createOrUpdateContactClient(Long id, String identifiantClient, String nomContact, String prenomContact, String fonctionContact, String telephone, String email, String numEtVoie,
+    public ContactClient createOrUpdateContactClient(String identifiantClient, String nomContact, String prenomContact, String fonctionContact, String telephone, String email, String numEtVoie,
             String codePostal, String ville, String pays) {
         EntityManager entityManager = database.get();
         ContactClient contactClient = null;
-        if(id != null){
-            // Get contact client to update
-            contactClient = this.getContactCLient(id); 
-        }
+        // Check if client exists
+        if(getClient(identifiantClient) == null){
+            throw new IllegalArgumentException("The value of identifiantClient must match with a registred client in database");
+        }        
+        // Get contact client to update*/
+        contactClient = this.getContactClient(identifiantClient, fonctionContact);
         if(contactClient == null){
             // Create new contact client
             contactClient = new ContactClient();
@@ -411,15 +435,16 @@ public class ClientServiceImpl implements ClientService {
      * @param id
      * @return The informationAPV or null
      */
-    public ContactClient getContactCLient(Long id){
+    private ContactClient getContactClient(String identifiantClient, String fonctionContact){
         try {
-            Query query = this.database.get().createQuery("SELECT c FROM ContactClient c WHERE c.id = :id");
-            query.setParameter("id", id);
+            Query query = this.database.get().createQuery("SELECT c FROM ContactClient c WHERE c.identifiantclient = :identifiantclient AND c.fonctioncontact = :fonctioncontact");
+            query.setParameter("identifiantclient", identifiantClient);
+            query.setParameter("fonctioncontact", fonctionContact);            
             ContactClient contactClient = (ContactClient) query.getSingleResult();
             return contactClient;
         }
         catch(Exception ex){
-            LOG.log(Level.SEVERE, "Error trying to get contact client with id : " + ex.getMessage(), ex);
+            LOG.log(Level.INFO, "Error trying to get contact client with id = " + identifiantClient + " and fonction contact = " + fonctionContact , ex);
             return null;
         }        
     }    

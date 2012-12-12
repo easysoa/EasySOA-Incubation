@@ -5,6 +5,8 @@ package fr.axxx.pivotal;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.osoa.sca.annotations.Reference;
 import org.osoa.sca.annotations.Scope;
@@ -20,6 +22,8 @@ import fr.axxx.pivotal.client.model.ContactClient;
 @Scope("COMPOSITE")
 public class ContactSvcSoapImpl implements ContactSvcSoap {
 
+    private final static Logger LOG = Logger.getLogger(ContactSvcSoapImpl.class.getCanonicalName());    
+    
     @Reference
     private ClientService clientService;
     
@@ -34,34 +38,45 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
     }
 
     @Override
-    public ArrayOfString informationAPV(Long id, String identifiantClient, String bilanLibelle, Integer nombre, Integer bilanAnnee) {
+    public ArrayOfString informationAPV(String identifiantClient, String bilanLibelle, Integer nombre, Integer bilanAnnee) {
         ArrayOfString arrayOfString = new ArrayOfString();
-        InformationAPV informationApv = clientService.createOrUpdateInformationApv(id, identifiantClient, bilanLibelle, nombre, bilanAnnee);
-        arrayOfString.getString().add(String.valueOf(informationApv.getId()));
-        arrayOfString.getString().add(informationApv.getIdentifiantClient());
-        arrayOfString.getString().add(informationApv.getBilanLibelle());
-        arrayOfString.getString().add(String.valueOf(informationApv.getNombre()));
-        arrayOfString.getString().add(String.valueOf(informationApv.getBilanAnnee()));
+        InformationAPV informationApv;
+        try {
+            informationApv = clientService.createOrUpdateInformationApv(identifiantClient, bilanLibelle, nombre, bilanAnnee);
+            arrayOfString.getString().add(String.valueOf(informationApv.getId()));
+            arrayOfString.getString().add(informationApv.getIdentifiantClient());
+            arrayOfString.getString().add(informationApv.getBilanLibelle());
+            arrayOfString.getString().add(String.valueOf(informationApv.getNombre()));
+            arrayOfString.getString().add(String.valueOf(informationApv.getBilanAnnee()));            
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error trying to create or update InformationAPV : " + ex.getMessage(), ex);
+        }
         return arrayOfString;
     }
 
     @Override
-    public ArrayOfString contactClient(Long id, String identifiantClient, String nomContact, String prenomContact, String fonctionContact, String telephone, String email, String numEtVoie, String codePostal,
+    public ArrayOfString contactClient(String identifiantClient, String nomContact, String prenomContact, String fonctionContact, String telephone, String email, String numEtVoie, String codePostal,
             String ville, String pays) {
         ArrayOfString arrayOfString = new ArrayOfString();
-        ContactClient contactClient = clientService.createOrUpdateContactClient(id, identifiantClient, nomContact, prenomContact, fonctionContact, telephone, email, numEtVoie, codePostal, ville, pays);
-        arrayOfString.getString().add(String.valueOf(contactClient.getId()));
-        arrayOfString.getString().add(contactClient.getIdentifiantClient());
-        arrayOfString.getString().add(contactClient.getNomContact());
-        arrayOfString.getString().add(contactClient.getPrenomContact());
-        arrayOfString.getString().add(contactClient.getFonctionContact());
-        arrayOfString.getString().add(contactClient.getTelephone());
-        arrayOfString.getString().add(contactClient.getEmail());
-        arrayOfString.getString().add(contactClient.getComplement());
-        arrayOfString.getString().add(contactClient.getNumEtVoie());
-        arrayOfString.getString().add(contactClient.getCodePostal());
-        arrayOfString.getString().add(contactClient.getVille());
-        arrayOfString.getString().add(contactClient.getPays());
+        ContactClient contactClient;
+        try {
+            contactClient = clientService.createOrUpdateContactClient(identifiantClient, nomContact, prenomContact, fonctionContact, telephone, email, numEtVoie, codePostal, ville, pays);
+            arrayOfString.getString().add(String.valueOf(contactClient.getId()));
+            arrayOfString.getString().add(contactClient.getIdentifiantClient());
+            arrayOfString.getString().add(contactClient.getNomContact());
+            arrayOfString.getString().add(contactClient.getPrenomContact());
+            arrayOfString.getString().add(contactClient.getFonctionContact());
+            arrayOfString.getString().add(contactClient.getTelephone());
+            arrayOfString.getString().add(contactClient.getEmail());
+            arrayOfString.getString().add(contactClient.getComplement());
+            arrayOfString.getString().add(contactClient.getNumEtVoie());
+            arrayOfString.getString().add(contactClient.getCodePostal());
+            arrayOfString.getString().add(contactClient.getVille());
+            arrayOfString.getString().add(contactClient.getPays());            
+        } catch (Exception ex) {
+            LOG.log(Level.SEVERE, "Error trying to create or update ContactClient : " + ex.getMessage(), ex);
+        }
+
         return arrayOfString;
     }
 

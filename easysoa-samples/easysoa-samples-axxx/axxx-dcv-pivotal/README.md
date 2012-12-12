@@ -124,6 +124,19 @@ Architecture is inspired by the one of INRIA's FraSCAti Studio : see website, so
 ### APV to Pivotal mapping
 It's pretty straightforward. Some hints :
 
-blocAdministratif/nomStructure => Raison_Sociale
-blocAdministratif/adresse => Num_et_voie
-tableauDeBord/partenaireDepuis => Anciennete
+* blocAdministratif/nomStructure => Raison_Sociale
+* blocAdministratif/adresse => Num_et_voie
+* tableauDeBord/partenaireDepuis => Anciennete
+
+
+## FAQ
+
+### Build fails
+with error "The POM for org.easysoa.discovery.code:easysoa-discovery-code-mavenplugin:jar:1.0-SNAPSHOT is missing, no dependency information available"
+
+Solution :
+
+You need to first build the EasySOA source discovery plugin once (and the EasySOA registry, but you don't need to start it !) by doing at the EasySOA-Incubation root : mvn clean install -DskipTests
+
+Or you can skip it by adding to the mvn command line : -DskipEasySOA
+

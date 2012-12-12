@@ -15,6 +15,12 @@
     <spring.version>3.1.2.RELEASE</spring.version>
     <hibernate.version>3.6.0.Final</hibernate.version>
     <cxf.version>2.5.2</cxf.version>
+    
+    <!-- EasySOA code discovery conf -->
+    <easysoa.discovery.code.nuxeoSitesUrl>http://localhost:8080/nuxeo/site</easysoa.discovery.code.nuxeoSitesUrl>
+    <easysoa.discovery.code.username>Administrator</easysoa.discovery.code.username>
+    <easysoa.discovery.code.password>Administrator</easysoa.discovery.code.password>
+    <easysoa.discovery.code.application>AXXX DPS APV</easysoa.discovery.code.application>
   </properties>
 
   <modules>
@@ -127,45 +133,6 @@
 
   <build>
     <plugins>
-      <!-- Code discovery plugin -->
-      <plugin>
-        <groupId>org.easysoa.discovery.code</groupId>
-        <artifactId>easysoa-discovery-code-mavenplugin</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <executions>
-          <execution>
-            <id>test</id>
-            <phase>install</phase>
-            <goals>
-              <goal>discover</goal>
-            </goals>
-            <configuration>
-              <nuxeoSitesUrl>http://localhost:8080/nuxeo/site</nuxeoSitesUrl>
-              <username>Administrator</username>
-              <password>Administrator</password>
-              <application>AXXX DPS APV</application>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>buildnumber-maven-plugin</artifactId>
-        <version>1.1</version>
-        <executions>
-          <execution>
-            <phase>validate</phase>
-            <goals>
-              <goal>create</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <doCheck>false</doCheck><!-- Warn: should be true (checks unstaged files) for real projects -->
-          <doUpdate>false</doUpdate>
-          <revisionOnScmFailure>0</revisionOnScmFailure>
-        </configuration>
-      </plugin>
       <!-- Compile with Java 1.6 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -208,6 +175,73 @@
       </plugins>
     </pluginManagement>
   </build>
+  
+  
+  <profiles>
+
+    <!--
+    EasySOA profile.
+    Enabled by default, to disable it add -DskipEasySOA to the mvn command line.
+    (doesn't even require a runnning EasySOA Registry, only its plugins to be in the maven repository)
+    Useful typically in CI. Allows :
+    * to discover services in source code and report them to EasySOA Registry if there
+    -->
+    <profile>
+      <id>EasySOA</id>
+	  <activation>
+	    <property>
+	      <name>!skipEasySOA</name>
+	    </property>
+	  </activation>
+      <build>
+        <plugins>
+          
+	      <!-- EasySOA Code discovery plugin -->
+	      <plugin>
+	        <groupId>org.easysoa.discovery.code</groupId>
+	        <artifactId>easysoa-discovery-code-mavenplugin</artifactId>
+	        <version>1.0-SNAPSHOT</version>
+	        <executions>
+	          <execution>
+	            <id>test</id>
+	            <phase>compile</phase>
+	            <goals>
+	              <goal>discover</goal>
+	            </goals>
+	            <configuration>
+	              <nuxeoSitesUrl>${easysoa.discovery.code.nuxeoSitesUrl}</nuxeoSitesUrl>
+	              <username>${easysoa.discovery.code.username}</username>
+	              <password>${easysoa.discovery.code.password}</password>
+	              <application>${easysoa.discovery.code.application}</application>
+	            </configuration>
+	          </execution>
+	        </executions>
+	      </plugin>
+	      <!-- buildnumber plugin, required by EasySOA Code discovery plugin -->
+	      <plugin>
+	        <groupId>org.codehaus.mojo</groupId>
+	        <artifactId>buildnumber-maven-plugin</artifactId>
+	        <version>1.1</version>
+	        <executions>
+	          <execution>
+	            <phase>validate</phase>
+	            <goals>
+	              <goal>create</goal>
+	            </goals>
+	          </execution>
+	        </executions>
+	        <configuration>
+	          <doCheck>false</doCheck><!-- Warn: should be true (checks unstaged files) for real projects -->
+	          <doUpdate>false</doUpdate>
+	          <revisionOnScmFailure>0</revisionOnScmFailure>
+	        </configuration>
+	      </plugin>
+	      
+        </plugins>
+      </build>
+    </profile>
+    
+  </profiles>
   
   <repositories>
     <repository>

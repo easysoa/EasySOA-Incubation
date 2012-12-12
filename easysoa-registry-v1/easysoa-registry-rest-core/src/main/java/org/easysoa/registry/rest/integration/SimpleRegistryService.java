@@ -23,6 +23,9 @@ public interface SimpleRegistryService {
      * {
      *   "wsdlInformations":[
      *     {
+     *       "endpoints": {
+     *         "endpointInformations":[]
+     *       },
      *       "projectID":"",
      *       "nuxeoID":"61739c9d-6308-4618-a547-769f20c8f51b",
      *       "name":"TdrService",
@@ -33,6 +36,9 @@ public interface SimpleRegistryService {
      *       "endpointUrl":"",
      *       "wsdlDownloadUrl":""
      *     },{
+     *       "endpoints": {
+     *         "endpointInformations":[]
+     *       },
      *       "projectID":"",
      *       "nuxeoID":"f20fa784-7ece-4b20-abe0-a28b3c73bb1e",
      *       "name":"PureAirFlowersService",
@@ -70,6 +76,43 @@ public interface SimpleRegistryService {
     
     /**
      * Returns the Endpoints registered in Nuxeo
+     * 
+     * {
+     *    "endpointInformations":[
+     *      {
+     *        "environment":"Test",
+     *        "endpointUrl":"http://localhost:8658/Test",
+     *        "projectID":"",
+     *        "nuxeoID":"fc9721a4-b439-44c4-ba66-cb7dd27f5269",
+     *        "name":"http://localhost:8658/Test",
+     *        "description":"this is an endpoint to be used...",
+     *        "soaName":"Test:http://localhost:8658/Test",
+     *        "objectType":"Endpoint",
+     *        "wsdlDownloadUrl":""
+     *      },{
+     *        "environment":"Test",
+     *        "endpointUrl":"http://localhost:8659/Test",
+     *        "projectID":"",
+     *        "nuxeoID":"f76591e3-3e5e-4bcd-96ae-620760f61d1f",
+     *        "name":"http://localhost:8659/Test",
+     *        "description":"this is an endpoint to be used...",
+     *        "soaName":"Test:http://localhost:8659/Test",
+     *        "objectType":"Endpoint",
+     *        "wsdlDownloadUrl":""
+     *     },{
+     *        "environment":"Test",
+     *        "endpointUrl":"http://localhost:8660/Test",
+     *        "projectID":"",
+     *        "nuxeoID":"784ebfaf-4542-4fda-8dc4-07a39d696255",
+     *        "name":"http://localhost:8660/Test",
+     *        "description":"this is an endpoint to be used...",
+     *        "soaName":"Test:http://localhost:8660/Test",
+     *        "objectType":"Endpoint",
+     *        "wsdlDownloadUrl":""
+     *      }]
+     *  }    
+     * 
+     * 
      * @param search looked up in name, description, in interface extracted metas (portType)
      * @param subProjectId if null, looks up in all subprojects
      * @return WSDLInformation array
@@ -86,11 +129,63 @@ public interface SimpleRegistryService {
             @QueryParam("environment") String environment*/ ) throws Exception;
     
     /**
-     * TODO jguillemotte
      * 
      * Returns services of the given subProject that match the search, for each
      * along with the array of all its endpoints :
      * [environmentName, endpointUrl, (seen)wsdlDownloadUrl]
+     *
+     * {
+     *   "wsdlInformations":[
+     *     {
+     *       "endpoints": {
+     *         "endpointInformations":[
+     *         {
+     *           "environment":"Test",
+     *           "endpointUrl":"http://localhost:8658/Test",
+     *           "projectID":"",
+     *           "nuxeoID":"fc9721a4-b439-44c4-ba66-cb7dd27f5269",
+     *           "name":"http://localhost:8658/Test",
+     *           "description":"this is an endpoint to be used...",
+     *           "soaName":"Test:http://localhost:8658/Test",
+     *           "objectType":"Endpoint",
+     *           "wsdlDownloadUrl":""
+     *         },{
+     *           "environment":"Test",
+     *           "endpointUrl":"http://localhost:8659/Test",
+     *           "projectID":"",
+     *           "nuxeoID":"f76591e3-3e5e-4bcd-96ae-620760f61d1f",
+     *           "name":"http://localhost:8659/Test",
+     *           "description":"this is an endpoint to be used...",
+     *           "soaName":"Test:http://localhost:8659/Test",
+     *           "objectType":"Endpoint",
+     *           "wsdlDownloadUrl":""
+     *         }
+     *       },
+     *       "projectID":"",
+     *       "nuxeoID":"61739c9d-6308-4618-a547-769f20c8f51b",
+     *       "name":"TdrService",
+     *       "description":null,
+     *       "soaName":"\"http://www.pureairflowers.com/services/\":TdrService",
+     *       "objectType":"InformationService",
+     *       "environment":"",
+     *       "endpointUrl":"",
+     *       "wsdlDownloadUrl":""
+     *     },{
+     *       "endpoints": {
+     *         "endpointInformations":[]
+     *       },
+     *       "projectID":"",
+     *       "nuxeoID":"f20fa784-7ece-4b20-abe0-a28b3c73bb1e",
+     *       "name":"PureAirFlowersService",
+     *       "description":null,
+     *       "soaName":"http://www.pureairflowers.com/services/:PureAirFlowersService",
+     *       "objectType":"InformationService",
+     *       "environment":"",
+     *       "endpointUrl":"",
+     *       "wsdlDownloadUrl":""
+     *     }
+     *   ]
+     * }
      * 
      * This is a convenience method to avoid to do a lot of queries. It is
      * especially useful to external platforms that want to synchronize all endpoints.
@@ -107,12 +202,5 @@ public interface SimpleRegistryService {
     @Produces(MediaType.APPLICATION_JSON)
     public ServiceInformations queryServicesWithEndpoints(@QueryParam("search") String search, 
             @QueryParam("subProjectId") String subProjectId ) throws Exception;
-            
-    /*
-    @GET
-    @Path("/queryServicesWithEndpointTest")
-    @Produces(MediaType.APPLICATION_JSON)
-    // TODO : change return type for EndpointInformation or common type
-    public ServiceInformation queryServicesWithEndpointTest() throws Exception;*/
    
 }

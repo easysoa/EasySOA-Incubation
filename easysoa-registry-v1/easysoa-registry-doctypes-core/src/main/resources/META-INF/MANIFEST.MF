@@ -24,4 +24,6 @@ Nuxeo-Component: OSGI-INF/DocumentService.xml,
  OSGI-INF/lifecycle-contrib.xml,
  OSGI-INF/ServiceFinderService.xml,
  OSGI-INF/service-finder-contrib.xml,
- OSGI-INF/diff-contrib.xml
+ OSGI-INF/diff-contrib.xml,
+ OSGI-INF/wall-contrib.xml
+

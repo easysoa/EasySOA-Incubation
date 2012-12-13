@@ -13,15 +13,42 @@
   xmlns:nxu="http://nuxeo.org/nxweb/util">
 
   <!-- SoaNode parents -->
-  <ui:include src="/incl/easysoa_soanode_parents.xhtml" />
-  
+  <ui:include src="/incl/easysoa_soanode_parents.xhtml"/>
+
   <!-- Default view -->
-  <h:form id="document_view">
-    <a4j:region id="documentViewRegion">
-      <a4j:outputPanel id="documentViewPanel">
-      <nxl:layout value="#{currentDocument}" mode="view" name="#{currentDocumentSummaryLayout}"/>
-    </a4j:outputPanel>
-    </a4j:region>
-  </h:form>
+  <nxu:set var="summaryLayouts"
+           value="#{nxd:typeInfo(currentDocument).getLayouts('summary', null)}"
+           cache="true">
+
+    <c:if test="#{not empty summaryLayouts}">
+
+      <c:if test="false">
+        Since 5.7: compatibility code for old layout contributions to the
+        "summary" document mode
+      </c:if>
+
+      <h:form id="document_view" enctype="multipart/form-data">
+        <a4j:region id="documentViewRegion">
+          <a4j:outputPanel id="documentViewPanel">
+            <nxl:documentLayout documentMode="summary" mode="view"
+                                value="#{currentDocument}"
+                                includeAnyMode="false"/>
+          </a4j:outputPanel>
+        </a4j:region>
+      </h:form>
+
+    </c:if>
+
+    <c:if test="#{empty summaryLayouts}">
+      <a4j:region id="documentViewRegion">
+        <a4j:outputPanel id="documentViewPanel">
+          <nxl:documentLayout documentMode="grid_summary" mode="view"
+                              value="#{currentDocument}" defaultLayout="grid_summary_layout"
+                              includeAnyMode="false"/>
+        </a4j:outputPanel>
+      </a4j:region>
+    </c:if>
+
+  </nxu:set>
 
 </div>

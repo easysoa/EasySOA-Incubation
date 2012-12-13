@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/endp/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/endp/">
+  
+  <xs:element name="id" type="xs:string"/> <!-- indicator id -->
+  
+  <xs:element name="endpointId" type="xs:string"/> <!-- Endpoint ID -->
+  
+  <xs:element name="slaOrOlaName" type="xs:string" /> <!-- SLA or OLA indicator name -->
+  <xs:element name="timestamp" type="xs:dateTime" />
+  <xs:element name="serviceLeveHealth" type="xs:string" /> <!-- gold, silver or bronze -->
+  <xs:element name="serviceLevelViolation" type="xs:boolean" />
+  
+</xs:schema>

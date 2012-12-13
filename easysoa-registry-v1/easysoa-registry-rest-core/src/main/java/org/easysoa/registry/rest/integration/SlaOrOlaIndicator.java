@@ -3,6 +3,8 @@
  */
 package org.easysoa.registry.rest.integration;
 
+import java.util.Date;
+
 /**
  * @author jguillemotte
  *
@@ -15,11 +17,11 @@ public class SlaOrOlaIndicator {
     
     private String slaOrOlaName;
     
-    private long timestamp;
+    private Date timestamp;
     
     private ServiceLevelHealth serviceLevelHealth;
     
-    private boolean serviceLevelViolation;    
+    private Boolean serviceLevelViolation;    
     
     /**
      * @return the endpointId
@@ -52,14 +54,14 @@ public class SlaOrOlaIndicator {
     /**
      * @return the timestamp
      */
-    public long getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
     /**
      * @param timestamp the timestamp to set
      */
-    public void setTimestamp(long timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 

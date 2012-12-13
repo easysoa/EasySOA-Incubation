@@ -3,25 +3,29 @@
  */
 package org.easysoa.registry.integration;
 
+import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-
-//import org.easysoa.registry.DiscoveryService;
-//import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.rest.integration.EndpointStateService;
 import org.easysoa.registry.rest.integration.ServiceLevelHealth;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicators;
 import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
-import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
-
-//import com.google.inject.Inject;
+import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
+import org.nuxeo.ecm.directory.Session;
+import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Endpoint state service implementation
@@ -29,62 +33,74 @@ import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
  * @author jguillemotte
  * 
  */
+@Path("easysoa/endpointStateService")
 public class EndpointStateServiceImpl implements EndpointStateService {
 
     // Servlet context
     @Context
     HttpServletRequest request;
-
-    // Nuxeo document service
-    /*@Inject
-    DocumentService documentService;*/
-
-    /*@Inject
-    DiscoveryService discoveryService;*/
     
     /**
      * @see org.easysoa.registry.rest.integration.EndpointStateService#updateSlaOlaIndicators(SlaOrOlaIndicator[])
      */
     @Override
     public void updateSlaOlaIndicators(SlaOrOlaIndicators slaOrOlaIndicators) throws Exception {
-        CoreSession documentManager = SessionFactory.getSession(request);
+
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        
         if(slaOrOlaIndicators != null){
-            for(SlaOrOlaIndicator indicator : slaOrOlaIndicators.getSlaOrOlaIndicatorList()){
-                
-                // get the indicator
-                ArrayList<String> parameters = new ArrayList<String>();
-                StringBuffer query = new StringBuffer(); 
-                query.append("SELECT * FROM SLA, OLA WHERE soan:name = '?'");
-                parameters.add(indicator.getSlaOrOlaName());
-                // name is enough to find the good sla or ola ??
-                //indicator.getEndpointId()
-                
-                try{
+
+            //openSession(); addRows(); closeSession();
+            // Open a session on slaOrOlaIndicator directory
+            Session session = directoryService.open("slaOrOlaIndicator");
+            if(session == null){
+                throw new Exception("Unable to open a new session on directory 'slaOrOlaIndicator'");
+            }
+
+            try{
+                // Update each indicator
+                for(SlaOrOlaIndicator indicator : slaOrOlaIndicators.getSlaOrOlaIndicatorList()){
+                    // get the indicator if exists
+                    /*ArrayList<String> parameters = new ArrayList<String>();
+                    StringBuffer query = new StringBuffer(); 
+                    query.append("SELECT * FROM slaOlaIndicators WHERE ind:slaOrOlaName = '?' AND ind:endpointId = '?'");
+                    parameters.add(indicator.getSlaOrOlaName());
+                    parameters.add(indicator.getEndpointId());
                     String nxqlQuery = NXQLQueryBuilder.getQuery(query.toString(), parameters.toArray(), false, true);
-                    DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);
+                    DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);*/
+                    Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+                    parameters.put("slaOrOlaName", indicator.getSlaOrOlaName());
+                    parameters.put("endpointId", indicator.getEndpointId());                    
+                    DocumentModelList documentModelList = session.query(parameters);
+                    DocumentModel indicatorModel;
                     
-                    if(soaNodeModelList != null){
-                        // Get the indicator
-                        DocumentModel indicatorModel = soaNodeModelList.get(0);
-                        // Update
-                        indicatorModel.setPropertyValue("", indicator.getServiceLevelHealth());
-                        indicatorModel.setPropertyValue("", indicator.getTimestamp());
-                        // Save
-                        //documentService.
+                    if(documentModelList != null){
+                        // Update existing indicator
+                        indicatorModel = documentModelList.get(0);
+                        indicatorModel.setPropertyValue("serviceLeveHealth", indicator.getServiceLevelHealth());
+                        indicatorModel.setPropertyValue("serviceLevelViolation", indicator.isServiceLevelViolation());
+                        indicatorModel.setPropertyValue("timestamp", indicator.getTimestamp());
+                        session.updateEntry(indicatorModel);
+                    } else {
+                        Map<String, Object> properties = new HashMap<String, Object>();
+                        properties.put("endpointId", indicator.getEndpointId());
+                        properties.put("slaOrOlaName", indicator.getSlaOrOlaName());
+                        properties.put("serviceLeveHealth", indicator.getServiceLevelHealth().toString());
+                        properties.put("serviceLevelViolation", String.valueOf(indicator.isServiceLevelViolation()));
+                        Calendar calendar = new GregorianCalendar();
+                        calendar.setTime(indicator.getTimestamp());
+                        properties.put("timestamp", calendar);
+                        session.createEntry(properties);
                     }
                 }
-               catch(Exception ex){
-                   // Return the exception and cancel the transaction
-                   throw new Exception("Failed to update SLA or OLA indicators ", ex);                   
-               }
-                
-                
-                // Update
-                // To update indicators ???
-                //discoveryService.runDiscovery(documentManager, identifier, properties, parentDocuments);
-                
-                //documentService.
-                
+                session.commit();
+                session.close();
+            }
+            catch(Exception ex){
+                 session.rollback();
+                 session.close();
+                 // Return the exception and cancel the transaction
+                 throw new Exception("Failed to update SLA or OLA indicators ", ex);                   
             }
         }
     }
@@ -98,11 +114,8 @@ public class EndpointStateServiceImpl implements EndpointStateService {
             String slaOrOlaName, String environment, String projectId,
             Date periodStart, Date periodEnd, int pageSize, int pageStart) throws Exception {
         
-        CoreSession documentManager = SessionFactory.getSession(request);
-
-        ArrayList<String> parameters = new ArrayList<String>();
-        StringBuffer query = new StringBuffer(); 
-        query.append("SELECT * FROM SLA, OLA ");
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);        
+        Session session = directoryService.open("slaOrOlaIndicator");        
         
         /*
         * Returns level indicators, in the given period (default : daily)
@@ -114,97 +127,61 @@ public class EndpointStateServiceImpl implements EndpointStateService {
         * @return SlaOrOlaIndicators array of SlaOrOlaIndicator
         */
         
+        if(session == null){
+            throw new Exception("Unable to open a new session on directory 'slaOrOlaIndicator'");
+        }
+
+        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+
         // TODO : Add parameters
-        if(endpointId != null){
-            
-            // check if there is a WHERE keyword
-            // can be done if parameters == 0
-            // else if parameters > 0 => add a AND keyword
-            query.append(addQueryKeyWord(parameters.size()));
-            //query.append("dc:title = '?'");
-            parameters.add(endpointId);
+        if(endpointId != null && !"".equals(endpointId)){
+            parameters.put("endpointId", endpointId);
         }
         
-        if(slaOrOlaName != null){
-            query.append(addQueryKeyWord(parameters.size()));
-            query.append("soan:name = '?'");
-            parameters.add(slaOrOlaName);
+        if(slaOrOlaName != null && !"".equals(slaOrOlaName)){
+            parameters.put("slaOrOlaName", slaOrOlaName);
         }
         
-        if(environment != null){
-            query.append(addQueryKeyWord(parameters.size()));
+        /*if(environment != null){
+            //query.append(addQueryKeyWord(parameters.size()));
             
-            parameters.add(environment);
+            //parameters.add(environment);
         } else {
             
-        }
+        }*/
         
-        if(projectId != null){
-            query.append(addQueryKeyWord(parameters.size()));
+        /*if(projectId != null){
+            //query.append(addQueryKeyWord(parameters.size()));
             
-            parameters.add(projectId);
+            //parameters.add(projectId);
         } else {
             
-        }
-        
-        if(periodStart == null){
-            query.append(addQueryKeyWord(parameters.size()));
-            
-            parameters.add(String.valueOf(periodStart));
-        } else {
-        
-        }
-        
-        if(periodEnd == null){
-            query.append(addQueryKeyWord(parameters.size()));
-            
-            parameters.add(String.valueOf(periodEnd));
-        } else {
-        
-        }
-        
+        }*/
         SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();
-        ArrayList<SlaOrOlaIndicator> indicatorList = new ArrayList<SlaOrOlaIndicator>();
         // Execute query        
         try {
-            String nxqlQuery = NXQLQueryBuilder.getQuery(query.toString(), parameters.toArray(), false, true);
-            DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);            
+            DocumentModelList soaNodeModelList = session.query(parameters);            
             SlaOrOlaIndicator indicator;
             for(DocumentModel model : soaNodeModelList){
                 indicator = new SlaOrOlaIndicator();
-                indicator.setEndpointId("");
-                indicator.setServiceLevelHealth(ServiceLevelHealth.gold);
-                indicator.setServiceLevelViolation(false);
-                indicator.setSlaOrOlaName((String)model.getPropertyValue("soan:name"));
-                indicator.setTimestamp(0);
-                indicatorList.add(indicator);
-
+                indicator.setEndpointId((String)model.getPropertyValue(org.easysoa.registry.types.SlaOrOlaIndicator.XPATH_ENDPOINT_ID));
+                indicator.setServiceLevelHealth(ServiceLevelHealth.valueOf((String)model.getPropertyValue(org.easysoa.registry.types.SlaOrOlaIndicator.XPATH_SERVICE_LEVEL_HEALTH)));
+                indicator.setServiceLevelViolation((Boolean)model.getPropertyValue(org.easysoa.registry.types.SlaOrOlaIndicator.XPATH_SERVICE_LEVEL_VIOLATION));
+                indicator.setSlaOrOlaName((String)model.getPropertyValue(org.easysoa.registry.types.SlaOrOlaIndicator.XPATH_SLA_OR_OLA_NAME));
+                GregorianCalendar calendar = (GregorianCalendar)model.getPropertyValue(org.easysoa.registry.types.SlaOrOlaIndicator.XPATH_TIMESTAMP);                
+                indicator.setTimestamp(calendar.getTime());
+                slaOrOlaIndicators.getSlaOrOlaIndicatorList().add(indicator);
             }
         } catch (ClientException ex) {
             ex.printStackTrace();
             throw ex;
-            
         }
         
         // TODO : add pagination
-        int itemStartIndex = pageSize * pageStart;
-        slaOrOlaIndicators.setSlaOrOlaIndicatorList(indicatorList.subList(itemStartIndex, itemStartIndex + pageSize)) ;                
-
-        return slaOrOlaIndicators;
-    }
-    
-    /**
-     * 
-     * @param parameterListSize
-     * @return
-     */
-    private String addQueryKeyWord(int parameterListSize){
-        if(parameterListSize <= 0){
-            return "WHERE";
-        } else {
-            return "AND";
-        }
+        //int itemStartIndex = pageSize * pageStart;
+        //slaOrOlaIndicators.setSlaOrOlaIndicatorList(indicatorList.subList(itemStartIndex, itemStartIndex + pageSize)) ;                
         
+        return slaOrOlaIndicators;
     }
     
 }

@@ -9,6 +9,7 @@ import org.easysoa.registry.dashboard.rest.MatchingDashboard;
 import org.easysoa.registry.dbb.rest.ServiceFinderRest;
 import org.easysoa.registry.documentation.rest.ServiceDocumentationController;
 import org.easysoa.registry.indicators.rest.IndicatorsController;
+import org.easysoa.registry.integration.EndpointStateServiceImpl;
 import org.easysoa.registry.integration.SimpleRegistryServiceImpl;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
@@ -32,6 +33,7 @@ public class EasySOAModule extends WebEngineModule {
         return new Class<?>[] {
                 RegistryApiImpl.class,
                 SimpleRegistryServiceImpl.class,
+                EndpointStateServiceImpl.class,
                 IndicatorsController.class,
                 ServiceDocumentationController.class,
                 MatchingDashboard.class,

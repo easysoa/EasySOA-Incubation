@@ -19,6 +19,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.easysoa.registry.rest.integration.EndpointInformations;
 import org.easysoa.registry.rest.integration.ServiceInformations;
+import org.easysoa.registry.rest.integration.SlaOrOlaIndicators;
 
 @Provider
 @Consumes(MediaType.APPLICATION_JSON)
@@ -54,6 +55,9 @@ public class JsonMessageReader implements MessageBodyReader<Object> {
             else if(jsonNode.has("endpointInformations")) {
                 return mapper.readValue(jsonNode, EndpointInformations.class);
             }
+            else if(jsonNode.has("slaOrOlaIndicators")) {
+                return mapper.readValue(jsonNode, SlaOrOlaIndicators.class);
+            }            
             else {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 JsonFactory factory = new JsonFactory(new ObjectMapper());

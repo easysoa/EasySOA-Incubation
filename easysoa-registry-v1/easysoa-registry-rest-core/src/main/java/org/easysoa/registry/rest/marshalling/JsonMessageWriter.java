@@ -15,13 +15,14 @@ import javax.ws.rs.ext.Provider;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 
 @Provider
-@Produces({MediaType.APPLICATION_JSON, "application/x-javascript"})
+@Produces({ MediaType.APPLICATION_JSON, "application/x-javascript" })
 public class JsonMessageWriter implements MessageBodyWriter<Object> {
 
     private JsonFactory factory;
-    
+
     public JsonMessageWriter() {
         factory = new JsonFactory(new ObjectMapper());
     }
@@ -29,8 +30,9 @@ public class JsonMessageWriter implements MessageBodyWriter<Object> {
     @Override
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType) {
-        return MediaType.APPLICATION_JSON_TYPE.isCompatible(mediaType)
-                || "application/x-javascript".equals(mediaType.toString());
+
+        return !AbstractBlob.class.isAssignableFrom(type)
+                && (MediaType.APPLICATION_JSON_TYPE.isCompatible(mediaType) || "application/x-javascript".equals(mediaType.toString()));
     }
 
     @Override

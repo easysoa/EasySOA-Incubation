@@ -51,6 +51,7 @@
 
     <!-- Abstract doctypes -->
     <doctype extends="Document" name="SoaNode">
+      <schema name="uid" />
       <schema name="common" />
       <schema name="dublincore" />
       <schema name="soanode" />

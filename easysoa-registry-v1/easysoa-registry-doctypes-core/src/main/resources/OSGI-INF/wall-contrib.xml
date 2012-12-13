@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<component name="org.easysoa.registry.wall" version="1.0">
+
+  <require>org.nuxeo.ecm.activity.listeners</require>
+
+  <!-- configure wall to display all events and minimessage -->
+  <extension target="org.nuxeo.ecm.activity.ActivityStreamService"
+             point="activityStreams">
+    <activityStream name="easySoaWallActivityStream">
+      <verbs>
+        <verb>documentCreated</verb>
+        <verb>documentModified</verb>
+        <verb>commentAdded</verb>
+        <verb>documentCheckedOut</verb>
+        <verb>documentRestored</verb>
+        <verb>documentPublished</verb>
+        <verb>minimessage</verb>
+      </verbs>
+    </activityStream>
+  </extension>
+
+  <!-- listener to store activity when events occured -->
+  <extension target="org.nuxeo.ecm.core.event.EventServiceComponent"
+             point="listener">
+    <listener name="activityStreamListener" async="true" postCommit="true"
+              class="org.easysoa.registry.wall.WallStreamListener"
+              priority="100">
+      <event>documentCreated</event>
+      <event>documentModified</event>
+      <event>commentAdded</event>
+      <event>documentCheckedOut</event>
+      <event>documentRestored</event>
+      <event>documentPublished</event>
+    </listener>
+
+  </extension>
+
+  <!-- Widget to display wall as one -->
+  <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
+             point="widgets">
+    <widget name="soanode_wall" type="template">
+      <labels>
+        <label mode="any">action.view.wall</label>
+      </labels>
+      <translated>true</translated>
+      <fields>
+        <field/>
+      </fields>
+      <properties widgetMode="any">
+        <property name="template">
+          /widgets/easysoa_wall_template.xhtml
+        </property>
+      </properties>
+    </widget>
+  </extension>
+
+  <!-- Wall action to displayed it on summary tab -->
+  <extension target="org.nuxeo.ecm.platform.actions.ActionService"
+             point="actions">
+    <action id="summary_wall" type="widget" order="100">
+      <category>SUMMARY_PANEL_LEFT</category>
+      <properties>
+        <property name="widgetName">soanode_wall</property>
+      </properties>
+      <filter id="isEasySoaWall">
+        <rule grant="true">
+          <type>IntelligentSystem</type>
+          <type>SystemTreeRoot</type>
+        </rule>
+      </filter>
+    </action>
+  </extension>
+
+  <!-- register needed activities verb -->
+  <extension target="org.nuxeo.ecm.activity.ActivityStreamService"
+             point="activityVerbs">
+    <activityVerb verb="commentAdded"
+                  labelKey="label.activity.commentAdded"/>
+    <activityVerb verb="documentCheckedOut"
+                  labelKey="label.activity.documentCheckedOut"/>
+    <activityVerb verb="documentRestored"
+                  labelKey="label.activity.documentRestored"/>
+    <activityVerb verb="documentPublished"
+                  labelKey="label.activity.documentPublished"/>
+  </extension>
+</component>

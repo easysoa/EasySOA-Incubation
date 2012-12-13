@@ -20,10 +20,13 @@
 
 package org.easysoa.preview;
 
+import org.easysoa.registry.facets.WsdlInfoFacet;
 import org.easysoa.registry.types.SoaNode;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.preview.adapter.PreviewAdapterFactory;
 import org.nuxeo.ecm.platform.preview.api.HtmlPreviewAdapter;
+
+import static org.easysoa.registry.facets.WsdlInfoFacet.FACET_WSDLINFO;
 
 /**
  *
@@ -36,7 +39,7 @@ public class EasySOAPreviewAdapterFactory implements PreviewAdapterFactory {
 
     @Override
     public HtmlPreviewAdapter getAdapter(DocumentModel doc) {
-        if (doc.hasFacet(SoaNode.FACET)) {
+        if (doc.hasFacet(FACET_WSDLINFO)) {
             return new NamedConverterBasedPreviewAdapter(doc, "wsdl2html");
         }
 

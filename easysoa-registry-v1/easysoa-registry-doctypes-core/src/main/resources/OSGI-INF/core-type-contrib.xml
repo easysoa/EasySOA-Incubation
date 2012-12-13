@@ -51,6 +51,7 @@
 
     <!-- Abstract doctypes -->
     <doctype extends="Document" name="SoaNode">
+      <schema name="uid" />
       <schema name="common" />
       <schema name="dublincore" />
       <schema name="soanode" />
@@ -75,6 +76,7 @@
     </doctype>
     <doctype extends="Folder" name="SystemTreeRoot">
       <schema name="dublincore" />
+      <facet name="SuperSpace" />
       <facet name="Commentable" />
       <facet name="Versionable" />
       <facet name="Publishable" />
@@ -88,6 +90,7 @@
     </doctype>
     <doctype extends="Folder" name="IntelligentSystem">
       <facet name="System" />
+      <facet name="SuperSpace" />
     </doctype>
     
     <!-- Architecture level -->

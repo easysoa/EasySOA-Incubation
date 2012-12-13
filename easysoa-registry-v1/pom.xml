@@ -250,6 +250,61 @@
         <artifactId>nuxeo-classification-web</artifactId>
         <version>${nuxeo.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-core</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-content</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm</groupId>
+        <artifactId>nuxeo-diff-jsf</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.social</groupId>
+        <artifactId>nuxeo-wall</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.rating</groupId>
+        <artifactId>nuxeo-rating-api</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.rating</groupId>
+        <artifactId>nuxeo-rating-core</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.rating</groupId>
+        <artifactId>nuxeo-rating-gadget</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.rating</groupId>
+        <artifactId>nuxeo-rating-web</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.activity</groupId>
+        <artifactId>nuxeo-activity</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.social</groupId>
+        <artifactId>nuxeo-relationship</artifactId>
+        <version>${nuxeo.version}}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.social</groupId>
+        <artifactId>nuxeo-mini-message</artifactId>
+        <version>${nuxeo.version}}</version>
+      </dependency>
       
       <!-- JUNG (graph lib.) -->
       <dependency>

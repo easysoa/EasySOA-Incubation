@@ -49,6 +49,17 @@
       <artifact:resolveFile key="org.nuxeo.ecm:nuxeo-diff-core::jar" />
       <artifact:resolveFile key="org.nuxeo.ecm:nuxeo-diff-content::jar" />
       <artifact:resolveFile key="org.nuxeo.ecm:nuxeo-diff-jsf::jar" />
+
+      <!-- Wall -->
+      <artifact:resolveFile key="org.nuxeo.ecm.social:nuxeo-wall::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.social:nuxeo-mini-message::jar" />
+      <artifact:resolveFile key="org.nuxeo.ecm.social:nuxeo-relationship::jar" />
+      <artifact:resolveFile key="org.nuxeo.activity:nuxeo-activity::jar" />
+      <artifact:resolveFile key="org.nuxeo.rating:nuxeo-rating-api::jar" />
+      <artifact:resolveFile key="org.nuxeo.rating:nuxeo-rating-core::jar" />
+      <artifact:resolveFile key="org.nuxeo.rating:nuxeo-rating-web::jar" />
+      <artifact:resolveFile key="org.nuxeo.rating:nuxeo-rating-gadget::jar" />
+
     </copy>
     <!-- Whereas the marketplace build using an EAR is automatically downloading the
     required libraries, that simpler solution requires you explicitly list them -->

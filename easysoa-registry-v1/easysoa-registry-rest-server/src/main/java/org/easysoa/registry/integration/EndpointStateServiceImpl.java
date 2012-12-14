@@ -4,10 +4,6 @@
 package org.easysoa.registry.integration;
 
 import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -22,7 +18,6 @@ import org.easysoa.registry.rest.integration.SlaOrOlaIndicators;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.impl.DocumentModelImpl;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.api.Framework;
@@ -50,7 +45,6 @@ public class EndpointStateServiceImpl implements EndpointStateService {
         
         if(slaOrOlaIndicators != null){
 
-            //openSession(); addRows(); closeSession();
             // Open a session on slaOrOlaIndicator directory
             Session session = directoryService.open("slaOrOlaIndicator");
             if(session == null){
@@ -61,35 +55,31 @@ public class EndpointStateServiceImpl implements EndpointStateService {
                 // Update each indicator
                 for(SlaOrOlaIndicator indicator : slaOrOlaIndicators.getSlaOrOlaIndicatorList()){
                     // get the indicator if exists
-                    /*ArrayList<String> parameters = new ArrayList<String>();
-                    StringBuffer query = new StringBuffer(); 
-                    query.append("SELECT * FROM slaOlaIndicators WHERE ind:slaOrOlaName = '?' AND ind:endpointId = '?'");
-                    parameters.add(indicator.getSlaOrOlaName());
-                    parameters.add(indicator.getEndpointId());
-                    String nxqlQuery = NXQLQueryBuilder.getQuery(query.toString(), parameters.toArray(), false, true);
-                    DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);*/
                     Map<String, Serializable> parameters = new HashMap<String, Serializable>();
                     parameters.put("slaOrOlaName", indicator.getSlaOrOlaName());
                     parameters.put("endpointId", indicator.getEndpointId());                    
                     DocumentModelList documentModelList = session.query(parameters);
                     DocumentModel indicatorModel;
                     
-                    if(documentModelList != null){
+                    if(documentModelList != null && documentModelList.size() > 0){
                         // Update existing indicator
                         indicatorModel = documentModelList.get(0);
-                        indicatorModel.setPropertyValue("serviceLeveHealth", indicator.getServiceLevelHealth());
-                        indicatorModel.setPropertyValue("serviceLevelViolation", indicator.isServiceLevelViolation());
+                        indicatorModel.setPropertyValue("serviceLeveHealth", indicator.getServiceLevelHealth().toString());
+                        indicatorModel.setPropertyValue("serviceLevelViolation", String.valueOf(indicator.isServiceLevelViolation()));
                         indicatorModel.setPropertyValue("timestamp", indicator.getTimestamp());
                         session.updateEntry(indicatorModel);
                     } else {
+                        // Create new indicator
                         Map<String, Object> properties = new HashMap<String, Object>();
                         properties.put("endpointId", indicator.getEndpointId());
                         properties.put("slaOrOlaName", indicator.getSlaOrOlaName());
-                        properties.put("serviceLeveHealth", indicator.getServiceLevelHealth().toString());
-                        properties.put("serviceLevelViolation", String.valueOf(indicator.isServiceLevelViolation()));
-                        Calendar calendar = new GregorianCalendar();
-                        calendar.setTime(indicator.getTimestamp());
-                        properties.put("timestamp", calendar);
+                        properties.put("serviceLeveHealth", indicator.getServiceLevelHealth().toString());    
+                        properties.put("serviceLevelViolation", indicator.isServiceLevelViolation());
+                        if(indicator.getTimestamp() != null){
+                            GregorianCalendar calendar = new GregorianCalendar();
+                            calendar.setTime(indicator.getTimestamp());
+                            properties.put("timestamp", calendar);
+                        }
                         session.createEntry(properties);
                     }
                 }
@@ -133,7 +123,6 @@ public class EndpointStateServiceImpl implements EndpointStateService {
 
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
 
-        // TODO : Add parameters
         if(endpointId != null && !"".equals(endpointId)){
             parameters.put("endpointId", endpointId);
         }

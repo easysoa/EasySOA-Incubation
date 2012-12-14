@@ -1,8 +1,6 @@
 package org.easysoa.registry.rest.integration;
 
 import java.util.Date;
-
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -34,14 +32,29 @@ public interface EndpointStateService {
 	 * NB. endpointId et slaOrOlaName sont à récupérer du modèle EasySOA des Specifications et mettre dans la configuration de la plateforme de monitoring
 	 *  (d'abord manuellement puis récupérés automatiquement au démarrage étant donné l'id du sous-projet de déploiement versionné) 
 	 * @param SlaOrOlaIndicators : array of SlaOrOlaIndicator
-	 * {endpointId, slaOrOlaName, timestamp, serviceLevelHealth=gold/silver/bronze, serviceLevelViolation=true/false})
+	 * 
+	 * Consumes :
+	 * 
+     * {
+     *   "slaOrOlaIndicators":[
+     *     {
+     *       "timestamp":1358093865529,
+     *       "endpointId":"test",
+     *       "slaOrOlaName":"testSlaIndicator",
+     *       "serviceLevelHealth":"gold",
+     *       "serviceLevelViolation":false
+     *     }
+     *   ]
+     * }
+	 * 
+	 * 
 	 * where endpointId is the nuxeo id of the endpoint
 	 * @throws Exception
 	 */
     @POST
     @Path("/updateSlaOlaIndicators")
-    @Produces(MediaType.APPLICATION_JSON)    
-	public void updateSlaOlaIndicators(@FormParam("SlaOrOlaIndicators") SlaOrOlaIndicators SlaOrOlaIndicators) throws Exception;
+    @Produces(MediaType.APPLICATION_JSON)
+	public void updateSlaOlaIndicators(SlaOrOlaIndicators SlaOrOlaIndicators) throws Exception;
 	
 	/**
 	 * Returns level indicators, in the given period (default : daily)
@@ -49,6 +62,21 @@ public interface EndpointStateService {
 	 * * endpointId & slaOrOlaName
 	 * * or wider : at least environment and subprojectId (or only global environment) ; possibly componentId... 
 	 * OPT paginated navigation
+	 * 
+	 * Produces :
+	 * 
+	 * {
+     *   "slaOrOlaIndicators":[
+     *     {
+     *       "timestamp":1358093865529,
+     *       "endpointId":"test",
+     *       "slaOrOlaName":"testSlaIndicator",
+     *       "serviceLevelHealth":"gold",
+     *       "serviceLevelViolation":false
+     *     }
+     *   ]
+     * }
+	 * 
      * @param periodStart : if null day start, if both null returns all in the current day
      * @param periodEnd : if null now, if both null returns all in the current day
      * @param pageSize OPT pagination : number of indicators per page

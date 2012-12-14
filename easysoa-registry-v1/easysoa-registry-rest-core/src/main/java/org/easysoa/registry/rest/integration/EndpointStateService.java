@@ -89,11 +89,47 @@ public interface EndpointStateService {
     @Produces(MediaType.APPLICATION_JSON)	
 	public SlaOrOlaIndicators getSlaOrOlaIndicators(@QueryParam("endpointId") String endpointId, 
 	        @QueryParam("slaOrOlaName") String slaOrOlaName,
-	        @QueryParam("environment") String environment,
-	        @QueryParam("projectId") String projectId,
 	        @QueryParam("periodStart") Date periodStart, 
 	        @QueryParam("periodEnd")Date periodEnd, 
 	        @QueryParam("pageSize") int pageSize, 
 	        @QueryParam("pageStart") int pageStart) throws Exception;
+
+    
+    /**
+     * Returns level indicators for the endpoints corresponding to the given environment and project ID
+     * , in the given period (default : daily)
+     * 
+     * Produces :
+     * 
+     * {
+     *   "slaOrOlaIndicators":[
+     *     {
+     *       "timestamp":1358093865529,
+     *       "endpointId":"test",
+     *       "slaOrOlaName":"testSlaIndicator",
+     *       "serviceLevelHealth":"gold",
+     *       "serviceLevelViolation":false
+     *     }
+     *   ]
+     * }
+     * 
+     * @param environment Endpoint environment
+     * @param projectId Endpoint project ID
+     * @param periodStart : if null day start, if both null returns all in the current day
+     * @param periodEnd : if null now, if both null returns all in the current day
+     * @param pageSize OPT pagination : number of indicators per page
+     * @param pageStart OPT pagination : index of the first indicator to return (starts with 0)
+     * @return SlaOrOlaIndicators array of SlaOrOlaIndicator
+     * @throws Exception
+     */
+    @GET
+    @Path("/getSlaOrOlaIndicatorsByEnv")
+    @Produces(MediaType.APPLICATION_JSON)    
+    public SlaOrOlaIndicators getSlaOrOlaIndicatorsByEnv(@QueryParam("environment") String environment, 
+            @QueryParam("projectId") String projectId, 
+            @QueryParam("periodStart") Date periodStart, 
+            @QueryParam("periodEnd")Date periodEnd, 
+            @QueryParam("pageSize") int pageSize, 
+            @QueryParam("pageStart") int pageStart) throws Exception;
 
 }

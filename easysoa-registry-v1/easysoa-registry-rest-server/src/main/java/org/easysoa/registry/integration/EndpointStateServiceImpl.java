@@ -4,9 +4,11 @@
 package org.easysoa.registry.integration;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
@@ -15,11 +17,15 @@ import org.easysoa.registry.rest.integration.EndpointStateService;
 import org.easysoa.registry.rest.integration.ServiceLevelHealth;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicators;
+import org.easysoa.registry.types.Endpoint;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -96,13 +102,84 @@ public class EndpointStateServiceImpl implements EndpointStateService {
     }
 
     /**
-     * @see org.easysoa.registry.rest.integration.EndpointStateService#getSlaOrOlaIndicators(Date,
+     * @see org.easysoa.registry.rest.integration.EndpointStateService#getSlaOrOlaIndicatorsByEnv(String, String, Date,
+     *      Date, int, int)
+     */
+    @Override
+    public SlaOrOlaIndicators getSlaOrOlaIndicatorsByEnv(String environment, String projectId,
+            Date periodStart, Date periodEnd, int pageSize, int pageStart) throws Exception {
+        // TODO NXQL query returning all endpoints where environment & projectId
+        // TODO put them in call to getSlaOrOlaIndicators(String endpointIds...) and return it
+        
+        CoreSession documentManager = SessionFactory.getSession(request);
+
+        if(environment != null && !"".equals(environment) && projectId != null && !"".equals(projectId)){
+            throw new IllegalArgumentException("Environment or projectid parameter must not be null or empty");
+        }
+        
+        // Fetch SoaNode list
+        ArrayList<String> parameters = new ArrayList<String>(); 
+        StringBuffer query = new StringBuffer(); 
+        query.append("SELECT * FROM Endpoint WHERE ");
+ 
+        // Search parameters
+        if(environment != null && !"".equals(environment)){
+            query.append(Endpoint.XPATH_ENDP_ENVIRONMENT + " like '?' ");
+            parameters.add(environment);
+        }
+        
+        if(projectId != null && !"".equals(projectId)){
+            if(environment != null && !"".equals(environment)){
+                query.append(" AND ");
+            }
+            query.append("endp:projectid" + " like '?' ");
+            parameters.add(projectId);
+        }
+        
+        // Execute query
+        String nxqlQuery = NXQLQueryBuilder.getQuery(query.toString(), parameters.toArray(), false, true);
+        DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);        
+        
+        // Get endpoints list
+        List<String> endpointsList = new ArrayList<String>();
+        for(DocumentModel documentModel : soaNodeModelList){
+            endpointsList.add((String)documentModel.getPropertyValue(Endpoint.XPATH_UUID));
+        }
+        
+        // Get endpoints indicators
+        return this.getSlaOrOlaIndicators(endpointsList, periodStart, periodEnd, pageSize, pageStart);
+    }
+    
+    /**
+     * 
+     * not REST, used by above 
+     * 
+     * @param endpointIds
+     * @param periodStart
+     * @param periodEnd
+     * @param pageSize
+     * @param pageStart
+     * @return
+     * @throws Exception
+     */
+    protected SlaOrOlaIndicators getSlaOrOlaIndicators(List<String> endpointIds,
+            Date periodStart, Date periodEnd, int pageSize, int pageStart) throws Exception {
+
+        // For each endpoint, get the corresponding indicators and returns the indicator list
+        SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();
+        for(String endpointId : endpointIds){
+            slaOrOlaIndicators.getSlaOrOlaIndicatorList().addAll(getSlaOrOlaIndicators(endpointId, "", periodStart, periodEnd, pageSize, pageStart).getSlaOrOlaIndicatorList());
+        }
+        return slaOrOlaIndicators;        
+    }
+
+    /**
+     * @see org.easysoa.registry.rest.integration.EndpointStateService#getSlaOrOlaIndicators(String, String, Date,
      *      Date, int, int)
      */
     @Override
     public SlaOrOlaIndicators getSlaOrOlaIndicators(String endpointId, 
-            String slaOrOlaName, String environment, String projectId,
-            Date periodStart, Date periodEnd, int pageSize, int pageStart) throws Exception {
+            String slaOrOlaName, Date periodStart, Date periodEnd, int pageSize, int pageStart) throws Exception {
         
         DirectoryService directoryService = Framework.getService(DirectoryService.class);        
         Session session = directoryService.open("slaOrOlaIndicator");        
@@ -122,7 +199,7 @@ public class EndpointStateServiceImpl implements EndpointStateService {
         }
 
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
-
+        
         if(endpointId != null && !"".equals(endpointId)){
             parameters.put("endpointId", endpointId);
         }
@@ -130,22 +207,7 @@ public class EndpointStateServiceImpl implements EndpointStateService {
         if(slaOrOlaName != null && !"".equals(slaOrOlaName)){
             parameters.put("slaOrOlaName", slaOrOlaName);
         }
-        
-        /*if(environment != null){
-            //query.append(addQueryKeyWord(parameters.size()));
-            
-            //parameters.add(environment);
-        } else {
-            
-        }*/
-        
-        /*if(projectId != null){
-            //query.append(addQueryKeyWord(parameters.size()));
-            
-            //parameters.add(projectId);
-        } else {
-            
-        }*/
+
         SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();
         // Execute query        
         try {

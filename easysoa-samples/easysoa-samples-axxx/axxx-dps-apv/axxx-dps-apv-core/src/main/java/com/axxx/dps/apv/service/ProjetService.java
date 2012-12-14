@@ -1,6 +1,6 @@
 package com.axxx.dps.apv.service;
 
-import com.axxx.dps.apv.model.Tdr;
+import com.axxx.dps.apv.model.Projet;
 import com.axxx.dps.apv.persistence.GenericEntityService;
 
 /**
@@ -12,6 +12,8 @@ import com.axxx.dps.apv.persistence.GenericEntityService;
  * @author mdutoo
  *
  */
-public interface TdrService extends GenericEntityService<Tdr> {
+public interface ProjetService extends GenericEntityService<Projet> {
+    
+    public void publish(Projet projet);
     
 }

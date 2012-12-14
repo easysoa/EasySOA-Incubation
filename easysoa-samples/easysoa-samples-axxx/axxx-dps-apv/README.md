@@ -1,12 +1,40 @@
 ## AXXX APV Web
 
-* TODO develop the APV Java model (beyond Precompte) 
-* TODO persist it in Hibernate / PostgreSQL (see axxx-dcv-pivotal/README.md)
-* TODO develop webapp in Tomcat and UI in Spring MVC, using session in view pattern to handle transactions
-* TODO expose it as WS (beyond Precompte), using CXF Interceptors & sessions in view pattern to handle transactions
-* TODO OW when a Projet Vacances is validated in APV, develop in Java a call of ContactSvc.Client and one call of ContactSvc.Information_APV per public (Information_APV.Bilan_Libelle) : accompagnateurs, enfants, jeunes, familles, adultesisoles, seniors, aidantsfamiliaux
+
+## Features
+* APV POJO model : PrecomptePartenaire, Tdr, Projet
+ * TODO unify PrecomptePartenaire & Tdr
+* Hibernate / PostgreSQL persistence, Spring annotated transactions & sessions (rather than session in view)
+ * TODO doc, see axxx-dcv-pivotal/README.md
+* Spring MVC UI / Tomcat webapp
+* Exposes WS : PrecomptePartenaire
+ * TODO TdrService getters ex. for monitoring business indicators ??
+
+TODO admin (vs tdr) user & POJO ?!
+
+Business processes :
+* TODO Tdr precompte filling : fill & approve precompte to available tdr ; allow only if complete (montant > 0, user info provided...)
+* TODO Projet Vacances :
+ * fill "goal" fields
+ * fill beneficiary aggregated fields
+ * OPT add beneficiaries
+ * OPT with accounting
+ * OPT fill post holiday fields
+* TODO Projet Vacances indicators update : on each click on "save",
+ * update accounting for each benef & globally,
+ * AS LESS AS POSSIBLE (prefer ex. computing read-only "Autres" field from other accounting fields) fill "errorMessages" field
+ * set "approvable" state if OK (nbBenefs > 0, balanced accounting, goals provided...)
+* TODO Projet Vacances publication process : when clicking on "publish" (only if "approvable"),
+ * set "published" status
+ * update tdr indicators TODO Q only through queries or stored also ??
+ * call in Java ContactSvc.Client once, and call ContactSvc.Information_APV once per public (Information_APV.Bilan_Libelle) : enfants, jeunes, adultesisoles, seniors (NO accompagnateurs, familles, aidantsfamiliaux)
 
 * TODO UI : prettify, more AXXX-y (see www.axxx.fr)
+
+TODO pouvoir se débarasser de tout s'il le faut : bilan comptable, voire benefs...
+TODO Benef
+TODO store bilan in other POJOs in same table
+TODO Q only through queries or stored also ??
 
 
 ### About
@@ -23,7 +51,8 @@ AXXX is a use case of the [EasySOA project](http://www.easysoa.org) and develope
 
 
 ### How to install :
-TODO
+TODO create database as below
+
 
 ### How to develop :
 
@@ -39,6 +68,9 @@ FOR NOW ONLY PrecomptePartenaireWebService !!
         in Eclipse, on PrecomptePartenaireWebServiceTestStarter do right-click > Run as Java application
 
 TODO then in your browser open http://
+
+Download Tomcat 6 from http://tomcat.apache.org/download-60.cgi
+unzip it, then copy target/*war in its webapps directory and start it : ./catalina.sh run
 
 Debugging :
 
@@ -97,6 +129,8 @@ Now you should be able to log in to the database with the created user :
 TODO
 
 
+
+
 ## FAQ
 
 ### Build fails
@@ -107,3 +141,4 @@ Solution :
 You need to first build the EasySOA source discovery plugin once (and the EasySOA registry, but you don't need to start it !) by doing at the EasySOA-Incubation root : mvn clean install -DskipTests
 
 Or you can skip it by adding to the mvn command line : -DskipEasySOA
+

@@ -12,7 +12,7 @@
 
     <axxx-dps-apv.version>1.0-SNAPSHOT</axxx-dps-apv.version>
 
-    <spring.version>3.1.2.RELEASE</spring.version>
+    <spring.version>3.0.6.RELEASE</spring.version><!-- to be consistent with CXF 2.5.2 (transport-http) -->
     <hibernate.version>3.6.0.Final</hibernate.version>
     <cxf.version>2.5.2</cxf.version>
     
@@ -80,13 +80,13 @@
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-context</artifactId>
-		<version>3.1.2.RELEASE</version>
+		<version>${spring.version}</version>
 	</dependency>
 
 	<dependency>
 		<groupId>org.springframework</groupId>
 		<artifactId>spring-test</artifactId>
-		<version>3.1.2.RELEASE</version>
+		<version>${spring.version}</version>
 	</dependency>
     
     <!-- easysoa tests -->

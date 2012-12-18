@@ -34,6 +34,7 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
         Client client = clientService.updateClient(identifiantClient, raisonSociale, 
                 anciennete, typeStructure, numEtVoie, email, codePostal, 
                 ville, pays, tel, rib, formeJuridique, siren);
+        // TODO also amount fields !
         return mapClientToArrayOfString(client);
     }
 

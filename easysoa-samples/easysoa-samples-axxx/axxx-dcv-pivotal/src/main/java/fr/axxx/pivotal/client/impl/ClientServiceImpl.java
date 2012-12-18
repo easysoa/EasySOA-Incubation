@@ -59,14 +59,14 @@ public class ClientServiceImpl implements ClientService {
         try{
             client = new Client(identifiantClient, raisonSociale, siren,  email);
             client.setAnciennete(anciennete);
-            client.setCodePostal(codePostal);
-            client.setFormeJuridique(formeJuridique);
-            client.setNumEtVoie(numEtVoie);
-            client.setPays(pays);
-            client.setRIB(rib);
-            client.setTel(tel);
             client.setTypeStructure(typeStructure);
+            client.setNumEtVoie(numEtVoie);
+            client.setCodePostal(codePostal);
             client.setVille(ville);
+            client.setPays(pays);
+            client.setTel(tel);
+            client.setRIB(rib);
+            client.setFormeJuridique(formeJuridique);
             entityManager.getTransaction().begin();
             entityManager.persist(client);
             entityManager.getTransaction().commit();
@@ -93,11 +93,10 @@ public class ClientServiceImpl implements ClientService {
                 throw new Exception("Unable to find client with the following identifiant : " + identifiantClient);
             }
             client.setRaisonSociale(raisonSociale);
-            client.setSIREN(siren);
-            client.setEmail(email);
             client.setAnciennete(anciennete);
             client.setTypeStructure(typeStructure);
             client.setNumEtVoie(numEtVoie);
+            client.setEmail(email);
             client.setCodePostal(codePostal);
             client.setVille(ville);
             client.setPays(pays);

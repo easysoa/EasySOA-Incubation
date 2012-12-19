@@ -3,6 +3,8 @@ package com.axxx.dps.apv.web.controller;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -29,7 +31,10 @@ public class TdrController {
     }
 
     @RequestMapping(method=RequestMethod.POST, value="/tdr/add")
-    public String add(@ModelAttribute("tdr") Tdr tdr, BindingResult result) {
+    public String add(@Valid @ModelAttribute("tdr") Tdr tdr, BindingResult result) {
+        if (result.hasErrors()) {
+            return "tdrs";
+        }
         tdrService.create(tdr);
         return "redirect:list";
     }

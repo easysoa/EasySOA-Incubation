@@ -16,7 +16,8 @@
  	<!-- Enabling Spring beans auto-discovery FROM CORE -->
  	<context:component-scan base-package="com.axxx.dps.apv.web" />
  
- 	<!-- Enabling Spring MVC configuration through annotations -->
+ 	<!-- Enabling Spring MVC configuration through annotations
+ 	including JSR303 annotation (if present on classpath, here Hibernate's) -->
  	<mvc:annotation-driven />
  
  	<!-- Defining which view resolver to use -->

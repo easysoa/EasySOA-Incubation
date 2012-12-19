@@ -4,17 +4,31 @@
 <html>
 <head>
     <title>Tdrs</title>
+    <style>
+.error {
+	color: #ff0000;
+}
+ 
+.errorblock {
+	color: #000;
+	background-color: #ffEEEE;
+	border: 3px solid #ff0000;
+	padding: 8px;
+	margin: 16px;
+}
+	</style>
 </head>
 <body>
  
 <h2>New Tdr</h2>
  
 <form:form method="post" action="add" commandName="tdr">
- 
+    <form:errors path="*" cssClass="errorblock" element="div" />
     <table>
     <tr>
         <td><form:label path="nomStructure">Nom structure</form:label></td>
         <td><form:input path="nomStructure" /></td>
+        <td><form:errors path="nomStructure" cssClass="error" /></td>
     </tr>
     <tr>
         <td colspan="2">

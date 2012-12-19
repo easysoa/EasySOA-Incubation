@@ -13,7 +13,12 @@
     <axxx-dps-apv.version>1.0-SNAPSHOT</axxx-dps-apv.version>
 
     <spring.version>3.0.6.RELEASE</spring.version><!-- to be consistent with CXF 2.5.2 (transport-http) -->
-    <hibernate.version>3.6.0.Final</hibernate.version>
+    <hibernate.version>3.6.0.Final</hibernate.version> <!-- NB. newer : 3.6.10 -->
+    <!-- works with : dom4j-1.6.1 slf4j-1.6.1(api,simple) hibernate-commons-annotations-3.2.0.Final hibernate-validator-4.1.0.Final hibernate-jpa-2.0-api-1.0.0.Final
+    BUT CXF works with : slf4j-1.6.2(api)
+    see http://grepcode.com/snapshot/repository.jboss.org/nexus/content/repositories/releases/org.hibernate/hibernate-entitymanager/3.6.0.Final-->
+    <hibernate.validator.version>4.2.0.Final</hibernate.validator.version><!-- required for @Valid, though 4.1.0.Final is advised -->
+    <slf4j.version>1.6.2</slf4j.version>
     <cxf.version>2.5.2</cxf.version>
     
     <!-- EasySOA code discovery conf -->
@@ -34,60 +39,6 @@
   </scm>
    
   <dependencies>
-    <!-- dependency>
-      <groupId>org.easysoa.sample</groupId>
-      <artifactId>easysoa-discovery-code-sample-itf</artifactId>
-      <version>${project.version}</version>
-    </dependency -->
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-frontend-jaxws</artifactId>
-      <version>${cxf.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-transports-http</artifactId>
-      <version>${cxf.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-transports-http-jetty</artifactId>
-      <version>${cxf.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-transports-local</artifactId>
-      <version>${cxf.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.6.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>jetty-continuation</artifactId>
-      <version>8.0.4.v20111024</version>
-    </dependency>
-    <!-- XXX Needed by Apache CXF, but missing from the deps. hierarchy -->
-    <dependency>
-      <groupId>org.apache.xmlgraphics</groupId>
-      <artifactId>batik-ext</artifactId>
-      <version>1.7</version>
-    </dependency>
-    
-	<!-- for standalone starter -->
-	<dependency>
-		<groupId>org.springframework</groupId>
-		<artifactId>spring-context</artifactId>
-		<version>${spring.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>org.springframework</groupId>
-		<artifactId>spring-test</artifactId>
-		<version>${spring.version}</version>
-	</dependency>
     
     <!-- easysoa tests -->
     <dependency>

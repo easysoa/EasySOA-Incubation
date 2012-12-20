@@ -39,9 +39,18 @@ AXXX is a use case of the [EasySOA project](http://www.easysoa.org) and develope
 Create the "axxx_pivotal" database and "axxx" user in the database server of your choice.
 See below how to do it with PostgreSQL (default) or MySQL.
 
-If different from default configuration (PostgreSQL), configure it in the AXXX Pivotal webapp.
-In development, this is done in pom.xml . In production, this is done in
-(src/main/resources/)META-INF/persistence.xml .
+If your choice differs from default configuration (PostgreSQL), you have
+* to change accordingly properties named "hibernate.*" in webapp configuration
+* and provide the right database driver jar
+
+To do this :
+* in development, these properties are in pom.xml and the database driver has to be added
+as a maven dependency there also (for MySQL, commented configuration is already provided 
+for both and has only to be uncommented)
+* in production, these properties can be changed by copying (src/main/resources/)META-INF/persistence.xml
+within the webapp to the WEB-INF/classes/META-INF/persistence.xml file and adapting it,
+and the database driver has to be added in the webapp's WEB-INF/lib or in your application server's
+shared library directory.
 
 
 ### How to develop :

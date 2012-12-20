@@ -23,9 +23,12 @@
 <!--                                                                     -->
 <!-- Contributor(s): Jeremie Guillemotte, Marwane Kalam-Alami            -->
 <!--                                                                     -->
-<composite xmlns="http://www.osoa.org/xmlns/sca/1.0"
-    xmlns:frascati="http://frascati.ow2.org/xmlns/sca/1.1" xmlns:web="http://frascati.ow2.org/xmlns/web/1.0"
-    xmlns:sca="http://tuscany.apache.org/xmlns/sca/1.0" name="AXXXPivotal">
+<composite name="AXXXPivotal"
+    xmlns="http://www.osoa.org/xmlns/sca/1.0"
+    xmlns:frascati="http://frascati.ow2.org/xmlns/sca/1.1"
+    xmlns:wsdli="http://www.w3.org/2004/08/wsdl-instance"
+    xmlns:web="http://frascati.ow2.org/xmlns/web/1.0"
+    xmlns:sca="http://tuscany.apache.org/xmlns/sca/1.0">
     
     <component name="Pivotal">
         <service name="Velocity">
@@ -65,8 +68,11 @@
         <reference name="database" target="PivotalDatabase/database" />
     	<reference name="precomptePartenaireService">
       		<interface.java interface="com.axxx.dps.apv.PrecomptePartenaireService"/>
-      		<!--<binding.ws wsdlElement="http://www.axxx.com/dps/apv#wsdl.port(PrecomptePartenaireServiceImpl/PrecomptePartenairePort)" wsdli:wsdlLocation="http://localhost:8076/services/PrecomptePartenaireService?wsdl"/>-->
-      		<binding.ws wsdlElement="http://www.axxx.com/dps/apv#wsdl.port(PrecomptePartenaireServiceImpl/PrecomptePartenairePort)" wsdli:wsdlLocation="file:///src/main/resources/axxx-dps-apv/PrecomptePartenaireService.wsdl"/>
+      		<!-- injecting remote APV service :
+      		using local wsdl not to block at startup, & externally configured url -->
+      		<binding.ws wsdlElement="http://www.axxx.com/dps/apv#wsdl.port(PrecomptePartenaireServiceImpl/PrecomptePartenairePort)"
+      		    uri="${apv.url.base}/services/PrecomptePartenaireService"
+      		    wsdli:wsdlLocation="axxx-dps-apv/PrecomptePartenaireService.wsdl"/><!-- from classpath ! -->
     	</reference>
   	</component>
 
@@ -74,8 +80,7 @@
 		<implementation.java class="fr.axxx.pivotal.ContactSvcSoapImpl" />
 		<service name="contactSvcService">
 			<interface.java interface="fr.axxx.pivotal.ContactSvcSoap"/>
-			<binding.ws uri="http://localhost:18001/WS/ContactSvc.asmx"/>
-			<!--<binding.ws uri="http://localhost:8784/WS/ContactSvc" />-->
+			<binding.ws uri="${pivotal.url.base}/WS/ContactSvc.asmx"/>
 		</service>
 		<reference name="clientService" target="Client/ClientService" />
 	</component>

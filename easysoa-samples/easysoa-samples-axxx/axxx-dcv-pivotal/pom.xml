@@ -30,6 +30,11 @@
         <composite.file>pivotal</composite.file>
         <org.ow2.frascati.binding.uri.base>http://localhost:7095</org.ow2.frascati.binding.uri.base>
 
+        <!-- AXXX SOA conf -->
+        <pivotal.url.base></pivotal.url.base>
+        <!-- pivotal.url.base>http://localhost:18000/</pivotal.url.base --><!-- TODO prod ? http://localhost:8784/ -->
+        <apv.url.base>http://localhost:8076</apv.url.base>
+
 		<!-- database conf -->
 	    <!-- NB. it is setup by Maven build resources filtering (must be activated),
 	    see http://www.sonatype.com/books/mvnref-book/reference/resource-filtering-sect-description.html -->
@@ -43,9 +48,9 @@
         <!-- for mysql : -->
         <!-- hibernate.connection.driver_class>com.mysql.jdbc.Driver</hibernate.connection.driver_class>
         <hibernate.dialect>org.hibernate.dialect.MySQLDialect</hibernate.dialect>
-        <hibernate.connection.url>jdbc:mysql://localhost:3306/easysoasimplified</hibernate.connection.url>
-        <hibernate.connection.username>root</hibernate.connection.username>
-        <hibernate.connection.password></hibernate.connection.password -->
+        <hibernate.connection.url>jdbc:mysql://localhost:3306/axxx_pivotal</hibernate.connection.url>
+        <hibernate.connection.username>axxx</hibernate.connection.username>
+        <hibernate.connection.password>axxx</hibernate.connection.password -->
         
         <!-- EasySOA code discovery & conf -->
         <easysoa.version>1.0-SNAPSHOT</easysoa.version><!-- TODO define in root ?? -->

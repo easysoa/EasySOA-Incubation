@@ -434,7 +434,7 @@
     <repository>
       <id>easysoa-local-libs</id>
       <name>EasySOA local project libraries</name>
-      <url>file://${project.basedir}/lib</url><!--  easysoa-registry-v1/easysoa-registry-doctypes-core/lib -->
+      <url>file://${project.basedir}/lib</url><!-- easysoa-registry-v1/easysoa-registry-doctypes-core/lib -->
       <layout>default</layout>
     </repository>
   </repositories>

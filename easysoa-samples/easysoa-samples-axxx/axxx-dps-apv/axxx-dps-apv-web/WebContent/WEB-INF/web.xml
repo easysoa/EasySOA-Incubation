@@ -12,7 +12,7 @@
 
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:axxx-dps-apv-context.xml</param-value>
+        <param-value>classpath:axxx-dps-apv-core-deploy-context.xml</param-value>
     </context-param>
  
     <!-- Hibernate session management : Open session in view pattern

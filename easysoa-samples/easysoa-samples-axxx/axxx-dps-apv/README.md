@@ -1,12 +1,11 @@
 ## AXXX APV Web
 
 
-## Features
+### Features
 
 * no user & security for now
 * APV POJO model : PrecomptePartenaire, Tdr, Projet
- * TODO unify PrecomptePartenaire & Tdr
-* Hibernate / PostgreSQL persistence, Spring annotated transactions & sessions (rather than session in view)
+* Hibernate / PostgreSQL persistence, session in view filter (rather than session = transaction)
  * TODO doc, see axxx-dcv-pivotal/README.md
 * Spring MVC UI / Tomcat webapp
  * field error handling : required, binding (ex. String instead of int), business errors (numbers <= 0...) 
@@ -33,42 +32,28 @@ Business processes :
  sets status to "approved", saves, OPT and redirects to approved tdr details page.
  * OPT also require tdr user information to be provided
 * TODO implement CreerPrecompteService on top of TdrService, with "created" status
+ * TODO map PrecomptePartenaire to Tdr
 * TODO in "tdrs" page, list Tdr with "approved" status (copy or reuse previous ones)
  * TODO for each allow to delete them, allow to go to details page with "sauver" button & validated fields
  * TODO for each list item & in details page, "projets" link to "projets" page listing the tdr's projets
  & "nouveau projet" button linking to empty projet details page
-* TODO in "projets" page, list Projet (typeLieu, periode, dept, status), only of current tdr if any
+* TODO in "projets" page, list Projet (typeLieu, periode, departement, status), only of current tdr if any
  * TODO for each allow to delete them, allow to go to details page with "sauver" button & validated fields.
  Clicking on "sauver" computes computed fields () and saves the projet.
- * TODO also there, enable "approuver" button only if : tdb fields filled (save for computed fields)
+ * TODO also there, enable "approuver" button only if : Benefs fields filled (save for computed fields)
  & valid (benefs > 0, montant > 0). Clicking on it does a "sauver", then sets status to "approved",
  saves projet, calls TdrService.updateTdb(), and redirects to (tdr's) "projets" page.
+  * OPT list & display details of Benef, compute Benefs fields from them
+  * LATER manage accounting fields (BenefFinancement) in Benef
 * TODO in TdrService :
  * computeTdb() recomputes its tdr's impacted computed fields (by queries on all approved projets),
  saves tdr, then calls TdrService.publish()
  * which calls (in Java) ContactSvc.Client once, and ContactSvc.Information_APV once per public
  (Information_APV.Bilan_Libelle) : enfants, jeunes, adultesisoles, seniors
+ * for this, generate pivotal/ContactSvc.wsdl to Java, inject it in Spring, OPT write mock & test
  * LATER display approved Projets in readonly & list them separately
 
-OBSOLETE
-* TODO Projet Vacances :
- * fill "goal" fields
- * fill beneficiary aggregated fields
- * OPT add beneficiaries
- * OPT with accounting
- * OPT fill post holiday fields
-* TODO Projet Vacances indicators update : on each click on "save",
- * update accounting for each benef & globally,
- * AS LESS AS POSSIBLE (prefer ex. computing read-only "Autres" field from other accounting fields) fill "errorMessages" field
- * set "approvable" state if OK (nbBenefs > 0, balanced accounting, goals provided...)
-* TODO Projet Vacances publication process : when clicking on "publish" (only if "approvable"),
-
 * TODO UI : prettify, more AXXX-y (see www.axxx.fr)
-
-TODO pouvoir se débarasser de tout s'il le faut : bilan comptable, voire benefs...
-TODO Benef
-TODO store bilan in other POJOs in same table
-TODO Q only through queries or stored also ??
 
 
 ### About
@@ -85,33 +70,46 @@ AXXX is a use case of the [EasySOA project](http://www.easysoa.org) and develope
 
 
 ### How to install :
-TODO create database as below
+
+Create the "axxx_apv" database and "axxx" user in the database server of your choice.
+See below how to do it with PostgreSQL (default) or MySQL.
+
+If different from default configuration (PostgreSQL), configure it in the AXXX APV webapp.
+In development, this is done in (axxx-dps-apv-core/src/main/resources/)axxx-dps-apv.properties .
+In production, this is done in webapp in WEB-INF/classes/axxx-dps-apv-deploy.properties .
 
 
 ### How to develop :
 
 Prerequisites : Java 6, Maven 2+
 
-Compiling :
+#### Compiling :
 
         mvn clean install -DskipTests
 
-Running :
+#### Running :
 
-FOR NOW ONLY PrecomptePartenaireWebService !!
-        in Eclipse, on PrecomptePartenaireWebServiceTestStarter do right-click > Run as Java application
+to expose WS from Eclipse, on PrecomptePartenaireWebServiceTestStarter do right-click > Run as Java application
+        and it'll be at http://localhost:8076/services/ProjetService?wsdl
 
-TODO then in your browser open http://
 
-Download Tomcat 6 from http://tomcat.apache.org/download-60.cgi
-unzip it, then copy target/*war in its webapps directory and start it : ./catalina.sh run
+#### Deploying :
 
-Debugging :
+Download Tomcat 6 from http://tomcat.apache.org/download-60.cgi , unzip it and change all
+80xx ports to 70xx in conf/server.xml (allows to have a running EasySOA Registry on the 8080 port). 
+
+Now copy axxx-dps-apv-web/target/*war in its webapps directory, go in bin/ directory and start it :
+
+	./catalina.sh run
+
+#### Debugging :
 
 Either
 * from Eclipse : right-click > Debug as Java application
 * for tests (or code discovery maven plugin), from Maven : add ```-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8002,server=y,suspend=y``` in the MAVEN_OPTS environment variable (```export MAVEN_OPTS="..."``` in command line shell or in your $HOME/.bashrc )
-* for Tomcat webapp : TODO enable debugging in Tomcat
+* for Tomcat webapp : change JPDA_ADDRESS in catalina.sh if you want (defaults to 8000) and start it using instead
+
+	./catalina.sh jpda run
 
 
 ### Creating database with PostgreSQL :
@@ -160,9 +158,7 @@ Now you should be able to log in to the database with the created user :
 
 
 ### How to use :
-TODO
-
-
+See Features
 
 
 ## FAQ
@@ -176,3 +172,7 @@ You need to first build the EasySOA source discovery plugin once (and the EasySO
 
 Or you can skip it by adding to the mvn command line : -DskipEasySOA
 
+### OutOfMemoryError - PermGen space error
+May happen with other webapps in the same tomcat. To solve it, add to catalina.sh :
+	
+	JAVA_OPTS=-XX:MaxPermSize=128m

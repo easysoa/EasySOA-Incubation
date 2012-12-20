@@ -20,7 +20,7 @@
  	<context:component-scan base-package="com.axxx.dps.apv" />
  	<context:annotation-config />
  	
- 	<!-- TEST CONFIGURATION (OVERRIDE) -->
+ 	<!-- DEFAULT CONFIGURATION (MAY BE OVERRIDEN) -->
 	<bean id="com.axxx.dps.apv.configurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">

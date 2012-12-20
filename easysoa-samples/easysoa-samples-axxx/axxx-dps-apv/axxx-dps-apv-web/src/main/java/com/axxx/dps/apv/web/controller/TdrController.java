@@ -32,7 +32,7 @@ public class TdrController {
 
     @RequestMapping(method=RequestMethod.POST, value="/tdr/add")
     public String add(@Valid @ModelAttribute("tdr") Tdr tdr, BindingResult result) {
-        if (result.hasErrors()) {
+        if (result.hasErrors()) { // validation check, see http://www.mkyong.com/spring-mvc/spring-3-mvc-and-jsr303-valid-example/
             return "tdrs";
         }
         tdrService.create(tdr);

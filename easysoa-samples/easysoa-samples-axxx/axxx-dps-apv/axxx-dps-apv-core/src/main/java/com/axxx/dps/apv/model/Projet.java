@@ -1,8 +1,18 @@
 package com.axxx.dps.apv.model;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.IndexColumn;
 
 import com.axxx.dps.apv.persistence.GenericEntity;
 
@@ -10,10 +20,23 @@ import com.axxx.dps.apv.persistence.GenericEntity;
 @Entity
 @Table(name = "apv_projet")
 @SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "hibernate_sequence")
+//@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Projet extends GenericEntity<Projet> {
 
     private static final long serialVersionUID = 2661251735222689510L;
 
+    @ManyToOne(optional=false)
+    private Tdr tdr;
+
+    @OneToMany(cascade=CascadeType.ALL, orphanRemoval=true)
+    // no mappedBy because this is the master side of the relation and has join & index
+    @JoinColumn(name = "benefs_list_id")
+    @IndexColumn(name = "benefs_list_index") // indexed list
+    //@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    private List<Benef> benefs; // OPT
+    
+    private String status; // TODO enum ?? ; created,( approved,) published (i.e. it's taken into account when computing numbers of its tdr)
+    
     private String typeLieu;
     
     // TODO add fields : take enough meaningful ones from reporting SQL (look for "ejou"), including those required by PrecomptePartenaire & Pivotal (aggregated in Client, Information_APV, OPT ContactClient)
@@ -39,6 +62,18 @@ public class Projet extends GenericEntity<Projet> {
     // nb, couttotal, montantapv, coutparjourparpersonne, montantapvparjourparpersonne, partapvfinancement
     // 0...
     //
+    @OneToOne(cascade=CascadeType.ALL, mappedBy="projet", orphanRemoval=true, fetch=FetchType.EAGER)
+    //@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    private Benefs enfantsBenefs; // for Information_APV (Nombre), Client (Nb_Benef_N, Montant_Utilise_N)
+    @OneToOne(cascade=CascadeType.ALL, mappedBy="projet", orphanRemoval=true, fetch=FetchType.EAGER)
+    //@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    private Benefs jeunesBenefs; // for Information_APV (Nombre), Client (Nb_Benef_N, Montant_Utilise_N)
+    @OneToOne(cascade=CascadeType.ALL, mappedBy="projet", orphanRemoval=true, fetch=FetchType.EAGER)
+    //@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    private Benefs adultesIsolesBenefs; // for Information_APV (Nombre), Client (Nb_Benef_N, Montant_Utilise_N)
+    @OneToOne(cascade=CascadeType.ALL, mappedBy="projet", orphanRemoval=true, fetch=FetchType.EAGER)
+    //@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    private Benefs seniorsBenefs; // for Information_APV (Nombre), Client (Nb_Benef_N, Montant_Utilise_N)
     
     // enfants
     //...
@@ -73,6 +108,31 @@ public class Projet extends GenericEntity<Projet> {
     
     // NB. pdp ?? (blocadmin ? utilisateurs ??)
     
+
+    public Tdr getTdr() {
+        return tdr;
+    }
+
+    public void setTdr(Tdr tdr) {
+        this.tdr = tdr;
+    }
+
+    public List<Benef> getBenefs() {
+        return benefs;
+    }
+
+    public void setBenefs(List<Benef> benefs) {
+        this.benefs = benefs;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     public String getTypeLieu() {
         return typeLieu;
     }
@@ -80,4 +140,37 @@ public class Projet extends GenericEntity<Projet> {
     public void setTypeLieu(String typeLieu) {
         this.typeLieu = typeLieu;
     }
+    
+    public Benefs getEnfantsBenefs() {
+        return enfantsBenefs;
+    }
+
+    public void setEnfantsBenefs(Benefs enfantsBenefs) {
+        this.enfantsBenefs = enfantsBenefs;
+    }
+
+    public Benefs getJeunesBenefs() {
+        return jeunesBenefs;
+    }
+
+    public void setJeunesBenefs(Benefs jeunesBenefs) {
+        this.jeunesBenefs = jeunesBenefs;
+    }
+
+    public Benefs getAdultesIsolesBenefs() {
+        return adultesIsolesBenefs;
+    }
+
+    public void setAdultesIsolesBenefs(Benefs adultesIsolesBenefs) {
+        this.adultesIsolesBenefs = adultesIsolesBenefs;
+    }
+
+    public Benefs getSeniorsBenefs() {
+        return seniorsBenefs;
+    }
+
+    public void setSeniorsBenefs(Benefs seniorsBenefs) {
+        this.seniorsBenefs = seniorsBenefs;
+    }
+    
 }

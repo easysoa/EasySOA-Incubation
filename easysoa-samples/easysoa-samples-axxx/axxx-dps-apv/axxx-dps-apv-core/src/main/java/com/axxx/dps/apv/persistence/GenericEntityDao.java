@@ -30,9 +30,9 @@ public interface GenericEntityDao<T extends GenericEntity<T>> {
     public abstract List<T> list(Class<? extends T> objectClass, Criterion filter, Order order, Integer limit,
             Integer offset);
 
-    public abstract Integer count();
+    public abstract Long count();
 
-    public abstract Integer count(Class<? extends T> objectClass, Criterion filter, Order order, Integer limit,
+    public abstract Long count(Class<? extends T> objectClass, Criterion filter, Order order, Integer limit,
             Integer offset);
 
     public abstract void evict(T object);

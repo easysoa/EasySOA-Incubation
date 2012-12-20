@@ -35,7 +35,7 @@ public interface GenericEntityService<T extends GenericEntity<T>> {
 
     public abstract List<T> list();
 
-    public abstract Integer count();
+    public abstract Long count();
 
     public abstract void evict(T entity);
 

@@ -110,19 +110,27 @@
   	</bean -->
 	
 	<!--
-	session management :
-	we choose to let session be auto opened by Spring along its transaction demarcation.
-	An alternative would be the "session in view" pattern (with a servlet filter that
-	explicitly opens & closes it), allowing for more efficiency on read-only database
-	access by using transaction-less sessions.
+	session management : session in view pattern
+	through servlet filter explicitly opening & closing session
+	to avoid all LazyInitializationException even in projet.getTdr()
+	& allows more efficient transaction-less database reads.
+	NB. alternative : to let session be auto opened by Spring along its transaction demarcation.
 	 -->
 	<bean id="com.axxx.dps.apv.transactionManager"
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager"
 		p:sessionFactory-ref="com.axxx.dps.apv.sessionFactory"/>
 	<!-- NOT p:hibernateManagedSession="true" (else Hibernate would be in charge of starting session,
-	but we want Spring's @Service @Transactional transaction demarcation doing it, allowing for
-	sessionFactory.getCurrentSession() to auto return the transaction's open session,
+	but we want Spring doing it, allowing for sessionFactory.getCurrentSession() to auto return the
+	transaction's open session,
 	see http://stackoverflow.com/questions/4699381/best-way-to-inject-hibernate-session-by-spring-3 ) -->
 	<tx:annotation-driven transaction-manager="com.axxx.dps.apv.transactionManager" />
+	
+	
+	<!-- VALIDATION -->
+	
+	<!-- i18n, see http://www.mkyong.com/spring-mvc/spring-3-mvc-and-jsr303-valid-example/ -->
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="messages" /><!-- in src/main/resources/messages.properties -->
+	</bean>
 	
 </beans>

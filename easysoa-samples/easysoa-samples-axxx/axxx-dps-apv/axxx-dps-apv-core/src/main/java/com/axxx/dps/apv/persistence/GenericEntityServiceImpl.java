@@ -14,7 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @param <T>
  */
-@Transactional(readOnly=true) // alas tx required to close session only at its end, at least only readOnly by default
+//@Transactional(readOnly=true)
+// NB. if no session in view filter, tx would always be required only to close session at its end
+// (at least only readOnly by default)
 public abstract class GenericEntityServiceImpl<T extends GenericEntity<T>> implements GenericEntityService<T> {
 
     /** to be implemented by returning an autowired field */
@@ -103,7 +105,7 @@ public abstract class GenericEntityServiceImpl<T extends GenericEntity<T>> imple
      * @see com.axxx.dps.apv.persistence.GenericEntityService#count()
      */
     @Override
-    public Integer count() {
+    public Long count() {
         return getGenericDao().count();
     }
 

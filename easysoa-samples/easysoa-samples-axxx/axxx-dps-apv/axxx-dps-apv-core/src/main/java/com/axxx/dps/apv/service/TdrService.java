@@ -1,5 +1,8 @@
 package com.axxx.dps.apv.service;
 
+import java.util.List;
+
+import com.axxx.dps.apv.model.Projet;
 import com.axxx.dps.apv.model.Tdr;
 import com.axxx.dps.apv.persistence.GenericEntityService;
 
@@ -13,5 +16,13 @@ import com.axxx.dps.apv.persistence.GenericEntityService;
  *
  */
 public interface TdrService extends GenericEntityService<Tdr> {
+
+    public List<Projet> getProjets(Tdr tdr);
+    
+    public void approve(Tdr tdr);
+
+    public void computeTdb(Tdr tdr);
+
+    public void publish(Tdr tdr);
     
 }

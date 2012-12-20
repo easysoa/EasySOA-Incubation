@@ -31,6 +31,11 @@
         <td><form:errors path="nomStructure" cssClass="error" /></td>
     </tr>
     <tr>
+        <td><form:label path="tdrTdb.partenaireDepuis">Tableau de bord - partenaire depuis</form:label></td>
+        <td><form:input path="tdrTdb.partenaireDepuis" /></td>
+        <td><form:errors path="tdrTdb.partenaireDepuis" cssClass="error" /></td>
+    </tr>
+    <tr>
         <td colspan="2">
             <input type="submit" value="Nouvelle tdr"/>
         </td>
@@ -46,12 +51,16 @@
 <tr>
     <th>Nom Structure</th>
     <th>Type Structure</th>
+    <th>Partenaire depuis</th>
+    <th>Projets</th>
     <th>&nbsp;</th>
 </tr>
 <c:forEach items="${tdrs}" var="tdr">
     <tr>
         <td>${tdr.nomStructure}</td>
         <!-- td>{tdr.lastname}, {tdr.firstname} </td -->
+        <td>${tdr.tdrTdb.partenaireDepuis}</td>
+        <td><a href="../projet/list?tdrId=${tdr.id}">projets</a></td>
         <td>...</td>
         <td><a href="delete/${tdr.id}">delete</a></td>
     </tr>

@@ -39,47 +39,14 @@
   </scm>
    
   <dependencies>
-    
-    <!-- easysoa tests -->
-    <dependency>
-      <groupId>org.easysoa.discovery</groupId>
-      <artifactId>easysoa-discovery-rest-mock</artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.easysoa.registry</groupId>
-      <artifactId>easysoa-registry-rest-client</artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.automation</groupId>
-      <artifactId>nuxeo-automation-client</artifactId>
-      <version>5.5</version>
-      <scope>test</scope>
-    </dependency>
+  
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.10</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-client</artifactId>
-      <version>1.14</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-      <version>1.9.10</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.10</version>
-    </dependency>
+    
   </dependencies>
 
   <build>
@@ -144,6 +111,43 @@
 	      <name>!skipEasySOA</name>
 	    </property>
 	  </activation>
+	  <dependencies>
+	    <!-- EasySOA Code discovery -->
+	    <dependency>
+	      <groupId>org.easysoa.registry</groupId>
+	      <artifactId>easysoa-registry-rest-client</artifactId>
+	      <version>1.0-SNAPSHOT</version>
+	      <scope>test</scope>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.nuxeo.ecm.automation</groupId>
+	      <artifactId>nuxeo-automation-client</artifactId>
+	      <version>5.5</version>
+	      <scope>test</scope>
+	    </dependency>
+	    <dependency>
+	      <groupId>com.sun.jersey</groupId>
+	      <artifactId>jersey-client</artifactId>
+	      <version>1.14</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.codehaus.jackson</groupId>
+	      <artifactId>jackson-core-asl</artifactId>
+	      <version>1.9.10</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.codehaus.jackson</groupId>
+	      <artifactId>jackson-mapper-asl</artifactId>
+	      <version>1.9.10</version>
+	    </dependency>
+	    <!-- EasySOA tests -->
+	    <!-- dependency>
+	      <groupId>org.easysoa.discovery</groupId>
+	      <artifactId>easysoa-discovery-rest-mock</artifactId>
+	      <version>1.0-SNAPSHOT</version>
+	      <scope>test</scope>
+	    </dependency -->
+	  </dependencies>
       <build>
         <plugins>
           

@@ -2,9 +2,9 @@ package com.axxx.dps.apv.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.axxx.dps.apv.model.Projet;
+import com.axxx.dps.apv.model.Tdr;
 import com.axxx.dps.apv.persistence.GenericEntityServiceImpl;
 
 
@@ -15,7 +15,6 @@ import com.axxx.dps.apv.persistence.GenericEntityServiceImpl;
  *
  */
 @Service
-@Transactional(readOnly=true) // alas tx required to close session only at its end, at least only readOnly by default
 public class ProjetServiceImpl extends GenericEntityServiceImpl<Projet> implements ProjetService {
 
     @Autowired
@@ -27,7 +26,12 @@ public class ProjetServiceImpl extends GenericEntityServiceImpl<Projet> implemen
     }
 
     @Override
-    public void publish(Projet projet) {
+    public Tdr getTdr(Projet projet) {
+        return projet.getTdr(); // can be done because inside session here
+    }
+
+    @Override
+    public void approve(Projet projet) {
         // TODO check (again) everything is alright ?
         
         // TODO change projet state to "published"

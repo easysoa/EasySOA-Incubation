@@ -1,9 +1,11 @@
 package com.axxx.dps.apv.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import com.axxx.dps.apv.model.Projet;
 import com.axxx.dps.apv.model.Tdr;
 import com.axxx.dps.apv.persistence.GenericEntityServiceImpl;
 
@@ -15,7 +17,6 @@ import com.axxx.dps.apv.persistence.GenericEntityServiceImpl;
  *
  */
 @Service
-@Transactional(readOnly=true) // alas tx required to close session only at its end, at least only readOnly by default
 public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements TdrService {
 
     @Autowired
@@ -24,6 +25,26 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
     @Override
     protected TdrDao getGenericDao() {
         return tdrDao;
+    }
+
+    @Override
+    public List<Projet> getProjets(Tdr tdr) {
+        return tdr.getProjets(); // can be done because inside session here
+    }
+
+    @Override
+    public void approve(Tdr tdr) {
+        // TODO
+    }
+
+    @Override
+    public void computeTdb(Tdr tdr) {
+        // TODO
+    }
+
+    @Override
+    public void publish(Tdr tdr) {
+        // TODO
     }
 
 }

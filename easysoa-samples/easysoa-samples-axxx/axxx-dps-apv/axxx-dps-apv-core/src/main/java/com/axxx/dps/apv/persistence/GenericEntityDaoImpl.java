@@ -169,7 +169,7 @@ public abstract class GenericEntityDaoImpl<T extends GenericEntity<T>> implement
      * @see com.axxx.dps.apv.persistence.GenericEntityDao#count()
      */
     @Override
-    public Integer count() {
+    public Long count() {
         return count(getObjectClass(), null, null, null, null);
     }
     
@@ -177,15 +177,16 @@ public abstract class GenericEntityDaoImpl<T extends GenericEntity<T>> implement
      * @see com.axxx.dps.apv.persistence.GenericEntityDao#count(java.lang.Class, org.hibernate.criterion.Criterion, org.hibernate.criterion.Order, java.lang.Integer, java.lang.Integer)
      */
     @Override
-    public Integer count(Class<? extends T> objectClass, Criterion filter, Order order, Integer limit, Integer offset) {
+    public Long count(Class<? extends T> objectClass, Criterion filter, Order order, Integer limit, Integer offset) {
         Criteria criteria = buildCriteria(objectClass, Projections.rowCount(), filter, order, limit, offset);
         
-        Integer count = (Integer) criteria.uniqueResult();
+        Long count = (Long) criteria.uniqueResult();
         
         return count;
     }
     
-    protected Criteria buildCriteria(Class<? extends T> objectClass, Projection projection, Criterion filter, Order order, Integer limit, Integer offset) {
+    protected Criteria buildCriteria(Class<? extends T> objectClass,
+            Projection projection, Criterion filter, Order order, Integer limit, Integer offset) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(objectClass);
         if(projection != null) {
             criteria.setProjection(projection);

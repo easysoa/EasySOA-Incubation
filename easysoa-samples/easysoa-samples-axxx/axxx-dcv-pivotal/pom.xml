@@ -47,7 +47,9 @@
         <hibernate.connection.username>root</hibernate.connection.username>
         <hibernate.connection.password></hibernate.connection.password -->
         
-        <!-- EasySOA code discovery conf -->
+        <!-- EasySOA code discovery & conf -->
+        <easysoa.version>1.0-SNAPSHOT</easysoa.version><!-- TODO define in root ?? -->
+        <nuxeo.version>5.7-SNAPSHOT</nuxeo.version><!-- TODO define in root ?? -->
         <easysoa.discovery.code.nuxeoSitesUrl>http://localhost:8080/nuxeo/site</easysoa.discovery.code.nuxeoSitesUrl>
         <easysoa.discovery.code.username>Administrator</easysoa.discovery.code.username>
         <easysoa.discovery.code.password>Administrator</easysoa.discovery.code.password>
@@ -147,50 +149,13 @@
         </dependency -->
         
     
-    <!-- easysoa tests : easysoa client (+ disco mock, nuxeo automation client)-->
+    <!-- tests -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.10</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>org.easysoa.discovery</groupId>
-      <artifactId>easysoa-discovery-rest-mock</artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.easysoa.registry</groupId>
-      <artifactId>easysoa-registry-rest-client</artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.automation</groupId>
-      <artifactId>nuxeo-automation-client</artifactId>
-      <version>5.5</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-client</artifactId>
-      <version>1.14</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-      <version>1.9.10</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.10</version>
-      <scope>test</scope>
-    </dependency>
-    
   </dependencies>
 
   <build>
@@ -286,6 +251,44 @@
 	      <name>!skipEasySOA</name>
 	    </property>
 	  </activation>
+	  <dependencies>
+	    <!-- EasySOA Code discovery -->
+	    <dependency>
+	      <groupId>org.easysoa.registry</groupId>
+	      <artifactId>easysoa-registry-rest-client</artifactId>
+	      <version>${easysoa.version}</version>
+	      <scope>test</scope>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.nuxeo.ecm.automation</groupId>
+	      <artifactId>nuxeo-automation-client</artifactId>
+	      <version>${nuxeo.version}</version>
+	      <scope>test</scope>
+	    </dependency>
+	    <!-- jersey & jackson : already got from above -->
+	    <!-- dependency>
+	      <groupId>com.sun.jersey</groupId>
+	      <artifactId>jersey-client</artifactId>
+	      <version>1.11</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.codehaus.jackson</groupId>
+	      <artifactId>jackson-core-asl</artifactId>
+	      <version>1.8.1</version>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.codehaus.jackson</groupId>
+	      <artifactId>jackson-mapper-asl</artifactId>
+	      <version>1.8.1</version>
+	    </dependency -->
+	    <!-- EasySOA tests : registry mock for discovery -->
+	    <!-- dependency>
+	      <groupId>org.easysoa.discovery</groupId>
+	      <artifactId>easysoa-discovery-rest-mock</artifactId>
+	      <version>1.0-SNAPSHOT</version>
+	      <scope>test</scope>
+	    </dependency -->
+	  </dependencies>
       <build>
         <plugins>
           

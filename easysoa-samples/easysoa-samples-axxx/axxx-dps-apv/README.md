@@ -101,6 +101,17 @@ Download Tomcat 6 from http://tomcat.apache.org/download-60.cgi , unzip it and c
 Now copy axxx-dps-apv-web/target/*war in its webapps directory, go in bin/ directory and start it :
 
 	./catalina.sh run
+	
+If the following error message is displayed :
+
+	The BASEDIR environment variable is not defined correctly
+	This environment variable is needed to run this program
+
+Just go in bin folder and execute the following command : 
+
+	chmod +x *.sh
+
+Then start Tomcat with the command ./catalina.sh run or ./startup.sh
 
 #### Debugging :
 

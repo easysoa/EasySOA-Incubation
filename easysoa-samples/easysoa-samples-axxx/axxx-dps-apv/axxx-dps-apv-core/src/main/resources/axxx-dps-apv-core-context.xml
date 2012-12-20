@@ -5,14 +5,12 @@
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:p="http://www.springframework.org/schema/p"
 	xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xmlns:cxf="http://cxf.apache.org/core"
 	xmlns:jaxws="http://cxf.apache.org/jaxws"
 	xmlns:http-conf="http://cxf.apache.org/transports/http/configuration"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
- 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
- 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
- 	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/tx/spring-mvc-3.1.xsd
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+ 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+ 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
 	http://cxf.apache.org/core http://cxf.apache.org/schemas/core.xsd
  	http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
  	http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
@@ -22,7 +20,7 @@
  	<context:component-scan base-package="com.axxx.dps.apv" />
  	<context:annotation-config />
  	
- 	<!-- TEST CONFIGURATION (OVERRIDE) -->
+ 	<!-- DEFAULT CONFIGURATION (MAY BE OVERRIDEN) -->
 	<bean id="com.axxx.dps.apv.configurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
@@ -79,9 +77,9 @@
 		p:debugUnreturnedConnectionStackTraces="${axxx.dps.apv.db.debugUnreturnedConnectionStackTraces}"
 		destroy-method="close" />
 		
-	<!-- autowire-candidate="false" -->
 	<bean id="com.axxx.dps.apv.sessionFactory"
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<!-- NB. not LocalSessionFactoryBean, which would require explicit entity mapping conf -->
 		<property name="dataSource" ref="com.axxx.dps.apv.datasource" />
 		<property name="hibernateProperties">
 			<props>
@@ -111,15 +109,28 @@
 		<property name="shared" value="true" />
   	</bean -->
 	
+	<!--
+	session management : session in view pattern
+	through servlet filter explicitly opening & closing session
+	to avoid all LazyInitializationException even in projet.getTdr()
+	& allows more efficient transaction-less database reads.
+	NB. alternative : to let session be auto opened by Spring along its transaction demarcation.
+	 -->
 	<bean id="com.axxx.dps.apv.transactionManager"
 		class="org.springframework.orm.hibernate3.HibernateTransactionManager"
-		p:sessionFactory-ref="com.axxx.dps.apv.sessionFactory" 
-		p:hibernateManagedSession="true"/><!-- TODO or org.springframework.orm.hibernate3.LocalSessionFactoryBean ?? -->
-		
+		p:sessionFactory-ref="com.axxx.dps.apv.sessionFactory"/>
+	<!-- NOT p:hibernateManagedSession="true" (else Hibernate would be in charge of starting session,
+	but we want Spring doing it, allowing for sessionFactory.getCurrentSession() to auto return the
+	transaction's open session,
+	see http://stackoverflow.com/questions/4699381/best-way-to-inject-hibernate-session-by-spring-3 ) -->
 	<tx:annotation-driven transaction-manager="com.axxx.dps.apv.transactionManager" />
 	
-	<!-- NB. session is opened and closed automatically
-	(rather than explicity in filter i.e. "session inview pattern") ????????????????????????????
-	see http://stackoverflow.com/questions/4699381/best-way-to-inject-hibernate-session-by-spring-3 -->
+	
+	<!-- VALIDATION -->
+	
+	<!-- i18n, see http://www.mkyong.com/spring-mvc/spring-3-mvc-and-jsr303-valid-example/ -->
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basename" value="messages" /><!-- in src/main/resources/messages.properties -->
+	</bean>
 	
 </beans>

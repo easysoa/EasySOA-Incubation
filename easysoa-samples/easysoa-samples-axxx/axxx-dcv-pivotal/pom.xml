@@ -31,7 +31,8 @@
         <org.ow2.frascati.binding.uri.base>http://localhost:7095</org.ow2.frascati.binding.uri.base>
 
 		<!-- database conf -->
-		<!-- TODO or postgresql ?? -->
+	    <!-- NB. it is setup by Maven build resources filtering (must be activated),
+	    see http://www.sonatype.com/books/mvnref-book/reference/resource-filtering-sect-description.html -->
         <hibernate.hbm2ddl.auto>update</hibernate.hbm2ddl.auto><!-- create ; in production : validate -->
         <!-- for postgresql : -->
         <hibernate.connection.driver_class>org.postgresql.Driver</hibernate.connection.driver_class>

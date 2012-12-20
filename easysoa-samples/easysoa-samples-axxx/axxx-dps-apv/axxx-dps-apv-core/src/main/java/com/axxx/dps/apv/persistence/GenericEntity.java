@@ -32,7 +32,7 @@ public abstract class GenericEntity<T> implements Comparable<GenericEntity<T>>, 
 	}
 	
 	public boolean isNew() {
-		return this.id == null;
+		return this.getId() == null;
 	}
 
 	public int compareTo(GenericEntity<T> o) {

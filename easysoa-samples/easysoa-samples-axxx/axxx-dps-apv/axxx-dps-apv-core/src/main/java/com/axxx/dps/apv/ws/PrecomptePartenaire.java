@@ -28,7 +28,7 @@ public class PrecomptePartenaire {
     @XmlElement(nillable=false, required=true)
 	private String cp;
     @XmlElement(nillable=false, required=true)
-	private String apeNaf; //. ex. 512E
+	private String apeNaf; //. ex. 512E TODO remove
     @XmlElement(nillable=false, required=true)
 	private String sirenSiret; // rule
 	

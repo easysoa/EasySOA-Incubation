@@ -1,6 +1,6 @@
 package com.axxx.dps.apv.service;
 
-import com.axxx.dps.apv.model.Tdr;
+import com.axxx.dps.apv.model.Projet;
 import com.axxx.dps.apv.persistence.GenericEntityDao;
 
 /**
@@ -9,6 +9,7 @@ import com.axxx.dps.apv.persistence.GenericEntityDao;
  * @author mdutoo
  *
  */
-public interface TdrDao extends GenericEntityDao<Tdr> {
+public interface ProjetDao extends GenericEntityDao<Projet> {
+    
     
 }

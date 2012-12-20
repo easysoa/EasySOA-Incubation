@@ -9,8 +9,9 @@ Features :
 * in ClientServiceImpl, (like in UserServiceImpl) at init if table empty fill with default data, including the 3 adresses of Uniserv mock and further from unbranded reporting SQL data (lookup tdr_bloca and other field names)
 * Client details page : button "Créer précompte" that calls TdrService.creerPrecompte(), displays OK or error message at the end of creerPrecompte, when it is disabled
  * TODO refer to locally stored APV WSDLs, Change localhost by vmapv and configure it int /etc/host file for re-routing
-* exposes ContactSvc.asmx.wsdl WS using FraSCAti and implements it on top of ClientService (Client only for updates, ContactClient & Information_APV also for updates)
- * TODO remove added object ids from WSDL & regenerate source, use business fields as keys instead
+* exposes ContactSvc.asmx.wsdl WS using FraSCAti and implements it on top of ClientService
+ * Client only for updates, ContactClient & Information_APV for create & updates
+ * updates' key fields : Identifiant_Client, for Information_APV also Bilan_Libelle & Bilan_Annee, OPT for ContactClient also Fonction
 * Pivotal's ContactSvc.asmx.wsdl's additionally exposes (required for SLA monitoring) :
  * .getClient(ididentifiantClient) returns Client
  * .getRepartitionTypeStructure() returns [{ typeStructure, clientCount }]
@@ -119,6 +120,12 @@ Some data is filled by default :
 
 ### Architecture
 Architecture is inspired by the one of INRIA's FraSCAti Studio : see website, source and [some feedbacks](https://github.com/easysoa/EasySOA/wiki/Frascati-studio-feedback).
+* JPA EntityManager / Hibernate persistence
+* FraSCAti application service layer
+* UI :
+ * velocity templates (by FraSCAti's implementation.velocity) for views and actions / controllers
+ * additionally, AJAX by FraSCAti REST services
+* simple login & security layer (User in session, explicitly passed to application services)
 
 
 ### APV to Pivotal mapping

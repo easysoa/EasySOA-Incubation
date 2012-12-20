@@ -29,6 +29,13 @@
           <groupId>org.hibernate</groupId>
           <artifactId>hibernate-entitymanager</artifactId>
           <version>${hibernate.version}</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>slf4j-api</artifactId>
+                  <!-- 1.6.1, conflicts with FraSCAti's -->
+              </exclusion>
+          </exclusions>
       </dependency>
 <!-- database driver : -->
     <dependency>
@@ -51,12 +58,6 @@
     	<artifactId>ehcache</artifactId>
     	<version>2.6.2</version> or 1.2.3 ?
     	<type>pom</type>
-    </dependency -->
-  
-    <!-- dependency>
-      <groupId>org.easysoa.sample</groupId>
-      <artifactId>easysoa-discovery-code-sample-itf</artifactId>
-      <version>${project.version}</version>
     </dependency -->
     
     <!-- cxf -->
@@ -83,7 +84,7 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
-      <version>1.6.4</version>
+      <version>${slf4j.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
@@ -113,46 +114,20 @@
 		<artifactId>spring-test</artifactId>
 		<version>${spring.version}</version>
 	</dependency>
-    
-    <!-- easysoa tests -->
-    <dependency>
-      <groupId>org.easysoa.discovery</groupId>
-      <artifactId>easysoa-discovery-rest-mock</artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.easysoa.registry</groupId>
-      <artifactId>easysoa-registry-rest-client</artifactId>
-      <version>1.0-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.automation</groupId>
-      <artifactId>nuxeo-automation-client</artifactId>
-      <version>5.5</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.10</version>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.jersey</groupId>
-      <artifactId>jersey-client</artifactId>
-      <version>1.14</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-      <version>1.9.10</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.10</version>
-    </dependency>
+	<!-- for JSR303 annotated validation
+	see http://www.mkyong.com/spring-mvc/spring-3-mvc-and-jsr303-valid-example/ -->
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-validator</artifactId>
+		<version>${hibernate.validator.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                    <!-- 1.6.1, conflicts with FraSCAti's -->
+                </exclusion>
+            </exclusions>
+	</dependency>
   </dependencies>
 
   <build>

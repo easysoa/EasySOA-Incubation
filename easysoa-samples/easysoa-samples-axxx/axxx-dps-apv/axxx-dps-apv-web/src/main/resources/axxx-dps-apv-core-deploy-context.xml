@@ -9,11 +9,8 @@
  	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd">
  	
  	
- 	<!-- AXXX APV CORE SPRING CONFIGURATION  -->
- 	<!-- not here because this context is started by MVC servlet while that one by web context listener -->
- 	<!-- import resource="classpath:axxx-dps-apv-context.xml"/ -->
- 	
- 	<!-- DEFAULT CONFIGURATION (MAY BE OVERRIDEN) -->
+ 	<!-- AXXX APV CORE SPRING CONFIGURATION - DEPLOYMENT OVERRIDES  -->
+ 	<import resource="classpath:axxx-dps-apv-core-context.xml"/>
 	<bean id="com.axxx.dps.apv.configurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
@@ -24,18 +21,5 @@
 		</property>
 		<property name="ignoreResourceNotFound" value="false" />
 	</bean>
- 	
- 	<!-- Enabling Spring beans auto-discovery FROM CORE -->
- 	<context:component-scan base-package="com.axxx.dps.apv.web" />
- 
- 	<!-- Enabling Spring MVC configuration through annotations
- 	including JSR303 annotation (if present on classpath, here Hibernate's) -->
- 	<mvc:annotation-driven />
- 
- 	<!-- Defining which view resolver to use -->
- 	<bean class= "org.springframework.web.servlet.view.InternalResourceViewResolver" >
- 	 	<property name="prefix" value="/WEB-INF/views/" />
- 	 	<property name="suffix" value=".jsp" />
- 	</bean>
 	
 </beans> 

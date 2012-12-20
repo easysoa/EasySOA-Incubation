@@ -89,14 +89,16 @@ public class EndpointStateServiceImpl implements EndpointStateService {
                         session.createEntry(properties);
                     }
                 }
-                session.commit();
-                session.close();
             }
             catch(Exception ex){
-                 session.rollback();
-                 session.close();
                  // Return the exception and cancel the transaction
                  throw new Exception("Failed to update SLA or OLA indicators ", ex);                   
+            } finally {
+                if (session != null) {
+                    // NB. container manages transaction, so no need to commit or rollback
+                    // (see doc of deprecated session.commit())
+                    session.close();
+                }
             }
         }
     }

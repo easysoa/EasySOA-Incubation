@@ -60,6 +60,8 @@
       <artifact:resolveFile key="org.nuxeo.rating:nuxeo-rating-web::jar" />
       <artifact:resolveFile key="org.nuxeo.rating:nuxeo-rating-gadget::jar" />
 
+      <!-- tree-snapshot -->
+      <artifact:resolveFile key="org.nuxeo.features:nuxeo-tree-snapshot::jar" />
     </copy>
     <!-- Whereas the marketplace build using an EAR is automatically downloading the
     required libraries, that simpler solution requires you explicitly list them -->

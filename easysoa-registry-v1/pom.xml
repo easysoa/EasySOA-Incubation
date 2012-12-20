@@ -236,6 +236,11 @@
       
       <!-- Nuxeo add-ons -->
       <dependency>
+        <groupId>org.nuxeo.features</groupId>
+        <artifactId>nuxeo-tree-snapshot</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
         <artifactId>nuxeo-classification-api</artifactId>
         <version>${nuxeo.version}</version>

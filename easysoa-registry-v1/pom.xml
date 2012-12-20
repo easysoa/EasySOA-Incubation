@@ -421,7 +421,7 @@
       <enabled>false</enabled>
      </snapshots>
     </repository>
-    <repository>
+    <!-- repository>
       <id>nuxeo-studio</id>
       <url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url>
       <releases>
@@ -430,6 +430,12 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
+    </repository -->
+    <repository>
+      <id>easysoa-local-libs</id>
+      <name>EasySOA local project libraries</name>
+      <url>file://${project.basedir}/lib</url><!--  easysoa-registry-v1/easysoa-registry-doctypes-core/lib -->
+      <layout>default</layout>
     </repository>
   </repositories>
   <pluginRepositories>

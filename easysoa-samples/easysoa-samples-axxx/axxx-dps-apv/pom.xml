@@ -21,7 +21,9 @@
     <slf4j.version>1.6.2</slf4j.version>
     <cxf.version>2.5.2</cxf.version>
     
-    <!-- EasySOA code discovery conf -->
+    <!-- EasySOA code discovery & conf -->
+    <easysoa.version>1.0-SNAPSHOT</easysoa.version><!-- TODO define in root ?? -->
+    <nuxeo.version>5.7-SNAPSHOT</nuxeo.version><!-- TODO define in root ?? -->
     <easysoa.discovery.code.nuxeoSitesUrl>http://localhost:8080/nuxeo/site</easysoa.discovery.code.nuxeoSitesUrl>
     <easysoa.discovery.code.username>Administrator</easysoa.discovery.code.username>
     <easysoa.discovery.code.password>Administrator</easysoa.discovery.code.password>
@@ -116,13 +118,13 @@
 	    <dependency>
 	      <groupId>org.easysoa.registry</groupId>
 	      <artifactId>easysoa-registry-rest-client</artifactId>
-	      <version>1.0-SNAPSHOT</version>
+	      <version>${easysoa.version}</version>
 	      <scope>test</scope>
 	    </dependency>
 	    <dependency>
 	      <groupId>org.nuxeo.ecm.automation</groupId>
 	      <artifactId>nuxeo-automation-client</artifactId>
-	      <version>5.5</version>
+	      <version>${nuxeo.version}</version>
 	      <scope>test</scope>
 	    </dependency>
 	    <dependency>

@@ -66,7 +66,7 @@
     	<reference name="precomptePartenaireService">
       		<interface.java interface="com.axxx.dps.apv.PrecomptePartenaireService"/>
       		<!--<binding.ws wsdlElement="http://www.axxx.com/dps/apv#wsdl.port(PrecomptePartenaireServiceImpl/PrecomptePartenairePort)" wsdli:wsdlLocation="http://localhost:8076/services/PrecomptePartenaireService?wsdl"/>-->
-      		<binding.ws wsdlElement="http://www.axxx.com/dps/apv#wsdl.port(PrecomptePartenaireServiceImpl/PrecomptePartenairePort)" wsdli:wsdlLocation="file:///src/main/resources/api/PrecomptePartenaireService.wsdl"/>
+      		<binding.ws wsdlElement="http://www.axxx.com/dps/apv#wsdl.port(PrecomptePartenaireServiceImpl/PrecomptePartenairePort)" wsdli:wsdlLocation="file:///src/main/resources/axxx-dps-apv/PrecomptePartenaireService.wsdl"/>
     	</reference>
   	</component>
 

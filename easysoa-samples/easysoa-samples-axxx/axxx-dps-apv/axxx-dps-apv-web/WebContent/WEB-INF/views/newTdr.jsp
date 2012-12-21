@@ -4,7 +4,7 @@
 
 <html>
 <head>
-    <title>Tdrs</title>
+    <title>tdr precompte</title>
     <style>
 .error {
 	color: #ff0000;
@@ -20,8 +20,31 @@
 	</style>
 </head>
 <body>
- 
+
 <h2>New Tdr</h2>
+ 
+ 
+    <!--@XmlElement(nillable=false, required=true)
+	private String identifiantClientPivotal;
+    @XmlElement(nillable=false, required=true)
+	private TypeStructure typeStructure; // enum ex. Association nat.
+    @XmlElement(nillable=false, required=true)
+	private String nomStructure;
+    @XmlElement(nillable=false, required=true)
+	private int anciennete;
+    @XmlElement(nillable=false, required=true)
+	private String telephone;
+	private String email;
+	@XmlElement(nillable=false, required=true)
+	private String adresse;
+	@XmlElement(nillable=false, required=true)
+	private String ville;
+    @XmlElement(nillable=false, required=true)
+	private String cp;
+    @XmlElement(nillable=false, required=true)
+	private String apeNaf; //. ex. 512E TODO remove
+    @XmlElement(nillable=false, required=true)
+	private String sirenSiret; // rule -->
  
 <form:form method="post" action="add" commandName="tdr">
     <form:errors path="*" cssClass="errorblock" element="div" />
@@ -43,35 +66,6 @@
     </tr>
 </table> 
 </form:form>
- 
-     
-<h2>All Tdrs</h2>
 
-<c:if  test="${!empty tdrs}">
-<table class="data" border="1">
-<tr>
-    <th>Nom Structure</th>
-    <th>Type Structure</th>
-    <th>Partenaire depuis</th>
-    <th>Status</th>
-    <th>Projets</th>
-    <th>&nbsp;</th>
-    <th>&nbsp;</th>
-</tr>
-<c:forEach items="${tdrs}" var="tdr">
-    <tr>
-        <td>${tdr.nomStructure}</td>
-        <!-- td>{tdr.lastname}, {tdr.firstname} </td -->
-        <td>${tdr.typeStructure}</td>
-        <td>${tdr.tdrTdb.partenaireDepuis}</td>
-        <td>${tdr.tdrTdb.status}</td>
-        <td><a href="../projet/list?tdrId=${tdr.id}">projets</a></td>
-        <td>...</td>
-        <td><a href="delete/${tdr.id}">delete</a></td>
-    </tr>
-</c:forEach>
-</table>
-</c:if>
- 
 </body>
 </html>

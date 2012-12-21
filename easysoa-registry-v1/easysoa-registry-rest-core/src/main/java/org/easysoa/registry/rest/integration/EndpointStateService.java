@@ -1,6 +1,5 @@
 package org.easysoa.registry.rest.integration;
 
-import java.util.Date;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -15,11 +14,9 @@ import javax.ws.rs.core.MediaType;
  * 
  * Architecture : see https://github.com/easysoa/EasySOA/wiki/Easysoa-integration-architecture---monitoring-platform
  * 
- * TODO jguillemotte
- * 
  * implementation :
  *  * meant to be on top of Nuxeo Directory (actually SQL, with the right indexes)
- * * dates are ISO8601 (in java use the right SimpleDateFormat), see http://stackoverflow.com/questions/3558458/recommended-date-format-for-rest-api  
+ *  * dates are ISO8601 (in java use the right SimpleDateFormat), see http://stackoverflow.com/questions/3558458/recommended-date-format-for-rest-api  
  * 
  * @author mdutoo, jguillemotte
  *
@@ -77,9 +74,9 @@ public interface EndpointStateService {
      *   ]
      * }
 	 * 
-     * @param periodStart : if null day start, if both null returns all in the current day
-     * @param periodEnd : if null now, if both null returns all in the current day
-     * @param pageSize OPT pagination : number of indicators per page
+     * @param periodStart : if null day start, if both null returns all in the current day, must be formatted with this format yyyy-MM-dd'T'HH:mm:ss
+     * @param periodEnd : if null now, if both null returns all in the current day, must be formatted with this format yyyy-MM-dd'T'HH:mm:ss
+     * @param pageSize OPT pagination : number of indicators per page, if not specified, all results are returned
      * @param pageStart OPT pagination : index of the first indicator to return (starts with 0)
 	 * @return SlaOrOlaIndicators array of SlaOrOlaIndicator
 	 * @throws Exception 
@@ -89,8 +86,8 @@ public interface EndpointStateService {
     @Produces(MediaType.APPLICATION_JSON)	
 	public SlaOrOlaIndicators getSlaOrOlaIndicators(@QueryParam("endpointId") String endpointId, 
 	        @QueryParam("slaOrOlaName") String slaOrOlaName,
-	        @QueryParam("periodStart") Date periodStart, 
-	        @QueryParam("periodEnd")Date periodEnd, 
+	        @QueryParam("periodStart") String periodStart, 
+	        @QueryParam("periodEnd") String periodEnd, 
 	        @QueryParam("pageSize") int pageSize, 
 	        @QueryParam("pageStart") int pageStart) throws Exception;
 
@@ -115,9 +112,9 @@ public interface EndpointStateService {
      * 
      * @param environment Endpoint environment
      * @param projectId Endpoint project ID
-     * @param periodStart : if null day start, if both null returns all in the current day
-     * @param periodEnd : if null now, if both null returns all in the current day
-     * @param pageSize OPT pagination : number of indicators per page
+     * @param periodStart : if null day start, if both null returns all in the current day, must be formatted with this format yyyy-MM-dd'T'HH:mm:ss
+     * @param periodEnd : if null now, if both null returns all in the current day, must be formatted with this format yyyy-MM-dd'T'HH:mm:ss
+     * @param pageSize OPT pagination : number of indicators per page, if not specified, all results are returned
      * @param pageStart OPT pagination : index of the first indicator to return (starts with 0)
      * @return SlaOrOlaIndicators array of SlaOrOlaIndicator
      * @throws Exception
@@ -127,8 +124,8 @@ public interface EndpointStateService {
     @Produces(MediaType.APPLICATION_JSON)    
     public SlaOrOlaIndicators getSlaOrOlaIndicatorsByEnv(@QueryParam("environment") String environment, 
             @QueryParam("projectId") String projectId, 
-            @QueryParam("periodStart") Date periodStart, 
-            @QueryParam("periodEnd")Date periodEnd, 
+            @QueryParam("periodStart") String periodStart, 
+            @QueryParam("periodEnd") String periodEnd, 
             @QueryParam("pageSize") int pageSize, 
             @QueryParam("pageStart") int pageStart) throws Exception;
 

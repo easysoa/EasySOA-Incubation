@@ -3,6 +3,7 @@
  */
 package org.easysoa.registry.integration;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -46,6 +47,7 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
     public final static String ENDPOINT_ID = "test";
     
     public final static String INDICATOR_NAME = "testSlaIndicator";
+    public final static String ANOTHER_INDICATOR_NAME = "anotherTestSlaIndicator";
     
     public final static String SERVICE_LEVEL_HEALTH = "gold";
     
@@ -60,20 +62,63 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         
         if(!initDone){
             
-            Session session = directoryService.open("slaOrOlaIndicator");
+            Session session = directoryService.open(org.easysoa.registry.types.SlaOrOlaIndicator.DOCTYPE);
            
             try{
+                // Create a fisrt SlaOrOlaIndicator
                 Map<String, Object> properties = new HashMap<String, Object>();
                 properties.put("endpointId", ENDPOINT_ID);
                 properties.put("slaOrOlaName", INDICATOR_NAME);
                 properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
                 properties.put("serviceLevelViolation", false);
                 Calendar calendar = new GregorianCalendar();
-                calendar.set(2012, 12, 13, 17, 17, 45);
                 properties.put("timestamp", calendar);
-                //  "2012-12-13T16:15:28-00:00"
-                
                 session.createEntry(properties);
+
+                // Create a second SlaOrOlaIndicator                
+                properties = new HashMap<String, Object>();
+                properties.put("endpointId", ENDPOINT_ID);
+                properties.put("slaOrOlaName", ANOTHER_INDICATOR_NAME);
+                properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
+                properties.put("serviceLevelViolation", true);
+                calendar = new GregorianCalendar();
+                calendar.set(2012, 11, 25, 8, 24, 37);
+                properties.put("timestamp", calendar);                
+                session.createEntry(properties);
+
+                // Create a third SlaOrOlaIndicator                
+                properties = new HashMap<String, Object>();
+                properties.put("endpointId", "anotherEndpointID");
+                properties.put("slaOrOlaName", "AgainAnotherIndicatorName");
+                properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
+                properties.put("serviceLevelViolation", true);
+                calendar = new GregorianCalendar();
+                calendar.set(2012, 11, 12, 16, 7, 10);
+                properties.put("timestamp", calendar);                
+                session.createEntry(properties);            
+
+                // Create a fourth SlaOrOlaIndicator                
+                properties = new HashMap<String, Object>();
+                properties.put("endpointId", "anotherEndpointID");
+                properties.put("slaOrOlaName", "IndicatorNameTest4");
+                properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
+                properties.put("serviceLevelViolation", true);
+                calendar = new GregorianCalendar();
+                calendar.set(2012, 11, 8, 9, 46, 43);
+                properties.put("timestamp", calendar);
+                session.createEntry(properties);
+                
+                // Create a fifth SlaOrOlaIndicator                
+                properties = new HashMap<String, Object>();
+                properties.put("endpointId", "anotherEndpointID");
+                properties.put("slaOrOlaName", "IndicatorNameTest5");
+                properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
+                properties.put("serviceLevelViolation", false);
+                calendar = new GregorianCalendar();
+                calendar.set(2012, 11, 14, 17, 27, 17);
+                properties.put("timestamp", calendar);                
+                session.createEntry(properties);  
+                
                 session.commit();
                 session.close();
             }
@@ -87,15 +132,15 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
     }
 
     /**
-     * Test the getSlaOrOlaIndicators REST operation
+     * Test the getSlaOrOlaIndicators REST operation with no query params
      */
     @Test
-    public void getSlaOrOlaIndicatorsTest(){
+    public void getSlaOrOlaIndicatorsSimpleTest(){
         logTestName(logger);
         
-        // Run first test request
+        // Run first test request to get all indicators
         Client client = createAuthenticatedHTTPClient();
-        WebResource discoveryRequest = client.resource(endpointStateService.getRootURL()).path("/getSlaOrOlaIndicators"); //.queryParam("endpointId", "test").queryParam("slaOrOlaName", "testSlaIndicator");
+        WebResource discoveryRequest = client.resource(endpointStateService.getRootURL()).path("/getSlaOrOlaIndicators");
         SlaOrOlaIndicators slaOrOlaIndicators = discoveryRequest.get(SlaOrOlaIndicators.class);        
         
         Assert.assertNotNull(slaOrOlaIndicators);
@@ -105,7 +150,48 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         Assert.assertEquals(ENDPOINT_ID, indicator.getEndpointId());
         Assert.assertEquals(INDICATOR_NAME, indicator.getSlaOrOlaName());
         Assert.assertEquals(SERVICE_LEVEL_HEALTH, indicator.getServiceLevelHealth().toString());
-    }    
+    }
+
+    /**
+     * Test the getSlaOrOlaIndicators REST operation with query params
+     */
+    @Test
+    public void getSlaOrOlaIndicatorsComplexTest(){
+        logTestName(logger);
+        
+        // Run first test request with endpointId and slaOrOlaName params
+        Client client = createAuthenticatedHTTPClient();
+        WebResource discoveryRequest = client.resource(endpointStateService.getRootURL()).path("/getSlaOrOlaIndicators").queryParam("endpointId", "test").queryParam("slaOrOlaName", INDICATOR_NAME);
+        SlaOrOlaIndicators slaOrOlaIndicators = discoveryRequest.get(SlaOrOlaIndicators.class);        
+        
+        Assert.assertNotNull(slaOrOlaIndicators);
+        Assert.assertEquals(1, slaOrOlaIndicators.getSlaOrOlaIndicatorList().size());
+        SlaOrOlaIndicator indicator = slaOrOlaIndicators.getSlaOrOlaIndicatorList().get(0);
+
+        Assert.assertEquals(ENDPOINT_ID, indicator.getEndpointId());
+        Assert.assertEquals(INDICATOR_NAME, indicator.getSlaOrOlaName());
+        Assert.assertEquals(SERVICE_LEVEL_HEALTH, indicator.getServiceLevelHealth().toString());
+        
+        // Run second test request with endpointId and date range params
+        Calendar periodStart = new GregorianCalendar();
+        periodStart.clear();
+        periodStart.set(2012, 11, 1, 0, 0, 1);
+        Calendar periodEnd = new GregorianCalendar();
+        periodEnd.clear();
+        periodEnd.set(2012, 11, 30, 23, 59, 59);
+        SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        discoveryRequest = client.resource(endpointStateService.getRootURL()).path("/getSlaOrOlaIndicators").queryParam("endpointId", "test").queryParam("periodStart", dateFormater.format(periodStart.getTime())).queryParam("periodEnd", dateFormater.format(periodEnd.getTime()));
+        slaOrOlaIndicators = discoveryRequest.get(SlaOrOlaIndicators.class);        
+        
+        Assert.assertNotNull(slaOrOlaIndicators);
+        Assert.assertEquals(2, slaOrOlaIndicators.getSlaOrOlaIndicatorList().size());
+        indicator = slaOrOlaIndicators.getSlaOrOlaIndicatorList().get(0);        
+
+        Assert.assertEquals(ENDPOINT_ID, indicator.getEndpointId());
+        Assert.assertEquals(INDICATOR_NAME, indicator.getSlaOrOlaName());
+        Assert.assertEquals(SERVICE_LEVEL_HEALTH, indicator.getServiceLevelHealth().toString());
+        
+    }
     
     /**
      * Test the updateSlaOlaIndicators REST operation
@@ -137,7 +223,7 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         indicatorUpdate.setServiceLevelViolation(true);
         indicatorUpdate.setServiceLevelHealth(ServiceLevelHealth.bronze);
         Calendar calendar = new GregorianCalendar();
-        calendar.set(2012, 12, 13, 17, 17, 45);
+        //calendar.set(2012, 12, 13, 17, 17, 45);
         indicatorUpdate.setTimestamp(calendar.getTime());
         slaOrOlaIndicatorsUpdate.getSlaOrOlaIndicatorList().add(indicatorUpdate);
         discoveryRequest.post(slaOrOlaIndicatorsUpdate);
@@ -165,7 +251,7 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         indicatorCreate.setServiceLevelViolation(true);
         indicatorCreate.setServiceLevelHealth(ServiceLevelHealth.silver);
         calendar = new GregorianCalendar();
-        calendar.set(2012, 10, 10, 23, 47, 13);
+        //calendar.set(2012, 10, 10, 23, 47, 13);
         indicatorCreate.setTimestamp(calendar.getTime());
         slaOrOlaIndicatorsCreate.getSlaOrOlaIndicatorList().add(indicatorCreate);
         discoveryRequest.post(slaOrOlaIndicatorsCreate);        
@@ -186,5 +272,51 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         Assert.assertEquals("silver", indicator.getServiceLevelHealth().toString());
         Assert.assertEquals(true, indicator.isServiceLevelViolation());        
     }
+    
+    @Test
+    public void getSlaOrOlaIndicatorsTestWithDateRangeAndPagination(){
+        logTestName(logger);
+        
+        // Required to avoid problem with indicators and periodEnd in the same second
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        // Run first test request
+        Client client = createAuthenticatedHTTPClient();
+        
+        // Run test request with date range params
+        Calendar periodStart = new GregorianCalendar();
+        periodStart.clear();
+        periodStart.set(2012, 0, 1, 0, 0, 1);
+        Calendar periodEnd = new GregorianCalendar();
+        SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        WebResource discoveryRequest = client.resource(endpointStateService.getRootURL()).path("/getSlaOrOlaIndicators").queryParam("periodStart", dateFormater.format(periodStart.getTime())).queryParam("periodEnd", dateFormater.format(periodEnd.getTime()));
+        SlaOrOlaIndicators slaOrOlaIndicators = discoveryRequest.get(SlaOrOlaIndicators.class);        
+        
+        Assert.assertNotNull(slaOrOlaIndicators);
+        // with no pagination, expect to get 5 indicators
+        Assert.assertEquals(5, slaOrOlaIndicators.getSlaOrOlaIndicatorList().size());
+
+        // Re-Run test request with date range params and pagination params to get the first page
+        discoveryRequest = client.resource(endpointStateService.getRootURL()).path("/getSlaOrOlaIndicators").queryParam("periodStart", dateFormater.format(periodStart.getTime())).queryParam("periodEnd", dateFormater.format(periodEnd.getTime())).queryParam("pageSize", "3").queryParam("pageStart", "0");
+        slaOrOlaIndicators = discoveryRequest.get(SlaOrOlaIndicators.class);        
+        
+        Assert.assertNotNull(slaOrOlaIndicators);
+        // Get the first page, expect to get three indicators
+        Assert.assertEquals(3, slaOrOlaIndicators.getSlaOrOlaIndicatorList().size());
+
+        // Re-Run test request with date range params and pagination params to get the second page
+        discoveryRequest = client.resource(endpointStateService.getRootURL()).path("/getSlaOrOlaIndicators").queryParam("periodStart", dateFormater.format(periodStart.getTime())).queryParam("periodEnd", dateFormater.format(periodEnd.getTime())).queryParam("pageSize", "3").queryParam("pageStart", "1");
+        slaOrOlaIndicators = discoveryRequest.get(SlaOrOlaIndicators.class);        
+        
+        Assert.assertNotNull(slaOrOlaIndicators);
+        // Get the first page, expect to get three indicators
+        Assert.assertEquals(2, slaOrOlaIndicators.getSlaOrOlaIndicatorList().size());        
+        
+    }    
+    
     
 }

@@ -4,12 +4,17 @@
 package org.easysoa.registry.integration;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
@@ -24,6 +29,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
+import org.nuxeo.ecm.directory.sql.filter.SQLBetweenFilter;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
@@ -109,7 +115,7 @@ public class EndpointStateServiceImpl implements EndpointStateService {
      */
     @Override
     public SlaOrOlaIndicators getSlaOrOlaIndicatorsByEnv(String environment, String projectId,
-            Date periodStart, Date periodEnd, int pageSize, int pageStart) throws Exception {
+            String periodStart, String periodEnd, int pageSize, int pageStart) throws Exception {
         // TODO NXQL query returning all endpoints where environment & projectId
         // TODO put them in call to getSlaOrOlaIndicators(String endpointIds...) and return it
         
@@ -165,7 +171,7 @@ public class EndpointStateServiceImpl implements EndpointStateService {
      * @throws Exception
      */
     protected SlaOrOlaIndicators getSlaOrOlaIndicators(List<String> endpointIds,
-            Date periodStart, Date periodEnd, int pageSize, int pageStart) throws Exception {
+            String periodStart, String periodEnd, int pageSize, int pageStart) throws Exception {
 
         // For each endpoint, get the corresponding indicators and returns the indicator list
         SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();
@@ -181,23 +187,23 @@ public class EndpointStateServiceImpl implements EndpointStateService {
      */
     @Override
     public SlaOrOlaIndicators getSlaOrOlaIndicators(String endpointId, 
-            String slaOrOlaName, Date periodStart, Date periodEnd, int pageSize, int pageStart) throws Exception {
+            String slaOrOlaName, String periodStart, String periodEnd, int pageSize, int pageStart) throws Exception {
         
         DirectoryService directoryService = Framework.getService(DirectoryService.class);        
-        Session session = directoryService.open("slaOrOlaIndicator");        
+        Session session = directoryService.open(org.easysoa.registry.types.SlaOrOlaIndicator.DOCTYPE);        
         
         /*
         * Returns level indicators, in the given period (default : daily)
         * OPT paginated navigation
         * @param periodStart : if null day start, if both null returns all in the current day
         * @param periodEnd : if null now, if both null returns all in the current day
-        * @param pageSize OPT pagination : number of indicators per page
+        * @param pageSize OPT pagination : number of indicators per page, if not specified, all results are returned
         * @param pageStart OPT pagination : index of the first indicator to return (starts with 0)
         * @return SlaOrOlaIndicators array of SlaOrOlaIndicator
         */
         
         if(session == null){
-            throw new Exception("Unable to open a new session on directory 'slaOrOlaIndicator'");
+            throw new Exception("Unable to open a new session on directory '" + org.easysoa.registry.types.SlaOrOlaIndicator.DOCTYPE + "'");
         }
 
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
@@ -213,7 +219,44 @@ public class EndpointStateServiceImpl implements EndpointStateService {
         SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();
         // Execute query        
         try {
-            DocumentModelList soaNodeModelList = session.query(parameters);            
+
+            // Use this method to have request on date range and pagination
+            Map<String, String> orderByParams = new HashMap<String, String>();
+            Set<String> fullTextSearchParams = new HashSet<String>();
+
+            SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            Calendar calendarFrom = new GregorianCalendar();
+            Calendar calendarTo = new GregorianCalendar();
+            Calendar currentDate = new GregorianCalendar();
+            
+            // Add date Range param
+            // If periodEnd is null and period start is null, set to current day end
+            if(periodEnd == null && periodStart == null){
+                calendarTo.clear();
+                calendarTo.set(currentDate.get(Calendar.YEAR) , currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH), 23, 59, 59);
+            } 
+            // If period End is null and periodStart not null, set to now
+            else if(periodEnd == null && periodStart != null) {
+                calendarTo.setTime(currentDate.getTime());
+            } 
+            // else set with the periodEnd param 
+            else {
+                calendarTo.setTime(dateFormater.parse(periodEnd));
+            }
+            // Set period start
+            if(periodStart != null){
+                calendarFrom.setTime(dateFormater.parse(periodStart));
+            } 
+            // If periodStart is null, set to current day start
+            else {
+                calendarFrom.clear();
+                calendarFrom.set(currentDate.get(Calendar.YEAR) , currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH));    
+            }            
+            SQLBetweenFilter dateRangeFilter = new SQLBetweenFilter(calendarFrom, calendarTo);
+            parameters.put("timestamp", dateRangeFilter);
+            // Execute the query
+            DocumentModelList soaNodeModelList = session.query(parameters, fullTextSearchParams, orderByParams, false, pageSize, pageStart * pageSize);
+            
             SlaOrOlaIndicator indicator;
             for(DocumentModel model : soaNodeModelList){
                 indicator = new SlaOrOlaIndicator();
@@ -229,10 +272,6 @@ public class EndpointStateServiceImpl implements EndpointStateService {
             ex.printStackTrace();
             throw ex;
         }
-        
-        // TODO : add pagination
-        //int itemStartIndex = pageSize * pageStart;
-        //slaOrOlaIndicators.setSlaOrOlaIndicatorList(indicatorList.subList(itemStartIndex, itemStartIndex + pageSize)) ;                
         
         return slaOrOlaIndicators;
     }

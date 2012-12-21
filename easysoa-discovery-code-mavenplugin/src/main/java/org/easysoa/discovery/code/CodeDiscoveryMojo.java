@@ -126,7 +126,13 @@ public class CodeDiscoveryMojo extends AbstractMojo {
         MavenDeliverableInformation mavenDeliverable = new MavenDeliverableInformation(
                 project.getGroupId() + ":" + project.getArtifactId());
         mavenDeliverable.setTitle(project.getName());
-        mavenDeliverable.setVersion(project.getVersion() + " (commit " + buildNumber.substring(0, 10) + ")");
+        String commit;
+        if (buildNumber == null || buildNumber.length() < 10) {
+            commit = "UNKNOWN (ERROR GETTING COMMIT)"; // BUG Talend's crozas
+        } else {
+            commit = buildNumber.substring(0, 10);
+        }
+        mavenDeliverable.setVersion(project.getVersion() + " (commit " + commit + ")");
         if (application != null && !application.trim().isEmpty()) {
             mavenDeliverable.setApplication(application);
         }

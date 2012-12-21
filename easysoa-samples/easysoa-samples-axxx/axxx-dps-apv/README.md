@@ -74,9 +74,16 @@ AXXX is a use case of the [EasySOA project](http://www.easysoa.org) and develope
 Create the "axxx_apv" database and "axxx" user in the database server of your choice.
 See below how to do it with PostgreSQL (default) or MySQL.
 
-If different from default configuration (PostgreSQL), configure it in the AXXX APV webapp.
-In development, this is done in (axxx-dps-apv-core/src/main/resources/)axxx-dps-apv.properties .
-In production, this is done in webapp in WEB-INF/classes/axxx-dps-apv-deploy.properties .
+If your choice differs from default configuration (PostgreSQL), you have
+* to change accordingly properties named "axxx.dps.apv.db.*" in webapp configuration
+* and provide the right database driver
+
+To do this :
+* in development, these properties are in (axxx-dps-apv-core/src/main/resources/)axxx-dps-apv.properties
+and the database driver has to be added as a maven dependency in pom.xml ;
+* in production, these properties are in webapp in WEB-INF/classes/axxx-dps-apv-deploy.properties
+and the database driver has to be added in the webapp's WEB-INF/lib or in your application server's
+shared library directory.
 
 
 ### How to develop :
@@ -107,11 +114,10 @@ If the following error message is displayed :
 	The BASEDIR environment variable is not defined correctly
 	This environment variable is needed to run this program
 
-Just go in bin folder and execute the following command : 
+Then before starting it, just go in bin folder and execute the following command : 
 
 	chmod +x *.sh
 
-Then start Tomcat with the command ./catalina.sh run or ./startup.sh
 
 #### Debugging :
 

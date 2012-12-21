@@ -13,6 +13,26 @@
     <module>axxx-dcv-pivotal</module>
     <module>axxx-dps-apv</module>
   </modules>
+  
+  <profiles>
+
+    <!--
+    EasySOA-specific code (to init a full AXXX EasySOA Registry model...) is contained in this profile.
+    Enabled by default, to disable it add -DskipEasySOA to the mvn command line.
+    -->
+    <profile>
+      <id>EasySOA</id>
+	  <activation>
+	    <property>
+	      <name>!skipEasySOA</name>
+	    </property>
+	  </activation>
+	  <modules>
+	    <module>axxx-easysoa-model</module>
+	  </modules>
+    </profile>
+    
+  </profiles>
 
 </project>
 

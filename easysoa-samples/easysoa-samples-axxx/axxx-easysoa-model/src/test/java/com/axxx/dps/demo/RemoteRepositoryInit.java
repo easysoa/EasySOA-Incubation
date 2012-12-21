@@ -16,6 +16,8 @@ import org.nuxeo.ecm.automation.client.model.Documents;
 
 
 /**
+ * Run it (from Eclipse : right-click > Run as Java application) to init full
+ * EasySOA model of AXXX use case in running EasySOA Registry.
  * 
  * WARNING: Requires the Nuxeo Studio project "EasySOA" to be deployed on a launched Nuxeo DM (port 8080) 
  * 

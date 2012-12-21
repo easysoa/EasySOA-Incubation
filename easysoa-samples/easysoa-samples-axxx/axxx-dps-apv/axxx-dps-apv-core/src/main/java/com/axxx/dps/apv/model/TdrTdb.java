@@ -14,7 +14,7 @@ public class TdrTdb { // does not extend GenericEntity because embedded in Tdr
     // tdr_tdb : partenairedepuis, montantdisponible, dotationglobale, reliquatanneeprecedente, dotationannuelle, sommeutilisee, reliquat, nbbeneficiairesapv
     // 1992  54020  267890  54020   213870   0   54020   0
     // 0    0   35000   0   35000   0   0   0
-    private int partenaireDepuis; // > 0 ; for Information_APV.Anciennete
+    private int partenaireDepuis; // > 0 ; for Client.Anciennete
     
     private double dotationGlobale; // computed during conventionnement, > 0 to approve it ; for Client.Dot_Glob_APV_N (should be reliquatanneeprecedente + dotationannuelle)
     private double reliquatAnneePrecedente; // set during conventionnement ; for Client.Dont_Reliquat_N_1

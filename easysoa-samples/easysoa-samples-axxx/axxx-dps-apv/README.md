@@ -25,7 +25,7 @@ Business processes :
  * TODO button "TEST SEULEMENT Créer une nouvelle Tdr" that goes to a "new tdr" page listing only tdr fields
  that correspond to PrecomptePartenaire fields, with the right validation annotations (@NotEmpty...).
  Clicking on it computes computed fields and creates a new tdr.
- * TODO in details page, list all fields but allow to edit only non-PrecomptePartenaire or computed ones
+ * TODO in details page, list all fields but allow to edit only non-identifiantClientPivotal or computed ones
  (dotationglobale), with validation. Clicking on "sauver" button computes them and saves the tdr.
  * TODO also there, enable "approuver" button only if : TdrTdb fields filled (save for computed fields)
  & valid (dotationannuelle > 0), especially "conventionnement" ones. Clicking on it does a "sauver", then
@@ -39,14 +39,14 @@ Business processes :
  & "nouveau projet" button linking to empty projet details page
 * TODO in "projets" page, list Projet (typeLieu, periode, departement, status), only of current tdr if any
  * TODO for each allow to delete them, allow to go to details page with "sauver" button & validated fields.
- Clicking on "sauver" computes computed fields () and saves the projet.
+ Clicking on "sauver" computes computed fields (OPT xxxBenefs from Benef lists & their accounting fields) and saves the projet.
  * TODO also there, enable "approuver" button only if : Benefs fields filled (save for computed fields)
  & valid (benefs > 0, montant > 0). Clicking on it does a "sauver", then sets status to "approved",
  saves projet, calls TdrService.updateTdb(), and redirects to (tdr's) "projets" page.
   * OPT list & display details of Benef, compute Benefs fields from them
   * LATER manage accounting fields (BenefFinancement) in Benef
 * TODO in TdrService :
- * computeTdb() recomputes its tdr's impacted computed fields (by queries on all approved projets),
+ * updateTdb() recomputes its tdr's impacted computed fields (by queries on all approved projets),
  saves tdr, then calls TdrService.publish()
  * which calls (in Java) ContactSvc.Client once, and ContactSvc.Information_APV once per public
  (Information_APV.Bilan_Libelle) : enfants, jeunes, adultesisoles, seniors

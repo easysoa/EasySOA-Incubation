@@ -39,9 +39,18 @@ AXXX is a use case of the [EasySOA project](http://www.easysoa.org) and develope
 Create the "axxx_pivotal" database and "axxx" user in the database server of your choice.
 See below how to do it with PostgreSQL (default) or MySQL.
 
-If different from default configuration (PostgreSQL), configure it in the AXXX Pivotal webapp.
-In development, this is done in pom.xml . In production, this is done in
-(src/main/resources/)META-INF/persistence.xml .
+If your choice differs from default configuration (PostgreSQL), you have
+* to change accordingly properties named "hibernate.*" in webapp configuration
+* and provide the right database driver jar
+
+To do this :
+* in development, these properties are in pom.xml and the database driver has to be added
+as a maven dependency there also (for MySQL, commented configuration is already provided 
+for both and has only to be uncommented)
+* in production, these properties can be changed by copying (src/main/resources/)META-INF/persistence.xml
+within the webapp to the WEB-INF/classes/META-INF/persistence.xml file and adapting it,
+and the database driver has to be added in the webapp's WEB-INF/lib or in your application server's
+shared library directory.
 
 
 ### How to develop :
@@ -106,8 +115,36 @@ Now you should be able to log in to the database with the created user :
 
 ### How to deploy in production :
 
-TODO from FStudio
-TODO (database) properties in root composite (or property file ?)
+The compilation step above produces a .war file in target/ that you can deploy in your
+favorite application server.
+
+*WARNING* for now it only supports to be deployed at application server root url.
+
+Here is how to do it with Apache Tomcat :
+
+Download Tomcat 6 from http://tomcat.apache.org/download-60.cgi , unzip it and change all
+80xx ports to 70xx in conf/server.xml (allows to have a running EasySOA Registry on the 8080 port). 
+
+Now copy axxx-dps-apv-web/target/pivotal/* in its webapps/ROOT directory :
+
+   rm -rf [TOMCAT_HOME]/webapps/ROOT/*
+   cp -rf axxx-dps-apv-web/target/pivotal/* [TOMCAT_HOME]/webapps/ROOT/
+
+Then go in bin/ directory and start it :
+
+    cd [TOMCAT_HOME]/bin/
+	./catalina.sh run
+	
+And AXXX Pivotal will be available at http://localhost:7080/ .
+	
+If the following error message is displayed :
+
+	The BASEDIR environment variable is not defined correctly
+	This environment variable is needed to run this program
+
+Then before starting it, just go in bin folder and execute the following command : 
+
+	chmod +x *.sh
 
 
 ### How to use :

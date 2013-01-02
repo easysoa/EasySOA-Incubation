@@ -25,4 +25,5 @@ public interface TdrService extends GenericEntityService<Tdr> {
 
     public void publish(Tdr tdr);
     
+    public List<Tdr> getTdrPrecomptes();
 }

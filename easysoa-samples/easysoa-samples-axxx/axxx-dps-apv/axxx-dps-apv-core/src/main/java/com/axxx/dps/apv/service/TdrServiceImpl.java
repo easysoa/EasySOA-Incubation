@@ -1,7 +1,12 @@
 package com.axxx.dps.apv.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +37,15 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
         return tdr.getProjets(); // can be done because inside session here
     }
 
+    @Override
+    public List<Tdr> getTdrPrecomptes(){
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put("tdrTdb.status", "created");
+        Criterion filter = Restrictions.allEq(properties);
+        Order order = Order.asc("nomStructure");
+        return tdrDao.list(Tdr.class, filter, order, null, null);
+    }
+    
     @Override
     public void approve(Tdr tdr) {
         // TODO

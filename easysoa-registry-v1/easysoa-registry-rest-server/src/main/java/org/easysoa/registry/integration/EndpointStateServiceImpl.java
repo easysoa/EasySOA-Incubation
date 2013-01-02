@@ -22,10 +22,12 @@ import org.easysoa.registry.rest.integration.ServiceLevelHealth;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicators;
 import org.easysoa.registry.types.Endpoint;
+import org.mvel2.ast.AssertNode;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.directory.DirectoryException;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.ecm.directory.sql.filter.SQLBetweenFilter;
@@ -50,6 +52,66 @@ public class EndpointStateServiceImpl implements EndpointStateService {
      * @see org.easysoa.registry.rest.integration.EndpointStateService#updateSlaOlaIndicators(SlaOrOlaIndicator[])
      */
     @Override
+    public void createSlaOlaIndicators(SlaOrOlaIndicators slaOrOlaIndicators) throws Exception {
+
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        
+        if(slaOrOlaIndicators != null){
+
+            // Open a session on slaOrOlaIndicator directory
+            Session session = directoryService.open("slaOrOlaIndicator");
+            if(session == null){
+                throw new Exception("Unable to open a new session on directory 'slaOrOlaIndicator'");
+            }
+
+            try{
+                // Update each indicator
+                for(SlaOrOlaIndicator indicator : slaOrOlaIndicators.getSlaOrOlaIndicatorList()){
+                    // Create new indicator
+                    createIndicator(session, indicator);
+                }
+            }
+            catch(Exception ex){
+                 // Return the exception and cancel the transaction
+                 throw new Exception("Failed to update SLA or OLA indicators ", ex);                   
+            } finally {
+                if (session != null) {
+                    // NB. container manages transaction, so no need to commit or rollback
+                    // (see doc of deprecated session.commit())
+                    session.close();
+                }
+            }
+        }
+    }
+    
+    private void createIndicator(Session session, SlaOrOlaIndicator indicator)
+            throws DirectoryException, ClientException, Exception {
+        checkNotNull(indicator.getEndpointId(), "SlaOrOlaIndicator.endpointId");
+        checkNotNull(indicator.getSlaOrOlaName(), "SlaOrOlaIndicator.slaOrOlaName");
+        // TODO LATER check that both exist
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("endpointId", indicator.getEndpointId());
+        properties.put("slaOrOlaName", indicator.getSlaOrOlaName());
+        properties.put("serviceLeveHealth", indicator.getServiceLevelHealth().toString());    
+        properties.put("serviceLevelViolation", indicator.isServiceLevelViolation());
+        if(indicator.getTimestamp() != null){
+            GregorianCalendar calendar = new GregorianCalendar();
+            calendar.setTime(indicator.getTimestamp());
+            properties.put("timestamp", calendar);
+        }
+        session.createEntry(properties);
+    }
+
+    private void checkNotNull(String value, String displayName) throws Exception {
+        if (value == null || value.trim().isEmpty()) {
+            throw new Exception(displayName + " must not be empty !");
+        }
+    }
+
+    /**
+     * @see org.easysoa.registry.rest.integration.EndpointStateService#updateSlaOlaIndicators(SlaOrOlaIndicator[])
+     */
+    @Override
     public void updateSlaOlaIndicators(SlaOrOlaIndicators slaOrOlaIndicators) throws Exception {
 
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
@@ -68,7 +130,10 @@ public class EndpointStateServiceImpl implements EndpointStateService {
                     // get the indicator if exists
                     Map<String, Serializable> parameters = new HashMap<String, Serializable>();
                     parameters.put("slaOrOlaName", indicator.getSlaOrOlaName());
-                    parameters.put("endpointId", indicator.getEndpointId());                    
+                    parameters.put("endpointId", indicator.getEndpointId());
+                    GregorianCalendar calendar = new GregorianCalendar();
+                    calendar.setTime(indicator.getTimestamp());
+                    parameters.put("timestamp", calendar);
                     DocumentModelList documentModelList = session.query(parameters);
                     DocumentModel indicatorModel;
                     
@@ -77,21 +142,10 @@ public class EndpointStateServiceImpl implements EndpointStateService {
                         indicatorModel = documentModelList.get(0);
                         indicatorModel.setPropertyValue("serviceLeveHealth", indicator.getServiceLevelHealth().toString());
                         indicatorModel.setPropertyValue("serviceLevelViolation", String.valueOf(indicator.isServiceLevelViolation()));
-                        indicatorModel.setPropertyValue("timestamp", indicator.getTimestamp());
                         session.updateEntry(indicatorModel);
                     } else {
                         // Create new indicator
-                        Map<String, Object> properties = new HashMap<String, Object>();
-                        properties.put("endpointId", indicator.getEndpointId());
-                        properties.put("slaOrOlaName", indicator.getSlaOrOlaName());
-                        properties.put("serviceLeveHealth", indicator.getServiceLevelHealth().toString());    
-                        properties.put("serviceLevelViolation", indicator.isServiceLevelViolation());
-                        if(indicator.getTimestamp() != null){
-                            GregorianCalendar calendar = new GregorianCalendar();
-                            calendar.setTime(indicator.getTimestamp());
-                            properties.put("timestamp", calendar);
-                        }
-                        session.createEntry(properties);
+                        createIndicator(session, indicator);
                     }
                 }
             }
@@ -159,7 +213,8 @@ public class EndpointStateServiceImpl implements EndpointStateService {
     
     /**
      * 
-     * not REST, used by above 
+     * not REST, used by above
+     * TODO LATER ask Nuxeo to support OR in SQL Directory queries 
      * 
      * @param endpointIds
      * @param periodStart

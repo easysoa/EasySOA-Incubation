@@ -13,5 +13,16 @@ public class ListUtils {
         }
         return list;
     }
+
+
+    /*// generic varargs don't work
+    public static ArrayList<T> list(T...objs) {
+        ArrayList<T> list = new ArrayList<T>(objs.length);
+        for (T obj : objs) {
+            list.add(obj);
+        }
+        return list;
+    }
+    */
     
 }

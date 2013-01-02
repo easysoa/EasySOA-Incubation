@@ -2,6 +2,7 @@ package org.easysoa.registry.rest.integration;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -25,7 +26,7 @@ import javax.ws.rs.core.MediaType;
 public interface EndpointStateService {
 
 	/**
-	 * Creates (OPT or udpdates) each of the given indicator, for the given endpointId, levelName and timestamp.
+	 * Creates each of the given indicator, for the given endpointId, levelName and timestamp.
 	 * NB. endpointId et slaOrOlaName sont à récupérer du modèle EasySOA des Specifications et mettre dans la configuration de la plateforme de monitoring
 	 *  (d'abord manuellement puis récupérés automatiquement au démarrage étant donné l'id du sous-projet de déploiement versionné) 
 	 * @param SlaOrOlaIndicators : array of SlaOrOlaIndicator
@@ -49,9 +50,39 @@ public interface EndpointStateService {
 	 * @throws Exception
 	 */
     @POST
-    @Path("/updateSlaOlaIndicators")
+    @Path("/slaOlaIndicators")
     @Produces(MediaType.APPLICATION_JSON)
-	public void updateSlaOlaIndicators(SlaOrOlaIndicators SlaOrOlaIndicators) throws Exception;
+	public void createSlaOlaIndicators(SlaOrOlaIndicators SlaOrOlaIndicators) throws Exception;
+
+    /**
+     * Updates each of the given indicator, for the given endpointId, levelName and timestamp.
+     * Not required in the normal work cycle, less efficient than createSlaOlaIndicators.
+     * NB. endpointId et slaOrOlaName sont à récupérer du modèle EasySOA des Specifications et mettre dans la configuration de la plateforme de monitoring
+     *  (d'abord manuellement puis récupérés automatiquement au démarrage étant donné l'id du sous-projet de déploiement versionné) 
+     * @param SlaOrOlaIndicators : array of SlaOrOlaIndicator
+     * 
+     * Consumes :
+     * 
+     * {
+     *   "slaOrOlaIndicators":[
+     *     {
+     *       "timestamp":1358093865529,
+     *       "endpointId":"test",
+     *       "slaOrOlaName":"testSlaIndicator",
+     *       "serviceLevelHealth":"gold",
+     *       "serviceLevelViolation":false
+     *     }
+     *   ]
+     * }
+     * 
+     * 
+     * where endpointId is the nuxeo id of the endpoint
+     * @throws Exception
+     */
+    @PUT
+    @Path("/slaOlaIndicators")
+    @Produces(MediaType.APPLICATION_JSON)
+    public void updateSlaOlaIndicators(SlaOrOlaIndicators SlaOrOlaIndicators) throws Exception;
 	
 	/**
 	 * Returns level indicators, in the given period (default : daily)
@@ -80,9 +111,11 @@ public interface EndpointStateService {
      * @param pageStart OPT pagination : index of the first indicator to return (starts with 0)
 	 * @return SlaOrOlaIndicators array of SlaOrOlaIndicator
 	 * @throws Exception 
+	 * 
+	 * FAQ : to get the latest value of an (endpoint) sla or ola indicator, look it up using pageSize=1 & pageStart = 0
 	 */
     @GET
-    @Path("/getSlaOrOlaIndicators")
+    @Path("/slaOlaIndicators")
     @Produces(MediaType.APPLICATION_JSON)	
 	public SlaOrOlaIndicators getSlaOrOlaIndicators(@QueryParam("endpointId") String endpointId, 
 	        @QueryParam("slaOrOlaName") String slaOrOlaName,
@@ -120,7 +153,7 @@ public interface EndpointStateService {
      * @throws Exception
      */
     @GET
-    @Path("/getSlaOrOlaIndicatorsByEnv")
+    @Path("/slaOlaIndicatorsByEnv")
     @Produces(MediaType.APPLICATION_JSON)    
     public SlaOrOlaIndicators getSlaOrOlaIndicatorsByEnv(@QueryParam("environment") String environment, 
             @QueryParam("projectId") String projectId, 

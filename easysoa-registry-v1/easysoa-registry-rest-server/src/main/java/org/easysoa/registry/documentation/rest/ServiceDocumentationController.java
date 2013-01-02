@@ -35,12 +35,12 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.indicators.rest.IndicatorProvider;
-import org.easysoa.registry.indicators.rest.SoftwareComponentIndicatorProvider;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.types.adapters.SoaNodeAdapter;
 import org.easysoa.registry.types.ids.SoaNodeId;
+import static org.easysoa.registry.utils.NuxeoListUtils.*;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -119,7 +119,7 @@ public class ServiceDocumentationController extends ModuleRoot {
             tagId2ServiceNbs.put(serviceProxyParentId, serviceProxyNb);
         }*/
         DocumentModelList untaggedServices = session.query("SELECT " + SERVICE_LIST_PROPS + " FROM " + InformationService.DOCTYPE + IndicatorProvider.NXQL_WHERE_NO_PROXY
-                + IndicatorProvider.NXQL_AND + " NOT ecm:uuid IN " + SoftwareComponentIndicatorProvider.getProxiedIdLiteralList(session, serviceProxies));
+                + IndicatorProvider.NXQL_AND + " NOT ecm:uuid IN " + getProxiedIdLiteralList(session, serviceProxies));
         
         return getView("services")
                 .arg("services", services)
@@ -145,7 +145,7 @@ public class ServiceDocumentationController extends ModuleRoot {
             List<DocumentModel> actualImpls = session.query(IndicatorProvider.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
                     + IndicatorProvider.NXQL_WHERE_NO_PROXY
                     + IndicatorProvider.NXQL_AND + "ecm:uuid IN "
-                    + SoftwareComponentIndicatorProvider.getProxiedIdLiteralList(session,
+                    + getProxiedIdLiteralList(session,
                             session.query(IndicatorProvider.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
                     + IndicatorProvider.NXQL_WHERE_PROXY + IndicatorProvider.NXQL_AND
                     + IndicatorProvider.NXQL_PATH_STARTSWITH + "/default-domain/repository/" + InformationService.DOCTYPE + "'"
@@ -153,7 +153,7 @@ public class ServiceDocumentationController extends ModuleRoot {
                     + IndicatorProvider.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + " IS NULL"))); // WARNING use IS NULL instead of !='true'
             List<DocumentModel> mockImpls = session.query(IndicatorProvider.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
                     + IndicatorProvider.NXQL_WHERE_NO_PROXY + IndicatorProvider.NXQL_AND + "ecm:uuid IN "
-                    + SoftwareComponentIndicatorProvider.getProxiedIdLiteralList(session,
+                    + getProxiedIdLiteralList(session,
                             session.query(IndicatorProvider.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
                     + IndicatorProvider.NXQL_WHERE_PROXY + IndicatorProvider.NXQL_AND
                     + IndicatorProvider.NXQL_PATH_STARTSWITH + "/default-domain/repository/" + InformationService.DOCTYPE + "'"
@@ -162,7 +162,7 @@ public class ServiceDocumentationController extends ModuleRoot {
             actualImpls = session.query(IndicatorProvider.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
                     + IndicatorProvider.NXQL_WHERE_NO_PROXY
                     + IndicatorProvider.NXQL_AND + "ecm:uuid NOT IN "
-                    + SoftwareComponentIndicatorProvider.getIdLiteralList(SoftwareComponentIndicatorProvider.getIds(mockImpls))); // WARNING use IS NULL instead of !='true'
+                    + toLiteral(getIds(mockImpls))); // WARNING use IS NULL instead of !='true'
             view = view
                     .arg("service", service)
                     .arg("actualImpls", actualImpls)

@@ -2,7 +2,6 @@ package org.easysoa.registry.indicators.rest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,12 +13,10 @@ import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoftwareComponent;
 import org.easysoa.registry.types.TaggingFolder;
-import org.nuxeo.ecm.core.api.ClientException;
+import static org.easysoa.registry.utils.NuxeoListUtils.*;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
 
 public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
@@ -79,9 +76,10 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                 + NXQL_WHERE_PROXY
                 + " AND ecm:path STARTSWITH '" + "/default-domain/repository/" + InformationService.DOCTYPE + "'"
                 // + " AND ecm:proxyTargetId IN " + getProxiedIdLiteralList(session, implementationInNoDeliverableOrWhoseIsInNoSoftwareComponent)); // TODO soaid for proxies
-                + " AND ecm:uuid IN " + getIdLiteralList(getProxyIds(session, implementationInNoDeliverableOrWhoseIsInNoSoftwareComponent, null))); // TODO soaid for proxies
+                + " AND ecm:uuid IN " + toLiteral(getProxyIds(session, implementationInNoDeliverableOrWhoseIsInNoSoftwareComponent, null))); // TODO soaid for proxies
         int serviceCount = computedIndicators.get(DoctypeCountIndicator.getName(ServiceImplementation.DOCTYPE)).getCount();
-        HashSet<String> implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentServiceIdSet = new HashSet<String>(getParentIds(implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentServiceProxy));
+        HashSet<String> implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentServiceIdSet = new HashSet<String>(
+                getParentIds(implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentServiceProxy));
         indicators.put("implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentService",
                 new IndicatorValue(implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentServiceIdSet.size(),
                         (serviceCount > 0) ? 100 * implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentServiceIdSet.size() / serviceCount : -1));
@@ -136,7 +134,7 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                 session.query(NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
                 + NXQL_WHERE_PROXY
                 + " AND ecm:path STARTSWITH '" + "/default-domain/repository/" + Deliverable.DOCTYPE
-                + " AND ecm:parentId IN " + getIdLiteralList(deliverableInNoSoftwareComponentOrWhoseIsInNoTaggingFolderIds))));
+                + " AND ecm:parentId IN " + toLiteral(deliverableInNoSoftwareComponentOrWhoseIsInNoTaggingFolderIds))));
         indicators.put("deliverableInNoSoftwareComponentOrWhoseIsInNoTaggingFolderImplementation",
                 new IndicatorValue(deliverableInNoSoftwareComponentOrWhoseIsInNoTaggingFolderImplementationIds.size(),
                         (serviceCount > 0) ? 100 * deliverableInNoSoftwareComponentOrWhoseIsInNoTaggingFolderImplementationIds.size() / serviceCount : -1));
@@ -152,7 +150,7 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                         + NXQL_WHERE_PROXY
                         + " AND ecm:path STARTSWITH '" + "/default-domain/repository/" + InformationService.DOCTYPE + "'"
                         // + " AND ecm:proxyTargetId IN " + getProxiedIdLiteralList(session, implementationInNoDeliverableOrWhoseIsInNoSoftwareComponent)); // TODO soaid for proxies
-                        + " AND ecm:uuid IN " + getIdLiteralList(getProxyIds(session, implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentOrWhoseIsInNoTaggingFolderIds, null))))); // TODO soaid for proxies
+                        + " AND ecm:uuid IN " + toLiteral(getProxyIds(session, implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentOrWhoseIsInNoTaggingFolderIds, null))))); // TODO soaid for proxies
         indicators.put("implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentOrWhoseIsInNoTaggingFolderService",
                 new IndicatorValue(implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentOrWhoseIsInNoTaggingFolderServiceIds.size(),
                         (serviceImplCount > 0) ? 100 * implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentOrWhoseIsInNoTaggingFolderServiceIds.size() / serviceCount : -1));
@@ -164,65 +162,6 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                 (serviceCount > 0) ? 100 * serviceInNoTaggingFolderIds.size() / serviceCount : -1));
         
         return indicators;
-    }
-    
-    public static String getIdLiteralList(Collection<String> ids) throws ClientException {
-        return "('" + ids.toString().replaceAll("[\\[\\]]", "").replaceAll(", ", "', '") + "')";
-    }
-
-    /**
-     * Does not use an intermediary set
-     * @param session
-     * @param proxies
-     * @return
-     * @throws ClientException
-     */
-    public static String getProxiedIdLiteralList(CoreSession session, List<DocumentModel> proxies) throws ClientException {
-        return getIdLiteralList(getProxiedIds(session, proxies));
-    }
-
-    public static List<String> getProxiedIds(CoreSession session, List<DocumentModel> proxies) throws ClientException {
-        ArrayList<String> proxiedIds = new ArrayList<String>();
-        for (DocumentModel proxy : proxies) {
-            proxiedIds.add(session.getWorkingCopy(proxy.getRef()).getId());
-        }
-        return proxiedIds;
-    }
-
-    public static List<String> getProxyIds(CoreSession session, List<DocumentModel> docs, DocumentRef root) throws ClientException {
-        ArrayList<String> proxyIds = new ArrayList<String>();
-        for (DocumentModel doc : docs) {
-            for (DocumentModel proxy : session.getProxies(doc.getRef(), root)) {
-                proxyIds.add(proxy.getId());
-            }
-        }
-        return proxyIds;
-    }
-
-    public static List<String> getProxyIds(CoreSession session, Collection<String> docIds, DocumentRef root) throws ClientException {
-        ArrayList<String> proxyIds = new ArrayList<String>();
-        for (String docId : docIds) {
-            for (DocumentModel proxy : session.getProxies(new IdRef(docId), root)) {
-                proxyIds.add(proxy.getId());
-            }
-        }
-        return proxyIds;
-    }
-    
-    public static List<String> getParentIds(List<DocumentModel> docs) throws ClientException {
-        ArrayList<String> parentIds = new ArrayList<String>();
-        for (DocumentModel doc : docs) {
-            parentIds.add(doc.getParentRef().reference().toString());
-        }
-        return parentIds;
-    }
-    
-    public static List<String> getIds(List<DocumentModel> docs) throws ClientException {
-        ArrayList<String> ids = new ArrayList<String>();
-        for (DocumentModel doc : docs) {
-            ids.add(doc.getId());
-        }
-        return ids;
     }
     
 }

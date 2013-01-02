@@ -151,7 +151,6 @@ public class ServiceFinderRest extends ModuleRoot {
     
 
     @POST
-    @Path("/")
     public Object findServices(@Context HttpContext httpContext, @Context HttpServletRequest request) throws Exception {
     	
     	// Retrieve params

@@ -108,6 +108,9 @@ Download Tomcat 6 from http://tomcat.apache.org/download-60.cgi , unzip it and c
 Now copy axxx-dps-apv-web/target/*war in its webapps directory, go in bin/ directory and start it :
 
 	./catalina.sh run
+
+Then it will be available at http://localhost:7080/apv and its web services below
+http://localhost:7080/apv/services .
 	
 If the following error message is displayed :
 

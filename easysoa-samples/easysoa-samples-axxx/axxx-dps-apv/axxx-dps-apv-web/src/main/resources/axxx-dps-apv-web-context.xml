@@ -38,4 +38,7 @@
  	 	<property name="suffix" value=".jsp" />
  	</bean>
 	
+	<mvc:resources mapping="/static/**" location="/WEB-INF/static/"/>
+	<mvc:resources mapping="/include/**" location="/WEB-INF/include/"/>	
+	
 </beans> 

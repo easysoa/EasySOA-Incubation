@@ -38,9 +38,9 @@ TDR precomptes
     <tr>
         <td>${tdr.nomStructure}</td>
         <td>${tdr.ville}</td>
-        <td><a href="../tdrprecompte/details?tdrId=${tdr.id}">Details</a></td>
+        <td><a href="../tdrprecompte/details/${tdr.id}">Details</a></td>
         <td>...</td>
-        <td><a href="delete/${tdr.id}">delete</a></td>
+        <td><a href="../tdrprecompte/delete/${tdr.id}">delete</a></td>
     </tr>
 </c:forEach>
 </table>
@@ -48,7 +48,7 @@ TDR precomptes
 
 <br/>
 
-<a href="../tdrprecompte/newTdr">TEST SEULEMENT Créer une nouvelle TDR</a>
+<a href="../tdrprecompte/newTdr">(TEST SEULEMENT) Créer une nouvelle TDR</a>
 
 </body>
 </html>

@@ -19,18 +19,6 @@
 			margin: 16px;
 		}
 	</style>
-	
-	<script type="text/javascript">
-		function saveSubmit(form){
-			form.action = "../save";
-			form.submit();
-		}
-		
-		function approveSubmit(form){
-			form.action = "../approve";
-			form.submit();
-		}		
-	</script>
 
 		<div class="columns-1" id="content-wrapper">
 			<div class="lfr-column" id="column-1">
@@ -60,11 +48,11 @@
 														<span style="font-size: large;"> </span>
 													</p>
 													<div>
-														<b><span style="color: maroon;">TDR precompte details</span></b>
+														<b><span style="color: maroon;">TDR details</span></b>
 													</div>
 													<p>
-														<c:if test="${!empty tdrPrecompteDetails}">
-														<form:form method="post" commandName="tdrPrecompteDetails" cssClass="uni-form">
+														<c:if test="${!empty tdr}">
+														<form:form method="post" commandName="tdr" action="../save" cssClass="uni-form">
 														    <form:errors path="*" cssClass="errorblock" element="div" />
 															<table class="data" border="1">
 																<colgroup> <!-- 1000 -->
@@ -76,7 +64,7 @@
 																	<col width="100px">			      	
 																</colgroup>
 																<tbody>
-																	<form:hidden path="id" value="${tdrPrecompteDetails.id}" />
+																	<form:hidden path="id" value="${tdr.id}" />
 																	<tr>
 																    	<td><form:label path="identifiantClientPivotal">Identifiant client Pivotal</form:label></td>
 																		<td><form:input disabled="true" path="identifiantClientPivotal" /></td>
@@ -135,26 +123,26 @@
 																    </tr>
 																    <tr>
 																        <td><form:label path="tdrTdb.dotationGlobale">Dotation globale</form:label></td>
-																		<td><form:hidden path="tdrTdb.dotationGlobale"/>${tdrPrecompteDetails.tdrTdb.montantDisponible}</td>
+																		<td><form:hidden path="tdrTdb.dotationGlobale"/>${tdr.tdrTdb.montantDisponible}</td>
 															        	<td>&nbsp;</td>
 																        <td><form:label path="tdrTdb.reliquatAnneePrecedente">Reliquat annee precedente</form:label></td>
-																		<td><form:hidden path="tdrTdb.reliquatAnneePrecedente"/>${tdrPrecompteDetails.tdrTdb.montantDisponible}</td>
+																		<td><form:hidden path="tdrTdb.reliquatAnneePrecedente"/>${tdr.tdrTdb.montantDisponible}</td>
 															        	<td>&nbsp;</td>		    
 																    </tr>
 																    <tr>
 																        <td><form:label path="tdrTdb.dotationAnnuelle">Dotation anuelle</form:label></td>
-																		<td><form:hidden path="tdrTdb.dotationAnnuelle"/>${tdrPrecompteDetails.tdrTdb.montantDisponible}</td>
+																		<td><form:hidden path="tdrTdb.dotationAnnuelle"/>${tdr.tdrTdb.montantDisponible}</td>
 															        	<td>&nbsp;</td>
 																        <td><form:label path="tdrTdb.sommeUtilisee">Somme utilisée</form:label></td>
-																		<td><form:hidden path="tdrTdb.sommeUtilisee"/>${tdrPrecompteDetails.tdrTdb.montantDisponible}</td>
+																		<td><form:hidden path="tdrTdb.sommeUtilisee"/>${tdr.tdrTdb.montantDisponible}</td>
 															        	<td>&nbsp;</td>		    
 																    </tr>
 																    <tr>
 																        <td><form:label path="tdrTdb.montantDisponible">Montant disponible</form:label></td>
-																		<td><form:hidden path="tdrTdb.montantDisponible"/>${tdrPrecompteDetails.tdrTdb.montantDisponible}</td>
+																		<td><form:hidden path="tdrTdb.montantDisponible"/>${tdr.tdrTdb.montantDisponible}</td>
 															        	<td>&nbsp;</td>
 																        <td><form:label path="tdrTdb.reliquat">Reliquat</form:label></td>
-																		<td><form:hidden path="tdrTdb.reliquat"/>${tdrPrecompteDetails.tdrTdb.reliquat}</td>
+																		<td><form:hidden path="tdrTdb.reliquat"/>${tdr.tdrTdb.reliquat}</td>
 															        	<td>&nbsp;</td>		    
 																    </tr>
 																    <tr>
@@ -185,29 +173,18 @@
 																		<td><form:input path="tdrTdb.nbBeneficiairesPrevisionnel"/></td>
 															        	<td><form:errors path="tdrTdb.nbBeneficiairesPrevisionnel" cssClass="error" /></td>
 																        <td><form:label path="tdrTdb.status">Status</form:label></td>
-																		<td><form:hidden path="tdrTdb.status"/>${tdrPrecompteDetails.tdrTdb.status}</td>
+																		<td><form:hidden path="tdrTdb.status"/>${tdr.tdrTdb.status}</td>
 															        	<td><td>&nbsp;</td></td>	        
 															        </tr>
 															    	<tr>
-															        	<td colspan="3">
-															            	<input type="submit" value="Sauver" onclick="saveSubmit(this.form);"/>
-															        	</td>
-															        	<td colspan="3">
-															        		<!-- TODO : complete the conditions to approve the TDR -->
-															        		<c:choose>
-																        		<c:when test="${tdrPrecompteDetails.tdrTdb.dotationAnnuelle > 0}">
-																        			<input type="submit" value="Approuver" onclick="approveSubmit(this.form);"/>
-																        		</c:when>
-																        		<c:otherwise>
-																        			<input type="submit" value="Approuver" onclick="approveSubmit(this.form);" disabled="true"/>
-																        		</c:otherwise>
-															        		</c:choose>
+															        	<td colspan="6">
+															            	<input type="submit" value="Sauver"/>
 															        	</td>
 															    	</tr>
 																</tbody>
 															</table>
 														</form:form>
-														</c:if>											
+														</c:if>
 													</p>
 												</div>
 											</div>
@@ -221,7 +198,7 @@
 			</div>
 		</div>
 		<div id="footer">
-			<a href="/apv/tdrprecompte/list.html">Back to TDR precomptes</a>
+			<a href="/apv/tdr/list.html">Back to TDR</a>
 		</div>
 
 <%@ include file="/static/html/footer.html" %>

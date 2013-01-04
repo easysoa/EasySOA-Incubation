@@ -1,0 +1,24 @@
+.portlet-journal-content .icon-actions {
+	float: left;
+	margin: 1px 10px 1px 1px;
+}
+
+.portlet-journal-content .icons-container {
+	clear: both;
+	height: auto;
+	margin-top: 1em;
+	overflow: hidden;
+	width: auto;
+}
+
+.portlet-journal-content .taglib-discussion {
+	margin-top: 18px;
+}
+
+.portlet-journal-content .taglib-ratings-wrapper {
+	margin-top: 1em;
+}
+
+.portlet-journal-content .ui-tabs {
+	margin: 18px 0;
+}

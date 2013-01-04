@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
 <%@ include file="/static/html/header.html" %>
@@ -34,23 +35,12 @@
 													<p>
 														<span style="font-size: large;"> </span>
 													</p>
-													<div>
-														<b><span style="color: maroon;">Bienvenue sur
-																le portail de l'AXXX </span></b>
-													</div>
 													<p></p>
 													<p style="text-align: justify;">
 														<span style="font-size: large;"><span
 															style="font-size: large;"><span
-																style="color: maroon;">A completer.</span></span></span>
+																style="color: maroon;">A completer avec la mission de l'axxx</span></span></span>
 													</p>
-													<p>&nbsp;</p>
-													<p style="text-align: justify;">
-														<span style="font-size: large;"><span
-															style="font-size: large;"><span
-																style="color: maroon;">A completer.</span></span></span>
-													</p>
-													<p style="text-align: justify;">&nbsp;</p>
 													<p>&nbsp;</p>
 												</div>
 											</div>
@@ -63,6 +53,7 @@
 				</div>
 			</div>
 		</div>
+
 		<div id="footer">
 
 		</div>

@@ -45,6 +45,15 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
         Order order = Order.asc("nomStructure");
         return tdrDao.list(Tdr.class, filter, order, null, null);
     }
+
+    @Override
+    public List<Tdr> getTdrs() {
+        Map<String, String> properties = new HashMap<String, String>();
+        properties.put("tdrTdb.status", "approved");
+        Criterion filter = Restrictions.allEq(properties);
+        Order order = Order.asc("nomStructure");
+        return tdrDao.list(Tdr.class, filter, order, null, null);
+    }    
     
     @Override
     public void approve(Tdr tdr) {

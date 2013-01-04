@@ -24,7 +24,8 @@ public class TdrController {
 
     @RequestMapping("tdr/list")
     public String list(Map<String, Object> map) {
-        List<Tdr> tdrs = tdrService.list();
+        //List<Tdr> tdrs = tdrService.list();
+        List<Tdr> tdrs = tdrService.getTdrs();
         map.put("tdrs", tdrs);
         map.put("tdr", new Tdr()); // for form
         return "tdrs";
@@ -43,6 +44,13 @@ public class TdrController {
     public String delete(@PathVariable("tdrId") long tdrId) {
         tdrService.delete(tdrId);
         return "redirect:/tdr/list";
+    }
+
+    @RequestMapping(method=RequestMethod.GET, value="tdr/details/{tdrId}")
+    public String details(Map<String, Object> map, @PathVariable("tdrId") long tdrId) {
+        Tdr tdr = tdrService.getById(tdrId);
+        map.put("tdr", tdr);
+        return "tdrDetails";
     }
     
 }

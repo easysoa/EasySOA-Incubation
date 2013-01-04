@@ -25,5 +25,15 @@ public interface TdrService extends GenericEntityService<Tdr> {
 
     public void publish(Tdr tdr);
     
+    /**
+     * Returns only Tdr's with approved status
+     * @return
+     */
+    public List<Tdr> getTdrs();
+    
+    /**
+     * Returns only Tdr's with created status
+     * @return
+     */
     public List<Tdr> getTdrPrecomptes();
 }

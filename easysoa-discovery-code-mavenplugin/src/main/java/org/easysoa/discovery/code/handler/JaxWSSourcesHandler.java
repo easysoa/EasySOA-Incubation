@@ -15,6 +15,8 @@ import javax.jws.WebService;
 import javax.xml.ws.WebServiceClient;
 import javax.xml.ws.WebServiceProvider;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.logging.Log;
 import org.easysoa.discovery.code.CodeDiscoveryRegistryClient;
 import org.easysoa.discovery.code.ParsingUtils;
@@ -237,6 +239,10 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
         if (wsNamespace == null) {
             wsNamespace = ParsingUtils.getAnnotationPropertyString(c, ANN_XML_WSPROVIDER, "targetNamespace");
         }
+        if (wsNamespace == null) {
+            // defaults to package ex. http://ws.apv.dps.axxx.com/ // TODO or only for itfs and not impls ??
+            wsNamespace = "http://" + StringUtils.reverseDelimited(c.getPackageName(), '.') + '/';
+        }
         return wsNamespace;
 	}
 
@@ -250,19 +256,22 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
             wsName = ParsingUtils.getAnnotationPropertyString(c, ANN_XML_WSPROVIDER, "serviceName");
         }
         if (wsName == null) {
+            // defaults to java itf // TODO if itf ! impl ??
             wsName = c.getName();
         }
 		return wsName;
 	}
 
-	private String getWsServiceName(JavaClass c) {	    
+	private String getWsServiceName(JavaClass c) {
+	    // service implementation name (used for binding & port)
         String serviceName = null; 
         serviceName = ParsingUtils.getAnnotationPropertyString(c, ANN_WS, "serviceName");
         if (serviceName == null) {
             serviceName = ParsingUtils.getAnnotationPropertyString(c, ANN_XML_WSCLIENT, "name");
         }
 		if (serviceName == null) {
-			serviceName = c.getName();
+		    // defaults to java impl + "Service" // TODO for impls ! itfs ??
+			serviceName = c.getName() + "Service";
 		}
 		return serviceName;
 	}
@@ -320,15 +329,22 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 	private JavaServiceImplementationInformation createServiceImplementation(JavaClass c,
 			JavaClass itfClass, JavaServiceInterfaceInformation interfaceInfo) throws Exception {
 	    String wsNamespace = getWsNamespace(c), wsName = getWsName(c), serviceName = getWsServiceName(c);
-		JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(
-	        		wsNamespace + ":" + wsName + "=" + serviceName);
-		serviceImpl.setTitle(c.getName());
-		
+	    
+		String wsdlPortTypeName;
+		if (interfaceInfo != null) {
+		    wsdlPortTypeName = toShortNsName(interfaceInfo.getWsNamespace(), interfaceInfo.getWsName());
+		} else {
+		    wsdlPortTypeName = toShortNsName(wsNamespace, wsName);
+		}
+		String wsdlServiceName = toShortNsName(wsNamespace, serviceName);
+
+        JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(
+                    wsNamespace + ":" + wsName + "=" + serviceName); // TODO NOOOOO rather classname !!!
+        serviceImpl.setTitle(c.getName());
+        
 		// TODO Cleaner porttype/servicename discovery + revert soanodeid
-		serviceImpl.setProperty(JavaServiceImplementation.XPATH_WSDL_PORTTYPE_NAME,
-				"{" + wsNamespace + "}" + wsName);
-		serviceImpl.setProperty(JavaServiceImplementation.XPATH_WSDL_SERVICE_NAME,
-				"{" + wsNamespace + "}" + serviceName);
+		serviceImpl.setProperty(JavaServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, wsdlPortTypeName);
+		serviceImpl.setProperty(JavaServiceImplementation.XPATH_WSDL_SERVICE_NAME, wsdlServiceName);
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_ISMOCK,
 		        c.getSource().getURL().getPath().contains("src/test/"));
@@ -350,9 +366,14 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 	    String itfClassName = itfClass.getName();
 	    InformationServiceInformation informationService = new InformationServiceInformation(wsNamespace + ":" + wsName);
 	    informationService.setProperty(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
-	    informationService.setProperty(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{" + wsNamespace + "}" + wsName);
+	    String wsdlPortTypeName = toShortNsName(wsNamespace, wsName);
+	    informationService.setProperty(InformationService.XPATH_WSDL_PORTTYPE_NAME, wsdlPortTypeName);
 	    informationService.setTitle(itfClassName.substring(itfClassName.lastIndexOf(".") + 1));
 	    return informationService;
+	}
+	
+	private String toShortNsName(String ns, String name) {
+	    return '{' + ns + '}' + name;
 	}
 
 	private String getWsNamespace(Class<?> c) {

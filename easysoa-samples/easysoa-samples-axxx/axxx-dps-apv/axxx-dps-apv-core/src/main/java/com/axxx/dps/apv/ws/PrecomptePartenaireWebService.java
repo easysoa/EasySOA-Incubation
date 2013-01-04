@@ -11,8 +11,15 @@ import javax.jws.WebService;
  * @author mdutoo
  *
  */
-@WebService(name="PrecomptePartenaireService", // used for imported WSDL, else default to java itf
-	targetNamespace="http://www.axxx.com/dps/apv") // default to package ex. http://ws.apv.dps.axxx.com/
+@WebService(name="PrecomptePartenaireService", // portType (service interface), else defaults to java itf
+	targetNamespace="http://www.axxx.com/dps/apv") // defaults to package ex. http://ws.apv.dps.axxx.com/
+// wsdl:portType/@name = itfClass.@WebService.name ; else defaults to itfClass.name
+//
+// and deduced :
+// wsdl:definitions/@name = wsdl:portType/@name (thus defaults to itfClass.name)
+//
+// moreover, as usual :
+// & targetNamespace for all of them
 public interface PrecomptePartenaireWebService {
 
 	/**

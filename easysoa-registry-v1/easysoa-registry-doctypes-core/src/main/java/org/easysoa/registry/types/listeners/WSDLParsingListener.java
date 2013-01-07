@@ -19,6 +19,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -80,62 +81,12 @@ public class WSDLParsingListener implements EventListener {
 
         if (InformationService.DOCTYPE.equals(sourceDocument.getType())
         		|| Endpoint.DOCTYPE.equals(sourceDocument.getType())) {
-	        // Extract metadata from WSDL
-	        Object filesInfoValue = sourceDocument.getPropertyValue("files:files");
-			if (filesInfoValue != null) {
-	
-				try {
-					// Look for first WSDL
-					Description wsdl = null;
-					List<?> filesInfoList = (List<?>) filesInfoValue;
-					for (Object fileInfoObject : filesInfoList) {
-						Map<?, ?> fileInfoMap = (Map<?, ?>) fileInfoObject;
-						Blob fileBlob = (Blob) fileInfoMap.get("file");
-						try {
-							File file = File.createTempFile("wsdlCandidate", null);
-							fileBlob.transferTo(file);
-							WSDLReader wsdlReader = WSDLFactory.newInstance().newWSDLReader();
-							
-							try {
-								wsdl = wsdlReader.read(file.toURI().toURL());
-								break;
-							}
-							catch (WSDLException e) {
-								// Not a WSDL, continue to next file
-							}
-						} catch (Exception e) {
-							logger.error("Failed to extract or parse potential WSDL", e);
-						}
-					}
-					
-					// Extract relevant metadata
-					if (wsdl != null) {
-						QName portTypeName = wsdl.getInterfaces().get(0).getQName();
-						QName serviceName = wsdl.getServices().get(0).getQName();
-						String wsdlVersion = wsdl.getVersion().name();
-						if (InformationService.DOCTYPE.equals(sourceDocument.getType())) {
-							sourceDocument.setPropertyValue(InformationService.XPATH_SOANAME,
-									new InformationServiceName(ServiceNameType.WEB_SERVICE,
-											portTypeName.getNamespaceURI(), portTypeName.getLocalPart()).toString());
-							sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString());
-							sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_SERVICE_NAME, serviceName.toString());
-							sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_VERSION, wsdlVersion);
-						}
-						else {
-							sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString());
-							sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_SERVICE_NAME, serviceName.toString());
-							sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_VERSION, wsdlVersion);
-						}
-
-						documentModified = true;
-					}
-					
-				
-				} catch (Exception e) {
-					logger.error("Failed to parse WSDL", e);
-					return;
-				}
-	        }
+			try {
+			    documentModified = extractMetadataFromWsdl(sourceDocument);
+			} catch (Exception e) {
+				logger.error("Failed to extract from WSDL", e);
+				return;
+			}
         }
 		
 		// Save according to event type
@@ -144,5 +95,72 @@ public class WSDLParsingListener implements EventListener {
 			documentManager.save();
 		}
 	}
+
+    private boolean extractMetadataFromWsdl(DocumentModel sourceDocument) throws Exception {
+        // Look for first WSDL
+        Description wsdl = null;
+        
+        // look in attached files
+        List<?> filesInfos = (List<?>) sourceDocument.getPropertyValue("files:files");
+        if (filesInfos != null && !filesInfos.isEmpty()) {
+            for (Object fileInfoObject : filesInfos) {
+                Map<?, ?> fileInfoMap = (Map<?, ?>) fileInfoObject;
+                Blob fileBlob = (Blob) fileInfoMap.get("file");
+                wsdl = tryParsingWsdlFromBlob(fileBlob);
+            }
+        }
+        
+        if (wsdl == null) {
+            // look in document content
+            Blob fileBlob = (Blob) sourceDocument.getPropertyValue("file:content");
+            if (fileBlob != null) {
+                wsdl = tryParsingWsdlFromBlob(fileBlob);
+            }
+        }
+        
+        // Extract relevant metadata
+        if (wsdl != null) {
+            QName portTypeName = wsdl.getInterfaces().get(0).getQName();
+            QName serviceName = wsdl.getServices().get(0).getQName();
+            String wsdlVersion = wsdl.getVersion().name();
+            if (InformationService.DOCTYPE.equals(sourceDocument.getType())) {
+                sourceDocument.setPropertyValue(InformationService.XPATH_SOANAME,
+                        new InformationServiceName(ServiceNameType.WEB_SERVICE,
+                                portTypeName.getNamespaceURI(), portTypeName.getLocalPart()).toString());
+                sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString());
+                sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_SERVICE_NAME, serviceName.toString());
+                sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_VERSION, wsdlVersion);
+            }
+            else {
+                sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString());
+                sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_SERVICE_NAME, serviceName.toString());
+                sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_VERSION, wsdlVersion);
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    private Description tryParsingWsdlFromBlob(Blob fileBlob) {
+        if (fileBlob.getFilename().toLowerCase().endsWith("wsdl")) {
+            try {
+                File file = File.createTempFile("wsdlCandidate", null);
+                fileBlob.transferTo(file);
+                WSDLReader wsdlReader = WSDLFactory.newInstance().newWSDLReader();
+                
+                try {
+                    return wsdlReader.read(file.toURI().toURL());
+                }
+                catch (WSDLException e) {
+                    logger.info("Failed to extract or parse potential WSDL", e);
+                    // Not a WSDL, continue to next file
+                }
+            } catch (Exception e) {
+                logger.error("Failed to extract or parse potential WSDL", e);
+            }
+        }
+        return null;
+    }
 
 }

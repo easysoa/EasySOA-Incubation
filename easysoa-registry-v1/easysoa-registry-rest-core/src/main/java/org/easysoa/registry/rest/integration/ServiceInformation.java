@@ -75,6 +75,12 @@ public class ServiceInformation /*extends WSDLInformation*/ {
     protected String objectType;
     
     protected String wsdlDownloadUrl;
+    protected String wsdlPortType;
+    protected String wsdlServiceName;
+    
+    protected String restPath;
+    protected String restAccepts;
+    protected String restContentType;
 
     /**
      * Default constructor
@@ -185,6 +191,46 @@ public class ServiceInformation /*extends WSDLInformation*/ {
      */
     public void setObjectType(String objectType) {
         this.objectType = checkNotNull(objectType);
+    }  
+    
+    public String getWsdlPortType() {
+        return wsdlPortType;
+    }
+
+    public void setWsdlPortType(String wsdlPortType) {
+        this.wsdlPortType = wsdlPortType;
+    }
+
+    public String getWsdlServiceName() {
+        return wsdlServiceName;
+    }
+
+    public void setWsdlServiceName(String wsdlServiceName) {
+        this.wsdlServiceName = wsdlServiceName;
+    }
+
+    public String getRestPath() {
+        return restPath;
+    }
+
+    public void setRestPath(String restPath) {
+        this.restPath = restPath;
+    }
+
+    public String getRestAccepts() {
+        return restAccepts;
+    }
+
+    public void setRestAccepts(String restAccepts) {
+        this.restAccepts = restAccepts;
+    }
+
+    public String getRestContentType() {
+        return restContentType;
+    }
+
+    public void setRestContentType(String restContentType) {
+        this.restContentType = restContentType;
     }
     
     /**
@@ -198,6 +244,6 @@ public class ServiceInformation /*extends WSDLInformation*/ {
         } else {
             return "";
         }        
-    }    
+    }  
     
 }

@@ -35,6 +35,11 @@ public interface SimpleRegistryService {
      *       "environment":"",
      *       "endpointUrl":"",
      *       "wsdlDownloadUrl":""
+     *       "wsdlPortType":""
+     *       "wsdlServiceName":""
+     *       "restPath":""
+     *       "restAccepts":""
+     *       "restContentType":""
      *     },{
      *       "endpoints": {
      *         "endpointInformations":[]
@@ -48,6 +53,11 @@ public interface SimpleRegistryService {
      *       "environment":"",
      *       "endpointUrl":"",
      *       "wsdlDownloadUrl":""
+     *       "wsdlPortType":""
+     *       "wsdlServiceName":""
+     *       "restPath":""
+     *       "restAccepts":""
+     *       "restContentType":""
      *     }
      *   ]
      * }
@@ -89,6 +99,11 @@ public interface SimpleRegistryService {
      *        "soaName":"Test:http://localhost:8658/Test",
      *        "objectType":"Endpoint",
      *        "wsdlDownloadUrl":""
+     *        "wsdlPortType":""
+     *        "wsdlServiceName":""
+     *        "restPath":""
+     *        "restAccepts":""
+     *        "restContentType":""
      *      },{
      *        "environment":"Test",
      *        "endpointUrl":"http://localhost:8659/Test",
@@ -99,6 +114,11 @@ public interface SimpleRegistryService {
      *        "soaName":"Test:http://localhost:8659/Test",
      *        "objectType":"Endpoint",
      *        "wsdlDownloadUrl":""
+     *        "wsdlPortType":""
+     *        "wsdlServiceName":""
+     *        "restPath":""
+     *        "restAccepts":""
+     *        "restContentType":""
      *     },{
      *        "environment":"Test",
      *        "endpointUrl":"http://localhost:8660/Test",
@@ -109,6 +129,11 @@ public interface SimpleRegistryService {
      *        "soaName":"Test:http://localhost:8660/Test",
      *        "objectType":"Endpoint",
      *        "wsdlDownloadUrl":""
+     *        "wsdlPortType":""
+     *        "wsdlServiceName":""
+     *        "restPath":""
+     *        "restAccepts":""
+     *        "restContentType":""
      *      }]
      *  }    
      * 
@@ -149,6 +174,11 @@ public interface SimpleRegistryService {
      *           "soaName":"Test:http://localhost:8658/Test",
      *           "objectType":"Endpoint",
      *           "wsdlDownloadUrl":""
+     *           "wsdlPortType":""
+     *           "wsdlServiceName":""
+     *           "restPath":""
+     *           "restAccepts":""
+     *           "restContentType":""
      *         },{
      *           "environment":"Test",
      *           "endpointUrl":"http://localhost:8659/Test",
@@ -159,6 +189,11 @@ public interface SimpleRegistryService {
      *           "soaName":"Test:http://localhost:8659/Test",
      *           "objectType":"Endpoint",
      *           "wsdlDownloadUrl":""
+     *           "wsdlPortType":""
+     *           "wsdlServiceName":""
+     *           "restPath":""
+     *           "restAccepts":""
+     *           "restContentType":""
      *         }
      *       },
      *       "projectID":"",
@@ -170,6 +205,11 @@ public interface SimpleRegistryService {
      *       "environment":"",
      *       "endpointUrl":"",
      *       "wsdlDownloadUrl":""
+     *       "wsdlPortType":""
+     *       "wsdlServiceName":""
+     *       "restPath":""
+     *       "restAccepts":""
+     *       "restContentType":""
      *     },{
      *       "endpoints": {
      *         "endpointInformations":[]
@@ -183,6 +223,11 @@ public interface SimpleRegistryService {
      *       "environment":"",
      *       "endpointUrl":"",
      *       "wsdlDownloadUrl":""
+     *       "wsdlPortType":""
+     *       "wsdlServiceName":""
+     *       "restPath":""
+     *       "restAccepts":""
+     *       "restContentType":""
      *     }
      *   ]
      * }

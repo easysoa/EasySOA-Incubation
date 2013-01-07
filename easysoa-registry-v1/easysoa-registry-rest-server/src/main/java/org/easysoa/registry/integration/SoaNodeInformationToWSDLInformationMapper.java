@@ -3,9 +3,11 @@
  */
 package org.easysoa.registry.integration;
 
+import org.easysoa.registry.matching.MatchingHelper;
 import org.easysoa.registry.rest.integration.EndpointInformation;
 import org.easysoa.registry.rest.integration.ServiceInformation;
 import org.easysoa.registry.types.Endpoint;
+import org.easysoa.registry.types.InformationService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
@@ -33,6 +35,15 @@ public class SoaNodeInformationToWSDLInformationMapper {
         serviceInformation.setDescription((String)nodeModel.getPropertyValue("dc:description"));
         serviceInformation.setNuxeoID(nodeModel.getId()); // the Nuxeo object ID
         serviceInformation.setObjectType(nodeModel.getType());
+
+        if (MatchingHelper.isWsdlInfo(nodeModel)) {
+            serviceInformation.setWsdlPortType((String)nodeModel.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME));
+            serviceInformation.setWsdlServiceName((String)nodeModel.getPropertyValue(InformationService.XPATH_WSDL_SERVICE_NAME));
+        } else if (MatchingHelper.isRestInfo(nodeModel)) {
+            serviceInformation.setRestPath((String)nodeModel.getPropertyValue(InformationService.XPATH_REST_PATH));
+            serviceInformation.setRestAccepts((String)nodeModel.getPropertyValue(InformationService.XPATH_REST_ACCEPTS));
+            serviceInformation.setRestContentType((String)nodeModel.getPropertyValue(InformationService.XPATH_REST_CONTENT_TYPE));
+        }
         
         // WSDL download URL : To be builded by hand
         // http://localhost:8080/nuxeo/nxfile/default/d5bd2a85-a936-4319-8cf9-6e4cd5fd0381/files:files/0/file/WeatherService.wsdl
@@ -77,7 +88,16 @@ public class SoaNodeInformationToWSDLInformationMapper {
         catch(Exception ex){
             endpointInformation.setWsdlDownloadUrl("");
             //ex.printStackTrace();
-        }         
+        }
+
+        if (MatchingHelper.isWsdlInfo(nodeModel)) {
+            endpointInformation.setWsdlPortType((String)nodeModel.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME));
+            endpointInformation.setWsdlServiceName((String)nodeModel.getPropertyValue(InformationService.XPATH_WSDL_SERVICE_NAME));
+        } else if (MatchingHelper.isRestInfo(nodeModel)) {
+            endpointInformation.setRestPath((String)nodeModel.getPropertyValue(InformationService.XPATH_REST_PATH));
+            endpointInformation.setRestAccepts((String)nodeModel.getPropertyValue(InformationService.XPATH_REST_ACCEPTS));
+            endpointInformation.setRestContentType((String)nodeModel.getPropertyValue(InformationService.XPATH_REST_CONTENT_TYPE));
+        }  
         
         if(Endpoint.DOCTYPE.equalsIgnoreCase(endpointInformation.getObjectType())){
             // Only for endpoint objects

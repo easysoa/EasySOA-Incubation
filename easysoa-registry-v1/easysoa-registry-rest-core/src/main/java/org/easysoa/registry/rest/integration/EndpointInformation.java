@@ -65,6 +65,8 @@ public class EndpointInformation/* extends WSDLInformation */{
         this.environment = checkNotNull(environment);
     }    
     
+    
+    // copied from InformationService (to avoid inheriting from it to simplify mapping to REST)
     private String projectID;
     
     private String nuxeoID;
@@ -78,6 +80,12 @@ public class EndpointInformation/* extends WSDLInformation */{
     private String objectType;
     
     private String wsdlDownloadUrl;
+    private String wsdlPortType;
+    private String wsdlServiceName;
+    
+    private String restPath;
+    private String restAccepts;
+    private String restContentType;
 
     /**
      * Default constructor
@@ -190,6 +198,46 @@ public class EndpointInformation/* extends WSDLInformation */{
         this.objectType = checkNotNull(objectType);
     }
     
+    public String getWsdlPortType() {
+        return wsdlPortType;
+    }
+
+    public void setWsdlPortType(String wsdlPortType) {
+        this.wsdlPortType = wsdlPortType;
+    }
+
+    public String getWsdlServiceName() {
+        return wsdlServiceName;
+    }
+
+    public void setWsdlServiceName(String wsdlServiceName) {
+        this.wsdlServiceName = wsdlServiceName;
+    }
+
+    public String getRestPath() {
+        return restPath;
+    }
+
+    public void setRestPath(String restPath) {
+        this.restPath = restPath;
+    }
+
+    public String getRestAccepts() {
+        return restAccepts;
+    }
+
+    public void setRestAccepts(String restAccepts) {
+        this.restAccepts = restAccepts;
+    }
+
+    public String getRestContentType() {
+        return restContentType;
+    }
+
+    public void setRestContentType(String restContentType) {
+        this.restContentType = restContentType;
+    }
+    
     /**
      * 
      * @param param The parameter to check
@@ -201,6 +249,6 @@ public class EndpointInformation/* extends WSDLInformation */{
         } else {
             return "";
         }        
-    }    
+    }
     
 }

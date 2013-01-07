@@ -165,10 +165,14 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
 
         // Check result
         ServiceInformation firstServiceInformation = serviceInformations.getServiceInformationList().get(0);
-        Assert.assertEquals("ns:testWithoutWsdl", firstServiceInformation.getSoaName());
+        Assert.assertEquals(INFORMATIONSERVICE_TEST_WITHOUT_POPRTTYPE_ID.getName(), firstServiceInformation.getSoaName());
+        Assert.assertEquals(null, firstServiceInformation.getWsdlPortType());
+        Assert.assertEquals(null, firstServiceInformation.getWsdlServiceName());
        
         ServiceInformation secondServiceInformation = serviceInformations.getServiceInformationList().get(1);
-        Assert.assertEquals("ns:test", secondServiceInformation.getSoaName());
+        Assert.assertEquals(INFORMATIONSERVICE_TEST_ID.getName(), secondServiceInformation.getSoaName());
+        Assert.assertEquals(TEST_PORT_TYPE, secondServiceInformation.getWsdlPortType());
+        Assert.assertEquals(null, secondServiceInformation.getWsdlServiceName());
 
         // Run second test request
         discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryWSDLInterfaces").queryParam("search", "another");

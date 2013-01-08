@@ -24,7 +24,7 @@ import com.axxx.dps.apv.persistence.GenericEntity;
 public class Projet extends GenericEntity<Projet> {
 
     private static final long serialVersionUID = 2661251735222689510L;
-
+    
     @ManyToOne(optional=false)
     private Tdr tdr;
 
@@ -37,7 +37,11 @@ public class Projet extends GenericEntity<Projet> {
     
     private String status; // TODO enum ?? ; created,( approved,) published (i.e. it's taken into account when computing numbers of its tdr)
     
-    private String typeLieu;
+    private String typeLieu; // enum Mer, Montagne, Campagne
+    
+    private Integer departement; // number TODO validation ; integer ?!
+    
+    private Integer periode; // month number TODO validation ; integer ?!
     
     // TODO add fields : take enough meaningful ones from reporting SQL (look for "ejou"), including those required by PrecomptePartenaire & Pivotal (aggregated in Client, Information_APV, OPT ContactClient)
     // duree, typelieu, pays, departement, region, periode, vacancesscolaires, transport, distance, hebergement, hebergementautre, formule, dominantesportive) FROM stdin;
@@ -62,16 +66,20 @@ public class Projet extends GenericEntity<Projet> {
     // nb, couttotal, montantapv, coutparjourparpersonne, montantapvparjourparpersonne, partapvfinancement
     // 0...
     //
-    @OneToOne(cascade=CascadeType.ALL, mappedBy="projet", orphanRemoval=true, fetch=FetchType.EAGER)
+    @OneToOne(cascade=CascadeType.ALL, /*mappedBy="projet",*/ orphanRemoval=true, fetch=FetchType.EAGER)
+    //@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    private Benefs totalBenefs; // OPT computed from other xxxBenefs here
+
+    @OneToOne(cascade=CascadeType.ALL, /*mappedBy="projet",*/ orphanRemoval=true, fetch=FetchType.EAGER)
     //@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Benefs enfantsBenefs; // for Information_APV (Nombre), Client (Nb_Benef_N, Montant_Utilise_N)
-    @OneToOne(cascade=CascadeType.ALL, mappedBy="projet", orphanRemoval=true, fetch=FetchType.EAGER)
+    @OneToOne(cascade=CascadeType.ALL, /*mappedBy="projet",*/ orphanRemoval=true, fetch=FetchType.EAGER)
     //@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Benefs jeunesBenefs; // for Information_APV (Nombre), Client (Nb_Benef_N, Montant_Utilise_N)
-    @OneToOne(cascade=CascadeType.ALL, mappedBy="projet", orphanRemoval=true, fetch=FetchType.EAGER)
+    @OneToOne(cascade=CascadeType.ALL, /*mappedBy="projet",*/ orphanRemoval=true, fetch=FetchType.EAGER)
     //@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Benefs adultesIsolesBenefs; // for Information_APV (Nombre), Client (Nb_Benef_N, Montant_Utilise_N)
-    @OneToOne(cascade=CascadeType.ALL, mappedBy="projet", orphanRemoval=true, fetch=FetchType.EAGER)
+    @OneToOne(cascade=CascadeType.ALL, /*mappedBy="projet",*/ orphanRemoval=true, fetch=FetchType.EAGER)
     //@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private Benefs seniorsBenefs; // for Information_APV (Nombre), Client (Nb_Benef_N, Montant_Utilise_N)
     
@@ -140,6 +148,34 @@ public class Projet extends GenericEntity<Projet> {
     public void setTypeLieu(String typeLieu) {
         this.typeLieu = typeLieu;
     }
+
+    /**
+     * @return the departement
+     */
+    public Integer getDepartement() {
+        return departement;
+    }
+
+    /**
+     * @param departement the departement to set
+     */
+    public void setDepartement(Integer departement) {
+        this.departement = departement;
+    }
+
+    /**
+     * @return the periode
+     */
+    public Integer getPeriode() {
+        return periode;
+    }
+
+    /**
+     * @param periode the periode to set
+     */
+    public void setPeriode(Integer periode) {
+        this.periode = periode;
+    }    
     
     public Benefs getEnfantsBenefs() {
         return enfantsBenefs;
@@ -147,6 +183,7 @@ public class Projet extends GenericEntity<Projet> {
 
     public void setEnfantsBenefs(Benefs enfantsBenefs) {
         this.enfantsBenefs = enfantsBenefs;
+        computeTotalBenef();        
     }
 
     public Benefs getJeunesBenefs() {
@@ -155,6 +192,7 @@ public class Projet extends GenericEntity<Projet> {
 
     public void setJeunesBenefs(Benefs jeunesBenefs) {
         this.jeunesBenefs = jeunesBenefs;
+        computeTotalBenef();
     }
 
     public Benefs getAdultesIsolesBenefs() {
@@ -163,14 +201,39 @@ public class Projet extends GenericEntity<Projet> {
 
     public void setAdultesIsolesBenefs(Benefs adultesIsolesBenefs) {
         this.adultesIsolesBenefs = adultesIsolesBenefs;
+        computeTotalBenef();
     }
 
     public Benefs getSeniorsBenefs() {
         return seniorsBenefs;
+      
     }
 
     public void setSeniorsBenefs(Benefs seniorsBenefs) {
         this.seniorsBenefs = seniorsBenefs;
+        computeTotalBenef();
+    }
+    
+    public Benefs getTotalBenefs() {
+        return totalBenefs;
+    }
+    
+    public void setTotalBenefs(Benefs totalBenefs) {
+        this.totalBenefs = totalBenefs;
+    }
+    
+    public void computeTotalBenef(){
+        if(this.totalBenefs == null){
+            this.totalBenefs = new Benefs();
+        }
+        this.totalBenefs.setMontantApv(this.getEnfantsBenefs().getMontantApv() 
+                + this.getJeunesBenefs().getMontantApv() 
+                + this.getAdultesIsolesBenefs().getMontantApv() 
+                + this.getSeniorsBenefs().getMontantApv());
+        this.totalBenefs.setNbBeneficiaires(this.getEnfantsBenefs().getNbBeneficiaires() 
+                + this.getJeunesBenefs().getNbBeneficiaires()
+                + this.getAdultesIsolesBenefs().getNbBeneficiaires() 
+                + this.getSeniorsBenefs().getNbBeneficiaires());
     }
     
 }

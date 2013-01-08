@@ -141,8 +141,8 @@
 																        <td><form:label path="tdrTdb.montantDisponible">Montant disponible</form:label></td>
 																		<td><form:hidden path="tdrTdb.montantDisponible"/>${tdr.tdrTdb.montantDisponible}</td>
 															        	<td>&nbsp;</td>
-																        <td><form:label path="tdrTdb.reliquat">Reliquat</form:label></td>
-																		<td><form:hidden path="tdrTdb.reliquat"/>${tdr.tdrTdb.reliquat}</td>
+																        <td>&nbsp;</td>
+																		<td>&nbsp;</td>
 															        	<td>&nbsp;</td>		    
 																    </tr>
 																    <tr>
@@ -159,7 +159,8 @@
 															        	<td><form:errors path="tdrTdb.nbEnfants" cssClass="error" /></td>
 																        <td><form:label path="tdrTdb.nbJeunes">Nombre jeunes</form:label></td>
 																		<td><form:input path="tdrTdb.nbJeunes"/></td>
-															        	<td><form:errors path="tdrTdb.nbJeunes" cssClass="error" /></td>		    </tr>
+															        	<td><form:errors path="tdrTdb.nbJeunes" cssClass="error" /></td>
+															        </tr>
 																    <tr>
 																        <td><form:label path="tdrTdb.nbAdultesIsoles">Nombre adultes isolés</form:label></td>
 																		<td><form:input path="tdrTdb.nbAdultesIsoles"/></td>

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.axxx.dps.apv.model.Projet;
 import com.axxx.dps.apv.model.Tdr;
+import com.axxx.dps.apv.model.TdrTdb;
 import com.axxx.dps.apv.persistence.GenericEntityServiceImpl;
 
 
@@ -32,10 +33,10 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
         return tdrDao;
     }
 
-    @Override
+    /*@Override
     public List<Projet> getProjets(Tdr tdr) {
         return tdr.getProjets(); // can be done because inside session here
-    }
+    }*/
 
     @Override
     public List<Tdr> getTdrPrecomptes(){
@@ -63,11 +64,43 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
     @Override
     public void computeTdb(Tdr tdr) {
         // TODO
+        //recomputes its tdr's impacted computed fields (by queries on all approved projets), saves tdr, then calls TdrService.publish()
+        
+        //private double dotationGlobale; // computed during conventionnement, > 0 to approve it ; for Client.Dot_Glob_APV_N (should be reliquatanneeprecedente + dotationannuelle)
+        //private double reliquatAnneePrecedente; // set during conventionnement ; for Client.Dont_Reliquat_N_1
+        //private double dotationAnnuelle; // set during conventionnement ; for Dont_Dot_N (& Client.Dot_Glob_APV_N)
+        
+        //private double sommeUtilisee; // for Client.Montant_Utilise_N ; = sum of projet.montant for all approved projets
+        //private double montantDisponible; // = dotationglobale - sommeutilisee
+        ///private double reliquat; // NO no meaning here (in APV would have been about year N-1, or somme commandee vs utilisee ?)
+        //private int nbBeneficiairesApv; // for Client.Nb_Benef_N ; = sum of tdr.nbx for every public x ; = sum of projet.nb for all approved projets
+        
+        TdrTdb tdrTdb = tdr.getTdrTdb();
+        // Compute fields
+        tdrTdb.setMontantDisponible(tdrTdb.getDotationGlobale() - tdrTdb.getSommeUtilisee());
+        // Get all approved projects and make the sum of montant apv 
+        List<Projet> projets = tdr.getProjets();
+        double sommeUtilisee = 0;
+        int nbBeneficiaires = 0;
+        for(Projet projet : projets){
+            if("approved".equals(projet.getStatus())){
+                sommeUtilisee = sommeUtilisee + projet.getTotalBenefs().getMontantApv();
+                nbBeneficiaires = nbBeneficiaires + projet.getTotalBenefs().getNbBeneficiaires();
+            }
+        }
+        tdrTdb.setSommeUtilisee(sommeUtilisee);
+        tdrTdb.setMontantDisponible(tdrTdb.getDotationGlobale() - tdrTdb.getSommeUtilisee());
+        tdrTdb.setNbBeneficiairesApv(nbBeneficiaires);
+        // Update TDR
+        this.update(tdr);
     }
 
     @Override
     public void publish(Tdr tdr) {
         // TODO
+        
+        //Call ContactSvc.Client once, and ContactSvc.Information_APV once per public (Information_APV.Bilan_Libelle) : enfants, jeunes, adultesisoles, seniors
+        
     }
 
 }

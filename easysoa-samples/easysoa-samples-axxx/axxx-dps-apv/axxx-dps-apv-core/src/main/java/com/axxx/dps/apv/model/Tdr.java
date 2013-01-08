@@ -24,7 +24,7 @@ public class Tdr extends GenericEntity<Tdr> {
     private static final long serialVersionUID = 8153363774843169652L;
     
     @OneToMany(cascade=CascadeType.ALL, mappedBy="tdr", orphanRemoval=true, fetch=FetchType.LAZY)
-    //@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    ///@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private List<Projet> projets;
     
 
@@ -75,7 +75,6 @@ public class Tdr extends GenericEntity<Tdr> {
     // 22525   Karine Tissot     01 45 35 13 13  karinetissot@avf.asso.fr
     // 22723   Elie Langlois 01 39 01 09 34  e.langlois_csf@yahoo.fr
     
-
     public List<Projet> getProjets() {
         return projets;
     }

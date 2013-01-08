@@ -4,7 +4,12 @@ import javax.jws.WebService;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.axxx.dps.apv.model.Tdr;
+import com.axxx.dps.apv.model.TdrTdb;
+import com.axxx.dps.apv.service.TdrService;
 
 
 /**
@@ -47,10 +52,26 @@ import org.springframework.stereotype.Service;
 public class PrecomptePartenaireWebServiceImpl implements PrecomptePartenaireWebService {
 
    	private Log log = LogFactory.getLog(this.getClass());
+    
+    @Autowired
+    private TdrService tdrService;
 
 	@Override
 	public void creerPrecompte(PrecomptePartenaire precomptePartenaire) {
-		log.debug("creerPrecompte start");
+		Tdr newTdr = new Tdr();
+		// TODO fields
+		newTdr.setAdresse(precomptePartenaire.getAdresse());
+		newTdr.setCp(precomptePartenaire.getCp());
+		newTdr.setEmail(precomptePartenaire.getEmail());
+		newTdr.setIdentifiantClientPivotal(precomptePartenaire.getIdentifiantClientPivotal());
+		newTdr.setNomStructure(precomptePartenaire.getNomStructure());
+		newTdr.setSirenSiret(precomptePartenaire.getSirenSiret());
+		newTdr.setTelephone(precomptePartenaire.getTelephone());
+		newTdr.setTypeStructure(precomptePartenaire.getTypeStructure().toString());
+		newTdr.setVille(precomptePartenaire.getVille());
+		newTdr.setTdrTdb(new TdrTdb());
+		newTdr.getTdrTdb().setStatus("created");
+        tdrService.create(newTdr);
 	}
 
 	

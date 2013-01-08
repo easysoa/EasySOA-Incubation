@@ -38,10 +38,18 @@
 							<div class="portlet-content">
 								<div class="portlet-content-container" style="">
 									<div>
-												<p><h1>TDR precomptes</h1></p>	
+										<p><h1>TDR precomptes</h1></p>
+												<div class="list">	
 													<p>
 														<c:if  test="${!empty tdrPrecomptes}">
-														<table class="list">
+														<table class="list" >
+														<colgroup>
+														 	<col width="200px">
+														 	<col width="400px">
+														  	<col width="120px">
+														   	<col width="230px">
+														   	<col width="50px">
+														</colgroup>														
 														<tbody>
 															<tr>
 															    <th>Nom Structure</th>
@@ -64,9 +72,10 @@
 														</table>
 														</c:if>													
 													</p>
-													<p>&nbsp;</p>
-													<p><a href="/apv/tdrprecompte/newTdr">(TEST SEULEMENT) Créer une nouvelle TDR</a></p>
-													<p>&nbsp;</p>
+												</div>
+												<p>&nbsp;</p>
+												<p><a href="/apv/tdrprecompte/newTdr">(TEST SEULEMENT) Créer une nouvelle TDR</a></p>
+												<p>&nbsp;</p>
 									</div>
 								</div>
 							</div>

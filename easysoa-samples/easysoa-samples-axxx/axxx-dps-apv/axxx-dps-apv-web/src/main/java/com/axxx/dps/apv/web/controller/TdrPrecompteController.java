@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.axxx.dps.apv.model.Tdr;
+import com.axxx.dps.apv.model.TdrTdb;
 import com.axxx.dps.apv.service.TdrService;
 
 /**
@@ -66,18 +67,18 @@ public class TdrPrecompteController {
             return "redirect:/tdrprecompte/details/" + tdr.getId();
         }
         // TODO : Compute fields
-        /*
-        tdr.getTdrTdb().setDotationGlobale(dotationGlobale);
+        TdrTdb tdrTdb = tdr.getTdrTdb();
+        tdrTdb.setDotationGlobale(tdrTdb.getReliquatAnneePrecedente() + tdrTdb.getDotationAnnuelle());
        
-        private double dotationGlobale; // computed during conventionnement, > 0 to approve it ; for Client.Dot_Glob_APV_N (should be reliquatanneeprecedente + dotationannuelle)
-        private double reliquatAnneePrecedente; // set during conventionnement ; for Client.Dont_Reliquat_N_1
-        private double dotationAnnuelle; // set during conventionnement ; for Dont_Dot_N (& Client.Dot_Glob_APV_N) ; = dotationglobale + reliquatanneeprecedente
+        //private double dotationGlobale; // computed during conventionnement, > 0 to approve it ; for Client.Dot_Glob_APV_N (should be reliquatanneeprecedente + dotationannuelle)
+        //private double reliquatAnneePrecedente; // set during conventionnement ; for Client.Dont_Reliquat_N_1
+        //private double dotationAnnuelle; // set during conventionnement ; for Dont_Dot_N (& Client.Dot_Glob_APV_N) ; = dotationglobale + reliquatanneeprecedente
         
-        private double sommeUtilisee; // for Client.Montant_Utilise_N ; = sum of projet.montant for all approved projets
-        private double montantDisponible; // = dotationglobale - sommeutilisee
-        private double reliquat; // = dotationglobale - sommeutilisee in year N (or N-1 ?)
-        private int nbBeneficiairesApv; // for Client.Nb_Benef_N ; = sum of tdr.nbx for every public x ; = sum of projet.nb for all approved projets
-        */
+        //private double sommeUtilisee; // for Client.Montant_Utilise_N ; = sum of projet.montant for all approved projets
+        //private double montantDisponible; // = dotationglobale - sommeutilisee
+        //private double reliquat; // = dotationglobale - sommeutilisee in year N (or N-1 ?)
+
+        //private int nbBeneficiairesApv; // for Client.Nb_Benef_N ; = sum of tdr.nbx for every public x ; = sum of projet.nb for all approved projets
 
         tdrService.update(tdr);
         return "redirect:/tdrprecompte/details/" + tdr.getId();

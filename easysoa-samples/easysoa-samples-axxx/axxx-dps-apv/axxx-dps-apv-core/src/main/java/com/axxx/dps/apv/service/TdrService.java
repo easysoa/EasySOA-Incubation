@@ -17,7 +17,7 @@ import com.axxx.dps.apv.persistence.GenericEntityService;
  */
 public interface TdrService extends GenericEntityService<Tdr> {
 
-    public List<Projet> getProjets(Tdr tdr);
+    //public List<Projet> getProjets(Tdr tdr);
     
     public void approve(Tdr tdr);
 

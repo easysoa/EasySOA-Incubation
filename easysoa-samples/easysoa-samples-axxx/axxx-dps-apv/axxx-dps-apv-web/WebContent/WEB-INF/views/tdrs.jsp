@@ -83,6 +83,15 @@
 													<p>
 														<c:if  test="${!empty tdrs}">
 														<table class="list">
+														<colgroup>
+														 	<col width="200px">
+														 	<col width="300px">
+														  	<col width="120px">
+														   	<col width="230px">
+														   	<col width="50px">
+														   	<col width="50px">
+														   	<col width="50px">
+														</colgroup>
 														<tbody>
 															<tr>
 															    <th>Nom Structure</th>

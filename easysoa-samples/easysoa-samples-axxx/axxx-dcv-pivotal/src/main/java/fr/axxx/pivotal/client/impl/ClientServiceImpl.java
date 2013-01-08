@@ -13,6 +13,8 @@ import org.osoa.sca.annotations.Reference;
 import org.osoa.sca.annotations.Scope;
 import com.axxx.dps.apv.PrecomptePartenaire;
 import com.axxx.dps.apv.PrecomptePartenaireService;
+import com.axxx.dps.apv.TypeStructure;
+
 import fr.axxx.pivotal.client.api.ClientService;
 import fr.axxx.pivotal.client.model.Client;
 import fr.axxx.pivotal.client.model.ContactClient;
@@ -295,7 +297,16 @@ public class ClientServiceImpl implements ClientService {
             precomptePartenaire.setIdentifiantClientPivotal(identifiantClient);
             precomptePartenaire.setSirenSiret(client.getSIREN());
             precomptePartenaire.setEmail(client.getEmail());
-            precomptePartenaireService.creerPrecompte(precomptePartenaire);
+            precomptePartenaire.setVille(client.getVille());            
+            precomptePartenaire.setAdresse(client.getNumEtVoie());
+            precomptePartenaire.setCp(client.getCodePostal());
+            precomptePartenaire.setNomStructure(client.getRaisonSociale());
+            precomptePartenaire.setTelephone(client.getTel());
+            //precomptePartenaire.setTypeStructure(TypeStructure.valueOf(client.getTypeStructure()));
+            // TODO : There is a problem with typestructure here  !!!
+            precomptePartenaire.setTypeStructure(TypeStructure.ASSOCIATION_NAT);
+            precomptePartenaire.setAnciennete(client.getAnciennete());
+            precomptePartenaireService.creerPrecompte(precomptePartenaire); // TODO ville et autres champs requis par PrecomptePartenaire et côté APV
             client.setCreerPrecompteDone(true);
             this.updateClient(client);
         }

@@ -18,8 +18,8 @@ public class Benefs extends GenericEntity<Benefs> {
 
     private static final long serialVersionUID = 850307431203808368L;
 
-    @ManyToOne(optional=false)
-    private Projet projet;
+    //@ManyToOne(optional=false)
+    //private Projet projet;
     
     // nbbeneficiaires, couttotal, montantapv, coutparjourparpersonne, montantapvparjourparpersonne, partapvfinancement
     // NB. /// = cout
@@ -30,9 +30,9 @@ public class Benefs extends GenericEntity<Benefs> {
     //private double montantapvparjourparpersonne;
     ///private int partapvfinancement;
 
-    public Projet getProjet() {
-        return projet;
-    }
+    //public Projet getProjet() {
+    //    return projet;
+    //}
     public int getNbBeneficiaires() {
         return nbBeneficiaires;
     }

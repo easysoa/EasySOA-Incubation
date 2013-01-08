@@ -22,7 +22,7 @@ public class TdrTdb { // does not extend GenericEntity because embedded in Tdr
     
     private double sommeUtilisee; // for Client.Montant_Utilise_N ; = sum of projet.montant for all approved projets
     private double montantDisponible; // = dotationglobale - sommeutilisee
-    private double reliquat; // = dotationglobale - sommeutilisee in year N (or N-1 ?)
+    //private double reliquat; // no meaning here (in APV would have been about year N-1, or somme commandee vs utilisee ?)
     private int nbBeneficiairesApv; // for Client.Nb_Benef_N ; = sum of tdr.nbx for every public x ; = sum of projet.nb for all approved projets
     
 
@@ -116,14 +116,6 @@ public class TdrTdb { // does not extend GenericEntity because embedded in Tdr
 
     public void setMontantDisponible(double montantDisponible) {
         this.montantDisponible = montantDisponible;
-    }
-
-    public double getReliquat() {
-        return reliquat;
-    }
-
-    public void setReliquat(double reliquat) {
-        this.reliquat = reliquat;
     }
 
     public int getNbBeneficiairesApv() {

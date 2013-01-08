@@ -1,8 +1,14 @@
 package com.axxx.dps.apv.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.axxx.dps.apv.model.Projet;
 import com.axxx.dps.apv.model.Tdr;
 import com.axxx.dps.apv.persistence.GenericEntityServiceImpl;
@@ -24,7 +30,7 @@ public class ProjetServiceImpl extends GenericEntityServiceImpl<Projet> implemen
     protected ProjetDao getGenericDao() {
         return projetDao;
     }
-
+    
     @Override
     public Tdr getTdr(Projet projet) {
         return projet.getTdr(); // can be done because inside session here
@@ -40,6 +46,15 @@ public class ProjetServiceImpl extends GenericEntityServiceImpl<Projet> implemen
         
         // TODO send tdr infos to Pivotal
         
+    }
+
+    @Override
+    public List<Projet> listByTdr(long tdrId) {
+        Map<String, Long> properties = new HashMap<String, Long>();
+        properties.put("tdr.id", tdrId);
+        Criterion filter = Restrictions.allEq(properties);
+        Order order = Order.asc("id");
+        return projetDao.list(Projet.class, filter, order, null, null);        
     }
 
 }

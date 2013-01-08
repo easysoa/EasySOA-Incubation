@@ -10,7 +10,6 @@
 			<div class="lfr-column" id="column-1">
 				<div class="lfr-portlet-column" id="layout-column_column-1">
 					<div id="p_p_id_56_INSTANCE_zZ7Y_" class="portlet-boundary portlet-boundary_56_  portlet-journal-content">
-						<!--<a id="p_56_INSTANCE_zZ7Y"></a>-->
 						<div class="portlet" id="portlet-wrapper-56_INSTANCE_zZ7Y">
 							<!--<div class="portlet-topper">
 								<span class="portlet-title"> <span><img
@@ -36,22 +35,8 @@
 													<div>
 														<b><span style="color: maroon;">Nouveau projet</span></b>
 													</div>
-													<p>
-														<form:form method="post" action="add" commandName="projet" cssClass="uni-form">
-														    <table>
-														    <form:hidden path="tdr" value="${projet.tdr}" />
-														    <tr>
-														        <td><form:label path="typeLieu">Type lieu</form:label></td>
-														        <td><form:input path="typeLieu" /></td>
-														    </tr>
-														    <tr>
-														        <td colspan="2">
-														            <input type="submit" value="Nouveau projet"/>
-														        </td>
-														    </tr>
-														</table> 
-														</form:form>
-													</p>
+
+													<a href="/apv/projet/newProjet?tdrId=${tdrId}">Créer un nouveau projet</a>
 
 													<p style="text-align: justify;">&nbsp;</p>
 													<p>
@@ -63,18 +48,33 @@
 													<p>
 														<c:if  test="${!empty projets}">
 														<table class="list">
+														<colgroup>
+														 	<col width="200px">
+														 	<col width="300px">
+														  	<col width="170px">
+														   	<col width="230px">
+														   	<col width="50px">
+														   	<col width="50px">
+														   	<!--<col width="50px">-->
+														</colgroup>
 														<tbody>
 															<tr>
 															    <th>Type lieu</th>
-															    <th>...</th>
+															    <th>Période</th>
+															    <th>Département</th>
+															    <th>status</th>															    
+															    <th>&nbsp;</th>
 															    <th>&nbsp;</th>
 															</tr>
 															<c:forEach items="${projets}" var="projet">
 																<!-- TODO alternate line colors -->
 															    <tr class="odd">
 															        <td>${projet.typeLieu}</td>
-															        <td>...</td>
-															        <td><a href="delete/${projet.id}">delete</a></td>
+															        <td>${projet.periode}</td>
+															        <td>${projet.departement}</td>
+															        <td>${projet.status}</td>
+																	<td><a href="/apv/projet/details/${projet.id}">Details</a></td>
+															        <td><a href="/apv/projet/delete/${projet.id}">Delete</a></td>
 															    </tr>
 															</c:forEach>
 														</tbody>

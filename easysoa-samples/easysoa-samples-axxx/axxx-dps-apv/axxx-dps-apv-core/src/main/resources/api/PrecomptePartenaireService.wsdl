@@ -31,6 +31,10 @@
 <xs:simpleType name="typeStructure">
     <xs:restriction base="xs:string">
       <xs:enumeration value="ASSOCIATION_NAT"/>
+      <xs:enumeration value="MISSION_LOCALE"/>
+      <xs:enumeration value="DELEGATION_TERRITORIALE_ASSOCIATIVE"/>
+      <xs:enumeration value="CENTRE_SOCIAL"/>
+      <xs:enumeration value="AUTRE"/>      
     </xs:restriction>
   </xs:simpleType>
 </xs:schema>

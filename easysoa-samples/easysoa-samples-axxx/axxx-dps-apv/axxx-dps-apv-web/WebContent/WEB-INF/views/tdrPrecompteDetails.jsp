@@ -81,9 +81,9 @@
 																    	<td><form:label path="identifiantClientPivotal">Identifiant client Pivotal</form:label></td>
 																		<td><form:input disabled="true" path="identifiantClientPivotal" /></td>
 															        	<td><form:errors path="identifiantClientPivotal" cssClass="error" /></td>
-															        	<td>&nbsp;</td>
-															        	<td>&nbsp;</td>
-															        	<td>&nbsp;</td>
+																        <td><form:label path="tdrTdb.status">Status</form:label></td>
+																		<td><form:hidden path="tdrTdb.status"/>${tdrPrecompteDetails.tdrTdb.status}</td>
+															        	<td>&nbsp;</td>															        	
 																	</tr>
 																	<tr>
 																    	<td><form:label path="nomStructure">Nom structure</form:label></td>
@@ -134,36 +134,34 @@
 															        	<td><form:errors path="tdrTdb.partenaireDepuis" cssClass="error" /></td>
 																    </tr>
 																    <tr>
+																		<td colspan="6"></td>															    
+																    </tr>																    
+																    <tr>
 																        <td><form:label path="tdrTdb.dotationGlobale">Dotation globale</form:label></td>
-																		<td><form:hidden path="tdrTdb.dotationGlobale"/>${tdrPrecompteDetails.tdrTdb.montantDisponible}</td>
+																		<td><form:hidden path="tdrTdb.dotationGlobale"/>${tdrPrecompteDetails.tdrTdb.dotationGlobale}</td>
 															        	<td>&nbsp;</td>
 																        <td><form:label path="tdrTdb.reliquatAnneePrecedente">Reliquat annee precedente</form:label></td>
-																		<td><form:hidden path="tdrTdb.reliquatAnneePrecedente"/>${tdrPrecompteDetails.tdrTdb.montantDisponible}</td>
+																		<td><form:input path="tdrTdb.reliquatAnneePrecedente"/></td>
 															        	<td>&nbsp;</td>		    
 																    </tr>
 																    <tr>
 																        <td><form:label path="tdrTdb.dotationAnnuelle">Dotation anuelle</form:label></td>
-																		<td><form:hidden path="tdrTdb.dotationAnnuelle"/>${tdrPrecompteDetails.tdrTdb.montantDisponible}</td>
+																		<td><form:input path="tdrTdb.dotationAnnuelle"/></td>
 															        	<td>&nbsp;</td>
 																        <td><form:label path="tdrTdb.sommeUtilisee">Somme utilisée</form:label></td>
-																		<td><form:hidden path="tdrTdb.sommeUtilisee"/>${tdrPrecompteDetails.tdrTdb.montantDisponible}</td>
+																		<td><form:hidden path="tdrTdb.sommeUtilisee"/>${tdrPrecompteDetails.tdrTdb.sommeUtilisee}</td>
 															        	<td>&nbsp;</td>		    
 																    </tr>
 																    <tr>
 																        <td><form:label path="tdrTdb.montantDisponible">Montant disponible</form:label></td>
 																		<td><form:hidden path="tdrTdb.montantDisponible"/>${tdrPrecompteDetails.tdrTdb.montantDisponible}</td>
 															        	<td>&nbsp;</td>
-																        <td><form:label path="tdrTdb.reliquat">Reliquat</form:label></td>
-																		<td><form:hidden path="tdrTdb.reliquat"/>${tdrPrecompteDetails.tdrTdb.reliquat}</td>
-															        	<td>&nbsp;</td>		    
-																    </tr>
-																    <tr>
 																        <td><form:label path="tdrTdb.nbBeneficiairesApv">Nombre bénéficiares APV</form:label></td>
 																		<td><form:input path="tdrTdb.nbBeneficiairesApv" disabled="true"/></td>
-															        	<td><form:errors path="tdrTdb.nbBeneficiairesApv" cssClass="error" /></td>
-															        	<td>&nbsp;</td>
-															        	<td>&nbsp;</td>
-															        	<td>&nbsp;</td>
+															        	<td><form:errors path="tdrTdb.nbBeneficiairesApv" cssClass="error" /></td>		    
+																    </tr>
+																    <tr>
+																		<td colspan="6"></td>															    
 																    </tr>
 																    <tr>
 																        <td><form:label path="tdrTdb.nbEnfants">Nombre enfants</form:label></td>
@@ -184,9 +182,9 @@
 																        <td><form:label path="tdrTdb.nbBeneficiairesPrevisionnel">Nombre bénéficiaires prévisionel</form:label></td>
 																		<td><form:input path="tdrTdb.nbBeneficiairesPrevisionnel"/></td>
 															        	<td><form:errors path="tdrTdb.nbBeneficiairesPrevisionnel" cssClass="error" /></td>
-																        <td><form:label path="tdrTdb.status">Status</form:label></td>
-																		<td><form:hidden path="tdrTdb.status"/>${tdrPrecompteDetails.tdrTdb.status}</td>
-															        	<td><td>&nbsp;</td></td>	        
+															        	<td>&nbsp;</td>
+															        	<td>&nbsp;</td>
+															        	<td>&nbsp;</td>
 															        </tr>
 															    	<tr>
 															        	<td colspan="3">

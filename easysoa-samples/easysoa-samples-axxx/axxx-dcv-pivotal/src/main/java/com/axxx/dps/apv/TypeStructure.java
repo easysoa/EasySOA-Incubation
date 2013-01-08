@@ -1,6 +1,7 @@
 
 package com.axxx.dps.apv;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 
@@ -23,14 +24,42 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum TypeStructure {
 
-    ASSOCIATION_NAT;
+    ASSOCIATION_NAT("Association nat."),
+    MISSION_LOCALE("Mission locale"),
+    DELEGATION_TERRITORIALE_ASSOCIATIVE("Délegation Territoriale Associative"),
+    CENTRE_SOCIAL("Centre social ou socio-culturel"),
+    AUTRE("Autre");
 
+    @XmlElement(nillable=false, required=true)
+    private String name = null;
+
+    private TypeStructure(String name) {
+        this.name = name;
+    }    
+    
     public String value() {
-        return name();
+        return name;
     }
 
     public static TypeStructure fromValue(String v) {
-        return valueOf(v);
+        //return valueOf(v);
+        if(ASSOCIATION_NAT.name().equals(v)){
+            return ASSOCIATION_NAT;
+        } else if(MISSION_LOCALE.name().equals(v)){
+            return MISSION_LOCALE;
+        } else if(DELEGATION_TERRITORIALE_ASSOCIATIVE.name().equals(v)){
+            return DELEGATION_TERRITORIALE_ASSOCIATIVE;
+        } else if(CENTRE_SOCIAL.name().equals(v)){
+            return CENTRE_SOCIAL;
+        } else if(AUTRE.name().equals(v)){
+            return AUTRE;
+        } else {
+            return null;
+        }
     }
+    
+    public void setName(String name) {
+        this.name = name;
+    }    
 
 }

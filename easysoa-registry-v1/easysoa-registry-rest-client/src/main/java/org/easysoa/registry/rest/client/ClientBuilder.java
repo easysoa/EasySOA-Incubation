@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.easysoa.registry.rest.RegistryApi;
+import org.easysoa.registry.rest.integration.EndpointStateService;
+import org.easysoa.registry.rest.integration.SimpleRegistryService;
 import org.easysoa.registry.rest.marshalling.JsonMessageReader;
 import org.easysoa.registry.rest.marshalling.JsonMessageWriter;
 
@@ -39,18 +41,32 @@ public class ClientBuilder {
         this.password = password;
     }
     
-    public WebResource constructEasySOAClient() {
+    public WebResource constructNuxeoClientBase() {
         ClientConfig clientConfig = new DefaultClientConfig();
         clientConfig.getSingletons().addAll(this.singletons);
         Client client = Client.create(clientConfig);
         client.addFilter(new HTTPBasicAuthFilter(username, password));
-        return client.resource(this.nuxeoUrl).path("easysoa");
+        return client.resource(this.nuxeoUrl);
+    }
+    
+    public WebResource constructEasySOAClient() {
+        return constructNuxeoClientBase().path("easysoa");
     }
     
     public RegistryApi constructRegistryApi() {
         WebResource client = constructEasySOAClient();
         WebResource registryApiResource = client.path("registry");
         return WebResourceFactory.newResource(RegistryApi.class, registryApiResource);
+    }
+    
+    public SimpleRegistryService constructSimpleRegistryService() {
+        WebResource client = constructNuxeoClientBase();
+        return WebResourceFactory.newResource(SimpleRegistryService.class, client);
+    }
+    
+    public EndpointStateService constructEndpointStateService() {
+        WebResource client = constructNuxeoClientBase();
+        return WebResourceFactory.newResource(EndpointStateService.class, client);
     }
 
 }

@@ -39,13 +39,11 @@
       <groupId>org.easysoa.registry</groupId>
       <artifactId>easysoa-registry-rest-client</artifactId>
       <version>${easysoa.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.automation</groupId>
       <artifactId>nuxeo-automation-client</artifactId>
       <version>${nuxeo.version}</version>
-      <scope>test</scope>
     </dependency>
     <!-- NB. this also gets jersey & jackson -->
     <!-- EasySOA tests -->

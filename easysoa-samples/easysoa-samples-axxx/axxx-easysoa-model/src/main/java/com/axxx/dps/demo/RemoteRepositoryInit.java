@@ -1,25 +1,57 @@
 package com.axxx.dps.demo;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+
 import org.easysoa.registry.types.ids.SoaNodeId;
+import org.easysoa.registry.facets.WsdlInfoFacet;
 import org.easysoa.registry.rest.RegistryApi;
 import org.easysoa.registry.rest.client.ClientBuilder;
+import org.easysoa.registry.rest.integration.EndpointStateService;
+import org.easysoa.registry.rest.integration.ServiceLevelHealth;
+import org.easysoa.registry.rest.integration.SimpleRegistryService;
+import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
+import org.easysoa.registry.rest.integration.SlaOrOlaIndicators;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
+import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.Repository;
 import org.easysoa.registry.types.SystemTreeRoot;
 import org.easysoa.registry.types.TaggingFolder;
+import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
 import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
+import org.nuxeo.ecm.automation.client.model.FileBlob;
+
+import com.sun.jersey.api.client.WebResource;
 
 
 /**
- * Run it (from Eclipse : right-click > Run as Java application) to init full
- * EasySOA model of AXXX use case in running EasySOA Registry.
+ * Inits a (remote) EasySOA registry with the SOA model of the AXXX use case.
  * 
- * WARNING: Requires the Nuxeo Studio project "EasySOA" to be deployed on a launched Nuxeo DM (port 8080) 
+ * To run it :
+ * * from Eclipse : right-click > Run as Java application) to init full
+ * EasySOA model of AXXX use case in running EasySOA Registry.
+ * * from Maven command line :
+ * mvn clean install exec:java -Dexec.mainClass="com.axxx.dps.demo.RemoteRepositoryInit"
+ * 
+ * The following arguments may be given (in maven by -Dexec.args="<space separated arguments>") to
+ * specify which step to play (if none are given, all of them will be played) :
+ * * clean : deletes the existing model
+ * * (Specifications are always (updated or) created)
+ * * (Realisation must be done by source discovery)
+ * * Deploiement : creates a Prod endpoint for TdrWebService
+ * * Exploitation : creates an SOA monitoring indicator for it (by calling EndpointStateService)
+ * 
+ * WARNING: Requires a running EasySOA Registry on port 8080 (or at least a launched Nuxeo DM
+ * with the Nuxeo Studio project "EasySOA" deployed)
  * 
  * @author mkalam-alami
  *
@@ -33,24 +65,38 @@ public class RemoteRepositoryInit {
 	public static final String SLA_DOCTYPE = "SLA";
 	public static final String OLA_DOCTYPE = "OLA";
 	public static final String COMPONENT_DOCTYPE = "Component";
-	public static final String COMPONENT_TYPE = "component_schema:componentCategory";
-	public static final String COMPONENT_INFORMATION_SERVICE = "component_schema:linkedInformationService";
-	public static final String COMPONENT_PROVIDER_ACTOR = "component_schema:providerActor";
+	public static final String COMPONENT_TYPE = "acomp:componentCategory";
+	public static final String COMPONENT_INFORMATION_SERVICE = "acomp:linkedInformationService";
+	public static final String COMPONENT_PROVIDER_ACTOR = "acomp:providerActor";
 	
 	private static RegistryApi registryApi;
 	private static Session session;
+    private static SimpleRegistryService simpleRegistryService;
+    private static EndpointStateService endpointStateService;
 
 	public static final void main(String[] args) throws Exception {
+	    HashSet<String> steps = new HashSet<String>(Arrays.asList(args));
+	    
 		initClients();
-		
+
+        String rootName = "Projets collaboratifs";
+        
+		if (steps.isEmpty() || steps.contains("clean")) {
+		 
 		// Reset repository and root
-		String rootName = "Projets collaboratifs";
 		delete("SELECT * FROM " + SystemTreeRoot.DOCTYPE + " WHERE dc:title = '" + rootName + "'");
 		delete("SELECT * FROM " + Repository.DOCTYPE);
 		
 		// Root
 		delete("SELECT * FROM " + SystemTreeRoot.DOCTYPE + " WHERE dc:title = '" + rootName + "'");
+        
+        }
+        
+        //if (steps.isEmpty() || steps.contains("Specifications")) {
+		
 		String rootPath = createDocument(SystemTreeRoot.DOCTYPE, rootName, "/default-domain/workspaces");
+
+        String platformArchitecturePath = "/default-domain/repository/Platform";//TODO or null ??
 		
 		// Project and its folders
 		String projectPath = createSoaNode(new SoaNodeId(TaggingFolder.DOCTYPE, "Intégration APV Web - Pivotal"), rootPath);
@@ -89,24 +135,42 @@ public class RemoteRepositoryInit {
  
 		// Information services
 		SoaNodeId isCheckAddressId = new SoaNodeId(InformationService.DOCTYPE, "checkAddress");
-		createSoaNode(isCheckAddressId,
-				infoArchitecturePath, InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actUniId));
+		createSoaNode(isCheckAddressId, infoArchitecturePath,
+		        InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actUniId));
 		
 		createSoaNode(new SoaNodeId(InformationService.DOCTYPE, "Cré_Précpte"), infoArchitecturePath,
-				InformationService.XPATH_PROVIDER_ACTOR + "=" + actSIDCVId);
+				InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actSIDCVId));
+
+        SoaNodeId isTdrWebServiceId = new SoaNodeId(InformationService.DOCTYPE, "TdrWebService");
+		createSoaNode(isTdrWebServiceId, infoArchitecturePath/*,
+		        InformationService.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService"*/);
+		uploadWsdl(getPath(isTdrWebServiceId), "../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
+		    // or manually upload WSDL on it
+		isTdrWebServiceId = new SoaNodeId(isTdrWebServiceId.getType(), "ws:http://www.axxx.com/dps/apv:PrecomptePartenaireService");
+		    // updating soaname to what the wsdl upload has set it to
+		    // TODO or never let it change ?!
 		
-		createSoaNode(new SoaNodeId(InformationService.DOCTYPE, "TdrWebService"), infoArchitecturePath);
-		createSoaNode(new SoaNodeId(OLA_DOCTYPE, "OLA TdrWebService"), slaPreCptPath);
+		SoaNodeId olaTdrWebServiceId = new SoaNodeId(OLA_DOCTYPE, "OLA TdrWebService");
+		createSoaNode(olaTdrWebServiceId, slaPreCptPath);
 		
 		createSoaNode(new SoaNodeId(InformationService.DOCTYPE, "Information_APV"), infoArchitecturePath);
 		
 		createSoaNode(new SoaNodeId(InformationService.DOCTYPE, "Cré_Maj_Dde_Fonds"), infoArchitecturePath);
+		
+		// Platforms
+        SoaNodeId axxxjavaWSPlatform = new SoaNodeId(Platform.DOCTYPE, "AXXX Java WS");
+        createSoaNode(axxxjavaWSPlatform, platformArchitecturePath,
+                Platform.XPATH_SERVICE_LANGUAGE + "=" + Platform.SERVICE_LANGUAGE_JAXWS);
 
 		// Components
 		createSoaNode(new SoaNodeId(COMPONENT_DOCTYPE, "checkAddress"), compArchitecturePath,
-				COMPONENT_TYPE + "=Application", COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isCheckAddressId));
+				COMPONENT_TYPE + "=Application",
+				COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isCheckAddressId));
 		createSoaNode(new SoaNodeId(COMPONENT_DOCTYPE, "TdrWebService"), compArchitecturePath,
-				COMPONENT_TYPE + "=Application");
+				COMPONENT_TYPE + "=Application",
+                "platform:serviceLanguage=JAX-WS",
+                COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isTdrWebServiceId));
+        createSoaNode(new SoaNodeId(COMPONENT_DOCTYPE, "TdrWebService"), getPath(axxxjavaWSPlatform)); // a second time to give it its platform
 		createSoaNode(new SoaNodeId(COMPONENT_DOCTYPE, "Information_APV"), compArchitecturePath,
 				COMPONENT_TYPE + "=Application");
 		createSoaNode(new SoaNodeId(COMPONENT_DOCTYPE, "Orchestration_DCV"), compArchitecturePath,
@@ -126,7 +190,13 @@ public class RemoteRepositoryInit {
 		createSoaNode(new SoaNodeId(COMPONENT_DOCTYPE, "Embedded CXF or FraSCAti with Talend exts"), compArchitecturePath,
 				COMPONENT_TYPE + "=Technical");
 
-		// PHASE 2: Realization
+		//}
+		
+		//if (steps.isEmpty() || steps.contains("Realisation")) {
+		
+		// PHASE 2: Realisation
+		// (checkout AXXX source and)
+		// do a source discovery
 		//publish(specificationsPath, realizationPath);
 //		createSoaNode(new SoaNodeId(???.DOCTYPE, "checkAddress"), realizationPath);
 //		createSoaNode(new SoaNodeId(???.DOCTYPE, "TdrWebService"), realizationPath,
@@ -134,10 +204,46 @@ public class RemoteRepositoryInit {
 //		createSoaNode(new SoaNodeId(???.DOCTYPE, "Information_APV"), realizationPath);
 //		createSoaNode(new SoaNodeId(???.DOCTYPE, "Orchestration_DCV"), realizationPath);
 //		createSoaNode(new SoaNodeId(???.DOCTYPE, "Orchestration_DPS"), realizationPath);
+
+		//}
+
+        SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(Endpoint.DOCTYPE, "Prod:http://localhost:7080/apv/services/PrecomptePartenaireService");//TdrWebServiceProdEndpoint
+		if (steps.isEmpty() || steps.contains("Deploiement")) {
 		
+        // PHASE 3: Deploiement
+		// rather do a web discovery
+		// TODO web discovery : upload wsdl
+        createSoaNode(tdrWebServiceProdEndpointId, (String) null,
+                Endpoint.XPATH_ENDP_ENVIRONMENT + "=Prod", // required even with soaname else integrity check fails
+                Endpoint.XPATH_URL + "=http://localhost:7080/apv/services/PrecomptePartenaireService"/*, // required even with soaname else integrity check fails
+                Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService"*/); 
+        uploadWsdl(getPath(new SoaNodeId(tdrWebServiceProdEndpointId.getType(), "Prod:http:||localhost:7080|apv|services|PrecomptePartenaireService")),
+                "../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
+            // or do a web discovery
+            // TODO web discovery : upload wsdl (for now manually upload WSDL on it)
+        
+		}
+		
+		if (steps.isEmpty() || steps.contains("Exploitation")) {
+		    // (Phase 4) Exploitation
+		    
+	        SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();
+	        slaOrOlaIndicators.setSlaOrOlaIndicatorList(new ArrayList<SlaOrOlaIndicator>());
+	        SlaOrOlaIndicator slaOrOlaIndicator = new SlaOrOlaIndicator();
+	        slaOrOlaIndicator.setEndpointId(getIdRef(tdrWebServiceProdEndpointId));
+	        slaOrOlaIndicator.setSlaOrOlaName(olaTdrWebServiceId.getName());
+	        slaOrOlaIndicator.setTimestamp(new Date());
+	        slaOrOlaIndicator.setServiceLevelHealth(ServiceLevelHealth.gold);
+	        slaOrOlaIndicator.setServiceLevelViolation(false);
+            slaOrOlaIndicators.getSlaOrOlaIndicatorList().add(slaOrOlaIndicator);
+            endpointStateService.createSlaOlaIndicators(slaOrOlaIndicators);
+            // TODO still pb :
+            // Exception in thread "main" com.sun.jersey.api.client.UniformInterfaceException: POST http://localhost:8080/nuxeo/site/easysoa/endpointStateService/slaOlaIndicators returned a response status of 204 No Content
+            // for now, rather use the other Jersey client like in EndpointStateServiceImpl
+		}
 	}
 
-	public static String getIdRef(SoaNodeId soaNodeId) throws Exception {
+    public static String getIdRef(SoaNodeId soaNodeId) throws Exception {
 		Documents info = (Documents) session
 				.newRequest("Document.Query")
 				.set("query", "SELECT * FROM " + soaNodeId.getType() + 
@@ -173,8 +279,19 @@ public class RemoteRepositoryInit {
 		if (path == null) {
 			throw new Exception("Path is null");
 		}
+		
+		// returns existing one if already exists (to allow for several steps)
+		Document parentDocument = getDocByPath(path);
+        Documents existingDocuments = (Documents) session
+                .newRequest("Document.Query")
+                .set("query", "SELECT * FROM " + doctype + " WHERE ecm:parentId = '" + parentDocument.getId()
+                        + "' AND dc:title='" + title + "'").execute();
+        if (existingDocuments != null && !existingDocuments.isEmpty()) {
+            return existingDocuments.get(0).getPath();
+        }
+		
 		OperationRequest request = session.newRequest("Document.Create")
-				.setInput(getDocByPath(path)).set("type", doctype)
+				.setInput(parentDocument).set("type", doctype)
 				.set("name", title);
 		StringBuilder propertiesString = new StringBuilder("dc:title=" + title);
 		for (String property : properties) {
@@ -214,7 +331,16 @@ public class RemoteRepositoryInit {
 		registryApi.post(soaNode);
 		return getPath(soaNodeId);
 	}
-	
+
+    public static void uploadWsdl(String path, String wsdlFilePath) throws Exception {
+        // see http://doc.nuxeo.com/display/NXDOC/Using+Nuxeo+Automation+Client
+        FileBlob wsdlBlob = new FileBlob(new File(wsdlFilePath));
+        wsdlBlob.setMimeType("text/xml");
+        session.newRequest("Blob.Attach").setHeader(
+                Constants.HEADER_NX_VOIDOP, "true").setInput(wsdlBlob) // HEADER_NX_VOIDOP => will return null
+                .set("document", path).execute();
+    }
+
 	public static void delete(String query) throws Exception {
 		Documents docs = (Documents) session.newRequest("Document.Query").set("query", query).execute();
 		for (Document doc : docs) {
@@ -225,6 +351,8 @@ public class RemoteRepositoryInit {
 	public static void initClients() {
 		ClientBuilder clientBuilder = new ClientBuilder();
 		registryApi = clientBuilder.constructRegistryApi();
+        simpleRegistryService = clientBuilder.constructSimpleRegistryService();
+		endpointStateService = clientBuilder.constructEndpointStateService();
 		
 		HttpAutomationClient client = new HttpAutomationClient(
 		           "http://localhost:8080/nuxeo/site/automation");

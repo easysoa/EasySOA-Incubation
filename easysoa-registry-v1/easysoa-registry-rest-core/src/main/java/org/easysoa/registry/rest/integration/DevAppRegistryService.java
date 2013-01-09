@@ -1,5 +1,6 @@
 package org.easysoa.registry.rest.integration;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -20,6 +21,8 @@ import javax.ws.rs.core.MediaType;
  *
  */
 @Path("easysoa/devAppRegistryService")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public interface DevAppRegistryService {
 
     /**
@@ -43,7 +46,6 @@ public interface DevAppRegistryService {
     //@param platform (ex : fraSCAtiStudioPlatformId) (LATER)
     @POST
     @Path("/register")
-    @Produces(MediaType.APPLICATION_JSON)
 	public Object register(
 			String subProjectId,
 			String name,
@@ -65,7 +67,6 @@ public interface DevAppRegistryService {
     //@param platform (ex : fraSCAtiStudioPlatformId) (LATER)
     @GET
     @Path("/query")
-    @Produces(MediaType.APPLICATION_JSON)
     public Object query(
             @QueryParam("search") String search, 
             @QueryParam("subProjectId") String subProjectId/*,

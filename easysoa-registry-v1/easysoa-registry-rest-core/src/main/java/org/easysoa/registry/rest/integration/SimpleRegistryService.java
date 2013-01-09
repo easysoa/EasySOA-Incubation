@@ -1,5 +1,6 @@
 package org.easysoa.registry.rest.integration;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -15,6 +16,8 @@ import javax.ws.rs.core.MediaType;
  *
  */
 @Path("easysoa/simpleRegistryService")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public interface SimpleRegistryService {
 
     /**
@@ -76,7 +79,6 @@ public interface SimpleRegistryService {
     //@param platform (ex : fraSCAtiStudioPlatformId) (LATER)
     @GET
     @Path("/queryWSDLInterfaces")
-    @Produces(MediaType.APPLICATION_JSON)
     public ServiceInformations queryWSDLInterfaces(
             @QueryParam("search") String search, 
             @QueryParam("subProjectId") String subProjectId/*,
@@ -145,7 +147,6 @@ public interface SimpleRegistryService {
      */
     @GET
     @Path("/queryEndpoints")
-    @Produces(MediaType.APPLICATION_JSON)
     public EndpointInformations queryEndpoints(@QueryParam("search") String search, 
             @QueryParam("subProjectId") String subProjectId/*,
             @QueryParam("platformServiceStandard") String platformServiceStandard,
@@ -244,7 +245,6 @@ public interface SimpleRegistryService {
      */
     @GET
     @Path("/queryServicesWithEndpoints")
-    @Produces(MediaType.APPLICATION_JSON)
     public ServiceInformations queryServicesWithEndpoints(@QueryParam("search") String search, 
             @QueryParam("subProjectId") String subProjectId ) throws Exception;
    

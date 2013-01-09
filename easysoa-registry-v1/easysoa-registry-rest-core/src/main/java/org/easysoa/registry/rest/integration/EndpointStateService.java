@@ -1,5 +1,6 @@
 package org.easysoa.registry.rest.integration;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -23,6 +24,7 @@ import javax.ws.rs.core.MediaType;
  *
  */
 @Path("easysoa/endpointStateService")
+@Consumes(MediaType.APPLICATION_JSON)
 public interface EndpointStateService {
 
 	/**
@@ -51,7 +53,6 @@ public interface EndpointStateService {
 	 */
     @POST
     @Path("/slaOlaIndicators")
-    @Produces(MediaType.APPLICATION_JSON)
 	public void createSlaOlaIndicators(SlaOrOlaIndicators SlaOrOlaIndicators) throws Exception;
 
     /**
@@ -81,7 +82,6 @@ public interface EndpointStateService {
      */
     @PUT
     @Path("/slaOlaIndicators")
-    @Produces(MediaType.APPLICATION_JSON)
     public void updateSlaOlaIndicators(SlaOrOlaIndicators SlaOrOlaIndicators) throws Exception;
 	
 	/**
@@ -116,7 +116,7 @@ public interface EndpointStateService {
 	 */
     @GET
     @Path("/slaOlaIndicators")
-    @Produces(MediaType.APPLICATION_JSON)	
+    @Produces(MediaType.APPLICATION_JSON)
 	public SlaOrOlaIndicators getSlaOrOlaIndicators(@QueryParam("endpointId") String endpointId, 
 	        @QueryParam("slaOrOlaName") String slaOrOlaName,
 	        @QueryParam("periodStart") String periodStart, 
@@ -154,7 +154,7 @@ public interface EndpointStateService {
      */
     @GET
     @Path("/slaOlaIndicatorsByEnv")
-    @Produces(MediaType.APPLICATION_JSON)    
+    @Produces(MediaType.APPLICATION_JSON)
     public SlaOrOlaIndicators getSlaOrOlaIndicatorsByEnv(@QueryParam("environment") String environment, 
             @QueryParam("projectId") String projectId, 
             @QueryParam("periodStart") String periodStart, 

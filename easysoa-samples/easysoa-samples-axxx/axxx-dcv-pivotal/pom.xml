@@ -33,7 +33,9 @@
         <!-- AXXX SOA conf -->
         <pivotal.url.base></pivotal.url.base>
         <!-- pivotal.url.base>http://localhost:18000/</pivotal.url.base --><!-- TODO prod ? http://localhost:8784/ -->
-        <apv.url.base>http://localhost:8076</apv.url.base>
+        <!-- apv.url.base>http://localhost:8076</apv.url.base --><!-- for test deployment PrecomptePartenaireWebServiceTestStarter -->
+        <apv.url.base>http://localhost:7080/apv/services/PrecomptePartenaireService</apv.url.base><!-- for local tomcat deployment -->
+        <!-- apv.url.base>http://owsi-vm-easysoa-axxx-apv.accelance.net:7080/apv/services/PrecomptePartenaireService</apv.url.base --><!-- for tomcat deployment on VMs -->
 
 		<!-- database conf -->
 	    <!-- NB. it is setup by Maven build resources filtering (must be activated),

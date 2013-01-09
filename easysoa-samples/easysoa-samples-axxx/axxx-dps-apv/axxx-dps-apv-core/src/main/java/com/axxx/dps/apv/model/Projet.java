@@ -226,6 +226,11 @@ public class Projet extends GenericEntity<Projet> {
         if(this.totalBenefs == null){
             this.totalBenefs = new Benefs();
         }
+        if (this.getEnfantsBenefs() == null || this.getJeunesBenefs() == null
+                || this.getAdultesIsolesBenefs() == null || this.getSeniorsBenefs() == null) {
+            // not inited, abort
+            return;
+        }
         this.totalBenefs.setMontantApv(this.getEnfantsBenefs().getMontantApv() 
                 + this.getJeunesBenefs().getMontantApv() 
                 + this.getAdultesIsolesBenefs().getMontantApv() 

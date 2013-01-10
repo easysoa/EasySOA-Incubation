@@ -1,6 +1,9 @@
 package org.easysoa.registry;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -14,10 +17,13 @@ import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
+import static org.easysoa.registry.utils.NuxeoListUtils.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -38,6 +44,9 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     
     public static final SoaNodeId SECOND_SERVICEIMPL_ID = 
     		new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenameyyy");
+
+    public static final SoaNodeId SECOND_SERVICEIMPL_SEPARATE_SUBPROJECT_ID = 
+            new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenameyyy_separateSubproject");
     
     public static final SoaNodeId THIRD_SERVICEIMPL_ID = 
     		new SoaNodeId(ServiceImplementation.DOCTYPE, "nszzz:namezzz=servicenamezzz");
@@ -47,6 +56,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     
     public static final SoaNodeId COMPONENT_ID = 
     		new SoaNodeId(Component.DOCTYPE, "xxx component");
+
     
     @Inject
     DocumentService documentService;
@@ -59,22 +69,116 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
 
 	private static DocumentModel foundComponent;
     
+
+    private static final Object[] EMPTY_STRING_ARRAY = new String[0];
+    
+    private String projectRootPath = "/default-domain";
+	
+    /**
+     * Creates but doesn't save session
+     * @param documentManager
+     * @param name
+     * @return
+     * @throws ClientException 
+     */
+	public DocumentModel createProject(CoreSession documentManager, String name) throws ClientException {
+        DocumentModel projectModel = documentManager.createDocumentModel("Project");
+        projectModel.setPathInfo(projectRootPath, name); // TODO safeName()
+        projectModel.setPropertyValue("dc:title", name);
+        projectModel = documentManager.createDocument(projectModel);
+        return projectModel;
+	}
+
+	/**
+	 * Creates but doesn't save session
+	 * @param documentManager
+	 * @param name
+	 * @param projectModel
+	 * @param parentSubprojectModels
+	 * @return
+	 * @throws ClientException
+	 */
+    public DocumentModel createSubproject(CoreSession documentManager, String name,
+            DocumentModel projectModel, List<DocumentModel> parentSubprojectModels) throws ClientException {
+        DocumentModel subprojectModel = documentManager.createDocumentModel("Subproject");
+        subprojectModel.setPathInfo(projectModel.getPathAsString(), name); // safeName()
+        subprojectModel.setPropertyValue("dc:title", name);
+        subprojectModel.setPropertyValue("subproject:subproject", subprojectModel.getId()); // to get copied
+        if (parentSubprojectModels != null && parentSubprojectModels.size() != 0) {
+            subprojectModel.setPropertyValue("subproject:parentSubprojects", getIds(parentSubprojectModels).toArray(EMPTY_STRING_ARRAY));
+        } else {
+            //subprojectModel.setPropertyValue("subproject:parentSubprojects", new ArrayList<String>(0)); // else inits to new Serializable[0]
+        }
+        subprojectModel = documentManager.createDocument(subprojectModel); // save required to have id below
+        String visibleSubprojectIdsCsv = computeVisibleSubprojects(documentManager, subprojectModel);
+        subprojectModel.setPropertyValue("subproject:visibleSubprojects", visibleSubprojectIdsCsv);
+        subprojectModel = documentManager.saveDocument(subprojectModel);
+        return subprojectModel;
+    }
+
+    private String computeVisibleSubprojects(CoreSession documentManager, DocumentModel subprojectModel) throws ClientException {
+        String[] parentSubprojectIds = (String[]) subprojectModel.getPropertyValue("subproject:parentSubprojects");
+        StringBuffer visibleSubprojectIdsSbuf = new StringBuffer("'"); // NB. '\'' doesn't work, counts as int !!
+        visibleSubprojectIdsSbuf.append(subprojectModel.getId());
+        visibleSubprojectIdsSbuf.append('\'');
+        
+        if (parentSubprojectIds != null && parentSubprojectIds.length != 0) {
+            for (String parentSubprojectId : parentSubprojectIds) {
+                DocumentModel parentSubprojectModel = documentManager.getDocument(new IdRef(parentSubprojectId));
+                String parentVisibleSubprojectIds = (String) parentSubprojectModel.getPropertyValue("subproject:visibleSubprojects");
+                //  NB. should always be set, at least to itself
+                visibleSubprojectIdsSbuf.append(',');
+                visibleSubprojectIdsSbuf.append(parentVisibleSubprojectIds);
+            }
+        }
+        return visibleSubprojectIdsSbuf.toString();
+    }
+
+    public DocumentModel createSubrojectSpecifications(CoreSession documentManager, DocumentModel projectModel) throws ClientException {
+        DocumentModel specificationsSubprojectModel = createSubproject(documentManager, "Specifications", projectModel, null);
+        return specificationsSubprojectModel;
+    }
+	
     @Test
     public void testSimpleDiscovery() throws Exception {
-    	// Discover service impl
+        // SUBPROJECT :
+        // creating projects
+        DocumentModel projectModel = createProject(documentManager, "MySoaProject");
+
+        DocumentModel otherProjectModel = createProject(documentManager, "MyOtherSoaProject");
+        
+        // creating subprojects
+        DocumentModel specificationsSubprojectModel = createSubproject(documentManager,
+                "Specifications", projectModel, null);
+
+        DocumentModel realisationSubprojectModel = createSubproject(documentManager,
+                "Realisation", projectModel, list(specificationsSubprojectModel));
+
+        DocumentModel anotherRealisationSubprojectModel = createSubproject(documentManager,
+                "Realisation", projectModel, null);
+        // - SUBPROJECT
+        
+        
+        // Discover service impl
     	HashMap<String, Object> implProperties = new HashMap<String, Object>();
+        implProperties.put(SoaNode.XPATH_SUBPROJECT, realisationSubprojectModel.getId()); // SUBPROJECT
+        implProperties.put(SoaNode.XPATH_VISIBLE_SUBPROJECTS, realisationSubprojectModel.getPropertyValue(SoaNode.XPATH_VISIBLE_SUBPROJECTS)); // SUBPROJECT
     	implProperties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
     	implProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
         discoveryService.runDiscovery(documentManager, FIRST_SERVICEIMPL_ID, implProperties, null);
         
     	// Discover information service
     	HashMap<String, Object> isProperties = new HashMap<String, Object>();
+        isProperties.put(SoaNode.XPATH_SUBPROJECT, specificationsSubprojectModel.getId()); // SUBPROJECT
+        isProperties.put(SoaNode.XPATH_VISIBLE_SUBPROJECTS, specificationsSubprojectModel.getPropertyValue(SoaNode.XPATH_VISIBLE_SUBPROJECTS)); // SUBPROJECT
     	isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
     	isProperties.put(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
     	DocumentModel foundInfoServ = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_ID, isProperties, null);
 
     	// Discover component
     	HashMap<String, Object> compProperties = new HashMap<String, Object>();
+    	compProperties.put(SoaNode.XPATH_SUBPROJECT, specificationsSubprojectModel.getId()); // SUBPROJECT
+    	compProperties.put(SoaNode.XPATH_VISIBLE_SUBPROJECTS, specificationsSubprojectModel.getPropertyValue(SoaNode.XPATH_VISIBLE_SUBPROJECTS)); // SUBPROJECT
     	// requires JAXWS (else would override IS's which would not be matched anymore ; TODO Q otherwise ??) :
     	compProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
     	compProperties.put(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE, foundInfoServ.getId());
@@ -83,7 +187,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	// check
         foundInfoServ = documentService.find(documentManager, INFORMATIONSERVICE_ID);
         DocumentModel foundImpl = documentService.find(documentManager, FIRST_SERVICEIMPL_ID);
-        Assert.assertEquals("Created information service must be linked to existing matching impls", foundInfoServ.getId(),
+        Assert.assertEquals("Created information service must be linked to existing matching impl", foundInfoServ.getId(),
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     	
     	// Discover another impl
@@ -94,6 +198,18 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         foundImpl = documentService.find(documentManager, SECOND_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must be linked to existing matching information service", foundInfoServ.getId(),
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
+        
+        // SUBPROJECT :
+        // Discover another impl in a separate subproject
+        implProperties.put(SoaNode.XPATH_SUBPROJECT, anotherRealisationSubprojectModel.getId());
+        implProperties.put(SoaNode.XPATH_VISIBLE_SUBPROJECTS, specificationsSubprojectModel.getPropertyValue(SoaNode.XPATH_VISIBLE_SUBPROJECTS));
+        discoveryService.runDiscovery(documentManager, SECOND_SERVICEIMPL_SEPARATE_SUBPROJECT_ID, implProperties, null);
+        // - SUBPROJECT
+
+        // check
+        foundImpl = documentService.find(documentManager, SECOND_SERVICEIMPL_ID);
+        Assert.assertEquals("Separate subproject impl must not be linked to existing matching information service", foundInfoServ.getId(),
+                foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     	
     	// Discover a non matching impl
     	HashMap<String, Object> impl3Properties = new HashMap<String, Object>();
@@ -201,7 +317,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	// Discover another is, then impl that has 2 matches
         foundInfoServ = discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE, "nsxxx:namexxx" + "P1KO"), isProperties, null);
         foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx" + "P1KO"), implProperties, null);
-        Assert.assertEquals("Created impl must not be linked because there is too much matching information services", null,
+        Assert.assertEquals("Created impl must not be linked because there are too much matching information services", null,
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     	
         // Discover endpoint that matches no is or impl (use matching dashboard TODO mka)
@@ -245,7 +361,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         Assert.assertNotNull("Created impl must be linked to existing matching information service because of provided component id",
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
         
-        // Discover an information service, then and endpoint that matches no impl but matches the IS.
+        // Discover an information service, then an endpoint that matches no impl but matches the IS.
         // A link should be made through a placeholder
         isProperties.clear();
         isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
@@ -263,6 +379,28 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         foundImpl = documentService.find(documentManager, implId);
         Assert.assertEquals("Created endpoint must be linked to a placeholder impl",
         		true, foundImpl.getPropertyValue(SoaNode.XPATH_ISPLACEHOLDER));
+        
+        // discover an endpoint matching no IS, then an impl that matches it ; they should be matched
+        /*isProperties.clear();
+        isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
+        isProperties.put(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{www}noISEndpoint");
+        foundInfoServ = discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE, "www:noISEndpoint"), isProperties, null);
+        */
+        epProperties.clear();
+        epProperties.put(Endpoint.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
+        epProperties.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, "{www}noISEndpoint");
+        foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("Prod", "www.a.com/noISEndpoint"), epProperties, null);
+
+        implProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{www}noISEndpoint");
+        foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "www:noISEndpoint=noISEndpointImplService" + "C1KO"), implProperties, null);
+        
+        //Assert.assertEquals("Created endpoint must be linked to matching impl", foundImpl.getId(),
+        //        foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
+        implId = foundEndpoint.getAdapter(SoaNode.class).getParentOfType(ServiceImplementation.DOCTYPE);
+        //foundImpl = documentService.find(documentManager, implId);
+        Assert.assertEquals("Created endpoint must be linked to matching impl",
+                implId.getName(), foundImpl.getPropertyValue(SoaNode.XPATH_SOANAME));
+        
         
         // discover endpoint matching guided by component / platform (criteria)
         // ex. in web disco :

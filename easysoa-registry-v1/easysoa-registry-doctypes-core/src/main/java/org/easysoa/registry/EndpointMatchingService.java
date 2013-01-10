@@ -16,16 +16,26 @@ public interface EndpointMatchingService {
 	 * Documents will also be filtered by component if the {@link org.easysoa.registry.facets.ArchitectureComponentFacet.XPATH_COMPONENT_ID}
 	 * property is set on the implementation.
 	 * @param skipPlatformMatching
+     * @param requireAtLeastOneExactCriteria
 	 * @returnList of matching service implementations
 	 * @throws ClientException
 	 */
-	DocumentModelList findServiceImpls(CoreSession documentManager,
-			DocumentModel endpoint, DocumentModel filterComponent,
-			boolean skipPlatformMatching) throws ClientException;
+	DocumentModelList findServiceImplementations(CoreSession documentManager,
+			DocumentModel endpoint, String filterComponentId,
+			boolean skipPlatformMatching, boolean requireAtLeastOneExactCriteria) throws ClientException;
 
 	DocumentModelList findInformationServices(CoreSession documentManager,
-			DocumentModel endpoint, DocumentModel filterComponent)
-			throws ClientException;
+			DocumentModel endpoint, String filterComponentId,
+			boolean requireAtLeastOneExactCriteria) throws ClientException;
+
+    /**
+     * @param documentManager
+     * @param serviceImpl The service implementation to find matches for
+     * @return List of matching service implementations
+     * @throws ClientException
+     */
+    DocumentModelList findEndpointsCompatibleWithImplementation(CoreSession documentManager,
+            DocumentModel serviceImpl) throws ClientException;
 
 	void linkServiceImplementation(CoreSession documentManager,
 			SoaNodeId endpointId, SoaNodeId implId,

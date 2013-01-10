@@ -8,6 +8,7 @@
   <!-- ===================== -->
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
+    <schema name="subproject" src="schemas/subproject.xsd" prefix="subproject" />
     <schema name="istr" src="schemas/intelligent-system-tree-root.xsd" prefix="istr" />
     <schema name="environment" src="schemas/environment.xsd" prefix="env" />
     <schema name="deliverable" src="schemas/deliverable.xsd" prefix="del" />
@@ -29,8 +30,13 @@
   
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
 
+    <facet name="SubprojectData" >
+      <schema name="subproject"/>
+    </facet>
     <!-- SoaNode tagging facet, allowing for queries such as #{document.hasFacet("SoaNode")} -->
-    <facet name="SoaNode" />
+    <facet name="SoaNode" >
+      <schema name="soanode" />
+    </facet>
     <facet name="System" />
     
     <!-- TODO in Studio ? -->
@@ -54,9 +60,9 @@
       <schema name="uid" />
       <schema name="common" />
       <schema name="dublincore" />
-      <schema name="soanode" />
       <schema name="files" />
       <schema name="file" /><!-- TODO to allow upload using CMIS in JWT export -->
+      <facet name="SubprojectData" />
       <facet name="SoaNode" />
       <!-- facet name="SubProjectId" / --><!-- TODO ; also projectId, referredSubProjectIds ? -->
       <facet name="Commentable" />
@@ -68,7 +74,18 @@
       <facet name="Folderish" />
     </doctype>
     
-    <!-- Systems hierarchies -->
+    <!-- Project & Systems hierarchies -->
+    <doctype extends="Document" name="Project">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <facet name="Folderish" />
+    </doctype>
+    <doctype extends="Document" name="Subproject">
+      <schema name="common" />
+      <schema name="dublincore" />
+      <facet name="Folderish" />
+      <facet name="SubprojectData" />
+    </doctype>
     <doctype extends="Document" name="Repository">
       <schema name="common" />
       <schema name="dublincore" />

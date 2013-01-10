@@ -3,31 +3,36 @@ package org.easysoa.registry;
 import java.util.Arrays;
 
 import org.apache.log4j.Logger;
-import org.easysoa.registry.facets.RestInfoFacet;
-import org.easysoa.registry.facets.WsdlInfoFacet;
+import org.easysoa.registry.matching.MatchingHelper;
 import org.easysoa.registry.matching.MatchingQuery;
-import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.ids.SoaNodeId;
+import org.easysoa.registry.utils.EmptyDocumentModelList;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
 
+
+/**
+ * TODO matching should be attempted / done if at least one exact (portType, endpointUrl)
+ * or provided guide (component, platform (id) of "actual" (??)) info
+ * (and not only portType)
+ * 
+ * @author mdutoo
+ *
+ */
 public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 
-    @SuppressWarnings("unused")
 	private static Logger logger = Logger.getLogger(EndpointMatchingServiceImpl.class);
     
-
     public boolean isEndpointAlreadyMatched(DocumentModel endpointDocument,
             CoreSession documentManager) throws ClientException {
         return endpointDocument.isProxy() // the proxy, possibly still being created,
@@ -38,25 +43,11 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
                 // NB. %ServiceImplementation to also handle JavaServiceImplementations
                 + Endpoint.XPATH_PARENTSIDS + "/* LIKE '%ServiceImplementation%'").isEmpty();
     }
-
-    /** TODO share elsewhere */
-    public static boolean isWsdlInfo(DocumentModel wsdlInfo) throws PropertyException, ClientException {
-        return wsdlInfo.hasFacet(WsdlInfoFacet.FACET_WSDLINFO) // for now static facet so always
-                //&& Platform.SERVICE_LANGUAGE_JAXWS.equals(informationService.getPropertyValue(Platform.XPATH_SERVICE_LANGUAGE))
-                && wsdlInfo.getPropertyValue(WsdlInfoFacet.XPATH_WSDL_PORTTYPE_NAME) != null; // OPT dynamic if possible when setting props in DiscoveryService ??
-    }
-
-    /** TODO share elsewhere */
-    public static boolean isRestInfo(DocumentModel restInfo) throws PropertyException, ClientException {
-        return restInfo.hasFacet(RestInfoFacet.FACET_RESTINFO) // for now static facet so always
-                //&& Platform.SERVICE_LANGUAGE_JAXRS.equals(informationService.getPropertyValue(Platform.XPATH_SERVICE_LANGUAGE))
-                && restInfo.getPropertyValue(RestInfoFacet.XPATH_REST_PATH) != null; // OPT dynamic if possible when setting props in DiscoveryService ??
-    }
     
     
-	public DocumentModelList findServiceImpls(CoreSession documentManager,
-			DocumentModel endpoint, DocumentModel filterComponent,
-			boolean skipPlatformMatching) throws ClientException {
+	public DocumentModelList findServiceImplementations(CoreSession documentManager,
+			DocumentModel endpoint, String filterComponentId,
+			boolean skipPlatformMatching, boolean requireAtLeastOneExactCriteria) throws ClientException { // TODO impl vs runtime platform matching ?
 
         // how should work matching in discovery & dashboard for :
         
@@ -69,7 +60,8 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		
 		// Init
 		DocumentService documentService = getDocumentService();
-    	MatchingQuery query = new MatchingQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE);
+    	boolean anyExactCriteria = false;
+		MatchingQuery query = new MatchingQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE);
 
     	// Match platform properties :
     	
@@ -78,13 +70,11 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     		DocumentModel platformDocument = documentManager.getDocument(
     				new IdRef((String) endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM)));
     		
-    		String[] platformPropsToMatch = new String[] {
-    				Platform.XPATH_LANGUAGE, Platform.XPATH_BUILD, Platform.XPATH_SERVICE_LANGUAGE,
-    				Platform.XPATH_DELIVERABLE_NATURE, Platform.XPATH_DELIVERABLE_REPOSITORY_URL};
-			for (String property : platformPropsToMatch ) {
+			for (String property : MatchingHelper.implPlatformPropsToMatch ) {
 		    	query.addConstraintMatchCriteriaIfSet(property,
 		    			platformDocument.getPropertyValue(property));
     		}
+            // TODO up to runtime platform constraints
 			
 			// TODO rather match platform ID (if any) than criteria
 	    	//query.addConstraintMatchCriteriaWithAltIfSet("iserv:linkedPlatform", "impl:platform",
@@ -95,6 +85,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     	// AGAINST THE IMPL'S SERVICE'S PLATFORM IF ANY ELSE AGAINST THE IMPL'S DISCOVERED PLATFORM CRITERIA
     	// TODO make it possible in disco (?) & model (yes)
     	else if (!skipPlatformMatching) {
+    	    // TODO rather match platform only if known as "actual" (or linked platform provided ??), rather than ...IfSet
 	    	query.addConstraintMatchCriteriaWithAltIfSet(Platform.XPATH_IDE,
 	    			ServiceImplementation.XPATH_IMPL_IDE,
 	    			endpoint.getPropertyValue(ServiceImplementation.XPATH_IMPL_IDE)); // TODO Q rather Endpoint.xx ?!?
@@ -125,18 +116,21 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     	// TODO IF FOUND PLATFORM LINK TO IT ?????
     	
     	// Match endpoint properties
-    	if (isWsdlInfo(endpoint)) { // TODO rather specific to Endpoint !!!!!!!!!!!!!!!
+    	if (MatchingHelper.isWsdlInfo(endpoint)) { // TODO rather specific to Endpoint !!!!!!!!!!!!!!!
             //query.addCriteria("ecm:mixinType = '" + Endpoint.FACET_WSDLINFO + "'"); // not required unless added dynamically but hard to do in DiscoveryServiceImpl
             query.addCriteria(ServiceImplementation.XPATH_TECHNOLOGY , Platform.SERVICE_LANGUAGE_JAXWS);
         	String endpointPortTypeName = (String) endpoint.getPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME);
-        	query.addConstraintMatchCriteria(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, endpointPortTypeName);
-    	} else if (isRestInfo(endpoint)) { // TODO rather specific to Endpoint !!!!!!!!!!!!!!!
+        	query.addCriteria(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, endpointPortTypeName); anyExactCriteria = true;
+                // NB. exact match (else useless because too wide), is set since is WS(DL)
+        	
+    	} else if (MatchingHelper.isRestInfo(endpoint)) { // TODO rather specific to Endpoint !!!!!!!!!!!!!!!
             //query.addCriteria("ecm:mixinType = '" + Endpoint.FACET_RESTINFO + "'"); // not required unless added dynamically but hard to do in DiscoveryServiceImpl
             query.addCriteria(ServiceImplementation.XPATH_TECHNOLOGY , Platform.SERVICE_LANGUAGE_JAXRS);
-        	String endpointRestPath = (String) endpoint.getPropertyValue(Endpoint.XPATH_REST_PATH);
+        	String endpointRestPath = (String) endpoint.getPropertyValue(Endpoint.XPATH_REST_PATH); anyExactCriteria = true;
         	//String endpointRestContentType = (String) endpoint.getPropertyValue(Endpoint.XPATH_REST_MEDIA_TYPE); // OPT
         	//OPT String endpointRestAccepts = (String) impl.getPropertyValue(Endpoint.XPATH_REST_ACCEPTS); // OPT
-            query.addConstraintMatchCriteria(ServiceImplementation.XPATH_REST_PATH, endpointRestPath);
+            query.addCriteria(ServiceImplementation.XPATH_REST_PATH, endpointRestPath); anyExactCriteria = true;
+                // NB. exact match (else useless because too wide), is set (at least to "") since is REST
             //query.addConstraintMatchCriteria(ServiceImplementation.XPATH_REST_ACCEPTS, endpointRestAccepts); // OPT
             //query.addConstraintMatchCriteria(ServiceImplementation.XPATH_REST_MEDIA_TYPE, endpointRestContentType); // OPT
     	}
@@ -158,10 +152,15 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		}*/
 
     	// Filter by component
-    	appendComponentFilterToQuery(documentManager, query, filterComponent, endpoint);
+    	filterComponentId = MatchingHelper.appendComponentFilterToQuery(documentManager, query, filterComponentId, endpoint);
+    	anyExactCriteria = anyExactCriteria || filterComponentId != null;
 
         // TODO filter mock ? a priori not...
         //query.addConstraintMatchCriteria(ServiceImplementation.XPATH_ISMOCK, "0");
+    	
+    	if (requireAtLeastOneExactCriteria && !anyExactCriteria) {
+    	    return EmptyDocumentModelList.INSTANCE;
+    	}
     	
     	// Run query
     	String implQuery = query.build();
@@ -172,22 +171,20 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 	}
 
     @Override
-	public DocumentModelList findInformationServices(
-			CoreSession documentManager, DocumentModel endpoint,
-			DocumentModel filterComponent) throws ClientException {
+	public DocumentModelList findInformationServices(CoreSession documentManager,
+	        DocumentModel endpoint, String filterComponentId,
+	        boolean requireAtLeastOneExactCriteria) throws ClientException { // TODO impl vs runtime platform matching ?
 		// Init
 		DocumentService documentService = getDocumentService();
+        boolean anyExactCriteria = false;
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
 
-    	// Match platform properties
+        // 1. IF A LINKED PLATFORM HAS BEEN PROVIDED FOR THE ENDPOINT BY THE PROBE EX. WEB DISCO
     	if (endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM) != null) {
     		DocumentModel platformDocument = documentManager.getDocument(
     				new IdRef((String) endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM)));
     		
-    		String[] platformPropsToMatch = new String[] {
-    				Platform.XPATH_LANGUAGE, Platform.XPATH_BUILD, Platform.XPATH_SERVICE_LANGUAGE,
-    				Platform.XPATH_DELIVERABLE_NATURE, Platform.XPATH_DELIVERABLE_REPOSITORY_URL};
-			for (String property : platformPropsToMatch ) {
+			for (String property : MatchingHelper.allPlatformPropsToMatch ) {
 		    	query.addConstraintMatchCriteriaIfSet(property,
 		    			platformDocument.getPropertyValue(property));
     		}
@@ -196,33 +193,80 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 	    	//query.addConstraintMatchCriteriaIfSet("iserv:linkedPlatform",
 	    	//		endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM));
     	}
+    	
+    	// 2. NB. NO PLATFORM MATCHING WHEN FINDING COMPATIBLE IS
+    	// else couldn't match SOAPUI mock endpoint with JAXWS expected IS + Component
+    	// (but do match it with impl)
+        // TODO rather match platform only if known as "actual" (or linked platform provided ??), rather than ...IfSet
     	 	
-    	if (isWsdlInfo(endpoint)) { // is endpoint WSDL (JAXWS) ?
+    	if (MatchingHelper.isWsdlInfo(endpoint)) { // is endpoint WSDL (JAXWS) ?
             //query.addCriteria("ecm:mixinType = '" + Endpoint.FACET_WSDLINFO + "'"); // not required unless added dynamically but hard to do in DiscoveryServiceImpl
-    	    query.addCriteria(Platform.XPATH_SERVICE_LANGUAGE , Platform.SERVICE_LANGUAGE_JAXWS); // TODO better, not impl !!!!!!!!
+    	    //query.addConstraintMatchCriteriaIfSet(Platform.XPATH_SERVICE_LANGUAGE , endpoint.getPropertyValue(Endpoint.XPATH_TECHNOLOGY));
+                // NO not necessarily JAWS ! .NET, HTTP mock or no requirement at all would be OK
         	String endpointPortTypeName = (String) endpoint.getPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME);
-        	query.addConstraintMatchCriteria(InformationService.XPATH_WSDL_PORTTYPE_NAME, endpointPortTypeName);
+        	query.addCriteria(InformationService.XPATH_WSDL_PORTTYPE_NAME, endpointPortTypeName); anyExactCriteria = true;
+        	    // NB. exact match (else useless because too wide), is set since is WS(DL)
         	
-    	} else if (isRestInfo(endpoint)) { // is endpoint REST (JAXRS) ?
+    	} else if (MatchingHelper.isRestInfo(endpoint)) { // is endpoint REST (JAXRS) ?
         	//query.addCriteria("ecm:mixinType = '" + Endpoint.FACET_RESTINFO + "'"); // not required unless added dynamically but hard to do in DiscoveryServiceImpl
-    	    query.addCriteria(Platform.XPATH_SERVICE_LANGUAGE , Platform.SERVICE_LANGUAGE_JAXRS); // TODO better, not impl !!!!!!!!
-        	String endpointRestPath = (String) endpoint.getPropertyValue(Endpoint.XPATH_REST_PATH); // if JAXRS
+    	    //query.addConstraintMatchCriteriaIfSet(Platform.XPATH_SERVICE_LANGUAGE, endpoint.getPropertyValue(Endpoint.XPATH_TECHNOLOGY));
+    	        // NO not necessarily JAXRS ! .NET, HTTP mock or no requirement at all would be OK
+        	String endpointRestPath = (String) endpoint.getPropertyValue(Endpoint.XPATH_REST_PATH);
             //OPT String endpointRestAccepts = (String) endpoint.getPropertyValue(Endpoint.XPATH_REST_ACCEPTS); // OPT
             //OPT String endpointRestContentType = (String) endpoint.getPropertyValue(Endpoint.XPATH_REST_CONTENT_TYPE); // OPT
-            query.addConstraintMatchCriteria(InformationService.XPATH_REST_PATH, endpointRestPath);
+            query.addCriteria(InformationService.XPATH_REST_PATH, endpointRestPath); anyExactCriteria = true;
+                // NB. exact match (else useless because too wide), is set (at least to "") since is REST
             //query.addConstraintMatchCriteria(InformationService.XPATH_REST_ACCEPTS, implRestAccepts); // OPT
             //query.addConstraintMatchCriteria(InformationService.XPATH_REST_CONTENT_TYPE, implRestContentType); // OPT
     	}
     	
     	// Filter by component
-    	appendComponentFilterToQuery(documentManager, query, filterComponent, endpoint);
+        filterComponentId = MatchingHelper.appendComponentFilterToQuery(documentManager, query, filterComponentId, endpoint);
+        anyExactCriteria = anyExactCriteria || filterComponentId != null;
     	
     	// Run query
     	String isQuery = query.build();
     	DocumentModelList foundIs = documentService.query(documentManager, isQuery, true, false);
     	return foundIs;
 	}
+    
 
+    @Override
+    public DocumentModelList findEndpointsCompatibleWithImplementation(CoreSession documentManager,
+            DocumentModel serviceImpl) throws ClientException {
+        
+        DocumentService documentService = getDocumentService();
+
+        MatchingQuery query = new MatchingQuery("SELECT * FROM " + Endpoint.DOCTYPE);
+        
+        if (MatchingHelper.isWsdlInfo(serviceImpl)) { // consistency logic
+            //query.addCriteria("ecm:mixinType = '" + InformationService.FACET_WSDLINFO + "'"); // NO should be added dynamically but hard to do in DiscoveryServiceImpl
+            query.addConstraintMatchCriteria(Endpoint.XPATH_TECHNOLOGY , Platform.SERVICE_LANGUAGE_JAXWS); // require to be its "actual" impl ; OPT for other impl platform metas
+            String implPortTypeName = (String) serviceImpl.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME); // if JAXWS
+            query.addConstraintMatchCriteria(Endpoint.XPATH_WSDL_PORTTYPE_NAME, implPortTypeName);
+                // NB. exact match (else useless because too wide), is set since is WS(DL)
+                    
+        } else if (MatchingHelper.isRestInfo(serviceImpl)) {
+            //query.addCriteria("ecm:mixinType = '" + ServiceImplementation.FACET_RESTINFO + "'"); // NO should be added dynamically but hard to do in DiscoveryServiceImpl
+            query.addConstraintMatchCriteria(Endpoint.XPATH_TECHNOLOGY , Platform.SERVICE_LANGUAGE_JAXRS); // require to be its "actual" impl ; OPT for other impl platform metas
+            String implRestPath = (String) serviceImpl.getPropertyValue(ServiceImplementation.XPATH_REST_PATH);
+            //OPT String implRestAccepts = (String) serviceImpl.getPropertyValue(ServiceImplementation.XPATH_REST_ACCEPTS); // OPT
+            //OPT String implRestContentType = (String) serviceImpl.getPropertyValue(ServiceImplementation.XPATH_REST_CONTENT_TYPE); // OPT
+            query.addConstraintMatchCriteria(Endpoint.XPATH_REST_PATH, implRestPath);
+                // NB. exact match (else useless because too wide), is set (at least to "") since is REST
+            //query.addConstraintMatchCriteria(Endpoint.XPATH_REST_ACCEPTS, implRestAccepts); // OPT
+            //query.addConstraintMatchCriteria(Endpoint.XPATH_REST_CONTENT_TYPE, implRestContentType); // OPT   
+        }
+        
+        // NB. IS-focused & partial matching, other platform metas are checked in the following call to findServiceImplementations()
+
+        // TODO handle the case of impl-endpoint links that are now wrong i.e. SOA validation
+        
+        String serviceImplQuery = query.build();
+        return documentService.query(documentManager, serviceImplQuery, true, false);
+    }
+
+    
 	@Override
 	public void linkServiceImplementation(CoreSession documentManager,
 			SoaNodeId endpointId, SoaNodeId implId, boolean save)
@@ -230,7 +274,10 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		if (implId != null) {
 			// Create link
 			DiscoveryService discoveryService = Framework.getService(DiscoveryService.class);
-			discoveryService.runDiscovery(documentManager, endpointId, null, Arrays.asList(implId));
+			discoveryService.runDiscovery(documentManager, endpointId, null, Arrays.asList(implId)); // TODO or explicitly ??
+			// i.e. impl.SOA_NAME (= implId.getName()) == ep.getParentOfType(ServiceImplementation.DOCTYPE).getName()
+
+	        // TODO if unmatched impl, enrich impl with impl-level platform metas to help it match to IS ?? 
 		}
 		else {
 			// Remove link
@@ -259,6 +306,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		DocumentModel implModel = docService.create(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, portTypeName));
 		implModel.setPropertyValue(ServiceImplementation.XPATH_ISPLACEHOLDER, true);
         implModel.setPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
+        // TODO also copy other impl-level platform metas, to be used when merging placeholder ? NOO rather delete placeholder and rematch endpoint
 		documentManager.saveDocument(implModel);
 		
 		// Attach placeholder impl to information service
@@ -286,21 +334,6 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 			return Framework.getService(DocumentService.class);
 		} catch (Exception e) {
 			throw new ClientException("Document service unavailable, aborting");
-		}
-	}
-
-	private void appendComponentFilterToQuery(CoreSession documentManager,
-			MatchingQuery query, DocumentModel filterComponent, DocumentModel endpoint) throws ClientException {
-		DocumentModel filterComponentModel = null;
-		if (filterComponent != null) {
-			filterComponentModel = documentManager.getWorkingCopy(filterComponent.getRef());
-		}
-		else if (endpoint.getPropertyValue(Endpoint.XPATH_COMPONENT_ID) != null) {
-			filterComponentModel = documentManager.getWorkingCopy(
-					new IdRef((String) endpoint.getPropertyValue(Endpoint.XPATH_COMPONENT_ID)));
-		}
-		if (filterComponentModel != null) {
-			query.addCriteria(Component.XPATH_COMPONENT_ID + " = '" + filterComponentModel.getId() + "'");
 		}
 	}
 

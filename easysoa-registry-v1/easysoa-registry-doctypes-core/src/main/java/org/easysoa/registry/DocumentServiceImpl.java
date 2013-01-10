@@ -44,11 +44,6 @@ public class DocumentServiceImpl implements DocumentService {
         String doctype = identifier.getType();
  
         if (isSoaNode(documentManager, doctype)) {
-        	// XXX Redundant with RepositoryManagementListener?
-            boolean createProxy = false;
-            if (!parentPath.equals(getSourceFolderPath(doctype))) {
-                createProxy = true;
-            }
             
             // Create or fetch source document
             DocumentModel documentModel = find(documentManager, identifier);
@@ -59,6 +54,7 @@ public class DocumentServiceImpl implements DocumentService {
             
             // Create proxy if needed (but make sure the parent is the instance of the repository,
             // otherwise the child proxy will only be visible in the context of the parent proxy)
+            boolean createProxy = !parentPath.equals(getSourceFolderPath(doctype)); // XXX Redundant with RepositoryManagementListener?
             if (createProxy) {
                 PathRef parentRef = new PathRef(parentPath);
                 DocumentModel parentModel = documentManager.getDocument(parentRef);
@@ -218,7 +214,8 @@ public class DocumentServiceImpl implements DocumentService {
         // Find proxy among children
         DocumentModelList childrenModels = documentManager.getChildren(parentModel.getRef());
         for (DocumentModel childModel : childrenModels) {
-            if (createSoaNodeId(childModel).equals(identifier)) {
+            if (this.isSoaNode(documentManager, childModel.getType()) // else case of .doc in biz archi along BS
+                    && createSoaNodeId(childModel).equals(identifier)) {
                 return childModel;
             }
         }

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/subproject/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/subproject/">
+  
+  <xs:simpleType name="stringArray">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+  
+  <xs:element name="subproject" type="xs:string" /><!-- TODO copied from subproject id -->
+  <xs:element name="parentSubprojects" type="nxs:stringArray" /><!-- only on subproject ?  -->
+  <xs:element name="visibleSubprojects" type="xs:string" /><!-- subproject + parentSubproject(s)'s visibleSubprojects, computed once on subproject -->
+  
+</xs:schema>

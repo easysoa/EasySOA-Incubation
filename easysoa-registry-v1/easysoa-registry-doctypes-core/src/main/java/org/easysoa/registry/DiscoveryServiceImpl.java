@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.common.utils.IdUtils;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.runtime.api.Framework;
@@ -44,6 +45,8 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         // Fetch or create document
         boolean shouldCreate = false;
         DocumentModel documentModel = documentService.find(documentManager, identifier);
+        // TODO subproject: new param ? prefix soaname ? map to subproject strategies ?? SubprojectDocumentService ?
+        // TODO subproject: computeVisibleSubprojects here ? in listener ?
         if (documentModel == null) {
             shouldCreate = true;
             documentModel = documentService.newSoaNodeDocument(documentManager, identifier);
@@ -79,57 +82,28 @@ public class DiscoveryServiceImpl implements DiscoveryService {
             String type = documentModel.getType();
             SoaMetamodelService soaMetamodelService = Framework.getService(SoaMetamodelService.class);
             for (SoaNodeId parentDocumentId : parentDocuments) {
-                List<String> path = soaMetamodelService.getPath(parentDocumentId.getType(), type);
+                List<String> pathBelowParent = soaMetamodelService.getPath(parentDocumentId.getType(), type);
                 String parentPathAsString = null;
                 
                 if (parentDocumentId.getType() != null) {
 	                // Make sure parent is valid
-	                if (path == null) {
+	                if (pathBelowParent == null) {
 	                    documentManager.cancel();
 	                    throw new Exception("No possible valid path from "
 	                            + parentDocumentId.getType() + " (" + parentDocumentId.toString()
 	                            + ") to " + type + " (" + identifier.getName() + ")");
 	                }
 	                else {
-		                DocumentModel parentDocument = documentService.find(documentManager, parentDocumentId);
-		                
-	                    // Create parent if necessary
-	                    if (parentDocument == null) {
-	                        parentDocument = documentService.create(documentManager, parentDocumentId);
-	                    }
-		                parentPathAsString = parentDocument.getPathAsString();
-	                    
-	                    // Link the intermediate documents 
-	                    // If we have unknown documents between the two, create placeholders
-	                    for (String pathStepType : path.subList(0, path.size() - 1)) {
-	                        // Before creating a placeholder, check if the intermediate type
-	                        // is not already listed in the parent documents
-	                        boolean placeholderNeeded = true;
-	                        for (SoaNodeId placeholderReplacementCandidate : parentDocuments) {
-	                            if (pathStepType.equals(placeholderReplacementCandidate.getType())) {
-	                                parentDocument = documentService.create(documentManager,
-	                                        placeholderReplacementCandidate, parentPathAsString);
-	        		                parentPathAsString = parentDocument.getPathAsString();
-	                                placeholderNeeded = false;
-	                                break;
-	                            }
-	                        }
-	                        
-	                        if (placeholderNeeded) {
-	                            parentDocument = documentService.create(documentManager,
-	                                    new SoaNodeId(pathStepType, IdUtils.generateStringId()), parentPathAsString);
-	                            parentDocument.setPropertyValue(SoaNode.XPATH_TITLE, "(Placeholder)");
-	                            parentDocument.setPropertyValue(SoaNode.XPATH_ISPLACEHOLDER, "1");
-	                        }
-	                    }
+                        parentPathAsString = createOrReuseIntermediateDocuments(documentManager,
+                                documentService, parentDocumentId, pathBelowParent, parentDocuments);
 	                }
                 
                 }
-                else {
+                else { // TODO when does it occur ??
                 	parentPathAsString = parentDocumentId.getName();
                 }
                 
-                // Create target document if necessary
+                // Create target document below parent if necessary
                 if (documentService.findProxy(documentManager, identifier, parentPathAsString) == null) {
                     documentService.create(documentManager, identifier, parentPathAsString);
                 }
@@ -139,7 +113,42 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         return documentModel;
     }
 
-	@SuppressWarnings("unused")
+	private String createOrReuseIntermediateDocuments(CoreSession documentManager, DocumentService documentService,
+	        SoaNodeId parentDocumentId, List<String> pathBelowParent,
+	        List<SoaNodeId> parentDocuments) throws ClientException {
+        DocumentModel parentDocument = documentService.find(documentManager, parentDocumentId);
+        
+        // Create parent if necessary
+        if (parentDocument == null) {
+            parentDocument = documentService.create(documentManager, parentDocumentId);
+        }
+        
+        // Link the intermediate documents 
+        // If we have unknown documents between the two, create placeholders
+        for (String pathStepType : pathBelowParent.subList(0, pathBelowParent.size() - 1)) {
+            // Before creating a placeholder, check if the intermediate type
+            // is not already listed in the parent documents
+            boolean placeholderNeeded = true;
+            for (SoaNodeId placeholderReplacementCandidate : parentDocuments) {
+                if (pathStepType.equals(placeholderReplacementCandidate.getType())) {
+                    parentDocument = documentService.create(documentManager,
+                            placeholderReplacementCandidate, parentDocument.getPathAsString());
+                    placeholderNeeded = false;
+                    break;
+                }
+            }
+            
+            if (placeholderNeeded) {
+                parentDocument = documentService.create(documentManager,
+                        new SoaNodeId(pathStepType, IdUtils.generateStringId()), parentDocument.getPathAsString());
+                parentDocument.setPropertyValue(SoaNode.XPATH_TITLE, "(Placeholder)");
+                parentDocument.setPropertyValue(SoaNode.XPATH_ISPLACEHOLDER, "1");
+            }
+        }
+        return parentDocument.getPathAsString();
+    }
+
+	
 	private DocumentModel discoverEndpoint(CoreSession documentManager,
 			SoaNodeId identifier, Map<String, Object> properties,
 			List<SoaNodeId> parentDocuments) throws Exception {

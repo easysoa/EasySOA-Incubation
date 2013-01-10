@@ -244,14 +244,16 @@ public class MatchingDashboard extends ModuleRoot {
 				componentModel = session.getDocument(new IdRef(componentUuid));
 			}
 			
-			// Run  matching service according to doctype
+			// Run matching service according to doctype
 			if (Endpoint.DOCTYPE.equals(model.getType())) {
 				EndpointMatchingService matchingService = Framework.getService(EndpointMatchingService.class);
-				return matchingService.findServiceImpls(session, model, componentModel, skipPlatformMatching);
+				return matchingService.findServiceImplementations(session,
+				        model, componentModel.getId(), skipPlatformMatching, false);
 			}
 			else {
 				ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);
-				return matchingService.findInformationServices(session, model, componentModel, skipPlatformMatching);
+				return matchingService.findInformationServices(session,
+				        model, componentModel.getId(), skipPlatformMatching, false);
 			}
 		}
 		else {

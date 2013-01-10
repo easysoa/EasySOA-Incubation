@@ -136,7 +136,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
             epProperties.put(Endpoint.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS); // TODO better ?!?
             // Associate endpoint with information service
             //isProperties.put("impl:providedInformationService", infoServiceWithMetas.getId()); // TODO matching should be done
-            discoveryService.runDiscovery(documentManager, ENDPOINT_TEST_WITHOUT_POPRTTYPE_ID, epProperties, null);
+            discoveryService.runDiscovery(documentManager, ENDPOINT_TEST_WITHOUT_POPRTTYPE_ID, epProperties, null); // TODO or by providing parent IS ??
             epProperties.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, TEST_PORT_TYPE);
             discoveryService.runDiscovery(documentManager, ENDPOINT_TEST, epProperties, null);
             discoveryService.runDiscovery(documentManager, ENDPOINT_INTEGRATION, epProperties, null);

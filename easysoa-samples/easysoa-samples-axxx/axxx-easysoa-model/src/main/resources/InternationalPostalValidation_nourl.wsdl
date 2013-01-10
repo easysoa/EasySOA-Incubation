@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax215="http://ipf.webservice.rt.saas.uniserv.com/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://ipf.webservice.rt.saas.uniserv.com" xmlns:ax213="http://webservice.rt.saas.uniserv.com/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://ipf.webservice.rt.saas.uniserv.com">
+    <wsdl:documentation>InternationalPostalValidation</wsdl:documentation>
+    <wsdl:types>
+        <xs:schema xmlns:ax214="http://webservice.rt.saas.uniserv.com/xsd" xmlns:ax216="http://ipf.webservice.rt.saas.uniserv.com/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://ipf.webservice.rt.saas.uniserv.com">
+            <xs:import namespace="http://webservice.rt.saas.uniserv.com/xsd"/>
+            <xs:import namespace="http://ipf.webservice.rt.saas.uniserv.com/xsd"/>
+            <xs:element name="enhanceAddress">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="authentication" nillable="true" type="ax214:Authentication"/>
+                        <xs:element minOccurs="0" name="parameter" nillable="true" type="ax215:Parameter"/>
+                        <xs:element minOccurs="0" name="address" nillable="true" type="ax215:InputAddress"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="enhanceAddressResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax215:EnhancedAddressList"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://ipf.webservice.rt.saas.uniserv.com/xsd">
+            <xs:complexType name="Parameter">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="parAlternativeCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parAlternativeStr" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parAmbigDpv" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parBulkPurchaser" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parBusinessCheck" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parBusinessFetch" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parCase" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parCheckAddress" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parCheckDeliveryLocation" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parCheckPobox" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parCheckStr" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parCityAbbrev" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parCityLen" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parCityListType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parCityMval" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parCountry" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parDpv" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parFontOut" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parHnoConfirmed" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parInsuffResult" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parJoker1" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parJoker2" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parJoker3" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parJoker4" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parJoker5" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parKeyWord" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parLangBe" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parLanguage" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parLenOutLine" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parLineUpperLower" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parMinMval" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parNormOutput" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parOutCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parOverspecTolerant" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parPosCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parPosZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parRdi" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parRef" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parResolveCompress" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parSelListMax" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parSortFields" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parSpecialChars" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parStiegThreshold" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parStrAbbrev" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parStrLen" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parStrMainType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parStrMval" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parStrType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parStrTypeDefault" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parSuppressDistrictEqual" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parTimeout" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parTolerantSearch" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parUmschValidDate" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parUntieRange" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parUseCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parZipFull" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parZipHno" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parZipMoreWeight" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parZipSearch" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="parZipSeparator" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InputAddress">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="buildName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="city" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cityDistrict" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cityLine" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="country" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hno" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="line1" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="line2" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="line3" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="line4" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="line5" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="line6" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="line7" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="location" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="majorStr" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="organisation" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="poBoxCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="poBoxCountry" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="poBoxNumber" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="poBoxState" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="poBoxZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="sec" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="specCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="specCountry" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="specZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="state" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="str" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strHno" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="subBuildName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="zip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="zipAddOn" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="EnhancedAddressList">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="enhancedAddress" nillable="true" type="ax215:EnhancedAddress"/>
+                    <xs:element minOccurs="0" name="errorMsg" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="retCount" type="xs:int"/>
+                    <xs:element minOccurs="0" name="retInfo" type="xs:int"/>
+                    <xs:element minOccurs="0" name="retType" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="EnhancedAddress">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="XCoordinate" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="YCoordinate" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="acAllFoots" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="acFootAll" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="acFootDpv" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="acFootZip4" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="acRetc" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="alternativeCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="alternativeStr" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="ambigLocationType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="areaCensal" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="buildingName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="buildingType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="buildingZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="carReg" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="carrierRoute" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="carrierSortInd" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="checkedLocation" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="city" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cityAbbrev" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cityAdminCode" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cityCode" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cityDelInd" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cityDetail" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cityDistrict" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cityDistrictCode" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cityNorm" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cityRegion" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="citySuffix" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cityViable" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="community" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="communityCode" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="coordinateLevel" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="country" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="countryFull" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="countryIso2" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="countryIsoAl" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="countryIsoNo" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="county" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="deliveryPoint" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="deliveryZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="depDistrict" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="department" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="distrPrint" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="distributionPoint" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="district" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="districtCode" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="dpvEtc" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="dpvValid" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="expireDays" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="financeNo" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="floorNo" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="floorZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="formerCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="formerStr" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="freguesi" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="freguesiCode" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hno" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hno2Al" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hno2Num" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoAddition" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoCityCode" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoCityDistrict" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoEven" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoExt" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoFrom" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoFromAl" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoMatch" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoNorm" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoNum" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoPos" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoRange" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoRistanti" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoTo" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoToAl" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hnoZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="icAdr" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="icArrd" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="icBd" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="icCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="icRoudis" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="icTdm" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="insertedLocationList" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="jobTitle" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="langCode" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="line1" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="line2" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="line3" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="line4" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="line5" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="line6" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="line7" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="lineCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="lineCountry" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="lineHno" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="lineLa" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="lineSpecial" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="lineStr" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="lineZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="location" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="locationCount" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="locationList" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="majorStr" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="matchedLocationList" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="maxZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="minZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="mval" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="mvalCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="mvalHno" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="mvalOrganisation" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="mvalStr" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="mvalZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="nielsen" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="noRecognizable2" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="noRecognizable3" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="noRecognizable4" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="noRecognizable5" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="noRecognizable6" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="organisation" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="poBoxCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="poBoxCountry" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="poBoxNumber" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="poBoxState" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="poBoxType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="poBoxZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="predirStr" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="rdi" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="rdiEnhanced" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="receiverDomiciled" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="region" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="regionCode" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resAbbrev" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resAdrType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resBuildName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resChange" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resCityDistrict" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resDepDistrict" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resHno" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resJoin" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resLineCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resLineHno" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resLineStr" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resLocation" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resMove" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resMoveCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resOrganisation" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resOver" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resPoBoxCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resPoBoxNumber" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resPoBoxZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resPostField" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resRef" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resRegion" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resSec" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resSpecCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resSpecLa" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resSpecZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resStr" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resSubBuildName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resVariant" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resZipAddOn" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="resultClass" type="xs:int"/>
+                    <xs:element minOccurs="0" name="resultCoordinateClass" type="xs:int"/>
+                    <xs:element minOccurs="0" name="resultPoBoxClass" type="xs:int"/>
+                    <xs:element minOccurs="0" name="resultSpecClass" type="xs:int"/>
+                    <xs:element minOccurs="0" name="roudisNo" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="sec" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="secEven" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="secFrom" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="secTo" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="secTypFull" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="specCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="specCountry" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="specIcCity" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="specService" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="specZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="state" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="stateFull" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="str" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strAbbrev" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strAmbig" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strArrd" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strCount" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strHno" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strKernel" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strLangCode" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strLastWord" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strNameChange" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strNo" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strPostdir" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strReg" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strSubdiv" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strTypeAbbrev" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strTypeLong" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strUnmatchedWords" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="strZip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="subBuildName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="unmatchedLocationList" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="zip" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="zipAddOn" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="zipRange" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="zipScheme" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="zipType" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://webservice.rt.saas.uniserv.com/xsd">
+            <xs:complexType name="Authentication">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="password" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="enhanceAddressRequest">
+        <wsdl:part name="parameters" element="ns:enhanceAddress"/>
+    </wsdl:message>
+    <wsdl:message name="enhanceAddressResponse">
+        <wsdl:part name="parameters" element="ns:enhanceAddressResponse"/>
+    </wsdl:message>
+    <wsdl:portType name="InternationalPostalValidationPortType">
+        <wsdl:operation name="enhanceAddress">
+            <wsdl:input message="ns:enhanceAddressRequest" wsaw:Action="urn:enhanceAddress"/>
+            <wsdl:output message="ns:enhanceAddressResponse" wsaw:Action="urn:enhanceAddressResponse"/>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="InternationalPostalValidationSoap11Binding" type="ns:InternationalPostalValidationPortType">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="enhanceAddress">
+            <soap:operation soapAction="urn:enhanceAddress" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="InternationalPostalValidationSoap12Binding" type="ns:InternationalPostalValidationPortType">
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="enhanceAddress">
+            <soap12:operation soapAction="urn:enhanceAddress" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:binding name="InternationalPostalValidationHttpBinding" type="ns:InternationalPostalValidationPortType">
+        <http:binding verb="POST"/>
+        <wsdl:operation name="enhanceAddress">
+            <http:operation location="enhanceAddress"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="InternationalPostalValidation">
+        <wsdl:port name="InternationalPostalValidationHttpsSoap11Endpoint" binding="ns:InternationalPostalValidationSoap11Binding">
+            <soap:address location="https://host/path/InternationalPostalValidation.InternationalPostalValidationHttpsSoap11Endpoint/"/>
+        </wsdl:port>
+        <wsdl:port name="InternationalPostalValidationHttpSoap11Endpoint" binding="ns:InternationalPostalValidationSoap11Binding">
+            <soap:address location="http://host/path/InternationalPostalValidation.InternationalPostalValidationHttpSoap11Endpoint/"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>

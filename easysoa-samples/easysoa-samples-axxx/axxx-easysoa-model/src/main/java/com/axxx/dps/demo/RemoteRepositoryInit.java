@@ -164,7 +164,8 @@ public class RemoteRepositoryInit {
         
 		SoaNodeId isCheckAddressId = new SoaNodeId(InformationService.DOCTYPE, "checkAddress");
 		String isCheckAddressPath = createSoaNode(isCheckAddressId, infoArchitecturePath,
-		        InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actUniId));
+		        InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actUniId)/*,
+                InformationService.XPATH_WSDL_PORTTYPE_NAME + "={http://ipf.webservice.rt.saas.uniserv.com}InternationalPostalValidationPortType"*/);
         uploadWsdl(isCheckAddressPath, "../axxx-easysoa-model/src/main/resources/InternationalPostalValidation_nourl.wsdl");
             // or manually upload WSDL on it
         isCheckAddressId = new SoaNodeId(isCheckAddressId.getType(), "ws:http://ipf.webservice.rt.saas.uniserv.com:InternationalPostalValidationPortType");
@@ -172,10 +173,11 @@ public class RemoteRepositoryInit {
             // TODO or never let it change ?!
         SoaNodeId olaCheckAddressId = new SoaNodeId(OLA_DOCTYPE, "OLA checkAddress");
         createSoaNode(olaCheckAddressId, isCheckAddressPath,
-                "dc:description=temps de réponse max, taux de disponibilité par période"); // NB. not linked to an SLA ; TODO BUT to its IS ? always ??
+                "dc:description=temps de réponse max, taux de disponibilité par période");
 
         SoaNodeId isTdrWebServiceId = new SoaNodeId(InformationService.DOCTYPE, "TdrWebService");
-        String isTdrWebServicePath = createSoaNode(isTdrWebServiceId, infoArchitecturePath/*,
+        String isTdrWebServicePath = createSoaNode(isTdrWebServiceId, infoArchitecturePath,
+                InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actSIDPSId)/*,
 		        InformationService.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService"*/);
 		uploadWsdl(isTdrWebServicePath, "../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
 		    // or manually upload WSDL on it
@@ -184,12 +186,13 @@ public class RemoteRepositoryInit {
 		    // TODO or never let it change ?!
 		SoaNodeId olaTdrWebServiceId = new SoaNodeId(OLA_DOCTYPE, "OLA TdrWebService");
 		createSoaNode(olaTdrWebServiceId, isTdrWebServicePath,
-		        "dc:description=temps de réponse max, taux de disponibilité par période"); // TODO link also to its IS ? always ??
+		        "dc:description=temps de réponse max, taux de disponibilité par période");
 		
-		String isInformationAPVPath = createSoaNode(new SoaNodeId(InformationService.DOCTYPE, "Information_APV"), infoArchitecturePath);
+		String isInformationAPVPath = createSoaNode(new SoaNodeId(InformationService.DOCTYPE, "Information_APV"), infoArchitecturePath,
+                InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actSIDCVId));
         SoaNodeId olaInformationAPVId = new SoaNodeId(OLA_DOCTYPE, "OLA Information_APV");
         createSoaNode(olaInformationAPVId, isInformationAPVPath,
-                "dc:description=temps de réponse max, taux de disponibilité par période"); // NB. not linked to an SLA ; TODO BUT to its IS ? always ??
+                "dc:description=temps de réponse max, taux de disponibilité par période");
 		
         // OPT contactClient
         
@@ -302,26 +305,20 @@ public class RemoteRepositoryInit {
 		// manually : do a web discovery
 		// TODO web discovery : upload wsdl
 		    
-        createSoaNode(tdrWebServiceProdEndpointId, (String) null,
+        String tdrWebServiceProdEndpointPath = createSoaNode(tdrWebServiceProdEndpointId, (String) null,
                 Endpoint.XPATH_ENDP_ENVIRONMENT + "=Prod", // required even with soaname else integrity check fails
                 Endpoint.XPATH_URL + "=http://localhost:7080/apv/services/PrecomptePartenaireService"/*, // required even with soaname else integrity check fails
                 Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService"*/);
-        //tdrWebServiceProdEndpointId = new SoaNodeId(tdrWebServiceProdEndpointId.getType(), "Prod:http:||localhost:7080|apv|services|PrecomptePartenaireService");
-            // updating soaname to what the wsdl upload has set it to
-            // TODO or never let it change ?! NOOOOO doesn't change anymore ??!! 
-        uploadWsdl(getPath(tdrWebServiceProdEndpointId),
+        uploadWsdl(tdrWebServiceProdEndpointPath,
                 "../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
             // or do a web discovery
             // TODO web discovery : upload wsdl (for now manually upload WSDL on it)
 
-        createSoaNode(checkAddressProdEndpointId, (String) null,
+        String checkAddressProdEndpointPath = createSoaNode(checkAddressProdEndpointId, (String) null,
                 Endpoint.XPATH_ENDP_ENVIRONMENT + "=Prod", // required even with soaname else integrity check fails
                 Endpoint.XPATH_URL + "=" + fromEnc("iuuq;00xxx/ebub.rvbmjuz.tfswjdf/dpn0npdlxtr5220tfswjdft0JoufsobujpobmQptubmWbmjebujpo/JoufsobujpobmQptubmWbmjebujpoIuuqTpbq22Foeqpjou0")/*, // required even with soaname else integrity check fails
-                Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://ipf.webservice.rt.saas.uniserv.com}InternationalPostalValidationPortType"*/); 
-        //checkAddressProdEndpointId = new SoaNodeId(checkAddressProdEndpointId.getType(), "Prod:" + fromEnc("iuuq;}}xxx/ebub.rvbmjuz.tfswjdf/dpn}npdlxtr522}tfswjdft}JoufsobujpobmQptubmWbmjebujpo/JoufsobujpobmQptubmWbmjebujpoIuuqTpbq22Foeqpjou}"));
-            // updating soaname to what the wsdl upload has set it to
-            // TODO or never let it change ?! NOOOOO doesn't change anymore ??!!
-        uploadWsdl(getPath(checkAddressProdEndpointId),
+                Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://ipf.webservice.rt.saas.uniserv.com}InternationalPostalValidationPortType"*/);
+        uploadWsdl(checkAddressProdEndpointPath,
                 "../axxx-easysoa-model/src/main/resources/InternationalPostalValidation_nourl.wsdl");
             // or do a web discovery
             // TODO web discovery : upload wsdl (for now manually upload WSDL on it)

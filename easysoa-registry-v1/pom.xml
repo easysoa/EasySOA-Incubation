@@ -52,7 +52,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <easysoa.version>1.0-SNAPSHOT</easysoa.version>
     <easysoa.studio.version>0.0.0-SNAPSHOT</easysoa.studio.version>
-    <nuxeo.version>5.7-SNAPSHOT</nuxeo.version>
+    <nuxeo.version>5.7-I20130111_0115</nuxeo.version>
     <jung.version>2.0.1</jung.version>
     <collections.generic.version>4.01</collections.generic.version>
     <easywsdl.version>2.3</easywsdl.version>

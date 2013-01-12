@@ -357,6 +357,10 @@ public class DocumentServiceImpl implements DocumentService {
 		return false;
 	}
 
+	/**
+	 * 
+     * @obsolete
+	 */
 	@Override
 	public DocumentModel findEndpoint(CoreSession documentManager,
 			SoaNodeId identifier, Map<String, Object> properties,

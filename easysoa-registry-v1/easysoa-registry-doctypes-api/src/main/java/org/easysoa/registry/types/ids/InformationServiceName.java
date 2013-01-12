@@ -28,6 +28,11 @@ public class InformationServiceName {
 		this.interfaceName = interfaceName;
 	}
 	
+	/**
+	 * 
+	 * @param name
+	 * @return null if not in format ws/java:ns:name
+	 */
 	public static InformationServiceName fromName(String name) {
 		String[] splitName = name.split(":");
 		

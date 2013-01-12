@@ -57,7 +57,15 @@ public abstract class AbstractJavaSourceHandler implements SourcesHandler {
 
     private AnnotatedServicesConsumptionFinder annotatedServicesFinder;
 
-    protected AbstractJavaSourceHandler() {
+    protected CodeDiscoveryMojo codeDiscovery;
+
+    /**
+     * 
+     * @param codeDiscovery provides access to maven plugin configuration params
+     */
+    protected AbstractJavaSourceHandler(CodeDiscoveryMojo codeDiscovery) {
+        this.codeDiscovery = codeDiscovery;
+        
         this.annotatedServicesFinder = new AnnotatedServicesConsumptionFinder(null);
         this.annotatedServicesFinder.addAnnotationToDetect(ANN_INJECT); // Java 6
         this.annotatedServicesFinder.addAnnotationToDetect("org.osoa.sca.annotations.Reference");
@@ -86,8 +94,7 @@ public abstract class AbstractJavaSourceHandler implements SourcesHandler {
         return null;
     }
 
-    public Collection<SoaNodeInformation> handleSources(CodeDiscoveryMojo codeDiscovery,
-            JavaSource[] sources,
+    public Collection<SoaNodeInformation> handleSources(JavaSource[] sources,
             MavenDeliverableInformation mavenDeliverable,
             CodeDiscoveryRegistryClient registryClient, Log log) throws Exception {
         List<SoaNodeInformation> discoveredNodes = new LinkedList<SoaNodeInformation>();
@@ -100,7 +107,7 @@ public abstract class AbstractJavaSourceHandler implements SourcesHandler {
         }
 
         // Find WS interfaces from dependencies
-        if (codeDiscovery != null) {
+        if (codeDiscovery.getMavenProject() != null) { // may be null in unit tests
             MavenProject mavenProject = codeDiscovery.getMavenProject();
             for (Object dependencyObject : mavenProject.getDependencyArtifacts()) {
                 Artifact dependency = (Artifact) dependencyObject;

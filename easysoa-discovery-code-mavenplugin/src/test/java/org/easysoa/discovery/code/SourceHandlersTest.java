@@ -48,8 +48,13 @@ public class SourceHandlersTest extends AbstractWebEngineTest {
     
     @BeforeClass
     public static void setUpHandlers() {
-        availableHandlers.put("JAX-WS", new JaxWSSourcesHandler());
-        availableHandlers.put("JAX-RS", new JaxRSSourcesHandler());
+        CodeDiscoveryMojo codeDiscovery = new CodeDiscoveryMojo() {{
+            this.setMatchInterfacesFirst(true);
+            this.setDiscoverInterfaces(true);
+            this.setDiscoverImplementations(true);
+        }};
+        availableHandlers.put("JAX-WS", new JaxWSSourcesHandler(codeDiscovery));
+        availableHandlers.put("JAX-RS", new JaxRSSourcesHandler(codeDiscovery));
     }
 
     @Test
@@ -86,7 +91,7 @@ public class SourceHandlersTest extends AbstractWebEngineTest {
         List<SoaNodeInformation> discoveredNodes = new LinkedList<SoaNodeInformation>();
         for (SourcesHandler handler : availableHandlers.values()) {
             // TODO mock instead of null CodeDiscoveryMojo, to test interfaces discovery from deps
-            discoveredNodes.addAll(handler.handleSources(null, sources, mavenDeliverable, registryClient, log));
+            discoveredNodes.addAll(handler.handleSources(sources, mavenDeliverable, registryClient, log));
         }
         return discoveredNodes;
     }

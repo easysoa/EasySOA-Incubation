@@ -15,9 +15,9 @@ import javax.jws.WebService;
 import javax.xml.ws.WebServiceClient;
 import javax.xml.ws.WebServiceProvider;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.plugin.logging.Log;
+import org.easysoa.discovery.code.CodeDiscoveryMojo;
 import org.easysoa.discovery.code.CodeDiscoveryRegistryClient;
 import org.easysoa.discovery.code.ParsingUtils;
 import org.easysoa.discovery.code.handler.consumption.ImportedServicesConsumptionFinder;
@@ -32,7 +32,6 @@ import org.easysoa.registry.types.OperationInformation;
 import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
 
-import com.thoughtworks.qdox.model.Annotation;
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
@@ -66,8 +65,8 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
     
     private Map<Type, String> implsToInterfaces = new HashMap<Type, String>();
     
-    public JaxWSSourcesHandler() {
-        super();
+    public JaxWSSourcesHandler(CodeDiscoveryMojo codeDiscovery) {
+        super(codeDiscovery);
         this.addAnnotationToDetect(ANN_WSPROVIDER);
         this.addAnnotationToDetect(ANN_XML_WSCLIENT);
         this.addAnnotationToDetect(ANN_XML_WSREF);
@@ -143,8 +142,10 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                     if (itfClass != null) {
                         // Extract service info
                     	// TODO Cleaner porttype discovery
-                        InformationServiceInformation informationService = createInformationService(itfClass, interfaceInfo);
-                        discoveredNodes.add(informationService);
+                        InformationServiceInformation informationService = this.createInformationService(itfClass, interfaceInfo);
+                        if (this.codeDiscovery.isDiscoverInterfaces()) {
+                            discoveredNodes.add(informationService);
+                        }
                         
                         // Extract operations info
                         Map<String, OperationInformation> itfOperationsInfo = interfaceInfo.getOperations();
@@ -157,7 +158,9 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                         serviceImpl.setOperations(new ArrayList<OperationInformation>(itfOperationsInfo.values()));
                     }
                     
-                    discoveredNodes.add(serviceImpl);
+                    if (this.codeDiscovery.isDiscoverImplementations()) {
+                        discoveredNodes.add(serviceImpl);
+                    }
                 }
             }
         }
@@ -364,7 +367,11 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 			JavaServiceInterfaceInformation interfaceInfo) throws Exception {
 	    String wsNamespace = getWsNamespace(itfClass), wsName = getWsName(itfClass);
 	    String itfClassName = itfClass.getName();
-	    InformationServiceInformation informationService = new InformationServiceInformation(wsNamespace + ":" + wsName);
+	    String itfSoaName = wsNamespace + ":" + wsName;
+	    if (codeDiscovery.isMatchInterfacesFirst()) {
+	        itfSoaName = "matchFirst:" + itfSoaName;
+	    }
+	    InformationServiceInformation informationService = new InformationServiceInformation(itfSoaName);
 	    informationService.setProperty(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
 	    String wsdlPortTypeName = toShortNsName(wsNamespace, wsName);
 	    informationService.setProperty(InformationService.XPATH_WSDL_PORTTYPE_NAME, wsdlPortTypeName);

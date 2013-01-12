@@ -168,7 +168,7 @@ public class RemoteRepositoryInit {
                 InformationService.XPATH_WSDL_PORTTYPE_NAME + "={http://ipf.webservice.rt.saas.uniserv.com}InternationalPostalValidationPortType"*/);
         uploadWsdl(isCheckAddressPath, "../axxx-easysoa-model/src/main/resources/InternationalPostalValidation_nourl.wsdl");
             // or manually upload WSDL on it
-        isCheckAddressId = new SoaNodeId(isCheckAddressId.getType(), "ws:http://ipf.webservice.rt.saas.uniserv.com:InternationalPostalValidationPortType");
+        ///isCheckAddressId = new SoaNodeId(isCheckAddressId.getType(), "ws:http://ipf.webservice.rt.saas.uniserv.com:InternationalPostalValidationPortType");
             // updating soaname to what the wsdl upload has set it to
             // TODO or never let it change ?!
         SoaNodeId olaCheckAddressId = new SoaNodeId(OLA_DOCTYPE, "OLA checkAddress");
@@ -181,15 +181,18 @@ public class RemoteRepositoryInit {
 		        InformationService.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService"*/);
 		uploadWsdl(isTdrWebServicePath, "../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
 		    // or manually upload WSDL on it
-		isTdrWebServiceId = new SoaNodeId(isTdrWebServiceId.getType(), "ws:http://www.axxx.com/dps/apv:PrecomptePartenaireService");
+		///isTdrWebServiceId = new SoaNodeId(isTdrWebServiceId.getType(), "ws:http://www.axxx.com/dps/apv:PrecomptePartenaireService");
 		    // updating soaname to what the wsdl upload has set it to
 		    // TODO or never let it change ?!
 		SoaNodeId olaTdrWebServiceId = new SoaNodeId(OLA_DOCTYPE, "OLA TdrWebService");
 		createSoaNode(olaTdrWebServiceId, isTdrWebServicePath,
 		        "dc:description=temps de réponse max, taux de disponibilité par période");
 		
-		String isInformationAPVPath = createSoaNode(new SoaNodeId(InformationService.DOCTYPE, "Information_APV"), infoArchitecturePath,
-                InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actSIDCVId));
+		SoaNodeId isInformationAPVId = new SoaNodeId(InformationService.DOCTYPE, "Information_APV");
+		String isInformationAPVPath = createSoaNode(isInformationAPVId, infoArchitecturePath,
+                InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actSIDCVId)/*,
+                InformationService.XPATH_WSDL_PORTTYPE_NAME + "={http://pivotal.axxx.fr/}ContactSvcSoap"*/);
+        uploadWsdl(isInformationAPVPath, "../axxx-dcv-pivotal/src/main/resources/api/ContactSvc.asmx.wsdl");
         SoaNodeId olaInformationAPVId = new SoaNodeId(OLA_DOCTYPE, "OLA Information_APV");
         createSoaNode(olaInformationAPVId, isInformationAPVPath,
                 "dc:description=temps de réponse max, taux de disponibilité par période");
@@ -225,7 +228,12 @@ public class RemoteRepositoryInit {
                 Platform.XPATH_TRANSPORT_PROTOCOL + "=" + "HTTP",
                 Platform.XPATH_SERVICE_RUNTIME + "=" + "CXF",
                 Platform.XPATH_APP_SERVER_RUNTIME + "=" + "Tomcat" // TODO Spring / Tomcat ??
-                		); // NB. no security for now 
+                		); // NB. no security for now
+        
+        SoaNodeId genericWSPlatform = new SoaNodeId(Platform.DOCTYPE, "Generic WS");
+        createSoaNode(genericWSPlatform, platformArchitecturePath,
+                Platform.XPATH_SERVICE_PROTOCOL + "=" + "SOAP",
+                Platform.XPATH_TRANSPORT_PROTOCOL + "=" + "HTTP");
 
         SoaNodeId axxxTalendESBPlatform = new SoaNodeId(Platform.DOCTYPE, "AXXX Talend ESB");
         createSoaNode(axxxTalendESBPlatform, platformArchitecturePath,
@@ -242,20 +250,23 @@ public class RemoteRepositoryInit {
         
 		// Components
         
-		createSoaNode(new SoaNodeId(COMPONENT_DOCTYPE, "checkAddress"), compArchitecturePath,
+        SoaNodeId cptCheckAddressId = new SoaNodeId(COMPONENT_DOCTYPE, "checkAddress");
+        createSoaNode(cptCheckAddressId, compArchitecturePath,
 				COMPONENT_TYPE + "=Application",
 				COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isCheckAddressId)); // réalise IS checkAddress TODO not the other way ??
+        createSoaNode(cptCheckAddressId, getPath(genericWSPlatform)); // again, to give it its platform
 		
 		SoaNodeId cptTdrWebServiceId = new SoaNodeId(COMPONENT_DOCTYPE, "TdrWebService");
 		createSoaNode(cptTdrWebServiceId, compArchitecturePath,
 				COMPONENT_TYPE + "=Application",
-                "platform:serviceLanguage=JAX-WS",
+				/*"platform:serviceLanguage=JAX-WS",*/
                 COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isTdrWebServiceId));
         createSoaNode(cptTdrWebServiceId, getPath(axxxJavaWSPlatform)); // again, to give it its platform
 		
         SoaNodeId cptInformationAPVId = new SoaNodeId(COMPONENT_DOCTYPE, "Information_APV");
         createSoaNode(cptInformationAPVId, compArchitecturePath,
-				COMPONENT_TYPE + "=Application");
+				COMPONENT_TYPE + "=Application",
+                COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isInformationAPVId));
         createSoaNode(cptInformationAPVId, getPath(axxxDotNETWSPlatform)); // again, to give it its platform
 		
         SoaNodeId cptOrchestrationDCVId = new SoaNodeId(COMPONENT_DOCTYPE, "Orchestration_DCV");
@@ -296,8 +307,9 @@ public class RemoteRepositoryInit {
 		//}
 
         
-        SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(Endpoint.DOCTYPE, "Prod:http://localhost:7080/apv/services/PrecomptePartenaireService");//TdrWebServiceProdEndpoint
+        SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(Endpoint.DOCTYPE, "Prod:http://localhost:7080/apv/services/PrecomptePartenaireService");//TODO host
         SoaNodeId checkAddressProdEndpointId = new SoaNodeId(Endpoint.DOCTYPE, "Prod:" + fromEnc("iuuq;00xxx/ebub.rvbmjuz.tfswjdf/dpn0npdlxtr5220tfswjdft0JoufsobujpobmQptubmWbmjebujpo/JoufsobujpobmQptubmWbmjebujpoIuuqTpbq22Foeqpjou0"));//checkAddressProdEndpoint
+        SoaNodeId informationAPVProdEndpointId = new SoaNodeId(Endpoint.DOCTYPE, "Prod:http://localhost:7080/pivotal/WS/ContactSvc.asmx");//TODO host // 18000
         
 		if (steps.isEmpty() || steps.contains("Deploiement")) {
 		
@@ -309,8 +321,7 @@ public class RemoteRepositoryInit {
                 Endpoint.XPATH_ENDP_ENVIRONMENT + "=Prod", // required even with soaname else integrity check fails
                 Endpoint.XPATH_URL + "=http://localhost:7080/apv/services/PrecomptePartenaireService"/*, // required even with soaname else integrity check fails
                 Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService"*/);
-        uploadWsdl(tdrWebServiceProdEndpointPath,
-                "../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
+        uploadWsdl(tdrWebServiceProdEndpointPath, "../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
             // or do a web discovery
             // TODO web discovery : upload wsdl (for now manually upload WSDL on it)
 
@@ -318,10 +329,19 @@ public class RemoteRepositoryInit {
                 Endpoint.XPATH_ENDP_ENVIRONMENT + "=Prod", // required even with soaname else integrity check fails
                 Endpoint.XPATH_URL + "=" + fromEnc("iuuq;00xxx/ebub.rvbmjuz.tfswjdf/dpn0npdlxtr5220tfswjdft0JoufsobujpobmQptubmWbmjebujpo/JoufsobujpobmQptubmWbmjebujpoIuuqTpbq22Foeqpjou0")/*, // required even with soaname else integrity check fails
                 Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://ipf.webservice.rt.saas.uniserv.com}InternationalPostalValidationPortType"*/);
-        uploadWsdl(checkAddressProdEndpointPath,
-                "../axxx-easysoa-model/src/main/resources/InternationalPostalValidation_nourl.wsdl");
+        uploadWsdl(checkAddressProdEndpointPath, "../axxx-easysoa-model/src/main/resources/InternationalPostalValidation_nourl.wsdl");
             // or do a web discovery
             // TODO web discovery : upload wsdl (for now manually upload WSDL on it)
+
+        String informationAPVProdEndpointPath = createSoaNode(informationAPVProdEndpointId, (String) null,
+                Endpoint.XPATH_ENDP_ENVIRONMENT + "=Prod", // required even with soaname else integrity check fails
+                Endpoint.XPATH_URL + "=http://localhost:7080/pivotal/WS/ContactSvc.asmx"/*, // required even with soaname else integrity check fails
+                Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://ipf.webservice.rt.saas.uniserv.com}InternationalPostalValidationPortType"*/);
+        uploadWsdl(informationAPVProdEndpointPath, "../axxx-dcv-pivotal/src/main/resources/api/ContactSvc.asmx.wsdl");
+            // or do a web discovery
+            // TODO web discovery : upload wsdl (for now manually upload WSDL on it)
+        
+        // TODO Cré_Précpte, Projet_Vacances with component / platform
         
 		}
 		

@@ -34,6 +34,12 @@ public class SoaNodeMatchingListener implements EventListener {
         DocumentEventContext documentContext = (DocumentEventContext) context;
         DocumentModel sourceDocument = documentContext.getSourceDocument();
         CoreSession documentManager = documentContext.getCoreSession();
+        
+        match(documentManager, sourceDocument);
+    }
+    
+    
+    private void match(CoreSession documentManager, DocumentModel sourceDocument) throws ClientException {    
 		DocumentService documentService;
 		ServiceMatchingService serviceMatchingService;
 		EndpointMatchingService endpointMatchingService;

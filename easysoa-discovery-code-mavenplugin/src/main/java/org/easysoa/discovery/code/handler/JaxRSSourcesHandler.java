@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.plugin.logging.Log;
+import org.easysoa.discovery.code.CodeDiscoveryMojo;
 import org.easysoa.discovery.code.CodeDiscoveryRegistryClient;
 import org.easysoa.discovery.code.ParsingUtils;
 import org.easysoa.discovery.code.model.JavaServiceImplementationInformation;
@@ -33,10 +34,16 @@ import com.thoughtworks.qdox.model.JavaSource;
 public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements SourcesHandler {
 
     private static final String ANN_PATH = "javax.ws.rs.Path";
+    private static final String ANN_CONSUMES = "javax.ws.rs.Consumes";
+    private static final String ANN_PRODUCES = "javax.ws.rs.Produces";
     private static final String[] ANN_METHODS = new String[] {
         "javax.ws.rs.GET", "javax.ws.rs.POST", "javax.ws.rs.PUT",
         "javax.ws.rs.HEAD", "javax.ws.rs.OPTIONS"
       };
+    
+    public JaxRSSourcesHandler(CodeDiscoveryMojo codeDiscovery) {
+        super(codeDiscovery);
+    }
     
     @Override
     public Map<String, JavaServiceInterfaceInformation> findWSInterfaces(JavaSource source,
@@ -127,6 +134,11 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_ISMOCK, ParsingUtils.isTestClass(c));
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTATIONCLASS, c.getFullyQualifiedName());
                         serviceImpl.addParentDocument(mavenDeliverable.getSoaNodeId());
+
+                        // extract base jaxrs conf TODO also methods & inheritance see http://fusesource.com/docs/esb/4.2/rest/RESTAnnotateInherit.html
+                        String baseRestPath = ParsingUtils.getAnnotationPropertyString(c, ANN_PATH, "value");
+                        String baseRestContentType = ParsingUtils.getAnnotationPropertyString(c, ANN_PRODUCES, "value");
+                        String baseRestAccepts = ParsingUtils.getAnnotationPropertyString(c, ANN_CONSUMES, "value");
                         
                         if (itf != null) {
                             // Extract WS info
@@ -135,9 +147,26 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                             if (interfaceInfo != null) {
                                 serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTEDINTERFACELOCATION, interfaceInfo.getMavenDeliverableId().getName());
                             }
-                            InformationServiceInformation serviceDef = new InformationServiceInformation(itf.getName());
+                            String itfSoaName = itf.getName(); // TODO better like JAXWS wsNamespace + ":" + wsName; ??
+                            if (codeDiscovery.isMatchInterfacesFirst()) {
+                                itfSoaName = "matchFirst:" + itfSoaName;
+                            }
+                            InformationServiceInformation serviceDef = new InformationServiceInformation(itfSoaName);
                             serviceImpl.addParentDocument(serviceDef.getSoaNodeId());
-                            discoveredNodes.add(serviceDef);
+
+                            if (this.codeDiscovery.isDiscoverInterfaces()) {
+                                discoveredNodes.add(serviceDef);
+                            }
+                        }
+                        
+                        // set jaxrs conf
+                        baseRestPath = (baseRestPath == null) ? "" : baseRestPath; // else won't be known as REST in EasySOA Registry
+                        serviceImpl.setProperty(JavaServiceImplementation.XPATH_REST_PATH, baseRestPath);
+                        if (baseRestAccepts != null) { // or defaults to "*" ?
+                            serviceImpl.setProperty(JavaServiceImplementation.XPATH_REST_ACCEPTS, baseRestAccepts);
+                        }
+                        if (baseRestContentType != null) { // or defaults to "application/*" ??
+                            serviceImpl.setProperty(JavaServiceImplementation.XPATH_REST_CONTENT_TYPE, baseRestContentType);
                         }
                         
                         // Extract operations info
@@ -165,7 +194,10 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                             }
                             serviceImpl.setOperations(operations);
                             
-                            discoveredNodes.add(serviceImpl);
+
+                            if (this.codeDiscovery.isDiscoverImplementations()) {
+                                discoveredNodes.add(serviceImpl);
+                            }
                         }
                     }
                 }

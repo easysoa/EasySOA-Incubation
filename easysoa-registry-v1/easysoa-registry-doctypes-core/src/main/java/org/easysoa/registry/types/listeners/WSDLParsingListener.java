@@ -54,8 +54,8 @@ public class WSDLParsingListener implements EventListener {
         if (InformationService.DOCTYPE.equals(sourceDocument.getType())) {
         	if (sourceDocument.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME) == null) {
         		InformationServiceName parsedSoaName = InformationServiceName.fromName(
-        				(String) sourceDocument.getPropertyValue(InformationService.XPATH_SOANAME));
-            	if (parsedSoaName != null) {
+        				(String) sourceDocument.getPropertyValue(InformationService.XPATH_SOANAME)); 
+            	if (parsedSoaName != null) { // not null only if in format ws/java:ns:name
 	        		String portTypeName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getInterfaceName();
 	        		sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
 	        		documentModified = true;
@@ -124,9 +124,11 @@ public class WSDLParsingListener implements EventListener {
             QName serviceName = wsdl.getServices().get(0).getQName();
             String wsdlVersion = wsdl.getVersion().name();
             if (InformationService.DOCTYPE.equals(sourceDocument.getType())) {
+                if (false) { // TODO [soaname change]
                 sourceDocument.setPropertyValue(InformationService.XPATH_SOANAME,
                         new InformationServiceName(ServiceNameType.WEB_SERVICE,
                                 portTypeName.getNamespaceURI(), portTypeName.getLocalPart()).toString());
+                }
                 sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString());
                 sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_SERVICE_NAME, serviceName.toString());
                 sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_VERSION, wsdlVersion);

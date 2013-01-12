@@ -71,7 +71,37 @@ public class CodeDiscoveryMojo extends AbstractMojo {
      * @parameter expression="${buildNumber}"
      */
     private String buildNumber;
+    
+    /**
+     * May be set to false to always create InformationServices out of Java interfaces
+     * (i.e. source code is the "master" controlling the InformationService layer).
+     * Otherwise (by default), interfaces are only created if an existing
+     * matching one is not found (i.e. the "master" controlling the InformationService
+     * layer is not source code but ex. manual Specifications subproject in the registry).
+     * 
+     * @parameter expression="${easysoa-discovery-code.matchInterfacesFirst}" default-value="true"
+     */
+    private boolean matchInterfacesFirst;
 
+    /**
+     * May be set to false to altogether disable discovering InformationServices
+     * out of Java interfaces.
+     * Set by default.
+     * 
+     * @parameter expression="${easysoa-discovery-code.discoverInterfaces}" default-value="true"
+     */
+    private boolean discoverInterfaces;
+
+    /**
+     * May be set to false to disable discovery of Java service implementations
+     * ex. when initializing an EasySOA project's Specifications subproject with
+     * InformationServices out of existing Java API code (then discoverInterfaces will be set).
+     * Set by default.
+     * 
+     * @parameter expression="${easysoa-discovery-code.discoverImplementations}" default-value="true"
+     */
+    private boolean discoverImplementations;
+    
     /**
      * The regex to match by group:artifact id where interfaces have to be
      * looked up. By default look up interfaces in top-level pom project group
@@ -120,8 +150,8 @@ public class CodeDiscoveryMojo extends AbstractMojo {
         RegistryApi registryApi = clientBuilder.constructRegistryApi();
         
         // Init handlers
-        this.availableHandlers.put("JAX-WS", new JaxWSSourcesHandler());
-        this.availableHandlers.put("JAX-RS", new JaxRSSourcesHandler());
+        this.availableHandlers.put("JAX-WS", new JaxWSSourcesHandler(this));
+        this.availableHandlers.put("JAX-RS", new JaxRSSourcesHandler(this));
         
         MavenDeliverableInformation mavenDeliverable = new MavenDeliverableInformation(
                 project.getGroupId() + ":" + project.getArtifactId());
@@ -164,7 +194,7 @@ public class CodeDiscoveryMojo extends AbstractMojo {
         JavaSource[] sources = builder.getSources();
         CodeDiscoveryRegistryClient registryClient = new CodeDiscoveryRegistryClient(registryApi);
         for (SourcesHandler handler : availableHandlers.values()) {
-            discoveredNodes.addAll(handler.handleSources(this, sources, mavenDeliverable, registryClient, log));
+            discoveredNodes.addAll(handler.handleSources(sources, mavenDeliverable, registryClient, log));
         }
         
         // Build and send discovery request
@@ -197,6 +227,18 @@ public class CodeDiscoveryMojo extends AbstractMojo {
         }
         
     }
+    
+    public boolean isMatchInterfacesFirst() {
+        return matchInterfacesFirst;
+    }
+
+    public boolean isDiscoverInterfaces() {
+        return discoverInterfaces;
+    }
+
+    public boolean isDiscoverImplementations() {
+        return discoverImplementations;
+    }
 
 	public MavenProject getMavenProject() {
         return project;
@@ -218,6 +260,77 @@ public class CodeDiscoveryMojo extends AbstractMojo {
             parentMavenProject = mavenProject.getParent();
         }
         return mavenProject;
+    }
+    
+    
+    // protected setters are only for testing purpose
+
+    public MavenProject getProject() {
+        return project;
+    }
+
+    protected void setProject(MavenProject project) {
+        this.project = project;
+    }
+
+    public String getNuxeoSitesUrl() {
+        return nuxeoSitesUrl;
+    }
+
+    protected void setNuxeoSitesUrl(String nuxeoSitesUrl) {
+        this.nuxeoSitesUrl = nuxeoSitesUrl;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    protected void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    protected void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getApplication() {
+        return application;
+    }
+
+    protected void setApplication(String application) {
+        this.application = application;
+    }
+
+    public String getBuildNumber() {
+        return buildNumber;
+    }
+
+    protected void setBuildNumber(String buildNumber) {
+        this.buildNumber = buildNumber;
+    }
+
+    public String getInterfaceLookupMavenIdRegex() {
+        return interfaceLookupMavenIdRegex;
+    }
+
+    protected void setInterfaceLookupMavenIdRegex(String interfaceLookupMavenIdRegex) {
+        this.interfaceLookupMavenIdRegex = interfaceLookupMavenIdRegex;
+    }
+
+    protected void setMatchInterfacesFirst(boolean matchInterfacesFirst) {
+        this.matchInterfacesFirst = matchInterfacesFirst;
+    }
+
+    protected void setDiscoverInterfaces(boolean discoverInterfaces) {
+        this.discoverInterfaces = discoverInterfaces;
+    }
+
+    protected void setDiscoverImplementations(boolean discoverImplementations) {
+        this.discoverImplementations = discoverImplementations;
     }
 
 }

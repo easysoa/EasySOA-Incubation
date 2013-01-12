@@ -63,7 +63,7 @@ public class RepositoryManagementListener implements EventListener {
 
         if (DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
         	try {
-	        	metamodelService.validateIntegrity(sourceDocument, false);
+	        	metamodelService.validateIntegrity(sourceDocument, false); // TODO [soaname change]
 			} catch (ModelIntegrityException e) {
 				logger.error("Aborting repository management on " + sourceDocument.getTitle() + ": " + e.getMessage());
 				return;
@@ -85,7 +85,7 @@ public class RepositoryManagementListener implements EventListener {
 				String newSoaName = metamodelService.validateIntegrity(sourceDocument,
 	        			DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName()));
 	        	if (newSoaName != null) {
-	        		sourceDocument.setPropertyValue(SoaNode.XPATH_SOANAME, newSoaName);
+	        		sourceDocument.setPropertyValue(SoaNode.XPATH_SOANAME, newSoaName); // TODO [soaname change]
 	        		documentManager.saveDocument(sourceDocument);
 	        	}
 	        	

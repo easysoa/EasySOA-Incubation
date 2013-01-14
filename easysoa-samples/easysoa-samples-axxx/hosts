@@ -1,0 +1,17 @@
+
+##############################
+## [EasySOA AXXX]
+## to be appended to your development computerr's hosts file
+#(to be found on Linux at /etc/hosts and on Windows at C:\Windows\System32\drivers\etc\hosts)
+
+## AXXX Test :
+127.0.0.1	vmpivotal
+127.0.0.1	vmapv
+127.0.0.1	vmregistry
+
+## AXXX Integration :
+# ip1		vmpivotal
+# ip2		vmapv
+# ip3		vmregistry
+
+

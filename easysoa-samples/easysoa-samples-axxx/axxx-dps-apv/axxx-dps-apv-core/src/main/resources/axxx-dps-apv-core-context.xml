@@ -52,10 +52,10 @@
 		implementor="#com.axxx.dps.apv.ws.precomptePartenaireWebServiceImpl"
 		address="${axxx.dps.apv.ws.baseUrl}/PrecomptePartenaireService" />
 	
- 	<!-- jaxws:client id="pivotal"
- 		serviceClass="fromwsdl" 
- 		address="http://localhost:8075/pivotal" >
- 	</jaxws:client -->
+ 	<jaxws:client id="com.ancv.form.ws.esbContactSvcClient"
+ 		serviceClass="fr.axxx.pivotal.ContactSvcSoap"
+ 		address="${axxx.dps.apv.ws.esb.baseUrl}/ContactSvc.asmx" >
+ 	</jaxws:client>
  	
 	<jaxws:endpoint id="com.axxx.dps.apv.ws.projetWebServiceImplEndpoint"
 		implementor="#com.axxx.dps.apv.ws.projetWebServiceImpl"

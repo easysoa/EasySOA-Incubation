@@ -15,7 +15,8 @@
     <!-- EasySOA code discovery & conf -->
     <easysoa.version>1.0-SNAPSHOT</easysoa.version><!-- TODO define in root ?? -->
     <nuxeo.version>5.7-I20130111_0115</nuxeo.version><!-- TODO define in root ?? -->
-    <easysoa.discovery.code.nuxeoSitesUrl>http://localhost:8080/nuxeo/site</easysoa.discovery.code.nuxeoSitesUrl>
+    <!-- easysoa.discovery.code.nuxeoSitesUrl>http://localhost:8080/nuxeo/site</easysoa.discovery.code.nuxeoSitesUrl --><!-- for local tests -->
+    <easysoa.discovery.code.nuxeoSitesUrl>http://vmregistry:8080/nuxeo/site</easysoa.discovery.code.nuxeoSitesUrl>
     <easysoa.discovery.code.username>Administrator</easysoa.discovery.code.username>
     <easysoa.discovery.code.password>Administrator</easysoa.discovery.code.password>
     <easysoa.discovery.code.application>AXXX DPS APV</easysoa.discovery.code.application>

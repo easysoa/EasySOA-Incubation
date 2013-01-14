@@ -21,8 +21,11 @@
 package com.axxx.dps.apv.ws;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.soap.SOAPException;
+
+import junit.framework.Assert;
 
 import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
@@ -36,8 +39,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import com.axxx.dps.apv.ws.PrecomptePartenaire;
 import com.axxx.dps.apv.ws.PrecomptePartenaireWebService;
 
+import fr.axxx.pivotal.ContactSvcSoap;
+import fr.axxx.pivotal.GetRepartitionTypeStructureResponse;
+import fr.axxx.pivotal.TypeStructureCount;
+
 /**
- * 
+ * Some tests require a running Pivotal on localhost ; those tests are disabled by default.
  * 
  * @author mdutoo
  *
@@ -55,6 +62,10 @@ public class PrecomptePartenaireWebServiceTest {
     @Qualifier("com.axxx.dps.apv.ws.PrecomptePartenaireWebServiceTestClient")
     private PrecomptePartenaireWebService precomptePartenaireWebService;
 
+    @Autowired
+    @Qualifier("com.ancv.form.ws.esbContactSvcClient")
+    private ContactSvcSoap pivotalContactService;
+
 	public void setProxyLocator(PrecomptePartenaireWebService precomptePartenaireWebService) {
         this.precomptePartenaireWebService = precomptePartenaireWebService;
     }	
@@ -70,6 +81,7 @@ public class PrecomptePartenaireWebServiceTest {
 
     @Test
 	public void testCreerPrecompte() {
+        Assert.assertNotNull(this.precomptePartenaireWebService);
     	PrecomptePartenaire precomptePartenaire = new PrecomptePartenaire();
     	precomptePartenaire.setIdentifiantClientPivotal("0x000E0006A00900C0");
     	precomptePartenaire.setNomStructure("ANECD");
@@ -81,6 +93,38 @@ public class PrecomptePartenaireWebServiceTest {
     	precomptePartenaire.setSirenSiret("");
 		this.precomptePartenaireWebService.creerPrecompte(precomptePartenaire);
 	}
+
+    /**
+     * Requires a running Pivotal on localhost
+     */
+    //@Test
+    public void testCallInformationAPV() {
+        Assert.assertNotNull(this.pivotalContactService);
+        this.pivotalContactService.informationAPV("AssociationVacances", "jeunes", 3, 2012);
+    }
+
+    /**
+     * Requires a running Pivotal on localhost
+     */
+    //@Test
+    public void testGetRepartitionTypeStructure() {
+        Assert.assertNotNull(this.pivotalContactService);
+        GetRepartitionTypeStructureResponse repartitionTypeStructureRes =
+                this.pivotalContactService.getRepartitionTypeStructure();
+        Assert.assertNotNull(repartitionTypeStructureRes);
+        Assert.assertNotNull(repartitionTypeStructureRes.getGetClientResult());
+        List<TypeStructureCount> typeStructureCounts = repartitionTypeStructureRes.getGetClientResult().getTypeStructureCount();
+        Assert.assertNotNull(typeStructureCounts);
+        
+        TypeStructureCount associationNatTypeStructureCount = null;
+        for (TypeStructureCount typeStructureCount : typeStructureCounts) {
+            if (typeStructureCount.getTypeStructure().equals("Association nat.")) {
+                associationNatTypeStructureCount = typeStructureCount;
+            }
+        }
+        Assert.assertNotNull(associationNatTypeStructureCount);
+        Assert.assertTrue(associationNatTypeStructureCount.getClientCount() > 0);
+    }
 	
 	/**
 	 * Wait for an user action to stop the test 

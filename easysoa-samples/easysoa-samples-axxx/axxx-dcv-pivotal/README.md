@@ -36,6 +36,9 @@ AXXX is a use case of the [EasySOA project](http://www.easysoa.org) and develope
 
 ### How to install :
 
+Append the contents of the provided ../hosts  file to your system's hosts file
+(to be found on Linux at /etc/hosts and on Windows at C:\Windows\System32\drivers\etc\hosts).
+
 Create the "axxx_pivotal" database and "axxx" user in the database server of your choice.
 See below how to do it with PostgreSQL (default) or MySQL.
 
@@ -148,6 +151,9 @@ If the following error message is displayed :
 Then before starting it, just go in bin folder and execute the following command : 
 
 	chmod +x *.sh
+
+Update the appended contents of your system's hosts file to the
+actual IPs of the deployment computers.
 
 
 ### How to use :

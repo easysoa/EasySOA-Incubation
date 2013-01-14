@@ -31,10 +31,11 @@
         <org.ow2.frascati.binding.uri.base>http://localhost:7095</org.ow2.frascati.binding.uri.base>
 
         <!-- AXXX SOA conf -->
-        <pivotal.url.base></pivotal.url.base>
-        <!-- pivotal.url.base>http://localhost:18000/</pivotal.url.base --><!-- TODO prod ? http://localhost:8784/ -->
-        <!-- apv.url.base>http://localhost:8076</apv.url.base --><!-- for test deployment PrecomptePartenaireWebServiceTestStarter -->
-        <apv.url.base>http://localhost:7080/apv/services/PrecomptePartenaireService</apv.url.base><!-- for local tomcat deployment -->
+        <pivotal.url.base></pivotal.url.base><!-- i.e. http://vmpivotal:8784/ -->
+        <!-- pivotal.url.base>http://localhost:18000/</pivotal.url.base --><!-- when started up from maven -->
+        <apv.url.base>http://vmapv:7080/apv/services/PrecomptePartenaireService</apv.url.base><!-- using alias (to be configured in /etc/hosts) that is independent from deployment target -->
+        <!-- apv.url.base>http://localhost:8076</apv.url.base --><!-- for test deployment (PrecomptePartenaireWebServiceTestStarter) -->
+        <!-- apv.url.base>http://localhost:7080/apv/services/PrecomptePartenaireService</apv.url.base --><!-- for local tomcat deployment -->
         <!-- apv.url.base>http://owsi-vm-easysoa-axxx-apv.accelance.net:7080/apv/services/PrecomptePartenaireService</apv.url.base --><!-- for tomcat deployment on VMs -->
 
 		<!-- database conf -->

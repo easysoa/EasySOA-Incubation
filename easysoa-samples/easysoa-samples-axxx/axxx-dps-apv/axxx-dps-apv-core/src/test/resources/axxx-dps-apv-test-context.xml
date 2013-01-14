@@ -15,7 +15,7 @@
  	<import resource="classpath:axxx-dps-apv-core-context.xml"/>
  	
  	<!-- TEST CONFIGURATION (OVERRIDE) -->
-	<bean id="org.easysoa.proxy.configurer"
+	<bean id="com.axxx.dps.apv.configurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
@@ -28,8 +28,6 @@
 
 
  	<!-- WEBSERVICES -->
-
-	<!-- import resource="classpath:META-INF/cxf/cxf-extension-http-jetty.xml"/ -->
 
 	<!-- cxf:bus>
 		<cxf:features>

@@ -125,9 +125,12 @@ Here is how to do it with Apache Tomcat :
 Download Tomcat 6 from http://tomcat.apache.org/download-60.cgi , unzip it and change all
 80xx ports to 70xx in conf/server.xml (allows to have a running EasySOA Registry on the 8080 port). 
 
-Now copy axxx-dps-apv-web/target/pivotal/* in its webapps/ROOT directory :
+Now copy axxx-dcv-pivotal/target/pivotal/* in its webapps/ROOT directory :
 
-   rm -rf [TOMCAT_HOME]/webapps/ROOT/*
+   rm -rf [TOMCAT_HOME]/webapps/ROOT/*   
+   scp -rp axxx-dcv-pivotal/target/pivotal/* [USER]:[REMOTE_HOST]:/home/[USER]/install/apache-tomcat-6.0.36/webapps/ROOT/
+
+   On local machine, you can use this command :
    cp -rf axxx-dps-apv-web/target/pivotal/* [TOMCAT_HOME]/webapps/ROOT/
 
 Then go in bin/ directory and start it :

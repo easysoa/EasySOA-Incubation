@@ -89,23 +89,39 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
         List<Projet> projets = tdr.getProjets();
         double sommeUtilisee = 0;
         int nbBeneficiaires = 0;
+        int nbAdultesIsoles = 0;
+        int nbEnfants = 0;
+        int nbJeunes = 0;
+        int nbSeniors = 0;
         for(Projet projet : projets){
             if("approved".equals(projet.getStatus())){
                 sommeUtilisee = sommeUtilisee + projet.getTotalBenefs().getMontantApv();
                 nbBeneficiaires = nbBeneficiaires + projet.getTotalBenefs().getNbBeneficiaires();
+                
+                nbAdultesIsoles = nbAdultesIsoles + projet.getAdultesIsolesBenefs().getNbBeneficiaires();
+                nbEnfants = nbEnfants + projet.getEnfantsBenefs().getNbBeneficiaires();
+                nbJeunes = nbJeunes + projet.getJeunesBenefs().getNbBeneficiaires();
+                nbSeniors = nbSeniors + projet.getSeniorsBenefs().getNbBeneficiaires();
             }
         }
+        
+        tdrTdb.setNbAdultesIsoles(nbAdultesIsoles);
+        tdrTdb.setNbEnfants(nbEnfants);
+        tdrTdb.setNbJeunes(nbJeunes);
+        tdrTdb.setNbSeniors(nbSeniors);        
+        
         tdrTdb.setSommeUtilisee(sommeUtilisee);
         tdrTdb.setMontantDisponible(tdrTdb.getDotationGlobale() - tdrTdb.getSommeUtilisee());
         tdrTdb.setNbBeneficiairesApv(nbBeneficiaires);
+        
         // Update TDR
+        // TODO : problem TdrTdb is not updated ....
         this.update(tdr);
         this.publish(tdr);
     }
 
     @Override
     public void publish(Tdr tdr) {
-        // TODO
         
         TdrTdb tdrTdb = tdr.getTdrTdb();
         //if(){ // test required ???

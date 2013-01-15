@@ -55,9 +55,9 @@
 															<p>
 																L’action sociale de l’AXXX s’adresse à quatre publics :
 																<ul>
-																    <li>- Les familles, notamment les familles monoparentales</li>
-																    <li>- Les jeunes adultes et adultes isolés</li>
-																    <li>- Les personnes en situation de handicap</li>
+																	<li>- Les enfants</li>
+																    <li>- Les jeunes adultes</li>
+																    <li>- Les adultes isolés</li>
 																    <li>- Les personnes âgées</li>
 																</ul>
 															</p>

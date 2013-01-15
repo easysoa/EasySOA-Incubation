@@ -73,6 +73,7 @@
 															        	<td>&nbsp;</td>
 															        	<td>&nbsp;</td>
 																	</tr>
+																	<tr><td colspan="6">&nbsp;</td></tr>																	
 																	<tr>
 																    	<td><form:label path="nomStructure">Nom structure</form:label></td>
 																		<td><form:input path="nomStructure" /></td>
@@ -121,6 +122,7 @@
 																		<td><form:input path="tdrTdb.partenaireDepuis"/></td>
 															        	<td><form:errors path="tdrTdb.partenaireDepuis" cssClass="error" /></td>
 																    </tr>
+																	<tr><td colspan="6">&nbsp;</td></tr>																    
 																    <tr>
 																        <td><form:label path="tdrTdb.dotationGlobale">Dotation globale</form:label></td>
 																		<td><form:hidden path="tdrTdb.dotationGlobale"/>${tdr.tdrTdb.montantDisponible}</td>
@@ -146,13 +148,14 @@
 															        	<td>&nbsp;</td>		    
 																    </tr>
 																    <tr>
-																        <td><form:label path="tdrTdb.nbBeneficiairesApv">Nombre bénéficiares APV</form:label></td>
+																        <td><form:label path="tdrTdb.nbBeneficiairesApv">Nombre bénéficiaires APV</form:label></td>
 																		<td><form:input path="tdrTdb.nbBeneficiairesApv" disabled="true"/></td>
 															        	<td><form:errors path="tdrTdb.nbBeneficiairesApv" cssClass="error" /></td>
 															        	<td>&nbsp;</td>
 															        	<td>&nbsp;</td>
 															        	<td>&nbsp;</td>
 																    </tr>
+																	<tr><td colspan="6">&nbsp;</td></tr>																    
 																    <tr>
 																        <td><form:label path="tdrTdb.nbEnfants">Nombre enfants</form:label></td>
 																		<td><form:input path="tdrTdb.nbEnfants"/></td>
@@ -177,6 +180,7 @@
 																		<td><form:hidden path="tdrTdb.status"/>${tdr.tdrTdb.status}</td>
 															        	<td><td>&nbsp;</td></td>	        
 															        </tr>
+																	<tr><td colspan="6">&nbsp;</td></tr>															        
 															    	<tr>
 															        	<td colspan="6">
 															            	<input type="submit" value="Sauver"/>

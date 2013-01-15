@@ -26,7 +26,6 @@ public class Tdr extends GenericEntity<Tdr> {
     @OneToMany(cascade=CascadeType.ALL, mappedBy="tdr", orphanRemoval=true, fetch=FetchType.LAZY)
     ///@Cache(usage=CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
     private List<Projet> projets;
-    
 
     // NB. to add fields ones from reporting SQL (ex. look for "bloca"),
     // including those required by PrecomptePartenaire & Pivotal (Client,
@@ -56,7 +55,6 @@ public class Tdr extends GenericEntity<Tdr> {
     
     private String sirenSiret; // OPT rule
     
-    
     /////////////////////
     // fields also required when calling Client :
 
@@ -65,7 +63,6 @@ public class Tdr extends GenericEntity<Tdr> {
     // 0    0   35000   0   35000   0   0   0
     @Embedded 
     private TdrTdb tdrTdb;
-    
     
     // OPT contacts
 

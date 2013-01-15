@@ -128,6 +128,7 @@
 																		<td><form:input path="seniorsBenefs.montantApv" /></td>
 															        	<td><form:errors path="seniorsBenefs.montantApv" cssClass="error" /></td>															        
 															        </tr>
+																	<tr><td colspan="6">&nbsp;</td></tr>															        
 															    	<tr>
 															        	<td colspan="3">
 															            	<input type="submit" value="Sauver" onclick="saveSubmit(this.form);"/>
@@ -137,6 +138,9 @@
 																        		<c:when test="${projet.totalBenefs.nbBeneficiaires > 0 && projet.totalBenefs.montantApv > 0 && projet.status == 'created'}">
 																        			<input type="submit" value="Approuver" onclick="approveSubmit(this.form);"/>
 																        		</c:when>
+																        		<c:when test="${projet.status == 'approved'}">
+																        			&nbsp;
+																        		</c:when>																        		
 																        		<c:otherwise>
 																        			Les conditions ne sont pas réunies, l'approbation du projet n'est pas possible.
 																        			<br/>

@@ -156,7 +156,7 @@
 																		<td><form:hidden path="tdrTdb.montantDisponible"/>${tdrPrecompteDetails.tdrTdb.montantDisponible}</td>
 															        	<td>&nbsp;</td>
 																        <td><form:label path="tdrTdb.nbBeneficiairesApv">Nombre bénéficiares APV</form:label></td>
-																		<td><form:input path="tdrTdb.nbBeneficiairesApv" disabled="true"/></td>
+																		<td><form:input path="tdrTdb.nbBeneficiairesApv"/></td>
 															        	<td><form:errors path="tdrTdb.nbBeneficiairesApv" cssClass="error" /></td>		    
 																    </tr>
 																	<tr><td colspan="6">&nbsp;</td></tr>
@@ -183,6 +183,7 @@
 															        	<td>&nbsp;</td>
 															        	<td>&nbsp;</td>
 															        </tr>
+															        <tr><td colspan="6">&nbsp;</td></tr>
 															    	<tr>
 															        	<td colspan="3">
 															            	<input type="submit" value="Sauver" onclick="saveSubmit(this.form);"/>
@@ -190,10 +191,11 @@
 															        	<td colspan="3">
 															        		<!-- TODO : complete the conditions to approve the TDR -->
 															        		<c:choose>
-																        		<c:when test="${tdrPrecompteDetails.tdrTdb.dotationAnnuelle > 0}">
+																        		<c:when test="${tdrPrecompteDetails.tdrTdb.dotationAnnuelle > 0 && tdrPrecompteDetails.tdrTdb.nbBeneficiairesApv > 0}">
 																        			<input type="submit" value="Approuver" onclick="approveSubmit(this.form);"/>
 																        		</c:when>
 																        		<c:otherwise>
+																        			Les conditions ne sont pas réunies, l'approbation de la TDR précompte n'est pas possible.																        		
 																        			<input type="submit" value="Approuver" onclick="approveSubmit(this.form);" disabled="true"/>
 																        		</c:otherwise>
 															        		</c:choose>

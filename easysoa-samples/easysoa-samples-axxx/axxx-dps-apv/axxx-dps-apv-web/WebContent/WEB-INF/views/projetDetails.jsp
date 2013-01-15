@@ -133,12 +133,13 @@
 															            	<input type="submit" value="Sauver" onclick="saveSubmit(this.form);"/>
 															        	</td>
 															        	<td colspan="3">
-															        		<!-- TODO : complete the conditions to approve the TDR -->
 															        		<c:choose>
-																        		<c:when test="${totalBenefs.nbBeneficiaires > 0 && totalBenefs.montantApv > 0 && projet.status == 'created'}">
+																        		<c:when test="${projet.totalBenefs.nbBeneficiaires > 0 && projet.totalBenefs.montantApv > 0 && projet.status == 'created'}">
 																        			<input type="submit" value="Approuver" onclick="approveSubmit(this.form);"/>
 																        		</c:when>
 																        		<c:otherwise>
+																        			Les conditions ne sont pas réunies, l'approbation du projet n'est pas possible.
+																        			<br/>
 																        			<input type="submit" value="Approuver" onclick="approveSubmit(this.form);" disabled="true"/>
 																        		</c:otherwise>
 															        		</c:choose>

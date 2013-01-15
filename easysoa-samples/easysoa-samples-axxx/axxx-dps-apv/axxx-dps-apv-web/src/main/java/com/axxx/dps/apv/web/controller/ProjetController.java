@@ -120,10 +120,17 @@ public class ProjetController {
         }
         projet.computeTotalBenef();
         projetService.update(projet);
-        projet.setStatus("approved");
-        projetService.update(projet);
-        tdrService.computeTdb(projet.getTdr());
+        try{    
+            projet.setStatus("approved");
+            projetService.update(projet);
+            tdrService.computeTdb(projet.getTdr());
+        }
+        catch(Exception ex){
+            // TODO better error gestion
+            ex.printStackTrace();
+        }
         return "redirect:list";
+        
     }    
     
 }

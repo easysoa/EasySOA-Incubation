@@ -109,7 +109,7 @@ public class TdrPrecompteController {
     @RequestMapping(method=RequestMethod.GET, value="tdrprecompte/delete/{tdrId}")
     public String delete(@PathVariable("tdrId") long tdrId) {
         tdrService.delete(tdrId);
-        return "tdrPrecomptes";
+        return "redirect:/tdrprecompte/list/";
     }
     
     /**

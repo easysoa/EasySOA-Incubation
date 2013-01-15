@@ -8,12 +8,16 @@ import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.axxx.dps.apv.model.Projet;
 import com.axxx.dps.apv.model.Tdr;
 import com.axxx.dps.apv.model.TdrTdb;
 import com.axxx.dps.apv.persistence.GenericEntityServiceImpl;
+
+import fr.axxx.pivotal.Client;
+import fr.axxx.pivotal.ContactSvcSoap;
 
 
 /**
@@ -28,6 +32,10 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
     @Autowired
     protected TdrDao tdrDao;
 
+    @Autowired
+    @Qualifier("com.ancv.form.ws.esbContactSvcClient")
+    private ContactSvcSoap pivotalContactService;
+    
     @Override
     protected TdrDao getGenericDao() {
         return tdrDao;
@@ -63,7 +71,6 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
 
     @Override
     public void computeTdb(Tdr tdr) {
-        // TODO
         //recomputes its tdr's impacted computed fields (by queries on all approved projets), saves tdr, then calls TdrService.publish()
         
         //private double dotationGlobale; // computed during conventionnement, > 0 to approve it ; for Client.Dot_Glob_APV_N (should be reliquatanneeprecedente + dotationannuelle)
@@ -93,14 +100,21 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
         tdrTdb.setNbBeneficiairesApv(nbBeneficiaires);
         // Update TDR
         this.update(tdr);
+        this.publish(tdr);
     }
 
     @Override
     public void publish(Tdr tdr) {
         // TODO
         
+        TdrTdb tdrTdb = tdr.getTdrTdb();
+        //if(){ // test required ???
+            pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "enfants", tdrTdb.getNbEnfants(), tdrTdb.getAnnee());
+            pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "jeunes", tdrTdb.getNbJeunes(), tdrTdb.getAnnee());
+            pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "adultesIsoles", tdrTdb.getNbAdultesIsoles(), tdrTdb.getAnnee());
+            pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "seniors", tdrTdb.getNbSeniors(), tdrTdb.getAnnee());
+        //}
         //Call ContactSvc.Client once, and ContactSvc.Information_APV once per public (Information_APV.Bilan_Libelle) : enfants, jeunes, adultesisoles, seniors
-        
     }
 
 }

@@ -1,5 +1,6 @@
 package org.easysoa.registry;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +53,7 @@ public interface SoaMetamodelService {
 			throws ModelIntegrityException, ClientException;
 
 	void validateWriteRightsOnProperties(DocumentModel documentModel,
-			Map<String, Object> properties) throws ModelIntegrityException, ClientException;
+			Map<String, Serializable> nuxeoProperties) throws ModelIntegrityException, ClientException;
 
 	
 }

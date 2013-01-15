@@ -9,6 +9,7 @@
 
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">
     <schema name="subproject" src="schemas/subproject.xsd" prefix="subproject" />
+    <schema name="spnode" src="schemas/subproject-node.xsd" prefix="spnode" />
     <schema name="istr" src="schemas/intelligent-system-tree-root.xsd" prefix="istr" />
     <schema name="environment" src="schemas/environment.xsd" prefix="env" />
     <schema name="deliverable" src="schemas/deliverable.xsd" prefix="del" />
@@ -30,8 +31,8 @@
   
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
 
-    <facet name="SubprojectData" >
-      <schema name="subproject"/>
+    <facet name="SubprojectNode" >
+      <schema name="spnode"/>
     </facet>
     <!-- SoaNode tagging facet, allowing for queries such as #{document.hasFacet("SoaNode")} -->
     <facet name="SoaNode" >
@@ -46,6 +47,7 @@
     <doctype extends="SoaNode" name="Platform">
       <facet name="PlatformData" />
       <facet name="Folderish" />
+      <facet name="SubprojectNode" /><!-- TODO other types ? or always add dynamically ? -->
     </doctype>
     
     <facet name="WsdlInfo" >
@@ -62,9 +64,8 @@
       <schema name="dublincore" />
       <schema name="files" />
       <schema name="file" /><!-- TODO to allow upload using CMIS in JWT export -->
-      <facet name="SubprojectData" />
+      <facet name="SubprojectNode" /><!-- not dynamically TODO and fore others ? -->
       <facet name="SoaNode" />
-      <!-- facet name="SubProjectId" / --><!-- TODO ; also projectId, referredSubProjectIds ? -->
       <facet name="Commentable" />
       <facet name="Versionable" />
       <facet name="Publishable" />
@@ -83,8 +84,9 @@
     <doctype extends="Document" name="Subproject">
       <schema name="common" />
       <schema name="dublincore" />
+      <schema name="subproject" />
       <facet name="Folderish" />
-      <facet name="SubprojectData" />
+      <facet name="SubprojectNode" />
     </doctype>
     <doctype extends="Document" name="Repository">
       <schema name="common" />

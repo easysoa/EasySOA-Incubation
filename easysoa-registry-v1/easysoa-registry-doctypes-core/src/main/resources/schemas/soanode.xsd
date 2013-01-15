@@ -5,9 +5,7 @@
   
   <xs:element name="name" type="xs:string" />
   
-  <xs:element name="subproject" type="xs:string" /><!-- TODO copied from subproject -->
-  <!-- xs:element name="parentSubproject(s)" type="xs:string" / --><!-- only on subproject ?  -->
-  <xs:element name="visibleSubprojects" type="xs:string" /><!-- subproject + parentSubproject(s)'s visibleSubprojects, computed once on subproject -->
+  <!-- NB. subproject-node properties in their own schema -->
   
   <xs:element name="isplaceholder" type="xs:boolean" default="false" />
     

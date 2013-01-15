@@ -54,7 +54,7 @@
 														<c:if test="${!empty tdr}">
 														<form:form method="post" commandName="tdr" action="../save" cssClass="uni-form">
 														    <form:errors path="*" cssClass="errorblock" element="div" />
-															<table class="data" border="1">
+															<table class="data">
 																<colgroup> <!-- 1000 -->
 																	<col width="200px">
 																	<col width="200px">

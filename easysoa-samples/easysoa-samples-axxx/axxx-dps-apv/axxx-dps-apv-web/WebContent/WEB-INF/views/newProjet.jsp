@@ -54,7 +54,7 @@
 														<c:if test="${!empty projet}">
 														<form:form method="post" commandName="projet" action="add?tdrId=${tdrId}" cssClass="uni-form">
 														    <form:errors path="*" cssClass="errorblock" element="div" />
-															<table class="data" border="1">
+															<table class="data">
 																<colgroup> <!-- 1000 -->
 																	<col width="250px">
 																	<col width="150px">

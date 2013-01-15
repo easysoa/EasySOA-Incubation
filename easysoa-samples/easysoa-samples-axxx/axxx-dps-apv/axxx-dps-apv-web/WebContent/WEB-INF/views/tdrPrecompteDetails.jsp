@@ -66,7 +66,7 @@
 														<c:if test="${!empty tdrPrecompteDetails}">
 														<form:form method="post" commandName="tdrPrecompteDetails" cssClass="uni-form">
 														    <form:errors path="*" cssClass="errorblock" element="div" />
-															<table class="data" border="1">
+															<table class="data">
 																<colgroup> <!-- 1000 -->
 																	<col width="200px">
 																	<col width="200px">
@@ -85,6 +85,7 @@
 																		<td><form:hidden path="tdrTdb.status"/>${tdrPrecompteDetails.tdrTdb.status}</td>
 															        	<td>&nbsp;</td>															        	
 																	</tr>
+																	<tr><td colspan="6">&nbsp;</td></tr>
 																	<tr>
 																    	<td><form:label path="nomStructure">Nom structure</form:label></td>
 																		<td><form:input path="nomStructure" /></td>
@@ -133,9 +134,7 @@
 																		<td><form:input path="tdrTdb.partenaireDepuis"/></td>
 															        	<td><form:errors path="tdrTdb.partenaireDepuis" cssClass="error" /></td>
 																    </tr>
-																    <tr>
-																		<td colspan="6"></td>															    
-																    </tr>																    
+																	<tr><td colspan="6">&nbsp;</td></tr>													    
 																    <tr>
 																        <td><form:label path="tdrTdb.dotationGlobale">Dotation globale</form:label></td>
 																		<td><form:hidden path="tdrTdb.dotationGlobale"/>${tdrPrecompteDetails.tdrTdb.dotationGlobale}</td>
@@ -160,9 +159,7 @@
 																		<td><form:input path="tdrTdb.nbBeneficiairesApv" disabled="true"/></td>
 															        	<td><form:errors path="tdrTdb.nbBeneficiairesApv" cssClass="error" /></td>		    
 																    </tr>
-																    <tr>
-																		<td colspan="6"></td>															    
-																    </tr>
+																	<tr><td colspan="6">&nbsp;</td></tr>
 																    <tr>
 																        <td><form:label path="tdrTdb.nbEnfants">Nombre enfants</form:label></td>
 																		<td><form:input path="tdrTdb.nbEnfants"/></td>

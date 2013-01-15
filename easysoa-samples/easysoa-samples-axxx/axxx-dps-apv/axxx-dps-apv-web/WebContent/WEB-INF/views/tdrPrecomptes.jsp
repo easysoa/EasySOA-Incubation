@@ -58,9 +58,9 @@
 															    <th></th>
 															    <th></th>
 															</tr>
-															<c:forEach items="${tdrPrecomptes}" var="tdr">
-															<!-- TODO alternate colors -->
-														    <tr class="odd APPROVED">
+															<c:forEach items="${tdrPrecomptes}" var="tdr" varStatus="loopStatus">
+  															<tr class="${loopStatus.index % 2 == 0 ? 'even' : 'odd'}">															
+																<!-- <tr class="odd APPROVED"> -->
 														        <td>${tdr.nomStructure}</td>
 														        <td>${tdr.ville}</td>
 														        <td><a href="/apv/tdrprecompte/details/${tdr.id}">Details</a></td>

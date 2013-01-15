@@ -43,7 +43,7 @@
 											<div class="article full">
 												<div class="title"></div>
 												<div class="text">
-													<p style="text-align: justify;">&nbsp;</p>
+													<!--<p style="text-align: justify;">&nbsp;</p>
 													<p>
 														<span style="font-size: large;"> </span>
 													</p>
@@ -53,7 +53,7 @@
 													<p>
 														<form:form method="post" action="add" commandName="tdr" cssClass="uni-form">
 														    <form:errors path="*" cssClass="errorblock" element="div" />
-														    <table>
+														    <table class="data">
 														    <tr>
 														        <td><form:label path="nomStructure">Nom structure</form:label></td>
 														        <td><form:input path="nomStructure" /></td>
@@ -76,7 +76,7 @@
 													<p style="text-align: justify;">&nbsp;</p>
 													<p>
 														<span style="font-size: large;"> </span>
-													</p>
+													</p>-->
 													<div>
 														<b><span style="color: maroon;">All Tdrs</span></b>
 													</div>
@@ -102,9 +102,8 @@
 															    <th>&nbsp;</th>
 															    <th>&nbsp;</th>
 															</tr>
-															<c:forEach items="${tdrs}" var="tdr">
-																<!-- TODO : alternate line colors -->
-															    <tr class="odd">
+															<c:forEach items="${tdrs}" var="tdr"  varStatus="loopStatus">
+  															<tr class="${loopStatus.index % 2 == 0 ? 'even' : 'odd'}">
 															        <td>${tdr.nomStructure}</td>
 															        <!-- td>{tdr.lastname}, {tdr.firstname} </td -->
 															        <td>${tdr.typeStructure}</td>

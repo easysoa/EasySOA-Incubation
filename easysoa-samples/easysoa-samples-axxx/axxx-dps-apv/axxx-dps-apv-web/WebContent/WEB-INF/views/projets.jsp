@@ -66,9 +66,8 @@
 															    <th>&nbsp;</th>
 															    <th>&nbsp;</th>
 															</tr>
-															<c:forEach items="${projets}" var="projet">
-																<!-- TODO alternate line colors -->
-															    <tr class="odd">
+															<c:forEach items="${projets}" var="projet"  varStatus="loopStatus">
+  															<tr class="${loopStatus.index % 2 == 0 ? 'even' : 'odd'}">
 															        <td>${projet.typeLieu}</td>
 															        <td>${projet.periode}</td>
 															        <td>${projet.departement}</td>

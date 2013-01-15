@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.axxx.dps.apv.model.Projet;
 import com.axxx.dps.apv.model.Tdr;
-import com.axxx.dps.apv.model.TdrTdb;
 import com.axxx.dps.apv.service.ProjetService;
 import com.axxx.dps.apv.service.TdrService;
 
@@ -130,7 +129,6 @@ public class ProjetController {
             ex.printStackTrace();
         }
         return "redirect:list";
-        
     }    
     
 }

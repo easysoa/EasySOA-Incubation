@@ -76,7 +76,7 @@
  
 													<form:form method="post" action="createNewTestTdr" commandName="tdr" cssClass="uni-form">
 													    <form:errors path="*" cssClass="errorblock" element="div" />
-													    <table>
+													    <table class="data">
 													    <tr>
 													        <td><form:label path="identifiantClientPivotal">Identifiant client pivotal</form:label></td>
 													        <td><form:input path="identifiantClientPivotal" /></td>

@@ -93,7 +93,14 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     /**
-     * TODO NO triggers documentCreate event but properties have not yet been set !
+     * If a document of the same identifier exists, returns it. Else creates a new document
+     * and puts it in the repository.
+     * BEWARE : it triggers documentCreate event (so don't use it if properties have still to be set
+     * ex. in DiscoveryServiceImpl or EndpointMatchingServiceImpl.linkInformationServiceThroughPlaceholder()
+     * but rather use find() then newSoaNodeDocument())
+     * Works only with SoaNode types (returns null otherwise).
+     * 
+     * @throws ClientException
      */
     public DocumentModel create(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
         DocumentModel documentModel = null;

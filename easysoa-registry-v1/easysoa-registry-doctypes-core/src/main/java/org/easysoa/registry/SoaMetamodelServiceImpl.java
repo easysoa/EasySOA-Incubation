@@ -224,7 +224,7 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 		return null;
 	}
 	
-	public void validateWriteRightsOnProperties(DocumentModel model, Map<String, Object> properties) throws ModelIntegrityException, ClientException {
+	public void validateWriteRightsOnProperties(DocumentModel model, Map<String, Serializable> properties) throws ModelIntegrityException, ClientException {
 		SoaNodeTypeDescriptor soaNodeTypeDescriptor = soaNodeTypes.get(model.getType());
 		if (properties != null && soaNodeTypeDescriptor != null) {
 			List<String> immutableProperties = new ArrayList<String>();

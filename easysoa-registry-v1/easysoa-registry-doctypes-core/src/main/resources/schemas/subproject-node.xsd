@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<xs:schema targetNamespace="http://www.nuxeo.org/ecm/schemas/spnode/"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:nxs="http://www.nuxeo.org/ecm/schemas/spnode/">
+  
+  <xs:simpleType name="stringArray">
+    <xs:list itemType="xs:string" />
+  </xs:simpleType>
+  
+  <!-- TODO copied from containing spnode and ancestor subproject -->
+  <xs:element name="subproject" type="xs:string" />
+  <xs:element name="visibleSubprojects" type="nxs:stringArray" /><!-- String array of subproject + parentSubproject(s)'s visibleSubprojects, computed once on subproject -->
+  <xs:element name="visibleSubprojectsCsv" type="xs:string" /><!-- CSV of subproject + parentSubproject(s)'s visibleSubprojects, computed once on subproject -->
+  
+</xs:schema>

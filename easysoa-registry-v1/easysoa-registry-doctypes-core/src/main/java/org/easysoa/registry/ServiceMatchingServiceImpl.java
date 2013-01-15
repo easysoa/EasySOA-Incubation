@@ -8,6 +8,7 @@ import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.utils.EmptyDocumentModelList;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -56,18 +57,18 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
         boolean anyExactCriteria = false;
         MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
 
-        // SUBPROJECT :        
+        // SUBPROJECT :
     	// implReferredSubProjectIds = "AXXXSpecifications"; // or in 2 pass & get it from subProject ?? 
     	//String implSubProjectId = "AXXXRealisation";
-        String implVisibleSubprojectIds = (String) impl.getPropertyValue(SoaNode.XPATH_VISIBLE_SUBPROJECTS); // "AXXXSpecifications"; // or in 2 pass & get it from subProject ?? 
+        String implVisibleSubprojectIds = (String) impl.getPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV); // "AXXXSpecifications"; // or in 2 pass & get it from subProject ?? 
         //String implSubProjectId = // "AXXXRealisation";
 
         // Filter by subproject
-        if (impl.getPropertyValue(SoaNode.XPATH_SUBPROJECT) != null) { // TODO remove ; only to allow still to work as usual
+        if (impl.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT) != null) { // TODO remove ; only to allow still to work as usual
             if (implVisibleSubprojectIds == null) {
                 throw new ClientException("visibleSubprojects should not be null on " + impl);
             }
-            query.addCriteria(SoaNode.XPATH_SUBPROJECT + " IN (" + implVisibleSubprojectIds + ")");
+            query.addCriteria(SubprojectNode.XPATH_SUBPROJECT + " IN (" + implVisibleSubprojectIds + ")");
         }
         // - SUBPROJECT
         
@@ -146,6 +147,14 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
         DocumentService documentService = getDocumentService();
 
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE);
+
+        // SUBPROJECT :
+        // Filter by subproject
+        String informationServiceSubproject = (String) informationService.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+        if (informationServiceSubproject != null) { // TODO remove ; only to allow still to work as usual
+            query.addCriteria(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS + "='" + informationServiceSubproject + "'"); // NB. multivalued prop
+        }
+        // - SUBPROJECT
     	
     	if (MatchingHelper.isWsdlInfo(informationService)) { // consistency logic
             //query.addCriteria("ecm:mixinType = '" + InformationService.FACET_WSDLINFO + "'"); // NO should be added dynamically but hard to do in DiscoveryServiceImpl

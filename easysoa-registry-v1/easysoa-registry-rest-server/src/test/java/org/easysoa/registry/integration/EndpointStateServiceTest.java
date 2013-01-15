@@ -181,14 +181,17 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         Calendar periodStart = new GregorianCalendar();
         periodStart.clear();
         periodStart.set(2012, 11, 1, 0, 0, 1);
-        Calendar periodEnd = new GregorianCalendar(); // now
         SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         discoveryRequest = client.resource(endpointStateService.getRootURL()).path("/slaOlaIndicators")
-                .queryParam("endpointId", ENDPOINT_ID).queryParam("periodStart", dateFormater.format(periodStart.getTime())).queryParam("periodEnd", dateFormater.format(periodEnd.getTime()));
+                .queryParam("endpointId", ENDPOINT_ID)
+                .queryParam("periodStart", dateFormater.format(periodStart.getTime()));
+                // NB. to mean "now", no "periodEnd" parameter at all is better
+                // than dateFormater.format(new GregorianCalendar().getTime())
+                // because it'll be initialized on server side therefore later
         slaOrOlaIndicators = discoveryRequest.get(SlaOrOlaIndicators.class);        
         
         Assert.assertNotNull(slaOrOlaIndicators);
-        Assert.assertEquals(2, slaOrOlaIndicators.getSlaOrOlaIndicatorList().size());
+        Assert.assertEquals(2, slaOrOlaIndicators.getSlaOrOlaIndicatorList().size()); // TODO non-deterministic fail, maybe because filter < same second ?
         indicator = slaOrOlaIndicators.getSlaOrOlaIndicatorList().get(0);        
 
         Assert.assertEquals(ENDPOINT_ID, indicator.getEndpointId());

@@ -7,8 +7,7 @@
     <xs:list itemType="xs:string" />
   </xs:simpleType>
   
-  <xs:element name="subproject" type="xs:string" /><!-- TODO copied from subproject id -->
-  <xs:element name="parentSubprojects" type="nxs:stringArray" /><!-- only on subproject ?  -->
-  <xs:element name="visibleSubprojects" type="xs:string" /><!-- subproject + parentSubproject(s)'s visibleSubprojects, computed once on subproject -->
+  <xs:element name="parentSubprojects" type="nxs:stringArray" /><!-- only on subproject  -->
+  <!-- others are in spnode -->
   
 </xs:schema>

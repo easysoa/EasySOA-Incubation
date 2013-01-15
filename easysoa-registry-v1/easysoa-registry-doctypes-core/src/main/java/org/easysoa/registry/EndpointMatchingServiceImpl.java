@@ -1,6 +1,8 @@
 package org.easysoa.registry;
 
+import java.io.Serializable;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.matching.MatchingHelper;
@@ -10,6 +12,7 @@ import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.EmptyDocumentModelList;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -62,6 +65,17 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		DocumentService documentService = getDocumentService();
     	boolean anyExactCriteria = false;
 		MatchingQuery query = new MatchingQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE);
+
+        // SUBPROJECT :
+        // Filter by subproject
+        String endpointVisibleSubprojectIds = (String) endpoint.getPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV);
+        if (endpoint.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT) != null) { // TODO remove ; only to allow still to work as usual
+            if (endpointVisibleSubprojectIds == null) {
+                throw new ClientException("visibleSubprojects should not be null on " + endpoint);
+            }
+            query.addCriteria(SubprojectNode.XPATH_SUBPROJECT + " IN (" + endpointVisibleSubprojectIds + ")");
+        }
+        // - SUBPROJECT
 
     	// Match platform properties :
     	
@@ -177,7 +191,19 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		// Init
 		DocumentService documentService = getDocumentService();
         boolean anyExactCriteria = false;
+        
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
+
+        // SUBPROJECT :
+        // Filter by subproject
+        String endpointVisibleSubprojectIds = (String) endpoint.getPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV);
+        if (endpoint.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT) != null) { // TODO remove ; only to allow still to work as usual
+            if (endpointVisibleSubprojectIds == null) {
+                throw new ClientException("visibleSubprojects should not be null on " + endpoint);
+            }
+            query.addCriteria(SubprojectNode.XPATH_SUBPROJECT + " IN (" + endpointVisibleSubprojectIds + ")");
+        }
+        // - SUBPROJECT
 
         // 1. IF A LINKED PLATFORM HAS BEEN PROVIDED FOR THE ENDPOINT BY THE PROBE EX. WEB DISCO
     	if (endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM) != null) {
@@ -238,6 +264,14 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
         DocumentService documentService = getDocumentService();
 
         MatchingQuery query = new MatchingQuery("SELECT * FROM " + Endpoint.DOCTYPE);
+
+        // SUBPROJECT :
+        // Filter by subproject
+        String serviceImplSubproject = (String) serviceImpl.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+        if (serviceImplSubproject != null) { // TODO remove ; only to allow still to work as usual
+            query.addCriteria(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS + "='" + serviceImplSubproject + "'"); // NB. multivalued prop
+        }
+        // - SUBPROJECT
         
         if (MatchingHelper.isWsdlInfo(serviceImpl)) { // consistency logic
             //query.addCriteria("ecm:mixinType = '" + InformationService.FACET_WSDLINFO + "'"); // NO should be added dynamically but hard to do in DiscoveryServiceImpl
@@ -274,7 +308,8 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		if (implId != null) {
 			// Create link
 			DiscoveryService discoveryService = Framework.getService(DiscoveryService.class);
-			discoveryService.runDiscovery(documentManager, endpointId, null, Arrays.asList(implId)); // TODO or explicitly ??
+			discoveryService.runDiscovery(documentManager, endpointId, null, Arrays.asList(implId)); // null props, else saved which triggers loop
+			// TODO or explicitly ??
 			// i.e. impl.SOA_NAME (= implId.getName()) == ep.getParentOfType(ServiceImplementation.DOCTYPE).getName()
 
 	        // TODO if unmatched impl, enrich impl with impl-level platform metas to help it match to IS ?? 
@@ -303,11 +338,17 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		
 		// Create placeholder impl
 		String portTypeName = (String) endpoint.getPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME);
-		DocumentModel implModel = docService.create(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, portTypeName));
-		implModel.setPropertyValue(ServiceImplementation.XPATH_ISPLACEHOLDER, true);
-        implModel.setPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
-        // TODO also copy other impl-level platform metas, to be used when merging placeholder ? NOO rather delete placeholder and rematch endpoint
-		documentManager.saveDocument(implModel);
+		SoaNodeId implId = new SoaNodeId(ServiceImplementation.DOCTYPE, portTypeName);
+		
+		HashMap<String, Serializable> nuxeoProperties = new HashMap<String, Serializable>(2);
+		nuxeoProperties.put(ServiceImplementation.XPATH_ISPLACEHOLDER, true);
+		nuxeoProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
+        // TODO also copy other impl-level platform metas. To be used when merging placeholder ? NOO rather delete placeholder and rematch endpoint
+		
+        // NB. don't do a documentManager.create() here, else triggers documentCreated event
+        // (and from there event loop) , even though properties have not been set yet
+        DocumentModel implModel = DiscoveryServiceImpl.createOrUpdate(documentManager, Framework.getService(DocumentService.class),
+                null, implId, nuxeoProperties, false);
 		
 		// Attach placeholder impl to information service
 		try {

@@ -32,16 +32,18 @@
 													<p>
 														<span style="font-size: large;"> </span>
 													</p>
+													<c:if test="${!empty tdrId}">
 													<div>
 														<b><span style="color: maroon;">Nouveau projet</span></b>
 													</div>
 
 													<a href="/apv/projet/newProjet?tdrId=${tdrId}">Créer un nouveau projet</a>
-
+													
 													<p style="text-align: justify;">&nbsp;</p>
 													<p>
 														<span style="font-size: large;"> </span>
 													</p>
+													</c:if>
 													<div>
 														<b><span style="color: maroon;">Tous les projets</span></b>
 													</div>

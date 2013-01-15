@@ -42,13 +42,13 @@
 													<p style="text-align: justify;">
 														<span style="font-size: large;"><span
 															style="font-size: large;"><span
-																style="color: maroon;">A completer.</span></span></span>
+																style="color: maroon;">2012 est l'année de lancement du nouvel outil informatique des Aides aux Vacances, programme d'action sociale que l'AXXX développe avec son réseau de partenaires œuvrant sur les champs caritatif, de la solidarité, de l'animation socio-culturelle, et de l'action sociale et médico-sociale.</span></span></span>
 													</p>
 													<p>&nbsp;</p>
 													<p style="text-align: justify;">
 														<span style="font-size: large;"><span
 															style="font-size: large;"><span
-																style="color: maroon;">A completer.</span></span></span>
+																style="color: maroon;">Ce programme s'inscrit pleinement dans la mission de l'AXXX qui est de favoriser l'accès aux vacances et aux loisirs du plus grand nombre, et notamment des personnes les plus fragilisées. Cet outil est accessible aux partenaires qui ont signé une convention de partenariat avec l'AXXX et à leurs porteurs de projets.</span></span></span>
 													</p>
 													<p style="text-align: justify;">&nbsp;</p>
 													<p>&nbsp;</p>

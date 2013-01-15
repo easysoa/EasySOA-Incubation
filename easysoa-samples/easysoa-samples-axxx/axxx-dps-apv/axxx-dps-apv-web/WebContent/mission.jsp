@@ -33,13 +33,35 @@
 												<div class="text">
 													<p style="text-align: justify;">&nbsp;</p>
 													<p>
-														<span style="font-size: large;"> </span>
+														<span style="font-size: large;"></span>
 													</p>
 													<p></p>
 													<p style="text-align: justify;">
-														<span style="font-size: large;"><span
-															style="font-size: large;"><span
-																style="color: maroon;">A completer avec la mission de l'axxx</span></span></span>
+														<span style="font-size: large;">
+															<b><span style="color: maroon;">Mission</span></b>
+															<br/>
+															<p>
+																L’AXXX s’appuie sur deux piliers pour favoriser l’accès aux vacances pour tous :
+																<ul>
+																	<li>- Le Bon-Vacances, destiné aux salariés du secteur privé et aux agents des fonctions publiques. Il est distribué essentiellement à travers les comités d’entreprises et les acteurs de l’action sociale des collectivités territoriales et de l’Etat.</li>
+																
+																    <li>- Grâce à son activité première – l’émission et la commercialisation du Bon-Vacances – l’AXXX dispose d’excédents de gestion intégralement dédiés au financement de séjours de vacances et de loisirs organisés par des associations caritatives, des collectivités territoriales et des organismes sociaux partenaires.</li>
+																
+																    <li>- L’objectif visé par l’AXXX est de réduire les inégalités dans le domaine des vacances et des loisirs, faciliter le départ en vacances des personnes dont les revenus sont les plus faibles, utiliser le temps des vacances dans un parcours d’insertion sociale et favoriser la mixité sociale.</li>
+																
+																</ul> 
+															</p>
+															<br/>
+															<p>
+																L’action sociale de l’AXXX s’adresse à quatre publics :
+																<ul>
+																    <li>- Les familles, notamment les familles monoparentales</li>
+																    <li>- Les jeunes adultes et adultes isolés</li>
+																    <li>- Les personnes en situation de handicap</li>
+																    <li>- Les personnes âgées</li>
+																</ul>
+															</p>
+														</span>
 													</p>
 													<p>&nbsp;</p>
 												</div>

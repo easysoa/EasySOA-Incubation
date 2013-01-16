@@ -79,7 +79,7 @@
 																	<form:hidden path="id" value="${tdrPrecompteDetails.id}" />
 																	<tr>
 																    	<td><form:label path="identifiantClientPivotal">Identifiant client Pivotal</form:label></td>
-																		<td><form:input disabled="true" path="identifiantClientPivotal" /></td>
+																		<td><form:hidden path="identifiantClientPivotal" />${tdrPrecompteDetails.identifiantClientPivotal}</td>
 															        	<td><form:errors path="identifiantClientPivotal" cssClass="error" /></td>
 																        <td><form:label path="tdrTdb.status">Status</form:label></td>
 																		<td><form:hidden path="tdrTdb.status"/>${tdrPrecompteDetails.tdrTdb.status}</td>

@@ -67,7 +67,7 @@
 																	<form:hidden path="id" value="${tdr.id}" />
 																	<tr>
 																    	<td><form:label path="identifiantClientPivotal">Identifiant client Pivotal</form:label></td>
-																		<td><form:input disabled="true" path="identifiantClientPivotal" /></td>
+																		<td><form:hidden path="identifiantClientPivotal" />${tdr.identifiantClientPivotal}</td>																		
 															        	<td><form:errors path="identifiantClientPivotal" cssClass="error" /></td>
 															        	<td>&nbsp;</td>
 															        	<td>&nbsp;</td>

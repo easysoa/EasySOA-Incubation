@@ -10,6 +10,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.axxx.dps.apv.model.Projet;
 import com.axxx.dps.apv.model.Tdr;
@@ -59,12 +60,14 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
         Order order = Order.asc("nomStructure");
         return tdrDao.list(Tdr.class, filter, order, null, null);
     }    
-    
+
+    @Transactional
     @Override
     public void approve(Tdr tdr) {
-        // TODO
+        // TODO move code from TdrPrecompteController.approve() here
     }
 
+    @Transactional
     @Override
     public void computeTdb(Tdr tdr) {
         //recomputes its tdr's impacted computed fields (by queries on all approved projets), saves tdr, then calls TdrService.publish()
@@ -120,12 +123,10 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
     public void publish(Tdr tdr) {
         
         TdrTdb tdrTdb = tdr.getTdrTdb();
-        //if(){ // test required ???
-            pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "enfants", tdrTdb.getNbEnfants(), tdrTdb.getAnnee());
-            pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "jeunes", tdrTdb.getNbJeunes(), tdrTdb.getAnnee());
-            pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "adultesisoles", tdrTdb.getNbAdultesIsoles(), tdrTdb.getAnnee());
-            pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "seniors", tdrTdb.getNbSeniors(), tdrTdb.getAnnee());
-        //}
+        pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "enfants", tdrTdb.getNbEnfants(), tdrTdb.getAnnee());
+        pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "jeunes", tdrTdb.getNbJeunes(), tdrTdb.getAnnee());
+        pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "adultesisoles", tdrTdb.getNbAdultesIsoles(), tdrTdb.getAnnee());
+        pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "seniors", tdrTdb.getNbSeniors(), tdrTdb.getAnnee());
         //Call ContactSvc.Client once, and ContactSvc.Information_APV once per public (Information_APV.Bilan_Libelle) : enfants, jeunes, adultesisoles, seniors
     }
 

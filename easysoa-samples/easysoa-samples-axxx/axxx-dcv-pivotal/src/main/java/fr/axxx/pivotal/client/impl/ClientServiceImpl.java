@@ -361,10 +361,10 @@ public class ClientServiceImpl implements ClientService {
      */
     private InformationAPV getInformationAPV(String identifiantClient, String bilanLibelle, String bilanAnnee){
         try {
-            Query query = this.database.get().createQuery("SELECT i FROM InformationAPV i WHERE i.identifiantClient = :identifiantclient AND i.bilanLibelle = :bilanlibelle AND i.bilanAnnee = : bilanannee");
+            Query query = this.database.get().createQuery("SELECT i FROM InformationAPV i WHERE i.identifiantClient = :identifiantclient AND i.bilanLibelle = :bilanlibelle AND i.bilanAnnee = :bilanannee");
             query.setParameter("identifiantclient", identifiantClient);
             query.setParameter("bilanlibelle", bilanLibelle);
-            query.setParameter("bilanannee", bilanAnnee);
+            query.setParameter("bilanannee", Integer.valueOf(bilanAnnee));
             InformationAPV informationAPV = (InformationAPV) query.getSingleResult();
             return informationAPV;
         }

@@ -119,9 +119,10 @@ public class ProjetController {
         if (result.hasErrors()) {
             return "projets";
         }
+        //projetService.approve(projet);
         projet.computeTotalBenef();
         projetService.update(projet);
-        try{    
+        try{
             projet.setStatus("approved");
             projetService.update(projet);
             //tdrService.computeTdb(projet.getTdr());

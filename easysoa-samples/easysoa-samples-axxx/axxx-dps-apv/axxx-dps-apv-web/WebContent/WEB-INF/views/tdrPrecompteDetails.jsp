@@ -155,7 +155,7 @@
 																        <td><form:label path="tdrTdb.montantDisponible">Montant disponible</form:label></td>
 																		<td><form:hidden path="tdrTdb.montantDisponible"/>${tdrPrecompteDetails.tdrTdb.montantDisponible}</td>
 															        	<td>&nbsp;</td>
-																        <td><form:label path="tdrTdb.nbBeneficiairesApv">Nombre bénéficiares APV</form:label></td>
+																        <td><form:label path="tdrTdb.nbBeneficiairesApv">Nombre bénéficiaires APV</form:label></td>
 																		<td><form:input path="tdrTdb.nbBeneficiairesApv"/></td>
 															        	<td><form:errors path="tdrTdb.nbBeneficiairesApv" cssClass="error" /></td>		    
 																    </tr>

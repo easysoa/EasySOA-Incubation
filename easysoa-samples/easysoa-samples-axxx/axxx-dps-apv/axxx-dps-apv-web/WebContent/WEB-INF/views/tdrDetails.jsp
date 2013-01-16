@@ -125,18 +125,18 @@
 																	<tr><td colspan="6">&nbsp;</td></tr>																    
 																    <tr>
 																        <td><form:label path="tdrTdb.dotationGlobale">Dotation globale</form:label></td>
-																		<td><form:hidden path="tdrTdb.dotationGlobale"/>${tdr.tdrTdb.montantDisponible}</td>
+																		<td><form:hidden path="tdrTdb.dotationGlobale"/>${tdr.tdrTdb.dotationGlobale}</td>
 															        	<td>&nbsp;</td>
 																        <td><form:label path="tdrTdb.reliquatAnneePrecedente">Reliquat annee precedente</form:label></td>
-																		<td><form:hidden path="tdrTdb.reliquatAnneePrecedente"/>${tdr.tdrTdb.montantDisponible}</td>
+																		<td><form:hidden path="tdrTdb.reliquatAnneePrecedente"/>${tdr.tdrTdb.reliquatAnneePrecedente}</td>
 															        	<td>&nbsp;</td>		    
 																    </tr>
 																    <tr>
 																        <td><form:label path="tdrTdb.dotationAnnuelle">Dotation anuelle</form:label></td>
-																		<td><form:hidden path="tdrTdb.dotationAnnuelle"/>${tdr.tdrTdb.montantDisponible}</td>
+																		<td><form:hidden path="tdrTdb.dotationAnnuelle"/>${tdr.tdrTdb.dotationAnnuelle}</td>
 															        	<td>&nbsp;</td>
 																        <td><form:label path="tdrTdb.sommeUtilisee">Somme utilisée</form:label></td>
-																		<td><form:hidden path="tdrTdb.sommeUtilisee"/>${tdr.tdrTdb.montantDisponible}</td>
+																		<td><form:hidden path="tdrTdb.sommeUtilisee"/>${tdr.tdrTdb.sommeUtilisee}</td>
 															        	<td>&nbsp;</td>		    
 																    </tr>
 																    <tr>

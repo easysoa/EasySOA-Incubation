@@ -61,7 +61,7 @@ public class Tdr extends GenericEntity<Tdr> {
     // tdr_tdb : partenairedepuis, montantdisponible, dotationglobale, reliquatanneeprecedente, dotationannuelle, sommeutilisee, reliquat, nbbeneficiairesapv
     // 1992  54020  267890  54020   213870   0   54020   0
     // 0    0   35000   0   35000   0   0   0
-    @Embedded 
+    @Embedded
     private TdrTdb tdrTdb;
     
     // OPT contacts

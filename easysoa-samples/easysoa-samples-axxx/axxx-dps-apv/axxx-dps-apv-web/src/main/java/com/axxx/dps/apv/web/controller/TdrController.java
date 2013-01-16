@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.axxx.dps.apv.model.Tdr;
+import com.axxx.dps.apv.model.TdrTdb;
 import com.axxx.dps.apv.service.TdrService;
 
 @Controller
@@ -40,6 +41,25 @@ public class TdrController {
         return "redirect:list";
     }
 
+    /**
+     * Save the details of a TDR
+     * @param map
+     * @param tdrId 
+     * @return
+     */
+    @RequestMapping(method=RequestMethod.POST, value="/tdr/save")
+    public String save(@Valid @ModelAttribute("tdr") Tdr tdr, BindingResult result) {
+        if (result.hasErrors()) { // validation check, see http://www.mkyong.com/spring-mvc/spring-3-mvc-and-jsr303-valid-example/
+            return "redirect:/tdr/details/" + tdr.getId();
+        }
+        TdrTdb tdrTdb = tdr.getTdrTdb();
+        tdrTdb.setDotationGlobale(tdrTdb.getReliquatAnneePrecedente() + tdrTdb.getDotationAnnuelle());
+        tdrTdb.setSommeUtilisee(0); // already 0 for tdr precompte
+        tdrTdb.setMontantDisponible(tdrTdb.getDotationGlobale() - tdrTdb.getSommeUtilisee()); // = dotationglobale - sommeutilisee
+        tdrService.update(tdr);
+        return "redirect:/tdr/details/" + tdr.getId();
+    }    
+    
     @RequestMapping(method=RequestMethod.GET, value="tdr/delete/{tdrId}")
     public String delete(@PathVariable("tdrId") long tdrId) {
         tdrService.delete(tdrId);

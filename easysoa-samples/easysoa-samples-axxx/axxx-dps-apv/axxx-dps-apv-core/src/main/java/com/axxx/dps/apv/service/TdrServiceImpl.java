@@ -113,10 +113,12 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
         tdrTdb.setSommeUtilisee(sommeUtilisee);
         tdrTdb.setMontantDisponible(tdrTdb.getDotationGlobale() - tdrTdb.getSommeUtilisee());
         tdrTdb.setNbBeneficiairesApv(nbBeneficiaires);
-        
+
         // Update TDR
         // TODO : problem TdrTdb is not updated ....
-        this.update(tdr);
+        tdr.setVille("Lyon");
+        tdrDao.update(tdr);
+        //this.update();
         this.publish(tdr);
     }
 

@@ -191,7 +191,7 @@
 															        	<td colspan="3">
 															        		<!-- TODO : complete the conditions to approve the TDR -->
 															        		<c:choose>
-																        		<c:when test="${tdrPrecompteDetails.tdrTdb.dotationAnnuelle > 0 && tdrPrecompteDetails.tdrTdb.nbBeneficiairesApv > 0}">
+																        		<c:when test="${tdrPrecompteDetails.tdrTdb.dotationAnnuelle > 0 && tdrPrecompteDetails.tdrTdb.nbBeneficiairesPrevisionnel > 0}">
 																        			<input type="submit" value="Approuver" onclick="approveSubmit(this.form);"/>
 																        		</c:when>
 																        		<c:otherwise>

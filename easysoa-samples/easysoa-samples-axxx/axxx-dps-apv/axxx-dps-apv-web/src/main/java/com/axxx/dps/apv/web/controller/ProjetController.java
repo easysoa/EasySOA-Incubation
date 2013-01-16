@@ -124,7 +124,8 @@ public class ProjetController {
         try{    
             projet.setStatus("approved");
             projetService.update(projet);
-            tdrService.computeTdb(projet.getTdr());
+            //tdrService.computeTdb(projet.getTdr());
+            tdrService.computeTdb(tdrService.getById(projet.getTdr().getId()));
         }
         catch(Exception ex){
             // TODO better error gestion

@@ -109,7 +109,9 @@
 			</div>
 		</div>
 		<div id="footer">
-
+		<c:if test="${!empty tdrId}">
+			<a href="/apv/tdr/list">Retour vers la liste des TDR</a>
+		</c:if>
 		</div>
 
 <%@ include file="/static/html/footer.html" %> 

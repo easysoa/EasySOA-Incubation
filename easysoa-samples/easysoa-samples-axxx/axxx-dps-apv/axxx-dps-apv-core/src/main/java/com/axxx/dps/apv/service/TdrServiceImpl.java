@@ -41,10 +41,6 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
         return tdrDao;
     }
 
-    /*@Override
-    public List<Projet> getProjets(Tdr tdr) {
-        return tdr.getProjets(); // can be done because inside session here
-    }*/
 
     @Override
     public List<Tdr> getTdrPrecomptes(){
@@ -116,8 +112,7 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
 
         // Update TDR
         // TODO : problem TdrTdb is not updated ....
-        tdrDao.update(tdr);
-        //this.update();
+        this.update(tdr);
         this.publish(tdr);
     }
 
@@ -128,7 +123,7 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
         //if(){ // test required ???
             pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "enfants", tdrTdb.getNbEnfants(), tdrTdb.getAnnee());
             pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "jeunes", tdrTdb.getNbJeunes(), tdrTdb.getAnnee());
-            pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "adultesIsoles", tdrTdb.getNbAdultesIsoles(), tdrTdb.getAnnee());
+            pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "adultesisoles", tdrTdb.getNbAdultesIsoles(), tdrTdb.getAnnee());
             pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "seniors", tdrTdb.getNbSeniors(), tdrTdb.getAnnee());
         //}
         //Call ContactSvc.Client once, and ContactSvc.Information_APV once per public (Information_APV.Bilan_Libelle) : enfants, jeunes, adultesisoles, seniors

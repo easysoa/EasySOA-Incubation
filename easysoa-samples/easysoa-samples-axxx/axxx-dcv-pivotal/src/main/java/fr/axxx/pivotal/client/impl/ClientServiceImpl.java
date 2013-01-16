@@ -195,7 +195,7 @@ public class ClientServiceImpl implements ClientService {
             return contactClients;
         }
         catch(Exception ex){
-            LOG.log(Level.SEVERE, "Error trying to get contatc client : " + ex.getMessage(), ex);
+            LOG.log(Level.SEVERE, "Error trying to get contact client : " + ex.getMessage(), ex);
             return null;
         }
     }
@@ -322,7 +322,7 @@ public class ClientServiceImpl implements ClientService {
         if(!InformationAPV.checkBilanLibelleValue(bilanLibelle)){
             throw new IllegalArgumentException("The value of bilanLibelle must be one of the following values : " 
                     + InformationAPV.BILAN_LIBELLE_ADULTESISOLES + ", " 
-                    + InformationAPV.BILAN_LIBELLE_FAMILLES + ", " 
+                    + InformationAPV.BILAN_LIBELLE_ENFANTS + ", " 
                     + InformationAPV.BILAN_LIBELLE_JEUNES + ", "
                     + InformationAPV.BILAN_LIBELLE_SENIORS);
         }
@@ -361,7 +361,7 @@ public class ClientServiceImpl implements ClientService {
      */
     private InformationAPV getInformationAPV(String identifiantClient, String bilanLibelle, String bilanAnnee){
         try {
-            Query query = this.database.get().createQuery("SELECT i FROM InformationAPV i WHERE i.identifiantclient = :identifiantclient AND i.bilanlibelle = :bilanlibelle AND i.bilanannee = : bilanannee");
+            Query query = this.database.get().createQuery("SELECT i FROM InformationAPV i WHERE i.identifiantClient = :identifiantclient AND i.bilanLibelle = :bilanlibelle AND i.bilanAnnee = : bilanannee");
             query.setParameter("identifiantclient", identifiantClient);
             query.setParameter("bilanlibelle", bilanLibelle);
             query.setParameter("bilanannee", bilanAnnee);
@@ -447,7 +447,7 @@ public class ClientServiceImpl implements ClientService {
      */
     private ContactClient getContactClient(String identifiantClient, String fonctionContact){
         try {
-            Query query = this.database.get().createQuery("SELECT c FROM ContactClient c WHERE c.identifiantclient = :identifiantclient AND c.fonctioncontact = :fonctioncontact");
+            Query query = this.database.get().createQuery("SELECT c FROM ContactClient c WHERE c.identifiantClient = :identifiantclient AND c.fonctionContact = :fonctioncontact");
             query.setParameter("identifiantclient", identifiantClient);
             query.setParameter("fonctioncontact", fonctionContact);            
             ContactClient contactClient = (ContactClient) query.getSingleResult();

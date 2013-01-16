@@ -55,13 +55,13 @@ public class InformationAPV extends GenericEntity<InformationAPV> {
 	// List of bilan libelle values
 	public static final String BILAN_LIBELLE_JEUNES = "jeunes";
 	public static final String BILAN_LIBELLE_SENIORS = "seniors";
-	public static final String BILAN_LIBELLE_FAMILLES = "familles";
+	public static final String BILAN_LIBELLE_ENFANTS = "enfants";
 	public static final String BILAN_LIBELLE_ADULTESISOLES = "adultesisoles"; 
 
     /** the Client this InformationAPV is about */
 	@XmlElement(name = "Identifiant_Client")
     protected String identifiantClient;
-    /** the "public" (target) of this InformationAPV, unique per Client & Bilan_Annee (TODO values : jeunes, seniors, familles, adultesisoles) */
+    /** the "public" (target) of this InformationAPV, unique per Client & Bilan_Annee (TODO values : jeunes, seniors, enfants, adultesisoles) */
     @XmlElement(name = "Bilan_Libelle")
     protected String bilanLibelle;
     /** the year of this InformationAPV, unique per Client & Bilan_Annee */
@@ -172,7 +172,7 @@ public class InformationAPV extends GenericEntity<InformationAPV> {
      * @return ture if the value can be used, false otherwise
      */
     public static boolean checkBilanLibelleValue(String bilanLibelle) {
-        if(BILAN_LIBELLE_ADULTESISOLES.equals(bilanLibelle) || BILAN_LIBELLE_FAMILLES.equals(bilanLibelle) || BILAN_LIBELLE_JEUNES.equals(bilanLibelle) || BILAN_LIBELLE_SENIORS.equals(bilanLibelle)){
+        if(BILAN_LIBELLE_ADULTESISOLES.equals(bilanLibelle) || BILAN_LIBELLE_ENFANTS.equals(bilanLibelle) || BILAN_LIBELLE_JEUNES.equals(bilanLibelle) || BILAN_LIBELLE_SENIORS.equals(bilanLibelle)){
             return true;
         } else {
             return false;

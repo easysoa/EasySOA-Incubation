@@ -203,7 +203,7 @@
 			</div>
 		</div>
 		<div id="footer">
-			<a href="/apv/tdr/list.html">Back to TDR</a>
+			<a href="/apv/tdr/list.html">Retour vers la TDR</a>
 		</div>
 
 <%@ include file="/static/html/footer.html" %>

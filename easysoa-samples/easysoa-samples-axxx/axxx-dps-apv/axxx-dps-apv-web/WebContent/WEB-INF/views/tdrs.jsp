@@ -111,7 +111,11 @@
 															        <td>${tdr.tdrTdb.status}</td>
 															        <td><a href="/apv/projet/list?tdrId=${tdr.id}">projets</a></td>
 															        <td><a href="/apv/tdr/details/${tdr.id}">Details</a></td>
-															        <td><a href="/apv/tdr/delete/${tdr.id}">delete</a></td>
+															        <td>
+															        <c:if test="${tdr.tdrTdb.status == 'created'}">
+															        	<a href="/apv/tdr/delete/${tdr.id}">delete</a>
+															        </c:if>
+															        </td>
 															    </tr>
 															</c:forEach>
 														</table>

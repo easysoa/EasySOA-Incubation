@@ -218,7 +218,7 @@
 			</div>
 		</div>
 		<div id="footer">
-			<a href="/apv/tdrprecompte/list.html">Back to TDR precomptes</a>
+			<a href="/apv/tdrprecompte/list.html">Retour vers la TDR précompte</a>
 		</div>
 
 <%@ include file="/static/html/footer.html" %>

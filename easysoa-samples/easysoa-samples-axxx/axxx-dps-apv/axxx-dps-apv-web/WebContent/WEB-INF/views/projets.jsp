@@ -45,7 +45,18 @@
 													</p>
 													</c:if>
 													<div>
-														<b><span style="color: maroon;">Tous les projets</span></b>
+														<b>
+															<span style="color: maroon;">
+																<c:choose>
+																	<c:when test="${!empty tdr}">
+																		Projets liés à la TDR ${tdr.nomStructure}
+																	</c:when>
+																	<c:otherwise>
+																		Tous les projets																	
+																	</c:otherwise>
+																</c:choose>
+															</span>
+														</b>
 													</div>
 													<p>
 														<c:if  test="${!empty projets}">
@@ -75,7 +86,11 @@
 															        <td>${projet.departement}</td>
 															        <td>${projet.status}</td>
 																	<td><a href="/apv/projet/details/${projet.id}">Details</a></td>
-															        <td><a href="/apv/projet/delete/${projet.id}">Delete</a></td>
+																	<td>
+																	<c:if test="${projet.status == 'created'}">
+															        	<a href="/apv/projet/delete/${projet.id}">Delete</a>
+															        </c:if>
+															        </td>
 															    </tr>
 															</c:forEach>
 														</tbody>

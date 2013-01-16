@@ -31,9 +31,10 @@ public class ProjetController {
     @RequestMapping("projet/list")
     public String list(@RequestParam(value="tdrId", required=false) Long tdrId, Map<String, Object> map) {
         List<Projet> projets;
+        Tdr tdr = null;
         if (tdrId != null && tdrId != 0) {
             
-            Tdr tdr = tdrService.getById(tdrId);
+            tdr = tdrService.getById(tdrId);
             if (tdr != null) {
                 projets = projetService.listByTdr(tdrId);
                 //projets = tdr.getProjets(); // NO no session
@@ -46,6 +47,7 @@ public class ProjetController {
         }
         map.put("projets", projets);
         //map.put("projet", new Projet()); // done by initProjet()
+        map.put("tdr", tdr);
         map.put("tdrId", tdrId);
         return "projets";
     }
@@ -128,7 +130,7 @@ public class ProjetController {
             // TODO better error gestion
             ex.printStackTrace();
         }
-        return "redirect:list";
+        return "redirect:list?tdrId=" + projet.getTdr().getId() ;
     }    
     
 }

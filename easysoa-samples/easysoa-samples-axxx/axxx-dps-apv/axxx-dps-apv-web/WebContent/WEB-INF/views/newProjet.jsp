@@ -135,7 +135,7 @@
 			</div>
 		</div>
 		<div id="footer">
-			<a href="/apv/projet/list.html">Back to projet list</a>
+			<a href="/apv/projet/list.html?trdId=${tdrId}">Retour vers la liste des projets</a>
 		</div>
 
 <%@ include file="/static/html/footer.html" %>

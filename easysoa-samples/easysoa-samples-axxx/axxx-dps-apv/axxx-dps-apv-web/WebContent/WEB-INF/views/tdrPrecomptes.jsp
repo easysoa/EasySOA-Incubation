@@ -74,7 +74,7 @@
 													</p>
 												</div>
 												<p>&nbsp;</p>
-												<p><a href="/apv/tdrprecompte/newTdr">(TEST SEULEMENT) Créer une nouvelle TDR</a></p>
+												<p><a href="/apv/tdrprecompte/newTdr">Créer une nouvelle TDR Précompte (POUR TESTS SEULEMENT)</a></p>
 												<p>&nbsp;</p>
 									</div>
 								</div>

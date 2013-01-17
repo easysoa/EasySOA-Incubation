@@ -72,7 +72,8 @@ public class SoaNodeId {
 
 	@Override
     public String toString() {
-        return this.subprojectId + ':' + this.type + ':' + this.name;
+        return ((this.subprojectId == null) ? "" : this.subprojectId)
+                + ':' + this.type + ':' + this.name;
     }
     
     @Override
@@ -91,7 +92,11 @@ public class SoaNodeId {
     public static SoaNodeId fromString(String string) {
 		String[] splitParent = string.split("\\:", 3); // TODO 4 if spname.version
 		if (splitParent.length == 3) {
-			return new SoaNodeId(splitParent[0], splitParent[1], splitParent[2]);
+		    String subprojectId = splitParent[0];
+		    if (subprojectId != null && subprojectId.trim().length() == 0) {
+		        subprojectId = null;
+		    }
+			return new SoaNodeId(subprojectId, splitParent[1], splitParent[2]);
 		}
 		else {
 			return null;

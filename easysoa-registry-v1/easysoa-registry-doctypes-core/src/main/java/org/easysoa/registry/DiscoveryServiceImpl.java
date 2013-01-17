@@ -50,8 +50,8 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 
         // SUBPROJECT :
         // find subproject (or create default one), from SOA node id or properties :
-        String subproject = null;
-        if ((subproject == null || subproject.length() == 0) && properties != null) {
+        String subproject = identifier.getSubprojectId();
+        if ((subproject == null || subproject.trim().length() == 0) && properties != null) {
             subproject = (String) properties.get(SubprojectNode.XPATH_SUBPROJECT);
             identifier.setSubprojectId(subproject);
         } // else don't create properties, otherwise when called with null to create links

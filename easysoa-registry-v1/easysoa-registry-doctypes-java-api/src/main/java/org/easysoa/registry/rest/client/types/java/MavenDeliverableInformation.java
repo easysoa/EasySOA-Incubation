@@ -19,8 +19,8 @@ public class MavenDeliverableInformation extends DeliverableInformation implemen
         // Identifiers format:
         // [GROUPID]:[ARTIFACTID]
         String[] tokens = getSoaName().split(":");
-        if (tokens.length == 3) {
-            return tokens[1];
+        if (tokens.length == 2) {
+            return tokens[0];
         }
         else {
             return null;
@@ -32,8 +32,8 @@ public class MavenDeliverableInformation extends DeliverableInformation implemen
         // Identifiers format:
         // [GROUPID]:[ARTIFACTID]
         String[] tokens = getSoaName().split(":");
-        if (tokens.length == 3) {
-            return tokens[2];
+        if (tokens.length == 2) {
+            return tokens[1];
         }
         else {
             return null;

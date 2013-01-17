@@ -5,7 +5,6 @@ import java.lang.reflect.AnnotatedElement;
 
 import com.thoughtworks.qdox.model.AbstractBaseJavaEntity;
 import com.thoughtworks.qdox.model.JavaClass;
-import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.annotation.AnnotationValue;
 
 public class ParsingUtils {

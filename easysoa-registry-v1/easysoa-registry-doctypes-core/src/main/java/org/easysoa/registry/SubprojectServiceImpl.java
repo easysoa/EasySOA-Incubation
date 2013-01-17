@@ -54,7 +54,23 @@ public class SubprojectServiceImpl {
         DocumentModel subprojectModel = documentManager.createDocumentModel(Subproject.DOCTYPE); // triggers DocumentEventTypes.EMPTY_DOCUMENTMODEL_CREATED
         subprojectModel.setPathInfo(projectModel.getPathAsString(), name); // TODO safeName()
         subprojectModel.setPropertyValue("dc:title", name);
-        subprojectModel = documentManager.createDocument(subprojectModel); // save required to have id below
+        
+        onSubprojectAboutToCreate(documentManager, subprojectModel, parentSubprojectModels);
+        
+        subprojectModel = documentManager.saveDocument(subprojectModel);
+        return subprojectModel;
+    }
+    
+    /**
+     * To be called on aboutToCreate
+     * @param subprojectModel 
+     * @param documentManager 
+     * @param parentSubprojectModels 
+     * @throws ClientException 
+     */
+    public static void onSubprojectAboutToCreate(CoreSession documentManager,
+            DocumentModel subprojectModel, List<DocumentModel> parentSubprojectModels) throws ClientException {
+        subprojectModel = documentManager.createDocument(subprojectModel); // save required to have id below // TODO rm thanks to path
         subprojectModel.setPropertyValue(Subproject.XPATH_SUBPROJECT, subprojectModel.getId()); // to get copied
         if (parentSubprojectModels != null && parentSubprojectModels.size() != 0) {
             subprojectModel.setPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS, getIds(parentSubprojectModels).toArray(EMPTY_STRING_ARRAY));
@@ -64,8 +80,8 @@ public class SubprojectServiceImpl {
         //String visibleSubprojectIdsCsv = computeVisibleSubprojects(documentManager, subprojectModel);
         //subprojectModel.setPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS, visibleSubprojectIdsCsv);
         computeAndSetVisibleSubprojects(documentManager, subprojectModel);
-        subprojectModel = documentManager.saveDocument(subprojectModel);
-        return subprojectModel;
+        // NB. saveDocument() is auto done after aboutToCreate even by event system
+        // TODO on documentCreated, update all below
     }
 
     /**

@@ -68,6 +68,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                 if (pathMethods != null || ParsingUtils.hasAnnotation(c, ANN_PATH)) {
             		  // TODO target wsName[space]
                       wsInjectableTypeSet.put(c.getFullyQualifiedName(), new JavaServiceInterfaceInformation(
+                              this.codeDiscovery.getSubproject(),
                               mavenDeliverable.getGroupId(), mavenDeliverable.getArtifactId(),
                               c.getFullyQualifiedName(), null, null, null));
                 }
@@ -89,7 +90,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
         }
         if (hasPathMethods || ParsingUtils.hasAnnotation(candidateClass, ANN_PATH)) {
         		// TODO target wsName[space]
-             return new JavaServiceInterfaceInformation(
+             return new JavaServiceInterfaceInformation(this.codeDiscovery.getSubproject(),
                       mavenDeliverable.getGroupId(), mavenDeliverable.getArtifactId(),
                       candidateClass.getName(), null, null, null);
         }
@@ -127,7 +128,8 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                     if (itf != null || pathMethods != null || ParsingUtils.hasAnnotation(c, ANN_PATH)) {
                         
                         // Extract WS info
-                        JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(c.getFullyQualifiedName());
+                        JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(
+                                this.codeDiscovery.getSubproject(), c.getFullyQualifiedName());
                         serviceImpl.setTitle(c.getName());
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXRS);
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_DOCUMENTATION, c.getComment());

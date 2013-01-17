@@ -1,24 +1,17 @@
 package org.easysoa.registry.subproject;
 
-import java.io.Serializable;
-
 import org.apache.log4j.Logger;
 import org.easysoa.registry.SubprojectServiceImpl;
-import org.easysoa.registry.types.Endpoint;
-import org.easysoa.registry.types.InformationService;
-import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.Subproject;
 import org.easysoa.registry.types.SubprojectNode;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
-import org.nuxeo.runtime.api.Framework;
 
 
 /**
@@ -54,8 +47,9 @@ public class SubprojectNodeListener implements EventListener {
         
         if (sourceDocument.hasSchema("subproject")) {
             // TODO NOO needs to be created first to get id
-            //SubprojectServiceImpl.computeAndSetVisibleSubprojects(documentManager, sourceDocument);
+            //SubprojectServiceImpl.onSubprojectAboutToCreate(documentManager, sourceDocument, null);
             // TODO also on change ?!?
+            
         } else {
             DocumentModel spnodeModel = null;
             DocumentModel parentDocument = documentManager.getDocument(sourceDocument.getParentRef());

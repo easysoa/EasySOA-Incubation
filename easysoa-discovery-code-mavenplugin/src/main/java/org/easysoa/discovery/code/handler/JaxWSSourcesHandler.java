@@ -86,8 +86,8 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
             	String wsNamespace = getWsNamespace(c);
             	Map<String, OperationInformation> operations = getOperationsInformation(c, null);
                 wsInjectableTypeSet.put(c.getFullyQualifiedName(), 
-                        new JavaServiceInterfaceInformation(mavenDeliverable.getGroupId(),
-                                mavenDeliverable.getArtifactId(),
+                        new JavaServiceInterfaceInformation(this.codeDiscovery.getSubproject(),
+                                mavenDeliverable.getGroupId(), mavenDeliverable.getArtifactId(),
                                 c.getFullyQualifiedName(), wsNamespace, wsName, operations));
             }
         }
@@ -102,8 +102,8 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
         	String wsName = getWsName(c);
         	String wsNamespace = getWsNamespace(c);
         	Map<String, OperationInformation> operations = getOperationsInformation(c);
-            return new JavaServiceInterfaceInformation(mavenDeliverable.getGroupId(),
-                    mavenDeliverable.getArtifactId(),
+            return new JavaServiceInterfaceInformation(this.codeDiscovery.getSubproject(),
+                    mavenDeliverable.getGroupId(), mavenDeliverable.getArtifactId(),
                     c.getName(), wsNamespace, wsName, operations);
         }
         else {
@@ -223,7 +223,8 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
     }
 
 	public JavaServiceImplementationInformation createTestDiscovery(String serviceImplName, String testName) throws Exception {
-        JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(serviceImplName);
+        JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(
+                this.codeDiscovery.getSubproject(), serviceImplName);
         List<String> tests = new ArrayList<String>();
         tests.add(testName);
         serviceImpl.setTests(tests);
@@ -343,7 +344,8 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 		String wsdlServiceName = toShortNsName(wsNamespace, serviceName);
 
         JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(
-                    wsNamespace + ":" + wsName + "=" + serviceName); // TODO NOOOOO rather classname !!!
+                this.codeDiscovery.getSubproject(),
+                wsNamespace + ":" + wsName + "=" + serviceName); // TODO NOOOOO rather classname !!!
         serviceImpl.setTitle(c.getName());
         
 		// TODO Cleaner porttype/servicename discovery + revert soanodeid

@@ -79,6 +79,11 @@
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
     </dependency>
+    <!-- tree snapshot -->
+    <dependency>
+      <groupId>org.nuxeo.features</groupId>
+      <artifactId>nuxeo-tree-snapshot</artifactId>
+    </dependency>
 
     <!-- Correlation graph -->
     <dependency>

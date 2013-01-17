@@ -31,6 +31,16 @@
       <event>documentCreated</event>
       <event>beforeDocumentModification</event>
     </listener>
+    
+    <listener name="subprojectListener" class="org.easysoa.registry.subproject.SubprojectNodeListener"
+      priority="150">
+      <event>aboutToCreate</event>
+    </listener>
+    
+    <listener name="treeSnapshotListener" class="org.easysoa.registry.subproject.TreeSnapshotListener"
+      priority="151">
+      <event>aboutToCreateLeafVersionEvent</event>
+    </listener>
   </extension>
 
 </component>

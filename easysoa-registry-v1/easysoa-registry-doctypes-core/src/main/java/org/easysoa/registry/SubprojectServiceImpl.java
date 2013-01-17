@@ -7,19 +7,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.easysoa.registry.types.Project;
+import org.easysoa.registry.types.Repository;
 import org.easysoa.registry.types.Subproject;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.PathRef;
 
 public class SubprojectServiceImpl {
 
-    
+    public static final PathRef defaultProjectPathRef = new PathRef(Project.DEFAULT_PROJECT_PATH);
+    public static final PathRef defaultSubprojectPathRef = new PathRef(Subproject.DEFAULT_SUBPROJECT_PATH);
 
     private static final Object[] EMPTY_STRING_ARRAY = new String[0];
     
-    private static String projectRootPath = "/default-domain";
     /**
      * Creates but doesn't save session
      * @param documentManager
@@ -28,8 +33,8 @@ public class SubprojectServiceImpl {
      * @throws ClientException 
      */
     public static DocumentModel createProject(CoreSession documentManager, String name) throws ClientException {
-        DocumentModel projectModel = documentManager.createDocumentModel("Project");
-        projectModel.setPathInfo(projectRootPath, name); // TODO safeName()
+        DocumentModel projectModel = documentManager.createDocumentModel(Project.DOCTYPE);
+        projectModel.setPathInfo(Repository.DEFAULT_DOMAIN_PATH, name); // TODO safeName()
         projectModel.setPropertyValue("dc:title", name);
         projectModel = documentManager.createDocument(projectModel);
         return projectModel;
@@ -46,8 +51,8 @@ public class SubprojectServiceImpl {
      */
     public static DocumentModel createSubproject(CoreSession documentManager, String name,
             DocumentModel projectModel, List<DocumentModel> parentSubprojectModels) throws ClientException {
-        DocumentModel subprojectModel = documentManager.createDocumentModel("Subproject"); // triggers DocumentEventTypes.EMPTY_DOCUMENTMODEL_CREATED
-        subprojectModel.setPathInfo(projectModel.getPathAsString(), name); // safeName()
+        DocumentModel subprojectModel = documentManager.createDocumentModel(Subproject.DOCTYPE); // triggers DocumentEventTypes.EMPTY_DOCUMENTMODEL_CREATED
+        subprojectModel.setPathInfo(projectModel.getPathAsString(), name); // TODO safeName()
         subprojectModel.setPropertyValue("dc:title", name);
         subprojectModel = documentManager.createDocument(subprojectModel); // save required to have id below
         subprojectModel.setPropertyValue(Subproject.XPATH_SUBPROJECT, subprojectModel.getId()); // to get copied
@@ -123,6 +128,91 @@ public class SubprojectServiceImpl {
     public static DocumentModel createSubrojectSpecifications(CoreSession documentManager, DocumentModel projectModel) throws ClientException {
         DocumentModel specificationsSubprojectModel = createSubproject(documentManager, "Specifications", projectModel, null);
         return specificationsSubprojectModel;
+    }
+    
+    
+    /**
+     * Rightens identifier after calling getSubprojectIdOrCreateDefault()
+     * @param documentManager
+     * @param identifier
+     * @return
+     * @throws ClientException
+     */
+    public static String setDefaultSubprojectIfNone(CoreSession documentManager,
+            SoaNodeId identifier) throws ClientException {
+        String subprojectId = identifier.getSubprojectId();
+        if (subprojectId == null || subprojectId.length() == 0) {
+            // default subproject mode (TODO rather create it at startup ? or explode ?? by query or path ?)
+            subprojectId = SubprojectServiceImpl.getOrCreateDefaultSubproject(documentManager).getId();
+            identifier.setSubprojectId(subprojectId);
+        }
+        return subprojectId;
+    }
+
+    /**
+     * If possible, rather use setDefaultSubprojectIfNone()
+     * @param documentManager
+     * @param subprojectId
+     * @return
+     * @throws ClientException
+     */
+    public static String getSubprojectIdOrCreateDefault(CoreSession documentManager,
+            String subprojectId) throws ClientException {
+        if (subprojectId == null || subprojectId.length() == 0) {
+            // default subproject mode (TODO rather create it at startup ? or explode ?? by query or path ?)
+            return getOrCreateDefaultSubproject(documentManager).getId();
+        } else {
+            return subprojectId;
+        }
+    }
+
+    public static DocumentModel getSubprojectOrCreateDefault(CoreSession documentManager,
+            String subprojectId) throws ClientException {
+        if (subprojectId == null) {
+            // default subproject mode (TODO rather create it at startup ? or explode ?? by query or path ?)
+            return getOrCreateDefaultSubproject(documentManager);
+        } else {
+            // getting latest subproject conf (replacing it in case it is older)
+            /*DocumentModelList subprojectResults = documentManager.query(
+                    "SELECT * FROM Subproject WHERE ecm:uuid='" + subprojectId + "'");
+            if (subprojectResults == null || subprojectResults.size() != 1) {
+                throw new ClientException("No (or too much) subproject (" + subprojectResults + ") with id " + subprojectId);
+            }
+            subprojectDocModel = subprojectResults.get(0);*/
+            return documentManager.getDocument(new IdRef(subprojectId)); // explodes if none
+        }
+    }
+
+    private static DocumentModel getOrCreateDefaultSubproject(CoreSession documentManager) throws ClientException {
+        // default subproject mode (TODO rather create it at startup ? or explode ?? by query or path ?)
+        //DocumentModelList subprojectResults = documentManager.query(
+        //        "SELECT * FROM Subproject WHERE dc:title='Default'"); // TODO better
+        DocumentModel subprojectDocModel;
+        DocumentModelList subprojectResults = documentManager.query(
+                "SELECT * FROM Subproject WHERE ecm:path='" + SubprojectServiceImpl.defaultSubprojectPathRef + "'");
+        if (subprojectResults == null || subprojectResults.isEmpty()) {
+            DocumentModel project = getOrCreateDefaultProject(documentManager);
+            subprojectDocModel = SubprojectServiceImpl.createSubproject(documentManager,
+                    Subproject.DEFAULT_SUBPROJECT_NAME , project, null);
+            documentManager.save();
+        } else {
+            subprojectDocModel = subprojectResults.get(0);
+        }
+        return subprojectDocModel;
+    }
+
+    private static DocumentModel getOrCreateDefaultProject(CoreSession documentManager) throws ClientException {
+        DocumentModel project;
+        DocumentModelList projectResults = documentManager.query(
+                "SELECT * FROM Project WHERE ecm:path='" + SubprojectServiceImpl.defaultProjectPathRef + "'");
+        if (projectResults == null || projectResults.isEmpty()) {
+            project = SubprojectServiceImpl.createProject(documentManager,
+                    Project.DEFAULT_PROJECT_NAME);
+            documentManager.save();
+        } else {
+            project = projectResults.get(0);
+        }
+        return project;
     }
     
 }

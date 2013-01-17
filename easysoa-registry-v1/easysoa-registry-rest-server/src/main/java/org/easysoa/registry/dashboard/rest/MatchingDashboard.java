@@ -73,7 +73,7 @@ public class MatchingDashboard extends ModuleRoot {
 			// List endpoints without impls
 			DocumentModelList unmatchedEndpoints = docService.query(session,
 					"SELECT * FROM " + Endpoint.DOCTYPE + " WHERE " +
-					Endpoint.XPATH_PARENTSIDS + " NOT LIKE '" + ServiceImplementation.DOCTYPE + "%'", true, false);
+					Endpoint.XPATH_PARENTSIDS + " NOT LIKE '%" + ServiceImplementation.DOCTYPE + ":%'", true, false);
 			view.arg("endpointWithoutImpl", unmatchedEndpoints);
 			
 			// List impls without infoservice

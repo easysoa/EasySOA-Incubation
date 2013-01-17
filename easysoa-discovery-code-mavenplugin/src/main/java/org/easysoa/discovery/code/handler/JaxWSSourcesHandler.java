@@ -194,7 +194,8 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                             // Try to attach test to existing non-mock impls
                             boolean foundOriginalImplementation = false;
                             SoaNodeInformation[] matchingRegistryImpls = registryClient
-                                    .findImplsByInterface(foundConsumption.getConsumedInterface());
+                                    .findImplsByInterface(this.codeDiscovery.getSubproject(),
+                                            foundConsumption.getConsumedInterface());
                             for (SoaNodeInformation matchingRegistryImpl : matchingRegistryImpls) {
                                 foundOriginalImplementation = true;
                                 discoveredNodes.add(createTestDiscovery(
@@ -371,7 +372,8 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 	    if (codeDiscovery.isMatchInterfacesFirst()) {
 	        itfSoaName = "matchFirst:" + itfSoaName;
 	    }
-	    InformationServiceInformation informationService = new InformationServiceInformation(itfSoaName);
+	    InformationServiceInformation informationService = new InformationServiceInformation(
+	            this.codeDiscovery.getSubproject(), itfSoaName);
 	    informationService.setProperty(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
 	    String wsdlPortTypeName = toShortNsName(wsNamespace, wsName);
 	    informationService.setProperty(InformationService.XPATH_WSDL_PORTTYPE_NAME, wsdlPortTypeName);

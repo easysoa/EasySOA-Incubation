@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.easysoa.registry.InvalidDoctypeException;
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ListUtils;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -24,7 +25,9 @@ public class SoaNodeAdapter extends AbstractDocumentAdapter implements SoaNode {
     public SoaNodeAdapter(DocumentModel documentModel) throws InvalidDoctypeException,
             PropertyException, ClientException {
         super(documentModel);
-        this.soaNodeId = new SoaNodeId(documentModel.getType(),
+        this.soaNodeId = new SoaNodeId(
+                (String) documentModel.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT),
+                documentModel.getType(),
                 (String) documentModel.getPropertyValue(SoaNode.XPATH_SOANAME));
     }
     

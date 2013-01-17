@@ -5,9 +5,9 @@ import org.nuxeo.ecm.core.api.ClientException;
 
 public interface IntelligentSystemTreeApi {
 	
-	public boolean intelligentSystemTreeExists(String name) throws ClientException;
+	public boolean intelligentSystemTreeExists(String subprojectId, String name) throws ClientException;
 
-	public void createIntelligentSystemTree(String name, String title) throws ClientException;
+	public void createIntelligentSystemTree(String subprojectId, String name, String title) throws ClientException;
 
 	public void classifySoaNode(String treeName, SoaNodeId identifier, String path) throws ClientException;
 	

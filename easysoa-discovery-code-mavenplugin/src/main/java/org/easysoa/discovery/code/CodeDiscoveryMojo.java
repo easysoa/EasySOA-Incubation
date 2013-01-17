@@ -63,6 +63,11 @@ public class CodeDiscoveryMojo extends AbstractMojo {
     /**
      * @parameter
      */
+    private String subproject = null;
+    
+    /**
+     * @parameter
+     */
     private String application;
 
     /**
@@ -295,6 +300,10 @@ public class CodeDiscoveryMojo extends AbstractMojo {
 
     protected void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getSubproject() {
+        return subproject;
     }
 
     public String getApplication() {

@@ -23,7 +23,6 @@ import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -48,7 +47,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
 
     private static Logger logger = Logger.getLogger(SimpleRegistryServiceTest.class);
 
-    private SimpleRegistryServiceHelper simpleRegistryService = new SimpleRegistryServiceHelper(this);
+    private String simpleRegistryServiceUrl = this.getURL(SimpleRegistryServiceImpl.class);
     
     @Inject
     DocumentService documentService;
@@ -158,7 +157,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
 
         // Run first test request
         Client client = createAuthenticatedHTTPClient();
-        WebResource discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryWSDLInterfaces").queryParam("search", "test").queryParam("subProjectId", "test");
+        WebResource discoveryRequest = client.resource(simpleRegistryServiceUrl).path("/queryWSDLInterfaces").queryParam("search", "test").queryParam("subProjectId", "test");
         ServiceInformations serviceInformations = discoveryRequest.get(ServiceInformations.class);
         // Check a result is returned
         Assert.assertNotNull(serviceInformations);
@@ -175,7 +174,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         Assert.assertEquals(null, secondServiceInformation.getWsdlServiceName());
 
         // Run second test request
-        discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryWSDLInterfaces").queryParam("search", "another");
+        discoveryRequest = client.resource(simpleRegistryServiceUrl).path("/queryWSDLInterfaces").queryParam("search", "another");
         serviceInformations = discoveryRequest.get(ServiceInformations.class);
         // Check a result is returned
         Assert.assertNotNull(serviceInformations);        
@@ -186,7 +185,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         Assert.assertEquals("anotherDescription", firstServiceInformation.getDescription());
         
         // Run third test request
-        discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryWSDLInterfaces");
+        discoveryRequest = client.resource(simpleRegistryServiceUrl).path("/queryWSDLInterfaces");
         serviceInformations = discoveryRequest.get(ServiceInformations.class);
         
         Assert.assertNotNull(serviceInformations);
@@ -202,7 +201,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
 
         // Run request
         Client client = createAuthenticatedHTTPClient();
-        WebResource discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryEndpoints");
+        WebResource discoveryRequest = client.resource(simpleRegistryServiceUrl).path("/queryEndpoints");
         EndpointInformations endpointInformations = discoveryRequest.get(EndpointInformations.class);
         
         Assert.assertNotNull(endpointInformations);
@@ -219,7 +218,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         
         // Run request
         Client client = createAuthenticatedHTTPClient();
-        WebResource discoveryRequest = client.resource(simpleRegistryService.getRootURL()).path("/queryServicesWithEndpoints");
+        WebResource discoveryRequest = client.resource(simpleRegistryServiceUrl).path("/queryServicesWithEndpoints");
         ServiceInformations serviceInformations = discoveryRequest.get(ServiceInformations.class);
         
         Assert.assertNotNull(serviceInformations);

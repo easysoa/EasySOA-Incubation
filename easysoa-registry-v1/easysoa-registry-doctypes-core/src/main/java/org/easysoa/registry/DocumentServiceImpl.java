@@ -9,8 +9,8 @@ import java.util.Map.Entry;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.IntelligentSystem;
-import org.easysoa.registry.types.Repository;
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.DocumentModelHelper;
 import org.easysoa.registry.utils.RepositoryHelper;
@@ -31,15 +31,28 @@ import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 
 public class DocumentServiceImpl implements DocumentService {
 	
-    public DocumentModel createDocument(CoreSession documentManager, String doctype, String name, String parentPath, String title) throws ClientException {
+    /* (non-Javadoc)
+     * @see org.easysoa.registry.DocumentService#createDocument(org.nuxeo.ecm.core.api.CoreSession, java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public DocumentModel createDocument(CoreSession documentManager,
+            String doctype, String name, String parentPath, String title) throws ClientException {
         // TODO if doctype belongs to SoaNode subtypes, throw new Exception("createDocument() doesn't work for SoaNode types, rather use create()")
         DocumentModel documentModel = documentManager.createDocumentModel(doctype);
         documentModel.setPathInfo(parentPath, safeName(name));
-        documentModel.setProperty("dublincore", "title", title);
+        documentModel.setPropertyValue(SoaNode.XPATH_TITLE, title);
+        // TODO fully recursive spnode copy, to ease setting spnode props (in SubprojectNode event listener) ??
+        //if (!documentModel.hasFacet("SubprojectNode")) {
+        //    documentModel.addFacet("SubprojectNode");
+        //    }
+        //documentModel.setPropertyValue(SubprojectNode.XPATH_SUBPROJECT, subprojectId);
+        // TODO or only if facet ??
         documentModel = documentManager.createDocument(documentModel);
         return documentModel;
     }
     
+    /* (non-Javadoc)
+     * @see org.easysoa.registry.DocumentService#create(org.nuxeo.ecm.core.api.CoreSession, org.easysoa.registry.types.ids.SoaNodeId, java.lang.String)
+     */
     public DocumentModel create(CoreSession documentManager, SoaNodeId identifier, String parentPath) throws ClientException {
         String doctype = identifier.getType();
  
@@ -54,7 +67,7 @@ public class DocumentServiceImpl implements DocumentService {
             
             // Create proxy if needed (but make sure the parent is the instance of the repository,
             // otherwise the child proxy will only be visible in the context of the parent proxy)
-            boolean createProxy = !parentPath.equals(getSourceFolderPath(doctype)); // XXX Redundant with RepositoryManagementListener?
+            boolean createProxy = !parentPath.equals(getSourceFolderPath(documentManager, identifier)); // XXX Redundant with RepositoryManagementListener?
             if (createProxy) {
                 PathRef parentRef = new PathRef(parentPath);
                 DocumentModel parentModel = documentManager.getDocument(parentRef);
@@ -120,12 +133,16 @@ public class DocumentServiceImpl implements DocumentService {
      * @see org.easysoa.registry.DocumentService#newSoaNodeDocument(org.nuxeo.ecm.core.api.CoreSession, org.easysoa.registry.SoaNodeId)
      */
     public DocumentModel newSoaNodeDocument(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
-        String doctype = identifier.getType(), name = identifier.getName();
-        ensureSourceFolderExists(documentManager, doctype);
+        String subprojectId = SubprojectServiceImpl.setDefaultSubprojectIfNone(documentManager, identifier);
+        String doctype = identifier.getType();
+        String name = identifier.getName();
+        getSourceFolder(documentManager, subprojectId, doctype);
         DocumentModel documentModel = documentManager.createDocumentModel(doctype);
-        documentModel.setPathInfo(getSourceFolderPath(doctype), safeName(name));
+        documentModel.setPathInfo(getSourceFolderPath(documentManager, subprojectId, doctype), safeName(name));
         documentModel.setPropertyValue(SoaNode.XPATH_TITLE, name);
         documentModel.setPropertyValue(SoaNode.XPATH_SOANAME, name);
+        documentModel.setPropertyValue(SubprojectNode.XPATH_SUBPROJECT, subprojectId);
+        // TODO copy spnode metas, or in listener, or using facet inheritance ??
         for (Entry<String, Serializable> defaultPropertyValue : identifier.getDefaultPropertyValues().entrySet()) {
         	documentModel.setPropertyValue(defaultPropertyValue.getKey(), defaultPropertyValue.getValue());
         }
@@ -139,6 +156,9 @@ public class DocumentServiceImpl implements DocumentService {
 		return name.replace('/', '|');
 	}
 
+    /**
+     * TODO across subproject
+     */
 	@Override
     public DocumentModel copy(CoreSession documentManager, DocumentModel sourceModel, DocumentRef ref) throws ClientException {
         if (sourceModel.isProxy()) {
@@ -174,17 +194,24 @@ public class DocumentServiceImpl implements DocumentService {
         return false;
     }
 
-    public DocumentModel findDocument(CoreSession documentManager, String type, String name) throws ClientException {
-        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + NXQL.ECM_NAME + " = '?'",
-                new Object[] { type, safeName(name) },
+    public DocumentModel findDocument(CoreSession documentManager,
+            String subprojectId, String type, String name) throws ClientException {
+        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + NXQL.ECM_NAME
+                + " = '?' AND " + SubprojectNode.XPATH_SUBPROJECT + " = '?'",
+                new Object[] { type, safeName(name),
+                SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId) }, // TODO TODOOOOO spnode
                 false, true);
         DocumentModelList results = query(documentManager, query, true, false);
         return results.size() > 0 ? results.get(0) : null;
     }
     
     public DocumentModel find(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
-        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE ecm:path STARTSWITH '?' AND " + SoaNode.XPATH_SOANAME + " = '?'",
-                new Object[] { identifier.getType(), Repository.REPOSITORY_PATH, identifier.getName() },
+        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE "/* + "ecm:path STARTSWITH '?' AND "*/
+                + SoaNode.XPATH_SOANAME + " = '?' AND " + SubprojectNode.XPATH_SUBPROJECT + " = '?'",
+                // TODO rather using subproject Path ??
+                // TODO REPOSITORY_PATH = /default-domain/Repository but default path /default-domain/MyProject/Default/Repository
+                new Object[] { identifier.getType()/*, Repository.REPOSITORY_PATH*/, identifier.getName(),
+                        SubprojectServiceImpl.setDefaultSubprojectIfNone(documentManager, identifier) },
                 false, true);
         DocumentModelList results = query(documentManager, query, true, false);
         return results.size() > 0 ? results.get(0) : null;
@@ -193,8 +220,10 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public DocumentModelList findProxies(CoreSession documentManager, SoaNodeId identifier)
             throws ClientException {
-        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'",
-                new Object[] { identifier.getType(), identifier.getName() },
+        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME
+                + " = '?' AND " + SubprojectNode.XPATH_SUBPROJECT + " = '?'",
+                new Object[] { identifier.getType(), identifier.getName(),
+                SubprojectServiceImpl.setDefaultSubprojectIfNone(documentManager, identifier) },
                 false, true);
         return query(documentManager, query, false, true);
     }
@@ -233,8 +262,10 @@ public class DocumentServiceImpl implements DocumentService {
     	if (identifier == null) {
     		return new DocumentModelListImpl();
     	}
-        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME + " = '?'",
-                new Object[] { identifier.getType(), identifier.getName() }, // TODO MDU and not safeName(identifier.getName()) !?
+        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + SoaNode.XPATH_SOANAME
+                + " = '?' AND " + SubprojectNode.XPATH_SUBPROJECT + " = '?'",
+                new Object[] { identifier.getType(), identifier.getName(),
+                SubprojectServiceImpl.setDefaultSubprojectIfNone(documentManager, identifier) },
                 false, true);
         return query(documentManager, query, false, false);
     }
@@ -295,13 +326,23 @@ public class DocumentServiceImpl implements DocumentService {
         return false;
     }
 
-    public String getSourceFolderPath(String doctype) {
-        return Repository.REPOSITORY_PATH + '/' + doctype; 
+    public String getSourceFolderPath(CoreSession documentManager,
+            SoaNodeId soaNodeId) throws PropertyException, ClientException {
+        return getSourceFolderPath(documentManager, soaNodeId.getSubprojectId(), soaNodeId.getType());
     }
     
-    public void ensureSourceFolderExists(CoreSession documentManager, String doctype) throws ClientException {
-        RepositoryHelper.getRepositoryInstance(documentManager);
-        getSourceFolder(documentManager, doctype);
+    public String getSourceFolderPath(CoreSession documentManager,
+            DocumentModel spNode) throws PropertyException, ClientException {
+        String subprojectId = (String) spNode.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+        String doctype = spNode.getType();
+        return getSourceFolderPath(documentManager, subprojectId, doctype);
+    }
+
+    public String getSourceFolderPath(CoreSession documentManager,
+            String subprojectId, String doctype) throws ClientException {
+        String repositoryPath = RepositoryHelper.getRepositoryPath(documentManager, subprojectId);
+        //return Repository.REPOSITORY_PATH + '/' + doctype;
+        return repositoryPath + '/' + doctype;
     }
     
     public DocumentModelList getChildren(CoreSession session, DocumentRef parentRef, String type) throws ClientException {
@@ -309,15 +350,23 @@ public class DocumentServiceImpl implements DocumentService {
         return session.getChildren(parentRef, type);
     }
 
-    private DocumentModel getSourceFolder(CoreSession documentManager, String doctype) throws ClientException {
-        PathRef sourceFolderRef = new PathRef(getSourceFolderPath(doctype));
+    public DocumentModel getSourceFolder(CoreSession documentManager,
+            DocumentModel spNode) throws ClientException {
+        String subprojectId = (String) spNode.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+        return getSourceFolder(documentManager, subprojectId, spNode.getType());
+    }
+
+    public DocumentModel getSourceFolder(CoreSession documentManager,
+            String subprojectId, String doctype) throws ClientException {
+        PathRef sourceFolderRef = new PathRef(getSourceFolderPath(documentManager, subprojectId, doctype));
+        // TODO not using PathRef ??
         if (documentManager.exists(sourceFolderRef)) {
             return documentManager.getDocument(sourceFolderRef);
-        }
-        else {
-            DocumentModel sourceFolderModel = documentManager.createDocumentModel(Repository.REPOSITORY_PATH,
-                    doctype, IntelligentSystem.DOCTYPE);
-            sourceFolderModel.setProperty("dublincore", "title", DocumentModelHelper.getDocumentTypeLabel(doctype) + "s");
+        } else {
+            DocumentModel subprojectRepository = RepositoryHelper.getRepository(documentManager, subprojectId);
+            DocumentModel sourceFolderModel = documentManager.createDocumentModel(
+                    subprojectRepository.getPathAsString(), doctype, IntelligentSystem.DOCTYPE);
+            sourceFolderModel.setPropertyValue("dc:title", DocumentModelHelper.getDocumentTypeLabel(doctype) + "s");
             sourceFolderModel = documentManager.createDocument(sourceFolderModel);
             return sourceFolderModel;
         }
@@ -325,7 +374,8 @@ public class DocumentServiceImpl implements DocumentService {
     
     public SoaNodeId createSoaNodeId(DocumentModel model) throws ClientException {
         try {
-            return new SoaNodeId(model.getType(), (String) model.getPropertyValue(SoaNode.XPATH_SOANAME));
+            return new SoaNodeId((String) model.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT),
+                    model.getType(), (String) model.getPropertyValue(SoaNode.XPATH_SOANAME));
         }
         catch (PropertyNotFoundException e) {
             throw new ClientException("Invalid document type (" + model.getType() + "), an SoaNode is expected");
@@ -401,6 +451,5 @@ public class DocumentServiceImpl implements DocumentService {
         DocumentModel documentModel = results.size() > 0 ? results.get(0) : null;
 		return documentModel;
 	}
-
 
 }

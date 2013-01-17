@@ -13,16 +13,16 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public abstract class Indicator implements IndicatorProvider {
 
-    public Map<String, IndicatorValue> computeIndicators(CoreSession session,
+    public Map<String, IndicatorValue> computeIndicators(CoreSession session, String subprojectId,
             Map<String, IndicatorValue> computedIndicators) throws Exception {
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
-        indicators.put(getName(), compute(session, computedIndicators));
+        indicators.put(getName(), compute(session, subprojectId, computedIndicators));
         return indicators;
     }
     
     public abstract String getName();
     
-    public abstract IndicatorValue compute(CoreSession session,
+    public abstract IndicatorValue compute(CoreSession session, String subprojectId,
             Map<String, IndicatorValue> computedIndicators) throws Exception;
     
 }

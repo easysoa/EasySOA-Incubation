@@ -8,8 +8,6 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
-import org.easysoa.registry.DiscoveryService;
-import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.rest.AbstractRestApiTest;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.Endpoint;
@@ -18,6 +16,8 @@ import org.easysoa.registry.types.SoftwareComponent;
 import org.easysoa.registry.types.SystemTreeRoot;
 import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.types.ids.SoaNodeId;
+import org.easysoa.registry.utils.DocumentModelHelper;
+import org.easysoa.registry.utils.RepositoryHelper;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -27,7 +27,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 
-import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource.Builder;
 
@@ -42,12 +41,6 @@ public class ServiceDocumentationControllerTest extends AbstractRestApiTest {
     }
 
     private static Logger logger = Logger.getLogger(ServiceDocumentationControllerTest.class);
-    
-    @Inject
-    DiscoveryService discoveryService;
-
-    @Inject
-    DocumentService documentService;
 
     @Test
     public void testServiceDocumentation() throws Exception {
@@ -128,15 +121,19 @@ public class ServiceDocumentationControllerTest extends AbstractRestApiTest {
         documentModel.setPathInfo(parentPath, name);
         documentModel.setProperty("dublincore", "title", title);
         documentModel = documentManager.createDocument(documentModel);*/
-        documentService.createDocument(documentManager, "Workspace", "Business", "/default-domain/workspaces", "Business");
-        DocumentModel business1Folder = documentService.createDocument(documentManager, SystemTreeRoot.DOCTYPE, "Business1", "/default-domain/workspaces/Business", "Business1");
+        documentService.createDocument(documentManager, "Workspace", "Business", DocumentModelHelper
+                .getWorkspacesPath(documentManager, defaultSubprojectId), "Business");
+        DocumentModel business1Folder = documentService.createDocument(documentManager,
+                SystemTreeRoot.DOCTYPE, "Business1", DocumentModelHelper
+                .getWorkspacesPath(documentManager, defaultSubprojectId), "Business1");
         // first BP (user created) :
-        DocumentModel b1p2 = documentService.create(documentManager, new SoaNodeId(TaggingFolder.DOCTYPE, "Business1Process2"), "/default-domain/workspaces/Business/Business1"); // will be auto reclassified
+        DocumentModel b1p2 = documentService.create(documentManager, new SoaNodeId(TaggingFolder.DOCTYPE, "Business1Process2"),
+                DocumentModelHelper.getWorkspacesPath(documentManager, defaultSubprojectId) + "/Business/Business1"); // will be auto reclassified
         b1p2.setPropertyValue("dc:title", "Business1Process2");
         documentManager.save();
         documentService.createSoaNodeId(b1p2);
         // 2nd BP (reused) :
-        documentManager.createProxy(new PathRef("/default-domain/repository/TaggingFolder/BusinessProcessSystem1"), business1Folder.getRef());
+        documentManager.createProxy(new PathRef(RepositoryHelper.getRepositoryPath(documentManager, defaultSubprojectId) + "/TaggingFolder/BusinessProcessSystem1"), business1Folder.getRef());
         
         // tag without service : 
         SoaNodeId tagWithoutService = new SoaNodeId(TaggingFolder.DOCTYPE, "tagWithoutService");
@@ -167,19 +164,19 @@ public class ServiceDocumentationControllerTest extends AbstractRestApiTest {
                 .path("tag/default-domain/repository/TaggingFolder/BusinessProcessSystem1").accept(MediaType.TEXT_HTML);
         res = serviceDocRef.get(String.class);
         logger.info(res);
-        Assert.assertTrue(res.contains("/default-domain/repository/Service/BusinessProcessSystem1Service1"));
+        Assert.assertTrue(res.contains(RepositoryHelper.getRepositoryPath(documentManager, defaultSubprojectId) + "/Service/BusinessProcessSystem1Service1"));
 
         serviceDocRef = client.resource(this.getURL(ServiceDocumentationController.class))
                 .path("tag/default-domain/workspaces/Business/Business1/Business1Process2").accept(MediaType.TEXT_HTML);
         res = serviceDocRef.get(String.class);
         logger.info(res);
-        Assert.assertTrue(res.contains("/default-domain/repository/Service/Business1Process2Service1"));
+        Assert.assertTrue(res.contains(RepositoryHelper.getRepositoryPath(documentManager, defaultSubprojectId) + "/Service/Business1Process2Service1"));
 
         serviceDocRef = client.resource(this.getURL(ServiceDocumentationController.class))
                 .path("default-domain/repository/Service/BusinessProcessSystem1Service1/tags").accept(MediaType.TEXT_HTML);
         res = serviceDocRef.get(String.class);
         logger.info(res);
-        Assert.assertTrue(res.contains("/default-domain/repository/TaggingFolder/Business1Process2"));
+        Assert.assertTrue(res.contains(RepositoryHelper.getRepositoryPath(documentManager, defaultSubprojectId) + "/TaggingFolder/Business1Process2"));
         
         // validation - internal services (consumption) :
         // for (service : getInternalServices(context))

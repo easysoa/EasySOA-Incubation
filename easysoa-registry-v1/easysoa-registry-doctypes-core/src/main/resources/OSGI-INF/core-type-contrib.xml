@@ -2,6 +2,7 @@
 <component name="org.easysoa.registry.doctypes.core.coretype.contrib">
 
   <require>org.nuxeo.ecm.core.CoreExtensions</require>
+  <require>org.nuxeo.platform.snapshot.doctypes</require>
 
   <!-- ===================== -->
   <!-- Core doctypes schemas -->
@@ -86,6 +87,7 @@
       <schema name="dublincore" />
       <schema name="subproject" />
       <facet name="Folderish" />
+      <facet name="Snapshotable" />
       <facet name="SubprojectNode" />
     </doctype>
     <doctype extends="Document" name="Repository">

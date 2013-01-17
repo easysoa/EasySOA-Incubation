@@ -9,18 +9,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.easysoa.registry.facets.WsdlInfoFacet;
-import org.easysoa.registry.matching.MatchingHelper;
 import org.easysoa.registry.matching.MatchingQuery;
 import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
-import org.easysoa.registry.types.Repository;
-import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.Subproject;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
-import org.easysoa.registry.utils.EmptyDocumentModelList;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -53,31 +49,16 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         }
 
         // SUBPROJECT :
-        // find subproject (or create default one) :
+        // find subproject (or create default one), from SOA node id or properties :
         String subproject = null;
-        if (properties != null) {
+        if ((subproject == null || subproject.length() == 0) && properties != null) {
             subproject = (String) properties.get(SubprojectNode.XPATH_SUBPROJECT);
-        } // else don't create, otherwise when called with null to create links
+            identifier.setSubprojectId(subproject);
+        } // else don't create properties, otherwise when called with null to create links
         // (EndpointMatchingService.linkServiceImplementation()), will be saved which triggers loop
-        DocumentModel subprojectDocModel = null;
-        if (subproject == null) {
-            // default subproject mode (TODO rather create it at startup ? or explode ??)
-            DocumentModelList subprojectResults = documentManager.query("SELECT * FROM Subproject WHERE dc:title='Default'");
-            if (subprojectResults == null || subprojectResults.size() != 1) {
-                DocumentModel project = SubprojectServiceImpl.createProject(documentManager, "MyProject");
-                subprojectDocModel = SubprojectServiceImpl.createSubproject(documentManager, "Default", project, null);
-                documentManager.save();
-            } else {
-                subprojectDocModel = subprojectResults.get(0);
-            }
-        } else {
-            // getting latest subproject conf (replacing it in case it is older)
-            DocumentModelList subprojectResults = documentManager.query("SELECT * FROM Subproject WHERE ecm:uuid='" + subproject + "'");
-            if (subprojectResults == null || subprojectResults.size() != 1) {
-                throw new Exception("No (or too much) subprojects (" + subprojectResults + ") in " + identifier + " - " + properties);
-            }
-            subprojectDocModel = subprojectResults.get(0);
-        }
+        DocumentModel subprojectDocModel = SubprojectServiceImpl
+                .getSubprojectOrCreateDefault(documentManager, subproject);
+        //SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, identifier.getSubprojectId())// TODO rather
         
         // complete disco'd SOA node by subproject infos
         ///properties.put(SubprojectNode.XPATH_PARENT_SUBPROJECTS, subprojectDocModel.getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS));
@@ -118,7 +99,8 @@ public class DiscoveryServiceImpl implements DiscoveryService {
                 documentModel = matchingSoaNode;
             } else {
                 // removing "implicit:" prefix
-                identifier = new SoaNodeId(identifier.getType(), identifier.getName().substring(11));
+                identifier = new SoaNodeId(identifier.getSubprojectId(), identifier.getType(),
+                        identifier.getName().substring(11));
             }
         }
 
@@ -241,6 +223,10 @@ public class DiscoveryServiceImpl implements DiscoveryService {
             String type = identifier.getType();
             SoaMetamodelService soaMetamodelService = Framework.getService(SoaMetamodelService.class);
             for (SoaNodeId parentDocumentId : parentDocuments) {
+                if (parentDocumentId.getSubprojectId() == null) {
+                    // if no subproject, put in same as child
+                    parentDocumentId.setSubprojectId(identifier.getSubprojectId());
+                } // else TODO soaMetamodelService supporting across subprojects
                 List<String> pathBelowParent = soaMetamodelService.getPath(parentDocumentId.getType(), type);
                 String parentPathAsString = null;
                 
@@ -300,7 +286,8 @@ public class DiscoveryServiceImpl implements DiscoveryService {
             
             if (placeholderNeeded) {
                 parentDocument = documentService.create(documentManager,
-                        new SoaNodeId(pathStepType, IdUtils.generateStringId()), parentDocument.getPathAsString());
+                        new SoaNodeId(parentDocumentId.getSubprojectId(), pathStepType, IdUtils.generateStringId()),
+                        parentDocument.getPathAsString());
                 parentDocument.setPropertyValue(SoaNode.XPATH_TITLE, "(Placeholder)");
                 parentDocument.setPropertyValue(SoaNode.XPATH_ISPLACEHOLDER, "1");
             }

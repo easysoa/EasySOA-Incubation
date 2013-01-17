@@ -4,9 +4,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.systems.IntelligentSystemTreeService;
-import org.easysoa.registry.types.Repository;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
+import org.easysoa.registry.utils.RepositoryHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,8 +40,13 @@ public class RepositoryManagementListener implements EventListener {
         }
         DocumentEventContext documentContext = (DocumentEventContext) context;
         DocumentModel sourceDocument = documentContext.getSourceDocument();
+        if (sourceDocument.isVersion()) {
+            return; // nothing can be done on it since it is a version, internal proxies
+            // are handled by tree snapshot itself (TODO nuxeo ID properties), and
+            // outside references to it can only change through explicit action (updateToVersion)
+        }
         if (!sourceDocument.hasSchema(SoaNode.SCHEMA)) {
-            return;
+            return; // nothing to do on non SOA nodes
         }
         
         // Initialize
@@ -161,16 +166,16 @@ public class RepositoryManagementListener implements EventListener {
 			throws ClientException, PropertyException, Exception {
 		
 		// If a document has been created through the Nuxeo UI, move it to the repository and leave only a proxy
-		String sourceFolderPath = documentService.getSourceFolderPath(sourceDocument.getType());
+		String sourceFolderPath = documentService.getSourceFolderPath(documentManager, sourceDocument);
 		DocumentModel parentModel = documentManager.getDocument(sourceDocument.getParentRef());
 		if (!sourceDocument.isProxy() && !parentModel.getPathAsString().equals(sourceFolderPath)
-		        || sourceDocument.isProxy() && parentModel.hasSchema(SoaNode.SCHEMA)
-		            && !sourceDocument.getPathAsString().startsWith(Repository.REPOSITORY_PATH)) {
-		    documentService.ensureSourceFolderExists(documentManager, sourceDocument.getType());
-		    
-		    // Build SoaNodeId
-		    String soaName = (String) sourceDocument.getPropertyValue(SoaNode.XPATH_SOANAME);
-		    SoaNodeId soaNodeId = new SoaNodeId(sourceDocument.getType(), soaName);
+		        || sourceDocument.isProxy() && parentModel.hasSchema(SoaNode.SCHEMA)) {
+            // Build SoaNodeId
+            SoaNodeId soaNodeId = documentService.createSoaNodeId(sourceDocument);
+            if (!sourceDocument.getPathAsString().startsWith(
+                    RepositoryHelper.getRepositoryPath(documentManager, soaNodeId.getSubprojectId()))) {
+            
+		    documentService.getSourceFolder(documentManager, sourceDocument);
 		    
 		    DocumentModel repositoryDocument = documentService.find(documentManager, soaNodeId);
 		    if (repositoryDocument != null) {
@@ -194,8 +199,10 @@ public class RepositoryManagementListener implements EventListener {
 		        parentModel = documentService.find(documentManager, documentService.createSoaNodeId(parentModel));
 		    }
 		    documentManager.createProxy(sourceDocument.getRef(), parentModel.getRef());
+		    
+            }
 		}
-		documentManager.save();
+		documentManager.save();//TODO ??
 		
 		return sourceDocument;
 	}

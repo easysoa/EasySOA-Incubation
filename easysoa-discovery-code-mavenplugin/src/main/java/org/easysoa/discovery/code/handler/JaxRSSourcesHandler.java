@@ -151,7 +151,8 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                             if (codeDiscovery.isMatchInterfacesFirst()) {
                                 itfSoaName = "matchFirst:" + itfSoaName;
                             }
-                            InformationServiceInformation serviceDef = new InformationServiceInformation(itfSoaName);
+                            InformationServiceInformation serviceDef = new InformationServiceInformation(
+                                    this.codeDiscovery.getSubproject(), itfSoaName);
                             serviceImpl.addParentDocument(serviceDef.getSoaNodeId());
 
                             if (this.codeDiscovery.isDiscoverInterfaces()) {

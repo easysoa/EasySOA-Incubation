@@ -16,12 +16,12 @@ import org.easysoa.registry.utils.ListUtils;
 
 public class ServiceImplementationInformation extends SoaNodeInformation implements ServiceImplementation {
     
-    public ServiceImplementationInformation(String name) {
-        super(new SoaNodeId(ServiceImplementation.DOCTYPE, name), null, null);
+    public ServiceImplementationInformation(String subprojectId, String name) {
+        super(new SoaNodeId(subprojectId, ServiceImplementation.DOCTYPE, name), null, null);
     }
 
-    protected ServiceImplementationInformation(String doctype, String name) {
-        super(new SoaNodeId(doctype, name), null, null);
+    protected ServiceImplementationInformation(String subprojectId, String doctype, String name) {
+        super(new SoaNodeId(subprojectId, doctype, name), null, null);
     }
     
     @Override

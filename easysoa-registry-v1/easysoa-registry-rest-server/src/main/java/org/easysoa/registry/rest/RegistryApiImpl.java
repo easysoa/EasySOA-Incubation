@@ -12,13 +12,16 @@ import javax.ws.rs.core.Context;
 
 import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
+import org.easysoa.registry.SubprojectServiceImpl;
+import org.easysoa.registry.indicators.rest.IndicatorProvider;
 import org.easysoa.registry.rest.marshalling.OperationResult;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.ids.SoaNodeId;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.easysoa.registry.utils.DocumentModelHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
@@ -65,11 +68,23 @@ public class RegistryApiImpl implements RegistryApi {
         }
     }
     
-    public SoaNodeInformation[] query(String query) throws Exception {
+    public SoaNodeInformation[] query(String subprojectId, String query) throws Exception {
         try {
             CoreSession documentManager = SessionFactory.getSession(request);
         	DocumentService docService = Framework.getService(DocumentService.class);
-            DocumentModelList modelList = docService.query(documentManager, query + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER, true, false);
+
+            //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
+            // TODO default or not ??
+            String subprojectPathCriteria;
+            if (subprojectId == null || subprojectId.length() == 0) {
+                subprojectPathCriteria = "";
+            } else {
+                subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH
+                        + documentManager.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
+            }
+        	
+            DocumentModelList modelList = docService.query(documentManager, query
+                    + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER + subprojectPathCriteria, true, false);
             SoaNodeInformation soaNodes[] = new SoaNodeInformation[modelList.size()];
             int i = 0;
             for (DocumentModel model : modelList) {
@@ -81,21 +96,43 @@ public class RegistryApiImpl implements RegistryApi {
         }
     }
     
-    public SoaNodeInformation get() throws Exception {
+    public SoaNodeInformation get(String subprojectId) throws Exception {
         CoreSession documentManager = SessionFactory.getSession(request);
-        DocumentModel document = documentManager.getDocument(new PathRef("/default-domain/workspaces"));
+
+        subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId);
+        // TODO default or not ??
+        /*String subprojectPathCriteria;
+        if (subprojectId == null || subprojectId.length() == 0) {
+            subprojectPathCriteria = "";
+        } else {
+            subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH
+                    + documentManager.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
+        }*/
+        
+        DocumentModel document = documentManager.getDocument(new PathRef(
+                DocumentModelHelper.getWorkspacesPath(documentManager, subprojectId)));
         return SoaNodeInformationFactory.create(documentManager, document); // FIXME WorkspaceRoot is not a SoaNode
     }
 
-    public SoaNodeInformation[] get(String doctype) throws Exception {
+    public SoaNodeInformation[] get(String subprojectId, String doctype) throws Exception {
         // Initialization
         CoreSession documentManager = SessionFactory.getSession(request);
         DocumentService documentService = Framework.getService(DocumentService.class);
 
+        //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId);
+        // TODO default or not ??
+        String subprojectPathCriteria;
+        if (subprojectId == null || subprojectId.length() == 0) {
+            subprojectPathCriteria = "";
+        } else {
+            subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH
+                    + documentManager.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
+        }
+
         // Fetch SoaNode list
         String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE "
                 + "ecm:currentLifeCycleState <> 'deleted' AND "
-                + "ecm:isCheckedInVersion = 0 AND " + "ecm:isProxy = 0",
+                + "ecm:isCheckedInVersion = 0 AND " + "ecm:isProxy = 0" + subprojectPathCriteria,
                 new Object[] { doctype }, false, true);
         DocumentModelList soaNodeModelList = documentManager.query(query);
 
@@ -110,15 +147,17 @@ public class RegistryApiImpl implements RegistryApi {
         return modelsToMarshall.toArray(new SoaNodeInformation[]{});
     }
 
-    public SoaNodeInformation get(String doctype, String name) throws Exception {
-        SoaNodeId id = new SoaNodeId(doctype, name);
+    public SoaNodeInformation get(String subprojectId, String doctype, String name) throws Exception {
+        // Initialization
+        CoreSession documentManager = SessionFactory.getSession(request);
+        DocumentService documentService = Framework.getService(DocumentService.class);
+
+        subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId);
+        SoaNodeId soaNodeId = new SoaNodeId(subprojectId, doctype, name);
+        
         try {
-            // Initialization
-            CoreSession documentManager = SessionFactory.getSession(request);
-            DocumentService documentService = Framework.getService(DocumentService.class);
-    
             // Fetch SoaNode
-            DocumentModel foundDocument = documentService.find(documentManager, id);
+            DocumentModel foundDocument = documentService.find(documentManager, soaNodeId);
             if (foundDocument == null) {
                 throw new Exception("Document doesnt exist"); // TODO 404
             }
@@ -128,17 +167,19 @@ public class RegistryApiImpl implements RegistryApi {
         }
         catch (Exception e) {
         	// TODO 500
-            throw new Exception("Failed to fetch document " + id.toString(), e);
+            throw new Exception("Failed to fetch document " + soaNodeId.toString(), e);
         }
     }
 
-    public OperationResult delete(String doctype, String name) throws ClientException {
-        SoaNodeId soaNodeId = new SoaNodeId(doctype, name);
-        try {
-            // Initialization
-            CoreSession documentManager = SessionFactory.getSession(request);
-            DocumentService documentService = Framework.getService(DocumentService.class);
+    public OperationResult delete(String subprojectId, String doctype, String name) throws Exception {
+        // Initialization
+        CoreSession documentManager = SessionFactory.getSession(request);
+        DocumentService documentService = Framework.getService(DocumentService.class);
 
+        subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId);
+        SoaNodeId soaNodeId = new SoaNodeId(subprojectId, doctype, name);
+        
+        try {
             // Delete SoaNode
             documentService.delete(documentManager, soaNodeId);
 
@@ -148,15 +189,19 @@ public class RegistryApiImpl implements RegistryApi {
         }
     }
     
-    public OperationResult delete(String doctype, String name, String correlatedDoctype,
-    		String correlatedName) throws ClientException {
-        SoaNodeId soaNodeId = new SoaNodeId(doctype, name),
-                correlatedSoaNodeId = new SoaNodeId(correlatedDoctype, correlatedName);
-        try {
-            // Initialization
-            CoreSession documentManager = SessionFactory.getSession(request);
-            DocumentService documentService = Framework.getService(DocumentService.class);
+    public OperationResult delete(String subprojectId, String doctype, String name,
+            String correlatedSubprojectId, String correlatedDoctype, String correlatedName) throws Exception {
+        // Initialization
+        CoreSession documentManager = SessionFactory.getSession(request);
+        DocumentService documentService = Framework.getService(DocumentService.class);
 
+        subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId);
+        SoaNodeId soaNodeId = new SoaNodeId(subprojectId, doctype, name);
+        // TODO findCorrelated() in visibleSubprojects ??
+        correlatedSubprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, correlatedSubprojectId);
+        SoaNodeId correlatedSoaNodeId = new SoaNodeId(correlatedSubprojectId, correlatedDoctype, correlatedName);
+        
+        try {
             // Delete proxy of SoaNode
             DocumentModel correlatedSoaNodeModel = documentService.find(documentManager, correlatedSoaNodeId);
             if (correlatedSoaNodeModel != null) {

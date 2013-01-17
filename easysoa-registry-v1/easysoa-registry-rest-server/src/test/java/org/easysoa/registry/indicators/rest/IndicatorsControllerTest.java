@@ -9,8 +9,6 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.easysoa.registry.DiscoveryService;
-import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.rest.AbstractRestApiTest;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.ServiceImplementation;
@@ -23,7 +21,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 
-import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource.Builder;
 
@@ -32,12 +29,6 @@ import com.sun.jersey.api.client.WebResource.Builder;
 public class IndicatorsControllerTest extends AbstractRestApiTest {
 
     private static Logger logger = Logger.getLogger(IndicatorsControllerTest.class);
-    
-    @Inject
-    DiscoveryService discoveryService;
-
-    @Inject
-    DocumentService documentService;
 
     @Test
     public void testIndicators() throws Exception {

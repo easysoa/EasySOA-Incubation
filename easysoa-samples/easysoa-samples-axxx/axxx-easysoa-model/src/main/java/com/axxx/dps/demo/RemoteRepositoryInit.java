@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
-import org.easysoa.registry.types.ids.SoaNodeId;
-import org.easysoa.registry.facets.WsdlInfoFacet;
 import org.easysoa.registry.rest.RegistryApi;
 import org.easysoa.registry.rest.client.ClientBuilder;
 import org.easysoa.registry.rest.integration.EndpointStateService;
@@ -20,8 +18,10 @@ import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.Repository;
+import org.easysoa.registry.types.Subproject;
 import org.easysoa.registry.types.SystemTreeRoot;
 import org.easysoa.registry.types.TaggingFolder;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
@@ -29,8 +29,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
-
-import com.sun.jersey.api.client.WebResource;
 
 
 /**
@@ -509,7 +507,7 @@ public class RemoteRepositoryInit {
 	}
 	
 	public static String getSourceFolderPath(String doctype) {
-        return Repository.REPOSITORY_PATH + '/' + doctype; 
+        return Subproject.DEFAULT_SUBPROJECT_PATH + '/' + Repository.REPOSITORY_NAME + '/' + doctype; 
     }
 
 }

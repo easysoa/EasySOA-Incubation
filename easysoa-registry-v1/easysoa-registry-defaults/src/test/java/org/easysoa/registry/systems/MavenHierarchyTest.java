@@ -39,17 +39,17 @@ public class MavenHierarchyTest extends AbstractRegistryTest {
     public void testClassification() throws ClientException {
         // Create manual SystemTreeRoot
         DocumentModel strModel = documentService.createDocument(documentManager,
-                SystemTreeRoot.DOCTYPE, "MyRoot",
-                DocumentModelHelper.WORKSPACEROOT_REF.toString(), "MyRoot");
+                SystemTreeRoot.DOCTYPE, "MyRoot", DocumentModelHelper
+                .getWorkspacesPath(documentManager, defaultSubprojectId), "MyRoot");
 
         // Create System in it
         DocumentModel systemModel = documentService.create(documentManager,
-                new SoaNodeId(TaggingFolder.DOCTYPE, "MySystem"),
+                new SoaNodeId(defaultSubprojectId, TaggingFolder.DOCTYPE, "MySystem"),
                 strModel.getPathAsString());
 
         // Create Deliverable in it
         DocumentModel deliverableModel = documentService.create(documentManager,
-                new SoaNodeId(Deliverable.DOCTYPE, "org.easysoa.registry:myartifact"),
+                new SoaNodeId(defaultSubprojectId, Deliverable.DOCTYPE, "org.easysoa.registry:myartifact"),
                 systemModel.getPathAsString());
         deliverableModel.setPropertyValue(Deliverable.XPATH_NATURE, MavenDeliverable.NATURE);
         documentManager.saveDocument(deliverableModel);
@@ -59,7 +59,7 @@ public class MavenHierarchyTest extends AbstractRegistryTest {
         // Make sure that the deliverable is now in the Maven hierarchy
         
         DocumentModel istrModel = documentService.findDocument(documentManager,
-                IntelligentSystemTreeRoot.DOCTYPE, "mavenHierarchy:mavenHierarchy");
+                defaultSubprojectId, IntelligentSystemTreeRoot.DOCTYPE, "mavenHierarchy:mavenHierarchy");
         Assert.assertNotNull("A Maven hierarchy intelligent system tree root must have been created",
                 istrModel);
         

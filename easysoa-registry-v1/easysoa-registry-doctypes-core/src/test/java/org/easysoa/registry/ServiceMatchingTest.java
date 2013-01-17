@@ -26,9 +26,12 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
+import org.nuxeo.snapshot.Snapshot;
+import org.nuxeo.snapshot.Snapshotable;
 
 /**
  * 
@@ -68,9 +71,75 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     
     @Inject
     SoaMetamodelService soaMetamodelService;
+    
+    
+    //@Test
+    public void testDiscoveryAcrossVersionedSubproject() throws Exception {
+        // SUBPROJECT :
+        // creating projects
+        DocumentModel projectModel = SubprojectServiceImpl.createProject(documentManager, "MySoaProject");
 
-	private static DocumentModel foundComponent;
-	
+        DocumentModel otherProjectModel = SubprojectServiceImpl.createProject(documentManager, "MyOtherSoaProject");
+        
+        // creating subprojects
+        DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.createSubproject(documentManager,
+                "Specifications", projectModel, null);
+
+        DocumentModel realisationSubprojectModel = SubprojectServiceImpl.createSubproject(documentManager,
+                "Realisation", projectModel, list(specificationsSubprojectModel));
+
+        DocumentModel anotherRealisationSubprojectModel = SubprojectServiceImpl.createSubproject(documentManager,
+                "Realisation", projectModel, null);
+        
+        documentManager.save();
+        // - SUBPROJECT
+
+        
+        // Discover information service
+        HashMap<String, Object> isProperties = new HashMap<String, Object>();
+        isProperties.put(SubprojectNode.XPATH_SUBPROJECT, specificationsSubprojectModel.getId()); // SUBPROJECT
+        isProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV, specificationsSubprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV)); // SUBPROJECT
+        isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
+        isProperties.put(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
+        DocumentModel foundInfoServ = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_ID, isProperties, null);
+        
+        // Discover component
+        HashMap<String, Object> compProperties = new HashMap<String, Object>();
+        compProperties.put(SubprojectNode.XPATH_SUBPROJECT, specificationsSubprojectModel.getId()); // SUBPROJECT
+        compProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV, specificationsSubprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV)); // SUBPROJECT
+        // requires JAXWS (else would override IS's which would not be matched anymore ; TODO Q otherwise ??) :
+        compProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
+        compProperties.put(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE, foundInfoServ.getId());
+        DocumentModel foundComponent = discoveryService.runDiscovery(documentManager, COMPONENT_ID, compProperties, null);
+
+        // Create versioned snapshot out of Specifications
+        Snapshotable snapshotable = specificationsSubprojectModel.getAdapter(Snapshotable.class);
+        Snapshot snapshot = snapshotable.createSnapshot(VersioningOption.MINOR);
+        // TODO TODOOOOOOOOOO update IDs in listener of event ABOUT_TO_CREATE_LEAF_VERSION_EVENT
+        //DocumentModel specificationsSubprojectV01Model = snapshot.getDocument();
+        DocumentModel specificationsSubprojectV01Model = documentManager.getLastDocumentVersion(new IdRef(((String[]) realisationSubprojectModel
+                .getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS))[0])); // TODO updateToVersion
+        realisationSubprojectModel.setPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS, new String[]{ specificationsSubprojectV01Model.getId() });
+        SubprojectServiceImpl.computeAndSetVisibleSubprojects(documentManager, realisationSubprojectModel); //TODO auto
+        documentManager.save();
+
+        DocumentModel foundInfoServV01 = documentService.find(documentManager, new SoaNodeId(specificationsSubprojectV01Model.getId(),
+                InformationService.DOCTYPE, "nsxxx:namexxx"));
+        Assert.assertNotNull(foundInfoServV01);
+        Assert.assertNotSame("Once versioned, InformationService should have different Nuxeo ID",
+                foundInfoServ.getId(), foundInfoServV01.getId());
+        
+        // Discover service impl
+        HashMap<String, Object> implProperties = new HashMap<String, Object>();
+        implProperties.put(SubprojectNode.XPATH_SUBPROJECT, realisationSubprojectModel.getId()); // SUBPROJECT
+        implProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV, realisationSubprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV)); // SUBPROJECT
+        implProperties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
+        implProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
+        DocumentModel foundImpl = discoveryService.runDiscovery(documentManager, FIRST_SERVICEIMPL_ID, implProperties, null);
+        
+        Assert.assertEquals("Created impl must be linked to existing versioned matching information service", foundInfoServV01.getId(),
+                foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
+    }
 	
     @Test
     public void testSimpleDiscovery() throws Exception {
@@ -109,7 +178,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
     	isProperties.put(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
     	DocumentModel foundInfoServ = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_ID, isProperties, null);
-
+    	
     	// Discover component
     	HashMap<String, Object> compProperties = new HashMap<String, Object>();
     	compProperties.put(SubprojectNode.XPATH_SUBPROJECT, specificationsSubprojectModel.getId()); // SUBPROJECT
@@ -117,7 +186,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	// requires JAXWS (else would override IS's which would not be matched anymore ; TODO Q otherwise ??) :
     	compProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
     	compProperties.put(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE, foundInfoServ.getId());
-    	foundComponent = discoveryService.runDiscovery(documentManager, COMPONENT_ID, compProperties, null);
+    	DocumentModel foundComponent = discoveryService.runDiscovery(documentManager, COMPONENT_ID, compProperties, null);
     	
     	// check
         foundInfoServ = documentService.find(documentManager, INFORMATIONSERVICE_ID);
@@ -136,15 +205,16 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         
         // SUBPROJECT :
         // Discover another impl in a separate subproject
-        implProperties.put(SubprojectNode.XPATH_SUBPROJECT, anotherRealisationSubprojectModel.getId());
-        implProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV, specificationsSubprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV));
-        discoveryService.runDiscovery(documentManager, SECOND_SERVICEIMPL_SEPARATE_SUBPROJECT_ID, implProperties, null);
-        // - SUBPROJECT
+        HashMap<String, Object> anotherImplProperties = new HashMap<String, Object>(implProperties);
+        anotherImplProperties.put(SubprojectNode.XPATH_SUBPROJECT, anotherRealisationSubprojectModel.getId());
+        anotherImplProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV, anotherRealisationSubprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV));
+        discoveryService.runDiscovery(documentManager, SECOND_SERVICEIMPL_SEPARATE_SUBPROJECT_ID, anotherImplProperties, null);
 
         // check
-        foundImpl = documentService.find(documentManager, SECOND_SERVICEIMPL_ID);
-        Assert.assertEquals("Separate subproject impl must not be linked to existing matching information service", foundInfoServ.getId(),
+        foundImpl = documentService.find(documentManager, SECOND_SERVICEIMPL_SEPARATE_SUBPROJECT_ID);
+        Assert.assertEquals("Separate subproject impl must not be linked to existing matching information service", null,
                 foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
+        // - SUBPROJECT
     	
     	// Discover a non matching impl
     	HashMap<String, Object> impl3Properties = new HashMap<String, Object>();
@@ -267,7 +337,12 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         //Assert.assertEquals("Created endpoint must be linked to existing matching information service", foundInfoServ.getId(),
         //		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
 
-        // Discover endpoint that matches is (on provided portType), but no impl
+        // Discover endpoint that matches is (on provided portType & disco'd component), but no impl
+        HashMap<String, Object> compProperties = new HashMap<String, Object>();
+        // requires JAXWS (else would override IS's which would not be matched anymore ; TODO Q otherwise ??) :
+        compProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
+        compProperties.put(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE, foundInfoServ.getId());
+        DocumentModel foundComponent = discoveryService.runDiscovery(documentManager, COMPONENT_ID, compProperties, null);
         epProperties.put(Endpoint.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS); // TODO better ?!?
         epProperties.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
         epProperties.put(Endpoint.XPATH_COMPONENT_ID, foundComponent.getId());

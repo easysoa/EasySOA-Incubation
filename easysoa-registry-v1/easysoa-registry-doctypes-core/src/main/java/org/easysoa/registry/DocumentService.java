@@ -28,14 +28,19 @@ public interface DocumentService {
     static final String NON_PROXIES_QUERY_FILTER = " AND " + NXQL.ECM_ISPROXY + " = 1";
 
     /**
-     * Helper for general document creation.
+     * Helper for non-SOA nodes documents (ex. SystemTreeRoot, IntelligentSystemTreeRoot...)
      * Direct use is not recommended for SoaNode types (whose auto reclassification requires soaId).
      * Used to create SOA roots and in tests.
-     * 
+     * @param documentManager
+     * @param doctype
+     * @param name
+     * @param parentPath should be below a Subproject, use DocumentHelper or RepositoryHelper to get such a path
+     * @param title
      * @return
      * @throws ClientException
      */
-    DocumentModel createDocument(CoreSession documentManager, String doctype, String name,
+    DocumentModel createDocument(CoreSession documentManager,
+            String doctype, String name,
             String parentPath, String title) throws ClientException;
     
 
@@ -93,8 +98,16 @@ public interface DocumentService {
      */
     boolean deleteProxy(CoreSession documentManager, SoaNodeId soaNodeId, String parentPath) throws ClientException;
     
-    DocumentModel findDocument(CoreSession documentManager, String type, String name)
-    throws ClientException;
+    /**
+     * To be used for non-SOA node documents (ex. SystemTreeRoot, IntelligentSystemTreeRoot...)
+     * @param documentManager
+     * @param subprojectId
+     * @param type
+     * @param name
+     * @return
+     * @throws ClientException
+     */
+    DocumentModel findDocument(CoreSession documentManager, String subprojectId, String type, String name) throws ClientException;
 
     /**
      * Finds any document given its type and name
@@ -150,10 +163,58 @@ public interface DocumentService {
     boolean hasChild(CoreSession documentManager, DocumentModel document, SoaNodeId childId)
             throws ClientException;
 
-    String getSourceFolderPath(String doctype);
+    
+    /**
+     * Calls getSourceFolderPath(String subprojectId, String doctype)
+     * @param soaNodeDocument
+     * @return
+     * @throws ClientException 
+     * @throws PropertyException 
+     */
+    String getSourceFolderPath(CoreSession documentManager, SoaNodeId soaNodeId) throws PropertyException, ClientException;
 
-    void ensureSourceFolderExists(CoreSession documentManager, String doctype)
-            throws ClientException;
+    /**
+     * Uses docType & spnode:subproject
+     * calls getSourceFolderPath(String subprojectId, String doctype)
+     * @param soaNodeDocument
+     * @return
+     * @throws ClientException 
+     * @throws PropertyException 
+     */
+    String getSourceFolderPath(CoreSession documentManager, DocumentModel spNode) throws PropertyException, ClientException;
+
+    /**
+     * Base version of getSourceFolderPath()
+     * @param subprojectId
+     * @param doctype
+     * @return
+     * @throws ClientException 
+     * @throws PropertyException 
+     */
+    String getSourceFolderPath(CoreSession documentManager, String subprojectId, String doctype) throws PropertyException, ClientException;
+
+    /**
+     * Get or create source folder for type in subproject
+     * Calls ensureSourceFolderExists(CoreSession documentManager, String subprojectId, String doctype)
+     * @param documentManager
+     * @param spNode
+     * @return
+     * @throws ClientException
+     */
+    DocumentModel getSourceFolder(CoreSession documentManager,
+            DocumentModel spNode) throws ClientException;
+
+    /**
+     * Get or create source folder for type in subproject
+     * Base version of getSourceFolder()
+     * @param documentManager
+     * @param subprojectId
+     * @param doctype
+     * @return
+     * @throws ClientException
+     */
+    DocumentModel getSourceFolder(CoreSession documentManager,
+            String subprojectId, String doctype) throws ClientException;
 
     SoaNodeId createSoaNodeId(DocumentModel model) throws PropertyException, ClientException;
     

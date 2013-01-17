@@ -43,11 +43,11 @@
         <artifactId>postgresql</artifactId>
         <version>9.1-901-1.jdbc4</version>
     </dependency>
-    <!-- dependency>
+    <dependency>
         <groupId>mysql</groupId>
         <artifactId>mysql-connector-java</artifactId>
         <version>5.1.14</version>
-    </dependency -->
+    </dependency>
     <dependency>
     	<groupId>c3p0</groupId>
     	<artifactId>c3p0</artifactId>
@@ -128,6 +128,24 @@
                 </exclusion>
             </exclusions>
 	</dependency>
+  <!-- talend  Service Activity monitoring -->
+  <dependency>
+    <groupId>org.talend.esb</groupId>
+    <artifactId>sam-agent</artifactId>
+    <version>5.0.2</version>
+  </dependency>
+  <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-tools-common</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+
+     <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-ws-addr</artifactId>
+      <version>${cxf.version}</version>
+    </dependency>
+<!-- end  talend  Service Activity monitoring -->
   </dependencies>
 
   <build>

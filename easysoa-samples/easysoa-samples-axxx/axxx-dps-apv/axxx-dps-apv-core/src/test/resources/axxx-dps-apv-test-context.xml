@@ -13,6 +13,7 @@
  	http://cxf.apache.org/transports/http/configuration http://cxf.apache.org/schemas/configuration/http-conf.xsd">
  	
  	<import resource="classpath:axxx-dps-apv-core-context.xml"/>
+
  	
  	<!-- TEST CONFIGURATION (OVERRIDE) -->
 	<bean id="com.axxx.dps.apv.configurer"
@@ -20,6 +21,7 @@
 		<property name="locations">
 			<list>
 				<value>classpath:axxx-dps-apv.properties</value>
+				<value>classpath:agent.properties</value>
 				<value>classpath:axxx-dps-apv-test.properties</value><!-- overrides -->
 			</list>
 		</property>
@@ -44,6 +46,9 @@
  	<jaxws:client id="com.axxx.dps.apv.ws.PrecomptePartenaireWebServiceTestClient"
  		serviceClass="com.axxx.dps.apv.ws.PrecomptePartenaireWebService" 
  		address="${axxx.dps.apv.ws.baseUrl}/PrecomptePartenaireService" >
+ 		<jaxws:features>
+         <ref bean="eventFeature"/>
+      </jaxws:features>
  	</jaxws:client>
 	
 </beans>

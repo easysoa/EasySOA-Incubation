@@ -26,6 +26,7 @@
 		<property name="locations">
 			<list>
 				<value>classpath:axxx-dps-apv.properties</value>
+				<value>classpath:agent.properties</value>
 			</list>
 		</property>
 		<property name="ignoreResourceNotFound" value="false" />
@@ -37,6 +38,7 @@
 	<import resource="classpath:META-INF/cxf/cxf.xml"/>
 	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml"/>
 	<import resource="classpath:META-INF/cxf/cxf-extension-http-jetty.xml"/>
+	<import resource="classpath:META-INF/tesb/agent-context.xml" /> 
 
 	<cxf:bus>
 		<cxf:features>
@@ -50,8 +52,13 @@
 
 	<jaxws:endpoint id="com.axxx.dps.apv.ws.precomptePartenaireWebServiceImplEndpoint"
 		implementor="#com.axxx.dps.apv.ws.precomptePartenaireWebServiceImpl"
-		address="${axxx.dps.apv.ws.baseUrl}/PrecomptePartenaireService" />
-	
+		address="${axxx.dps.apv.ws.baseUrl}/PrecomptePartenaireService">
+	 <!-- Talend feature -->
+        <jaxws:features>
+          <ref bean="eventFeature"/>
+        </jaxws:features>
+      </jaxws:endpoint>
+
  	<jaxws:client id="com.ancv.form.ws.esbContactSvcClient"
  		serviceClass="fr.axxx.pivotal.ContactSvcSoap"
  		address="${axxx.dps.apv.ws.esb.baseUrl}/ContactSvc.asmx" >

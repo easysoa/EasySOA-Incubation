@@ -15,6 +15,7 @@
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="locations">
 			<list>
+				<value>classpath:agent.properties</value>
 				<value>classpath:axxx-dps-apv.properties</value>
 				<value>classpath:axxx-dps-apv-deploy.properties</value><!-- for deployment time overrides -->
 			</list>

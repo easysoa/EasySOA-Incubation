@@ -47,7 +47,7 @@ public class SubprojectNodeListener implements EventListener {
         
         if (sourceDocument.hasSchema("subproject")) {
             // TODO NOO needs to be created first to get id
-            //SubprojectServiceImpl.onSubprojectAboutToCreate(documentManager, sourceDocument, null);
+            SubprojectServiceImpl.onSubprojectAboutToCreate(documentManager, sourceDocument);
             // TODO also on change ?!?
             
         } else {

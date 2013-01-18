@@ -30,15 +30,128 @@
         </contentView>
       </contentViews>
     </type>
-    <type id="WorkspaceRoot" coretype="WorkspaceRoot">
+    <!-- type id="WorkspaceRoot" coretype="WorkspaceRoot">
+      <label>Projects</label>
+      <icon>/icons/workspace.gif</icon>
+      <bigIcon>/icons/workspace_100.png</bigIcon>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>files</layout>
+      </layouts>
+      <layouts mode="listing">
+        <layout>document_listing</layout>
+        <layout>document_listing_compact_2_columns</layout>
+        <layout>document_listing_icon_2_columns</layout>
+        <layout>default_summary_layout</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
       <subtypes>
+        <type>Project</type>
         <type>SystemTreeRoot</type>
         <type>IntelligentSystemTreeRoot</type>
+      </subtypes>
+    </type -->
+    <type id="ProjectRoot" coretype="Domain">
+      <label>Domain</label>
+      <icon>/icons/workspace.gif</icon>
+      <bigIcon>/icons/workspace_100.png</bigIcon>
+      <category>Collaborative</category>
+      <description>ProjectRoot.description</description>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>files</layout>
+      </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
+      <layouts mode="listing">
+        <layout>document_listing</layout>
+        <layout>document_listing_compact_2_columns</layout>
+        <layout>document_listing_icon_2_columns</layout>
+        <layout>default_summary_layout</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
+      <subtypes>
+        <type>Project</type>
       </subtypes>
     </type>
     <type id="Workspace" coretype="Workspace">
       <subtypes>
         <type>SystemTreeRoot</type>
+      </subtypes>
+    </type>
+    <type id="Project" coretype="Project">
+      <label>Project</label>
+      <icon>/icons/workspace.gif</icon>
+      <bigIcon>/icons/workspace_100.png</bigIcon>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>files</layout>
+      </layouts>
+      <layouts mode="listing">
+        <layout>document_listing</layout>
+        <layout>document_listing_compact_2_columns</layout>
+        <layout>document_listing_icon_2_columns</layout>
+        <layout>default_summary_layout</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
+      <subtypes>
+        <type>Subproject</type>
+      </subtypes>
+    </type>
+    <type id="Subproject" coretype="Subproject">
+      <label>Subproject</label>
+      <icon>/icons/workspace.gif</icon>
+      <bigIcon>/icons/workspace_100.png</bigIcon>
+      <default-view>view_documents</default-view>
+      <layouts mode="any">
+        <layout>heading</layout>
+        <layout>files</layout>
+      </layouts>
+      <layouts mode="listing">
+        <layout>document_listing</layout>
+        <layout>document_listing_compact_2_columns</layout>
+        <layout>document_listing_icon_2_columns</layout>
+        <layout>default_summary_layout</layout>
+      </layouts>
+      <contentViews category="content">
+        <contentView>document_content</contentView>
+      </contentViews>
+      <contentViews category="trash_content">
+        <contentView showInExportView="false">
+          document_trash_content
+        </contentView>
+      </contentViews>
+      <subtypes>
+        <type>File</type>
+        <type>Folder</type>
+        <type>SystemTreeRoot</type>
+        <type>IntelligentSystemTreeRoot</type>
       </subtypes>
     </type>
     <type id="SystemTreeRoot" coretype="SystemTreeRoot">

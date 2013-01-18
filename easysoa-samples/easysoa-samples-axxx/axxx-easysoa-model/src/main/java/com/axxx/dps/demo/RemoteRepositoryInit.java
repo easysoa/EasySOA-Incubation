@@ -21,8 +21,6 @@ import org.easysoa.registry.types.Project;
 import org.easysoa.registry.types.Repository;
 import org.easysoa.registry.types.Subproject;
 import org.easysoa.registry.types.SubprojectNode;
-import org.easysoa.registry.types.SystemTreeRoot;
-import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
@@ -105,15 +103,24 @@ public class RemoteRepositoryInit {
 		/*String specificationsPath = createDocument("Folder", "1. Spécifications", projectPath);
 		createDocument("Folder", "2. Réalisation", projectPath);
 		createDocument("Folder", "3. Déploiements", projectPath);*/
+        
         String specificationsPath = projectPath + '/' + Subproject.SPECIFICATIONS_SUBPROJECT_NAME;
         //String specificationsSubprojectId = (String) getDocByPath(specificationsPath).getProperties().get("spnode:subproject");
-        String specificationsSubprojectId = (String) getDocByPath(specificationsPath).getId();
-        String realisationPath = projectPath + '/' + Subproject.REALISATION_SUBPROJECT_NAME;
+        Document specificationsSubprojectDoc = getDocByPath(specificationsPath);
+        String specificationsSubprojectId = (String) specificationsSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
+        
+        String realisationPath = createDocument(Subproject.DOCTYPE, Subproject.REALISATION_SUBPROJECT_NAME, projectPath,
+                Subproject.XPATH_PARENT_SUBPROJECTS + "=" + specificationsSubprojectDoc.getId());
+        ///String realisationPath = projectPath + '/' + Subproject.REALISATION_SUBPROJECT_NAME;
         //String realisationSubprojectId = (String) getDocByPath(realisationPath).getProperties().get("spnode:subproject");
-        String realisationSubprojectId = (String) getDocByPath(realisationPath).getId();
-        String deploiementPath = projectPath + '/' + Subproject.DEPLOIEMENT_SUBPROJECT_NAME;
+        Document realisationSubprojectDoc = getDocByPath(realisationPath);
+        String realisationSubprojectId = (String) realisationSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
+
+        String deploiementPath = createDocument(Subproject.DOCTYPE, Subproject.DEPLOIEMENT_SUBPROJECT_NAME, projectPath,
+                Subproject.XPATH_PARENT_SUBPROJECTS + "=" + realisationSubprojectDoc.getId());
+        ///String deploiementPath = projectPath + '/' + Subproject.DEPLOIEMENT_SUBPROJECT_NAME;
         //String deploiementSubprojectId = (String) getDocByPath(deploiementPath).getProperties().get("spnode:subproject");
-        String deploiementSubprojectId = (String) getDocByPath(deploiementPath).getId();
+        String deploiementSubprojectId = (String) getDocByPath(deploiementPath).getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
 
         //String platformArchitecturePath = "/default-domain/repository/Platform";
         String platformArchitecturePath = specificationsPath + "/Platform";//TODO within project or out (i.e. global) ??

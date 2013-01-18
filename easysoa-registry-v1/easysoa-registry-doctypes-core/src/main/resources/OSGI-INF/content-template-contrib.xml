@@ -17,17 +17,33 @@
 
     <factoryBinding name="DomainFactory" factoryName="SimpleTemplateFactory" targetType="Domain">
       <template>
-        <templateItem typeName="WorkspaceRoot" id="workspaces" title="Hierarchies" description="Service Registry"/>
+        <!-- templateItem typeName="WorkspaceRoot" id="workspaces" title="Projects" description="Service Registry"/ -->
         <templateItem typeName="SectionRoot" id="sections" title="Publications" description="Root of sections"/>
-<!--         <templateItem typeName="TemplateRoot" id="templates" title="Templates" description="Root of workspaces templates"/> -->
+        <templateItem typeName="TemplateRoot" id="templates" title="Templates" description="Root of workspaces templates"/>
       </template>
     </factoryBinding>
 
-    <factoryBinding name="WorkspaceRootFactory" factoryName="SimpleTemplateFactory" targetType="WorkspaceRoot">
+    <factoryBinding name="DomainFactory" factoryName="SimpleTemplateFactory" targetType="TemplateRoot">
+      <template>
+        <templateItem typeName="Project" id="projectTemplate" title="Project Template" description="Project Template"/>
+      </template>
+    </factoryBinding>
+
+    <factoryBinding name="DomainFactory" factoryName="SimpleTemplateFactory" targetType="Project">
+      <template>
+        <templateItem typeName="Subproject" id="Specifications" title="1. Specifications" description="Specifications"/>
+        <!-- LATER also init those ; for not impossible with parent subprojects -->
+        <!-- templateItem typeName="Subproject" id="Realisation" title="2. Realisation" description="Realisation"/>
+        <templateItem typeName="Subproject" id="Deploiement" title="3. Deploiement" description="Deploiement"/ -->
+      </template>
+    </factoryBinding>
+
+    <!-- SUBPROJECT TODO remove -->
+    <!-- factoryBinding name="WorkspaceRootFactory" factoryName="SimpleTemplateFactory" targetType="WorkspaceRoot">
       <template>
         <templateItem typeName="SystemTreeRoot" id="mysoa" title="My SOA documents" description="Default SOA document tree"/>
       </template>
-    </factoryBinding>
+    </factoryBinding -->
 
   </extension>
 

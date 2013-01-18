@@ -168,14 +168,14 @@ public class RepositoryManagementListener implements EventListener {
 		// If a document has been created through the Nuxeo UI, move it to the repository and leave only a proxy
 		String sourceFolderPath = documentService.getSourceFolderPath(documentManager, sourceDocument);
 		DocumentModel parentModel = documentManager.getDocument(sourceDocument.getParentRef());
+		
+		SoaNodeId soaNodeId = documentService.createSoaNodeId(sourceDocument);
 		if (!sourceDocument.isProxy() && !parentModel.getPathAsString().equals(sourceFolderPath)
-		        || sourceDocument.isProxy() && parentModel.hasSchema(SoaNode.SCHEMA)) {
-            // Build SoaNodeId
-            SoaNodeId soaNodeId = documentService.createSoaNodeId(sourceDocument);
-            if (!sourceDocument.getPathAsString().startsWith(
-                    RepositoryHelper.getRepositoryPath(documentManager, soaNodeId.getSubprojectId()))) {
-            
-		    documentService.getSourceFolder(documentManager, sourceDocument);
+		        || sourceDocument.isProxy() && parentModel.hasSchema(SoaNode.SCHEMA)
+		        && !sourceDocument.getPathAsString().startsWith(
+		                RepositoryHelper.getRepositoryPath(documentManager, soaNodeId.getSubprojectId()))) {
+		    
+		    documentService.getSourceFolder(documentManager, sourceDocument); // ensuring it exists
 		    
 		    DocumentModel repositoryDocument = documentService.find(documentManager, soaNodeId);
 		    if (repositoryDocument != null) {
@@ -199,8 +199,6 @@ public class RepositoryManagementListener implements EventListener {
 		        parentModel = documentService.find(documentManager, documentService.createSoaNodeId(parentModel));
 		    }
 		    documentManager.createProxy(sourceDocument.getRef(), parentModel.getRef());
-		    
-            }
 		}
 		documentManager.save();//TODO ??
 		

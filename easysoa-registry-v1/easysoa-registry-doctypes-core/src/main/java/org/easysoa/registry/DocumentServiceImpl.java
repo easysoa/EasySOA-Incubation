@@ -136,9 +136,9 @@ public class DocumentServiceImpl implements DocumentService {
         String subprojectId = SubprojectServiceImpl.setDefaultSubprojectIfNone(documentManager, identifier);
         String doctype = identifier.getType();
         String name = identifier.getName();
-        getSourceFolder(documentManager, subprojectId, doctype);
+        DocumentModel sourceFolder = getSourceFolder(documentManager, subprojectId, doctype); // ensuring it exists at the same time
         DocumentModel documentModel = documentManager.createDocumentModel(doctype);
-        documentModel.setPathInfo(getSourceFolderPath(documentManager, subprojectId, doctype), safeName(name));
+        documentModel.setPathInfo(sourceFolder.getPathAsString(), safeName(name));
         documentModel.setPropertyValue(SoaNode.XPATH_TITLE, name);
         documentModel.setPropertyValue(SoaNode.XPATH_SOANAME, name);
         documentModel.setPropertyValue(SubprojectNode.XPATH_SUBPROJECT, subprojectId);

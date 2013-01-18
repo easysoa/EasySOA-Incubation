@@ -39,7 +39,7 @@ import org.nuxeo.snapshot.Snapshotable;
 public class ServiceMatchingTest extends AbstractRegistryTest {
 
 	@SuppressWarnings("unused")
-    private static Logger logger = Logger.getLogger(DiscoveryServiceTest.class);
+    private static Logger logger = Logger.getLogger(ServiceMatchingTest.class);
 
     public static final SoaNodeId FIRST_SERVICEIMPL_ID = 
     		new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx");
@@ -74,18 +74,24 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         DocumentModel projectModel = SubprojectServiceImpl.createProject(documentManager, "MySoaProject");
 
         DocumentModel otherProjectModel = SubprojectServiceImpl.createProject(documentManager, "MyOtherSoaProject");
+
+        documentManager.save(); // to trigger creation of auto Specifications subprojects
         
         // creating subprojects
-        DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.createSubproject(
-                documentManager, "Specifications", projectModel, null);
-        String specificationsSubprojectId = SubprojectServiceImpl.subprojectToId(specificationsSubprojectModel);
+        // reusing auto created Specifications subproject (else guard explodes) :
+        // TODO the same for the others
+        ///DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.createSubproject(
+        ///        documentManager, "Specifications", projectModel, null);
+        DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.getSubprojectByName(
+                documentManager, projectModel, "Specifications");
+        String specificationsSubprojectId = SubprojectServiceImpl.buildSubprojectId(specificationsSubprojectModel);
 
         DocumentModel realisationSubprojectModel = SubprojectServiceImpl.createSubproject(
                 documentManager, "Realisation", projectModel, list(specificationsSubprojectModel));
-        String realisationSubprojectId = SubprojectServiceImpl.subprojectToId(realisationSubprojectModel);
+        String realisationSubprojectId = SubprojectServiceImpl.buildSubprojectId(realisationSubprojectModel);
 
         DocumentModel anotherRealisationSubprojectModel = SubprojectServiceImpl.createSubproject(
-                documentManager, "Realisation", projectModel, null);
+                documentManager, "RealisationPhase2", projectModel, null);
         
         documentManager.save();
         
@@ -123,7 +129,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
                 .getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS))[0])); // TODO updateToVersio
         ///realisationSubprojectModel.setPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS, new String[]{ specificationsSubprojectV01Model.getId() });
         DocumentModel foundInfoServV01 = documentService.find(documentManager, new SoaNodeId(
-                SubprojectServiceImpl.subprojectToId(specificationsSubprojectV01Model),
+                SubprojectServiceImpl.buildSubprojectId(specificationsSubprojectV01Model),
                 InformationService.DOCTYPE, "nsxxx:namexxx"));
         Assert.assertNotNull(foundInfoServV01);
         Assert.assertNotSame("Once versioned, InformationService should have different Nuxeo ID",
@@ -133,7 +139,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
                 documentManager, "Realisation", projectModel, list(specificationsSubprojectV01Model));
         
         // Discover service impl
-        String versioningRealisationSubprojectId = SubprojectServiceImpl.subprojectToId(specificationsSubprojectModel);
+        String versioningRealisationSubprojectId = SubprojectServiceImpl.buildSubprojectId(specificationsSubprojectModel);
         SoaNodeId CSP_FIRST_SERVICEIMPL_ID = new SoaNodeId(versioningRealisationSubprojectId,
                 ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx");
         HashMap<String, Object> implProperties = new HashMap<String, Object>();
@@ -158,20 +164,21 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         documentManager.save(); // to trigger auto init
         
         // creating subprojects
-        // reusing auto created (template) Specifications TODO the same for the others
-        //DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.createSubproject(documentManager,
-        //        "Specifications", projectModel, null);
-        DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.getSubprojectById(documentManager,
-                projectModel.getPathAsString() + '/' + Subproject.SPECIFICATIONS_SUBPROJECT_NAME + "_v");
-        String specificationsSubprojectId = SubprojectServiceImpl.subprojectToId(specificationsSubprojectModel);
+        // reusing auto created Specifications subproject (else guard explodes) :
+        // TODO the same for the others
+        ///DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.createSubproject(
+        ///        documentManager, "Specifications", projectModel, null);
+        DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.getSubprojectByName(
+                documentManager, projectModel, "Specifications");
+        String specificationsSubprojectId = SubprojectServiceImpl.buildSubprojectId(specificationsSubprojectModel);
 
         DocumentModel realisationSubprojectModel = SubprojectServiceImpl.createSubproject(documentManager,
                 "Realisation", projectModel, list(specificationsSubprojectModel));
-        String realisationSubprojectId = SubprojectServiceImpl.subprojectToId(realisationSubprojectModel);
+        String realisationSubprojectId = SubprojectServiceImpl.buildSubprojectId(realisationSubprojectModel);
 
         DocumentModel anotherRealisationSubprojectModel = SubprojectServiceImpl.createSubproject(documentManager,
                 "RealisationPhase2", projectModel, null);
-        String anotherRealisationSubprojectId = SubprojectServiceImpl.subprojectToId(anotherRealisationSubprojectModel);
+        String anotherRealisationSubprojectId = SubprojectServiceImpl.buildSubprojectId(anotherRealisationSubprojectModel);
         
         documentManager.save();
         // cross-subproject ids

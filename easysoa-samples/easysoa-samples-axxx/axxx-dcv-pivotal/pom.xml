@@ -300,6 +300,7 @@
 	              <username>${easysoa.discovery.code.username}</username>
 	              <password>${easysoa.discovery.code.password}</password>
 	              <application>${easysoa.discovery.code.application}</application>
+                      <subproject>${easysoa.discovery.code.subproject}</subproject>
 	            </configuration>
 	          </execution>
 	        </executions>

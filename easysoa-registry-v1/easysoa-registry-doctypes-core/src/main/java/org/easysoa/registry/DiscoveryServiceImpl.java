@@ -14,9 +14,9 @@ import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.SoaNode;
-import org.easysoa.registry.types.Subproject;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
+import org.easysoa.registry.utils.NuxeoListUtils;
 import org.nuxeo.common.utils.IdUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -58,7 +58,11 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         // (EndpointMatchingService.linkServiceImplementation()), will be saved which triggers loop
         DocumentModel subprojectDocModel = SubprojectServiceImpl
                 .getSubprojectOrCreateDefault(documentManager, subproject);
-        //SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, identifier.getSubprojectId())// TODO rather
+        if (subprojectDocModel == null) {
+            throw new Exception("EasySOA DiscoveryService : can't find given subproject "
+                    + subproject + " (create it first), aborting discovery of " + identifier);
+            // TODO rather auto creation if not exist mode ??
+        }
         
         // complete disco'd SOA node by subproject infos
         ///properties.put(SubprojectNode.XPATH_PARENT_SUBPROJECTS, subprojectDocModel.getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS));
@@ -107,7 +111,8 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         Map<String, Serializable> nuxeoProperties = toNuxeoProperties(properties);
         
         // SUBPROJECT :
-        if (nuxeoProperties == null) {
+        // NB. about spnode props : id is provided through SoaNodeId, visible are computed on aboutToCreate
+        /*if (nuxeoProperties == null) {
             // for subproject props
             // TODO may trigger event loop, try better for setting subproject props:
             // only if incomplete or change, in event listener...
@@ -115,7 +120,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         }
         nuxeoProperties.put(SubprojectNode.XPATH_SUBPROJECT, subprojectDocModel.getPropertyValue(Subproject.XPATH_SUBPROJECT));
         nuxeoProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS, subprojectDocModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS)); // TODO or recompute ??
-        nuxeoProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV, subprojectDocModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV)); // TODO or recompute ??
+        nuxeoProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV, subprojectDocModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV)); // TODO or recompute ??*/
         // - SUBPROJECT
         
         documentModel = createOrUpdate(documentManager, documentService,
@@ -140,46 +145,51 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         boolean shouldCreate = false;
         if (documentModel == null) {
             shouldCreate = true;
-            documentModel = documentService.newSoaNodeDocument(documentManager, identifier);
+            documentModel = documentService.newSoaNodeDocument(documentManager, identifier, nuxeoProperties);
+
+            // only now that props are OK, create or save document
+            // (required below for handling parents by creating proxies to it)
+            documentModel = documentManager.createDocument(documentModel);
         }
         else {
             SoaMetamodelService metamodelService = Framework.getService(SoaMetamodelService.class);
             metamodelService.validateWriteRightsOnProperties(documentModel, nuxeoProperties);
-        }
-        
-        // Set properties
-        boolean changed = false;
-        if (nuxeoProperties != null) {
-            for (Entry<String, Serializable> nuxeoProperty : nuxeoProperties.entrySet()) {
-                // FIXME Non-serializable error handling
-                String propertyKey = nuxeoProperty.getKey();
-                Serializable propertyValue = nuxeoProperty.getValue();
-                Serializable docPropertyValue = documentModel.getPropertyValue(propertyKey);
-                if (dontOverrideProperties && docPropertyValue != null
-                    // in dontOverrideProperties (ex.matchFirst mode), only set if doesn't exist yet
-                    || propertyEquals(docPropertyValue, propertyValue)) { // don't set if the same
-                    continue;
+
+            // Set properties
+            boolean changed = false;
+            if (nuxeoProperties != null) {
+                for (Entry<String, Serializable> nuxeoProperty : nuxeoProperties.entrySet()) {
+                    // FIXME Non-serializable error handling
+                    String propertyKey = nuxeoProperty.getKey();
+                    Serializable propertyValue = nuxeoProperty.getValue();
+                    Serializable docPropertyValue = documentModel.getPropertyValue(propertyKey);
+                    if (dontOverrideProperties && docPropertyValue != null
+                        // in dontOverrideProperties (ex.matchFirst mode), only set if doesn't exist yet
+                        || propertyEquals(docPropertyValue, propertyValue)) { // don't set if the same
+                        continue;
+                    }
+                    documentModel.setPropertyValue(propertyKey, propertyValue);
+                    changed = true;
                 }
-                documentModel.setPropertyValue(propertyKey, propertyValue);
-                changed = true;
+            }
+            
+            if (changed) {
+                // only now that props are OK, create or save document
+                // (required below for handling parents by creating proxies to it)
+                
+                // don't save if properties null, else triggers event loop with matching
+                // (findAndMatchServiceImplementation, linkInformationServiceThroughPlaceholder,
+                // linkServiceImplementation, runDiscovery)
+                documentModel = documentManager.saveDocument(documentModel);
             }
         }
         
-        // only now that props are OK, create or save document
-        // (required below for handling parents by creating proxies to it)
-        if (shouldCreate) {
-            documentModel = documentManager.createDocument(documentModel);
-        } else if (changed) {
-            // don't save if properties null, else triggers event loop with matching
-            // (findAndMatchServiceImplementation, linkInformationServiceThroughPlaceholder,
-            // linkServiceImplementation, runDiscovery)
-            documentModel = documentManager.saveDocument(documentModel);
-        }
         return documentModel;
     }
 
     /**
      * WARNING may be costly !
+     * Both must be in their Nuxeo better form (ex. String[] and not List...)
      * TODO better handle all cases of complex properties : types, depth, lists...
      * @param docPropertyValue
      * @param propertyValue
@@ -191,15 +201,28 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         }
         if (docPropertyValue != null) {
             if (docPropertyValue instanceof String[]) {
-                // FIXME better handle all cases of complex properties : types, depth, lists...
-                return Arrays.deepEquals((String[]) docPropertyValue, (String[]) propertyValue);
-            } else {
+                // FIXME better handle all cases of complex properties : types, depth, lists, maps (for operations)...
+                if (propertyValue instanceof String[]) {
+                    return Arrays.deepEquals((String[]) docPropertyValue, (String[]) propertyValue);
+                } else if (propertyValue instanceof List) {
+                    return Arrays.deepEquals((String[]) docPropertyValue, ((List<?>) propertyValue).toArray(NuxeoListUtils.EMPTY_STRING_ARRAY));
+                } else {
+                    return false;//TODO
+                }
+            } else {//TODO
                 return docPropertyValue.equals(propertyValue);
             }
         }
         return false;
     }
 
+    /**
+     * Converts (so values stored in Nuxeo will be well typed) :
+     * * Boolean to String
+     * * List to String[]
+     * @param properties
+     * @return
+     */
     private Map<String, Serializable> toNuxeoProperties(Map<String, Object> properties) {
         if (properties == null) {
             return null;
@@ -210,7 +233,10 @@ public class DiscoveryServiceImpl implements DiscoveryService {
             Object propertyValue = property.getValue();
             if (propertyValue instanceof Boolean) {
                 propertyValue = propertyValue.toString();
-            }
+            }/* else if (propertyValue instanceof List) {
+                propertyValue = ((List<?>) propertyValue).toArray(NuxeoListUtils.EMPTY_STRING_ARRAY);
+                // TODO also non-String properties
+            }*///TODO NOO rather array to list comparison in propertyEquals()
             nuxeoProperties.put(property.getKey(), (Serializable) propertyValue);
         }
         return nuxeoProperties;

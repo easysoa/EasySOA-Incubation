@@ -12,6 +12,9 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 
 public class NuxeoListUtils {
+    
+    /** to help List.toArray() */
+    public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     public static ArrayList<DocumentModel> list(DocumentModel...objs) {
         ArrayList<DocumentModel> list = new ArrayList<DocumentModel>(objs.length);

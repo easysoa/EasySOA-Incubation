@@ -336,9 +336,9 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 			DocumentModel informationService, boolean save) throws Exception {
 		DocumentService docService = getDocumentService();
 		
-		// Create placeholder impl
+		// Create placeholder impl (in endpoint subproject) :
 		String portTypeName = (String) endpoint.getPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME);
-		String subprojectId = (String) informationService.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+		String subprojectId = (String) endpoint.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
 		SoaNodeId implId = new SoaNodeId(subprojectId, ServiceImplementation.DOCTYPE, portTypeName);
 		
 		HashMap<String, Serializable> nuxeoProperties = new HashMap<String, Serializable>(2);

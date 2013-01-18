@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.easysoa.registry.DocumentService;
-import org.easysoa.registry.types.OperationInformation;
+import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.types.InformationService;
+import org.easysoa.registry.types.OperationInformation;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
 
 public class ServiceImplStateProvider implements IndicatorProvider {
@@ -37,7 +37,8 @@ public class ServiceImplStateProvider implements IndicatorProvider {
         if (subprojectId == null) {
             subprojectPathCriteria = "";
         } else {
-            subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH + session.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
+            subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaFromId(subprojectId);
         }
 
         // Count indicators - ServiceImplementation-specific
@@ -47,8 +48,8 @@ public class ServiceImplStateProvider implements IndicatorProvider {
         int serviceImplsDocQuality = 0;
         Map<Serializable, Boolean> hasMock = new HashMap<Serializable, Boolean>();
         int mockedImplsCount = 0, testedImplsCount = 0, nonMockImplsCount = 0;
-        DocumentModelList serviceImplModels = session.query(NXQL_SELECT_FROM
-                + ServiceImplementation.DOCTYPE + NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
+        DocumentModelList serviceImplModels = session.query(DocumentService.NXQL_SELECT_FROM
+                + ServiceImplementation.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
         
         for (DocumentModel serviceImplModel : serviceImplModels) {
             ServiceImplementation serviceImpl = serviceImplModel.getAdapter(ServiceImplementation.class);

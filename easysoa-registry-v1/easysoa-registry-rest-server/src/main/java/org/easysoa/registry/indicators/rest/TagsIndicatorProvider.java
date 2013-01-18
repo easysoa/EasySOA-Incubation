@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.easysoa.registry.DocumentService;
+import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.TaggingFolder;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.runtime.api.Framework;
 
@@ -33,7 +33,8 @@ public class TagsIndicatorProvider implements IndicatorProvider {
         if (subprojectId == null) {
             subprojectPathCriteria = "";
         } else {
-            subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH + session.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
+            subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaFromId(subprojectId);
         }
         
         // Count users
@@ -41,8 +42,8 @@ public class TagsIndicatorProvider implements IndicatorProvider {
         
         // Count services without tagging folders
         int notTaggedServices = 0;
-        DocumentModelList serviceModels = session.query(NXQL_SELECT_FROM + InformationService.DOCTYPE
-                + NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
+        DocumentModelList serviceModels = session.query(DocumentService.NXQL_SELECT_FROM + InformationService.DOCTYPE
+                + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
         for (DocumentModel serviceModel : serviceModels) {
             DocumentModelList serviceParents = documentService.findAllParents(session, serviceModel);
             notTaggedServices++;

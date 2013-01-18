@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.easysoa.registry.DocumentService;
+import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
 
 // XXX Outdated (Relied on the Service doctype)
@@ -37,12 +37,13 @@ public class ServiceStateProvider implements IndicatorProvider {
         if (subprojectId == null) {
             subprojectPathCriteria = "";
         } else {
-            subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH + session.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
+            subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaFromId(subprojectId);
         }
         
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
-        DocumentModelList serviceList = session.query(NXQL_SELECT_FROM + "Service"
-                + NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
+        DocumentModelList serviceList = session.query(DocumentService.NXQL_SELECT_FROM + "Service"
+                + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
         
         // Count indicators - Service-specific
         int serviceWhithoutImplementationNb = 0;

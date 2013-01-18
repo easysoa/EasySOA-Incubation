@@ -2,9 +2,10 @@ package org.easysoa.registry.indicators.rest;
 
 import java.util.Map;
 
+import org.easysoa.registry.DocumentService;
+import org.easysoa.registry.SubprojectServiceImpl;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
@@ -37,7 +38,8 @@ public abstract class QueryCountIndicator extends Indicator {
         if (subprojectId == null) {
             subprojectPathCriteria = "";
         } else {
-            subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH + session.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
+            subprojectPathCriteria = " " + DocumentService.NXQL_PATH_STARTSWITH
+                    + SubprojectServiceImpl.buildCriteriaFromId(subprojectId);
         }
         
         IterableQueryResult queryResult = session.queryAndFetch(valueQuery + subprojectPathCriteria, NXQL.NXQL);

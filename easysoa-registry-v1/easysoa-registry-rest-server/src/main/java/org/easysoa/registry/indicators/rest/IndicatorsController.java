@@ -44,7 +44,6 @@ import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.SoftwareComponent;
 import org.easysoa.registry.types.TaggingFolder;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;

@@ -226,16 +226,18 @@ public class RemoteRepositoryInit {
         
         SoaNodeId axxxDotNETWSPlatform = new SoaNodeId(platformSubprojectId, Platform.DOCTYPE, "AXXX .NET WS");
         createSoaNode(axxxDotNETWSPlatform, platformArchitecturePath,
+                "dc:description=Note : les 'vrais' critères d'une plateforme MS .NET ne sont pas appliqués "
+                + "afin que malgré l'implémentation de Pivotal dans AXXX en Java/FraSCAti ses services matchent tout de même.",
                 Platform.XPATH_IDE + "=" + "Visual Studio",
-                Platform.XPATH_LANGUAGE + "=" + "C#",
+                ////Platform.XPATH_LANGUAGE + "=" + "C#", //// not to prevent our Pivotal on FStudio impl
                 //Platform.XPATH_BUILD + "=" + "", // Visual Studio ?
-                Platform.XPATH_SERVICE_LANGUAGE + "=" + "C#", // ?
+                ////Platform.XPATH_SERVICE_LANGUAGE + "=" + "C#", // ? //// not to prevent our Pivotal on FStudio impl
                 //Platform.XPATH_DELIVERABLE_NATURE + "=" + "Maven", // ?
                 //Platform.XPATH_DELIVERABLE_REPOSITORY_URL + "=" + "http://owsi-vm-easysoa-axxx-registry.accelance.net/maven", // simulated CI // ?
                 Platform.XPATH_SERVICE_PROTOCOL + "=" + "SOAP",
-                Platform.XPATH_TRANSPORT_PROTOCOL + "=" + "HTTP",
-                Platform.XPATH_SERVICE_RUNTIME + "=" + ".NET", // ?
-                Platform.XPATH_APP_SERVER_RUNTIME + "=" + ".NET" // ?
+                Platform.XPATH_TRANSPORT_PROTOCOL + "=" + "HTTP"
+                ////Platform.XPATH_SERVICE_RUNTIME + "=" + ".NET", // ? //// not to prevent our Pivotal on FStudio impl
+                ////Platform.XPATH_APP_SERVER_RUNTIME + "=" + ".NET" // ? //// not to prevent our Pivotal on FStudio impl
                         );
 		
         SoaNodeId axxxJavaWSPlatform = new SoaNodeId(platformSubprojectId, Platform.DOCTYPE, "AXXX Java WS");

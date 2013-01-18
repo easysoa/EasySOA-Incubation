@@ -50,6 +50,10 @@ public class RepositoryManagementListener implements EventListener {
             return; // nothing to do on non SOA nodes
         }
         
+        if (SubprojectServiceImpl.isBeingVersionedSubprojectNode(sourceDocument)) {
+            return; // this document is currently being tree snapshotted, do nothing here
+        }
+        
         // Initialize
         CoreSession documentManager = documentContext.getCoreSession();
         DocumentService documentService;

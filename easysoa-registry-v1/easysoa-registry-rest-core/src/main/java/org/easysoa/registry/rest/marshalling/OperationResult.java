@@ -28,7 +28,12 @@ public class OperationResult {
     public OperationResult(boolean success, String message, Exception e) {
         this(success);
         this.setException(e);
-        this.setMessage(message);
+        message = (message == null) ? "" : message + " : ";
+        this.setMessage(message + e.getMessage());
+    }
+    
+    public OperationResult(boolean success, Exception e) {
+        this(success, "", e);
     }
 
     public void setException(Exception e) {

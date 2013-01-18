@@ -59,6 +59,8 @@ public class SoaNodeMatchingListener implements EventListener {
 			logger.error("Document service unavailable, aborting");
 			return;
 		}
+		
+		documentManager.save(); // so the just created ex. IS can be found in reverse from existing impl
 
         // Endpoint: Link to service implementation
         if (documentService.isTypeOrSubtype(documentManager, sourceDocument.getType(), Endpoint.DOCTYPE)) {

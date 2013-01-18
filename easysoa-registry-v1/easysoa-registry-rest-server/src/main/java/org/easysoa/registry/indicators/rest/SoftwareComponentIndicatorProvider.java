@@ -25,7 +25,6 @@ import org.easysoa.registry.utils.RepositoryHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
 
 public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
@@ -51,14 +50,14 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
         if (subprojectId == null) {
             subprojectPathCriteria = "";
         } else {
-            subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH + session.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
+            subprojectPathCriteria = " " + IndicatorProvider.DocumentService.NXQL_PATH_STARTSWITH + session.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
         }*/
         
         // not in any software component :
-        DocumentModelList deliverableProxyInASoftwareComponent = session.query(NXQL_SELECT_FROM + Deliverable.DOCTYPE
-                + NXQL_WHERE_PROXY + NXQL_AND + NXQL_PATH_STARTSWITH
-                + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/SoftwareComponent" + NXQL_QUOTE);
-        DocumentModelList deliverableInNoSoftwareComponent = session.query(NXQL_SELECT_FROM + Deliverable.DOCTYPE + NXQL_WHERE_NO_PROXY
+        DocumentModelList deliverableProxyInASoftwareComponent = session.query(DocumentService.NXQL_SELECT_FROM + Deliverable.DOCTYPE
+                + DocumentService.NXQL_WHERE_PROXY + DocumentService.NXQL_AND + DocumentService.NXQL_PATH_STARTSWITH
+                + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/SoftwareComponent" + DocumentService.NXQL_QUOTE);
+        DocumentModelList deliverableInNoSoftwareComponent = session.query(DocumentService.NXQL_SELECT_FROM + Deliverable.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY
                 + " AND ecm:uuid NOT IN " + getProxiedIdLiteralList(session, deliverableProxyInASoftwareComponent));
         int deliverableInNoSoftwareComponentCount = deliverableInNoSoftwareComponent.size();
         int deliverableCount = computedIndicators.get(DoctypeCountIndicator.getName(Deliverable.DOCTYPE)).getCount();
@@ -66,18 +65,18 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                 new IndicatorValue(deliverableInNoSoftwareComponentCount,
                 (deliverableCount > 0) ? 100 * deliverableInNoSoftwareComponentCount / deliverableCount : -1));
         
-        DocumentModelList deliverableInNoSoftwareComponentsImplementations = session.query(NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
-                + NXQL_WHERE_PROXY
+        DocumentModelList deliverableInNoSoftwareComponentsImplementations = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
+                + DocumentService.NXQL_WHERE_PROXY
                 + " AND ecm:path STARTSWITH '" + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/" + Deliverable.DOCTYPE + "'"
                 + " AND ecm:parentId NOT IN " + getProxiedIdLiteralList(session, deliverableProxyInASoftwareComponent));
         indicators.put("deliverableInNoSoftwareComponentsImplementations", 
                 new IndicatorValue(deliverableInNoSoftwareComponentsImplementations.size(),
                         -1));
         
-        DocumentModelList implementationProxyInADeliverable = session.query(NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
-                + NXQL_WHERE_PROXY
+        DocumentModelList implementationProxyInADeliverable = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
+                + DocumentService.NXQL_WHERE_PROXY
                 + " AND ecm:path STARTSWITH '" + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/" + Deliverable.DOCTYPE + "'");
-        DocumentModelList implementationInNoDeliverable = session.query(NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE + NXQL_WHERE_NO_PROXY
+        DocumentModelList implementationInNoDeliverable = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY
                 + " AND ecm:uuid NOT IN " + getProxiedIdLiteralList(session, implementationProxyInADeliverable));
         int serviceImplCount = computedIndicators.get(DoctypeCountIndicator.getName(ServiceImplementation.DOCTYPE)).getCount();
         indicators.put("implementationInNoDeliverable", 
@@ -90,8 +89,8 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                 new IndicatorValue(implementationInNoDeliverableOrWhoseIsInNoSoftwareComponent.size(),
                         (serviceImplCount > 0) ? 100 * implementationInNoDeliverableOrWhoseIsInNoSoftwareComponent.size() / serviceImplCount : -1));
         
-        DocumentModelList implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentServiceProxy = session.query(NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
-                + NXQL_WHERE_PROXY
+        DocumentModelList implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentServiceProxy = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
+                + DocumentService.NXQL_WHERE_PROXY
                 + " AND ecm:path STARTSWITH '" + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/" + InformationService.DOCTYPE + "'"
                 // + " AND ecm:proxyTargetId IN " + getProxiedIdLiteralList(session, implementationInNoDeliverableOrWhoseIsInNoSoftwareComponent)); // TODO soaid for proxies
                 + " AND ecm:uuid IN " + toLiteral(getProxyIds(session, implementationInNoDeliverableOrWhoseIsInNoSoftwareComponent, null))); // TODO soaid for proxies
@@ -103,7 +102,7 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                         (serviceCount > 0) ? 100 * implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentServiceIdSet.size() / serviceCount : -1));
        
         HashSet<String> serviceWhithoutImplementationIdSet = new HashSet<String>(serviceCount);
-        DocumentModelList serviceList = session.query(NXQL_SELECT_FROM + InformationService.DOCTYPE + NXQL_WHERE_NO_PROXY);
+        DocumentModelList serviceList = session.query(DocumentService.NXQL_SELECT_FROM + InformationService.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY);
         DocumentService documentService = Framework.getService(DocumentService.class);
         for (DocumentModel service : serviceList) {
             DocumentModelList serviceImpls = documentService.getChildren(session, service.getRef(), ServiceImplementation.DOCTYPE);
@@ -126,17 +125,17 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                 new IndicatorValue(serviceInASoftwareComponentIdSet.size(),
                 (serviceCount > 0) ? 100 * serviceInASoftwareComponentIdSet.size() / serviceCount : -1)); // TODO bof
         
-        DocumentModelList softwareComponentProxyInATaggingFolder = session.query(NXQL_SELECT_FROM + "SoftwareComponent"
-                + NXQL_WHERE_PROXY
+        DocumentModelList softwareComponentProxyInATaggingFolder = session.query(DocumentService.NXQL_SELECT_FROM + "SoftwareComponent"
+                + DocumentService.NXQL_WHERE_PROXY
                 + " AND ecm:path STARTSWITH '" + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/" + TaggingFolder.DOCTYPE + "'");
-        DocumentModelList softwareComponentInNoTaggingFolder = session.query(NXQL_SELECT_FROM + "SoftwareComponent" + NXQL_WHERE_NO_PROXY
+        DocumentModelList softwareComponentInNoTaggingFolder = session.query(DocumentService.NXQL_SELECT_FROM + "SoftwareComponent" + DocumentService.NXQL_WHERE_NO_PROXY
                 + " AND ecm:uuid NOT IN " + getProxiedIdLiteralList(session, softwareComponentProxyInATaggingFolder)); // TODO bof
         int softwareComponentCount = computedIndicators.get(DoctypeCountIndicator.getName(SoftwareComponent.DOCTYPE)).getCount();
         indicators.put("softwareComponentInNoTaggingFolder",
                 new IndicatorValue(softwareComponentInNoTaggingFolder.size(),
                         (softwareComponentCount > 0) ? 100 * softwareComponentInNoTaggingFolder.size() / softwareComponentCount : -1));
-        HashSet<String> softwareComponentInNoTaggingFoldersDeliverableIds = new HashSet<String>(getProxiedIds(session, session.query(NXQL_SELECT_FROM + Deliverable.DOCTYPE
-                + NXQL_WHERE_PROXY
+        HashSet<String> softwareComponentInNoTaggingFoldersDeliverableIds = new HashSet<String>(getProxiedIds(session, session.query(DocumentService.NXQL_SELECT_FROM + Deliverable.DOCTYPE
+                + DocumentService.NXQL_WHERE_PROXY
                 + " AND ecm:path STARTSWITH '" + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/SoftwareComponent" + "'"
                 + " AND ecm:parentId NOT IN " + getProxiedIdLiteralList(session, softwareComponentProxyInATaggingFolder))));
         indicators.put("softwareComponentInNoTaggingFoldersDeliverables", 
@@ -149,8 +148,8 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                         (deliverableCount > 0) ? 100 * deliverableInNoSoftwareComponentOrWhoseIsInNoTaggingFolderIds.size() / deliverableCount : -1));
 
         HashSet<String> deliverableInNoSoftwareComponentOrWhoseIsInNoTaggingFolderImplementationIds = new HashSet<String>(getProxiedIds(session,
-                session.query(NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
-                + NXQL_WHERE_PROXY
+                session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
+                + DocumentService.NXQL_WHERE_PROXY
                 + " AND ecm:path STARTSWITH '" + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/" + Deliverable.DOCTYPE
                 + " AND ecm:parentId IN " + toLiteral(deliverableInNoSoftwareComponentOrWhoseIsInNoTaggingFolderIds))));
         indicators.put("deliverableInNoSoftwareComponentOrWhoseIsInNoTaggingFolderImplementation",
@@ -164,8 +163,8 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                         (serviceImplCount > 0) ? 100 * implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentOrWhoseIsInNoTaggingFolderIds.size() / serviceImplCount : -1));
         
         HashSet<String> implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentOrWhoseIsInNoTaggingFolderServiceIds = new HashSet<String>(getProxiedIds(session,
-                session.query(NXQL_SELECT_FROM  + ServiceImplementation.DOCTYPE
-                        + NXQL_WHERE_PROXY
+                session.query(DocumentService.NXQL_SELECT_FROM  + ServiceImplementation.DOCTYPE
+                        + DocumentService.NXQL_WHERE_PROXY
                         + " AND ecm:path STARTSWITH '" + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/" + InformationService.DOCTYPE + "'"
                         // + " AND ecm:proxyTargetId IN " + getProxiedIdLiteralList(session, implementationInNoDeliverableOrWhoseIsInNoSoftwareComponent)); // TODO soaid for proxies
                         + " AND ecm:uuid IN " + toLiteral(getProxyIds(session, implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentOrWhoseIsInNoTaggingFolderIds, null))))); // TODO soaid for proxies

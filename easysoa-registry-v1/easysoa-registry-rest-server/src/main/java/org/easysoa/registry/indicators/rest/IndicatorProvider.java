@@ -13,25 +13,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
  *
  */
 public interface IndicatorProvider {
-
-    static final String NXQL_SELECT_FROM = "SELECT * FROM ";
-    static final String NXQL_WHERE = " WHERE ";
-    static final String NXQL_AND = " AND ";
-    static final String NXQL_QUOTE = "'";
-
-    static final String NXQL_IS_NOT_DELETED = "ecm:currentLifeCycleState <> 'deleted'";
-
-    static final String NXQL_IS_NOT_VERSIONED = "ecm:isCheckedInVersion = 0";
-    
-    static final String NXQL_IS_PROXY = "ecm:isProxy = 1";
-    static final String NXQL_IS_NO_PROXY = "ecm:isProxy = 0";
-    
-    static final String NXQL_WHERE_NO_PROXY = NXQL_WHERE + NXQL_IS_NOT_DELETED
-            + NXQL_AND + NXQL_IS_NOT_VERSIONED + NXQL_AND + NXQL_IS_NO_PROXY;
-    static final String NXQL_WHERE_PROXY = NXQL_WHERE + NXQL_IS_NOT_DELETED
-            + NXQL_AND + NXQL_IS_NOT_VERSIONED + NXQL_AND + NXQL_IS_PROXY;
-
-    static final String NXQL_PATH_STARTSWITH = "ecm:path STARTSWITH '";
     
     /**
      * @return The required indicator names

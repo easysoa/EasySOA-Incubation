@@ -7,7 +7,6 @@ import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.ServiceImplementation;
-import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.utils.EmptyDocumentModelList;
 import org.nuxeo.ecm.core.api.ClientException;

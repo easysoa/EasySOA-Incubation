@@ -1,5 +1,6 @@
 package org.easysoa.registry;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -19,13 +20,29 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
  */
 public interface DocumentService {
     
-    static final String DELETED_DOCUMENTS_QUERY_FILTER = " AND " + NXQL.ECM_LIFECYCLESTATE + " != 'deleted'";
+    static final String NXQL_SELECT_FROM = "SELECT * FROM ";
+    static final String NXQL_WHERE = " WHERE ";
+    static final String NXQL_AND = " AND ";
+    static final String NXQL_QUOTE = "'";
 
-    static final String VERSIONS_QUERY_FILTER = " AND " + NXQL.ECM_ISVERSION + " = 0";
+    static final String NXQL_IS_NOT_DELETED = NXQL.ECM_LIFECYCLESTATE + " != 'deleted'";
+    static final String NXQL_IS_NOT_VERSIONED = NXQL.ECM_ISVERSION + " = 0";
+    static final String NXQL_IS_PROXY = NXQL.ECM_ISPROXY + " = 0";
+    static final String NXQL_IS_NO_PROXY = NXQL.ECM_ISPROXY + " = 1";
+    static final String NXQL_PATH_STARTSWITH = NXQL.ECM_PATH + " STARTSWITH '";
     
-    static final String PROXIES_QUERY_FILTER = " AND " + NXQL.ECM_ISPROXY + " = 0";
+    static final String DELETED_DOCUMENTS_QUERY_FILTER = " AND " + NXQL_IS_NOT_DELETED;
+
+    static final String VERSIONS_QUERY_FILTER = " AND " + NXQL_IS_NOT_VERSIONED;
     
-    static final String NON_PROXIES_QUERY_FILTER = " AND " + NXQL.ECM_ISPROXY + " = 1";
+    static final String PROXIES_QUERY_FILTER = " AND " + NXQL_IS_PROXY;
+    
+    static final String NON_PROXIES_QUERY_FILTER = " AND " + NXQL_IS_NO_PROXY;
+
+    static final String NXQL_WHERE_NO_PROXY = NXQL_WHERE + NXQL_IS_NOT_DELETED
+            + NXQL_AND + NXQL_IS_NOT_VERSIONED + NXQL_AND + NXQL_IS_NO_PROXY;
+    static final String NXQL_WHERE_PROXY = NXQL_WHERE + NXQL_IS_NOT_DELETED
+            + NXQL_AND + NXQL_IS_NOT_VERSIONED + NXQL_AND + NXQL_IS_PROXY;
 
     /**
      * Helper for non-SOA nodes documents (ex. SystemTreeRoot, IntelligentSystemTreeRoot...)
@@ -70,13 +87,27 @@ public interface DocumentService {
      * Creates a new SoaNode document but doesn't save it (therefore have to save
      * afterwards using ex. coreSession.saveDocument()). To be preferred to createDocument
      * because doesn't trigger documentCreated event.
+     * Calls newSoaNodeDocument(CoreSession, SoaNodeId, null).
      * @param documentManager nuxeo core session
      * @param identifier must be a valid SoaNodeId (check it with isSoaNode())
+     * @param nuxeoProperties 
      * @throws ClientException nuxeo error, or if already exists - check it before using
      * documentService.find(documentManager, identifier)
      */
-    DocumentModel newSoaNodeDocument(CoreSession documentManager, SoaNodeId identifier)
-            throws ClientException;
+    DocumentModel newSoaNodeDocument(CoreSession documentManager, SoaNodeId identifier) throws ClientException;
+
+    /**
+     * Creates a new SoaNode document and ses computed properties AFTER setting
+     * argument-provided properties so that they don't break anything.
+     * To be used from DiscoveryService.
+     * @param documentManager
+     * @param identifier
+     * @param nuxeoProperties
+     * @return
+     * @throws ClientException
+     */
+    DocumentModel newSoaNodeDocument(CoreSession documentManager, SoaNodeId identifier,
+            Map<String, Serializable> nuxeoProperties) throws ClientException;
     
     /**
      * Copies a document at the target destination.

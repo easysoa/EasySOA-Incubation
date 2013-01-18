@@ -21,13 +21,9 @@
 package org.easysoa.registry.monitoring.rest;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -35,18 +31,10 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
-import org.easysoa.registry.indicators.rest.IndicatorProvider;
-import org.easysoa.registry.indicators.rest.SoftwareComponentIndicatorProvider;
 import org.easysoa.registry.types.Endpoint;
-import org.easysoa.registry.types.InformationService;
-import org.easysoa.registry.types.ServiceImplementation;
-import org.easysoa.registry.types.TaggingFolder;
-import org.easysoa.registry.types.adapters.SoaNodeAdapter;
-import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;

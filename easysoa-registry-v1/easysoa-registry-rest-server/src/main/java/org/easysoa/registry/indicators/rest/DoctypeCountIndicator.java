@@ -2,13 +2,15 @@ package org.easysoa.registry.indicators.rest;
 
 import java.util.List;
 
+import org.easysoa.registry.DocumentService;
+
 
 public class DoctypeCountIndicator extends QueryCountIndicator {
 
     private final String doctype;
 
     public DoctypeCountIndicator(String doctype) {
-        super(NXQL_SELECT_FROM + doctype + NXQL_WHERE_NO_PROXY);
+        super(DocumentService.NXQL_SELECT_FROM + doctype + DocumentService.NXQL_WHERE_NO_PROXY);
         this.doctype = doctype;
     }
 

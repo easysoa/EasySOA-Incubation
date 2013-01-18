@@ -18,14 +18,16 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 
 public class SubprojectServiceImpl {
 
+    public static final String  SUBPROJECT_ID_VERSION_SEPARATOR = "_v";
+    
     public static final PathRef defaultProjectPathRef = new PathRef(Project.DEFAULT_PROJECT_PATH);
     public static final PathRef defaultSubprojectPathRef = new PathRef(Subproject.DEFAULT_SUBPROJECT_PATH);
+    public static final String defaultSubprojectId = Subproject.DEFAULT_SUBPROJECT_PATH + SUBPROJECT_ID_VERSION_SEPARATOR;
 
-    private static final String[] EMPTY_STRING_ARRAY = new String[0];
-    private static final String  SUBPROJECT_ID_VERSION_SEPARATOR = "_v";
 
     private static Logger logger = Logger.getLogger(SubprojectServiceImpl.class);
     
@@ -61,9 +63,9 @@ public class SubprojectServiceImpl {
         
         String[] parentSubprojectEcmUuids;
         if (parentSubprojectModels == null) {
-            parentSubprojectEcmUuids = EMPTY_STRING_ARRAY;
+            parentSubprojectEcmUuids = NuxeoListUtils.EMPTY_STRING_ARRAY;
         } else {
-            parentSubprojectEcmUuids = NuxeoListUtils.getIds(parentSubprojectModels).toArray(EMPTY_STRING_ARRAY);
+            parentSubprojectEcmUuids = NuxeoListUtils.getIds(parentSubprojectModels).toArray(NuxeoListUtils.EMPTY_STRING_ARRAY);
         }
         subprojectModel.setPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS, parentSubprojectEcmUuids);
         
@@ -82,13 +84,17 @@ public class SubprojectServiceImpl {
      */
     public static void onSubprojectAboutToCreate(CoreSession documentManager,
             DocumentModel subprojectModel) throws ClientException {
+        if (getSubprojectById(documentManager, buildSubprojectId(subprojectModel)) != null) {
+            throw new ClientException("Trying to create Subproject but already exists at "
+                    + buildSubprojectId(subprojectModel));
+        }
         // TODO also on document change... (parents)
         computeAndSetVisibleSubprojects(documentManager, subprojectModel);
         // NB. saveDocument() is auto done after aboutToCreate even by event system
         // TODO on documentCreated, update all below
     }
 
-    public static String subprojectToId(DocumentModel subprojectModel) {
+    public static String buildSubprojectId(DocumentModel subprojectModel) {
         StringBuffer sbuf = new StringBuffer(subprojectModel.getPathAsString());
         sbuf.append(SUBPROJECT_ID_VERSION_SEPARATOR);
         if (subprojectModel.isVersion()) {
@@ -97,21 +103,52 @@ public class SubprojectServiceImpl {
         }
         return sbuf.toString();
     }
+    
+    public static String getPathFromId(String subprojectId) {
+        int lastVersionSeparatorId = subprojectId.lastIndexOf(SUBPROJECT_ID_VERSION_SEPARATOR);
+        if (lastVersionSeparatorId < 0) {
+            logger.warn("getPathFromId() called on badly formatted subprojectId " + subprojectId);
+            return null;
+        }
+        return subprojectId.substring(0, lastVersionSeparatorId);
+    }
+    
+    public static String buildCriteriaFromId(String subprojectId) {
+        return DocumentService.NXQL_PATH_STARTSWITH + getPathFromId(subprojectId) + "'";
+    }
+    
+    public static boolean isBeingVersionedSubprojectNode(DocumentModel subprojectNode)
+            throws PropertyException, ClientException {
+        String subprojectId = (String) subprojectNode.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+        int lastVersionSeparatorId = subprojectId.lastIndexOf(SUBPROJECT_ID_VERSION_SEPARATOR);
+        if (lastVersionSeparatorId < 0) {
+            logger.warn("isBeingVersionedSubprojectNode() called on badly formatted subprojectId " + subprojectId);
+        }
+        return lastVersionSeparatorId != subprojectId.length() - SUBPROJECT_ID_VERSION_SEPARATOR.length();
+    }
 
     public static DocumentModel getSubprojectById(CoreSession documentManager, String subprojectId) throws ClientException {
         subprojectId = getSubprojectIdOrCreateDefault(documentManager, subprojectId);
-        String[] subprojectIdParts = subprojectId.split(SUBPROJECT_ID_VERSION_SEPARATOR);
-        String path = subprojectIdParts[0];
+        // rather looking for Subproject with spnode:subprojet (simpler and more generic than using path)
+        /*int lastVersionSeparatorId = subprojectId.lastIndexOf(SUBPROJECT_ID_VERSION_SEPARATOR);
+        if (lastVersionSeparatorId < 0) {
+            logger.warn("getSubprojectById() called on badly formatted subprojectId " + subprojectId);
+            return null;
+        }
+        
+        String path = subprojectId.substring(0, lastVersionSeparatorId);
         String versionLabelCriteria;
-        if (subprojectIdParts.length == 1) {
+        if (lastVersionSeparatorId == subprojectId.length() - SUBPROJECT_ID_VERSION_SEPARATOR.length()) {
             versionLabelCriteria = "";
         } else {
-            String versionLabel = subprojectIdParts[1];
+            String versionLabel = subprojectId.substring(lastVersionSeparatorId + SUBPROJECT_ID_VERSION_SEPARATOR.length());
             versionLabelCriteria = " AND ecm:versionLabel='" + versionLabel + "'";
         }
         DocumentModelList res = documentManager.query("select * from Subproject where ecm:path='"
                 + path + "'" + versionLabelCriteria
-                + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER + DocumentService.PROXIES_QUERY_FILTER); // TODO ?
+                + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER + DocumentService.PROXIES_QUERY_FILTER); // TODO ?*/
+        DocumentModelList res = documentManager.query("SELECT * FROM " + Subproject.DOCTYPE
+                + " WHERE " + SubprojectNode.XPATH_SUBPROJECT + "='" + subprojectId + "'");
         if (res.size() == 1) {
             return res.get(0);
         } else if (res.isEmpty()) {
@@ -120,7 +157,21 @@ public class SubprojectServiceImpl {
             logger.fatal("More than one subproject found for id " + subprojectId + " : " + res);
             return null;
         }
-        
+    }
+
+    public static DocumentModel getSubprojectByName(CoreSession documentManager,
+            DocumentModel project, String subprojectName) throws ClientException {
+        String path = project.getPathAsString() + '/' + subprojectName;
+        DocumentModelList res = documentManager.query("select * from Subproject where ecm:path='" + path
+                + "'" + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER + DocumentService.PROXIES_QUERY_FILTER);
+        if (res.size() == 1) {
+            return res.get(0);
+        } else if (res.isEmpty()) {
+            return null;
+        } else {
+            logger.fatal("More than one subproject found at path " + path + " : " + res);
+            return null;
+        }
     }
 
     /**
@@ -128,7 +179,7 @@ public class SubprojectServiceImpl {
      * TODO not public ??
      */
     public static void computeAndSetVisibleSubprojects(CoreSession documentManager, DocumentModel subprojectModel) throws ClientException {
-        String subprojectId = subprojectToId(subprojectModel);
+        String subprojectId = buildSubprojectId(subprojectModel);
         subprojectModel.setPropertyValue(Subproject.XPATH_SUBPROJECT, subprojectId); // to get copied
         
         Serializable foundParentSubprojectIds = subprojectModel.getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS);
@@ -163,7 +214,7 @@ public class SubprojectServiceImpl {
                 visibleSubprojectIdsCsvSbuf.append(parentVisibleSubprojectIdsCsv);
             }
         }
-        String[] visibleSubprojectIds = (String[]) visibleSubprojectIdList.toArray(EMPTY_STRING_ARRAY);
+        String[] visibleSubprojectIds = (String[]) visibleSubprojectIdList.toArray(NuxeoListUtils.EMPTY_STRING_ARRAY);
         subprojectModel.setPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS, visibleSubprojectIds);
         String visibleSubprojectIdsCsv = visibleSubprojectIdsCsvSbuf.toString();
         subprojectModel.setPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV, visibleSubprojectIdsCsv);
@@ -210,12 +261,13 @@ public class SubprojectServiceImpl {
 
     public static DocumentModel getSubprojectOrCreateDefault(CoreSession documentManager,
             String subprojectId) throws ClientException {
-        if (subprojectId == null || subprojectId.length() == 0) {
+        DocumentModel foundSubproject = getSubprojectById(documentManager, subprojectId);
+        if (foundSubproject == null && (subprojectId == null || subprojectId.length() == 0
+                || subprojectId.equals(defaultSubprojectId))) {
             // default subproject mode (TODO rather create it at startup ? or explode ?? by query or path ?)
             return getOrCreateDefaultSubproject(documentManager);
-        } else {
-            return getSubprojectById(documentManager, subprojectId);
         }
+        return foundSubproject;
     }
 
     private static DocumentModel getOrCreateDefaultSubproject(CoreSession documentManager) throws ClientException {

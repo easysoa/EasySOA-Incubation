@@ -129,23 +129,43 @@ public class DocumentServiceImpl implements DocumentService {
         return documentModel;
     }
 
+    public DocumentModel newSoaNodeDocument(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
+        return newSoaNodeDocument(documentManager, identifier, null);
+    }
     /* (non-Javadoc)
      * @see org.easysoa.registry.DocumentService#newSoaNodeDocument(org.nuxeo.ecm.core.api.CoreSession, org.easysoa.registry.SoaNodeId)
      */
-    public DocumentModel newSoaNodeDocument(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
+    public DocumentModel newSoaNodeDocument(CoreSession documentManager, SoaNodeId identifier,
+            Map<String, Serializable> nuxeoProperties) throws ClientException {
         String subprojectId = SubprojectServiceImpl.setDefaultSubprojectIfNone(documentManager, identifier);
         String doctype = identifier.getType();
         String name = identifier.getName();
         DocumentModel sourceFolder = getSourceFolder(documentManager, subprojectId, doctype); // ensuring it exists at the same time
         DocumentModel documentModel = documentManager.createDocumentModel(doctype);
         documentModel.setPathInfo(sourceFolder.getPathAsString(), safeName(name));
+        
+        // setting default props from SOA node id
         documentModel.setPropertyValue(SoaNode.XPATH_TITLE, name);
+
+        // other default properties : (user ex. for Endpoint)
+        for (Entry<String, Serializable> defaultPropertyValue : identifier.getDefaultPropertyValues().entrySet()) {
+            documentModel.setPropertyValue(defaultPropertyValue.getKey(), defaultPropertyValue.getValue());
+        }
+        
+        if (nuxeoProperties != null) {
+            // user-provided properties
+            for (Entry<String, Serializable> nuxeoProperty : nuxeoProperties.entrySet()) {
+                String propertyKey = nuxeoProperty.getKey();
+                Serializable propertyValue = nuxeoProperty.getValue();
+                documentModel.setPropertyValue(propertyKey, propertyValue);
+            }
+        }
+        
+        // setting props than must not be overriden by user-provided props
         documentModel.setPropertyValue(SoaNode.XPATH_SOANAME, name);
         documentModel.setPropertyValue(SubprojectNode.XPATH_SUBPROJECT, subprojectId);
+        
         // TODO copy spnode metas, or in listener, or using facet inheritance ??
-        for (Entry<String, Serializable> defaultPropertyValue : identifier.getDefaultPropertyValues().entrySet()) {
-        	documentModel.setPropertyValue(defaultPropertyValue.getKey(), defaultPropertyValue.getValue());
-        }
         return documentModel;
     }
 

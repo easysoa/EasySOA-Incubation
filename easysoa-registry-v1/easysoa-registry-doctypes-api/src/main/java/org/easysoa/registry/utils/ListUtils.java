@@ -8,6 +8,9 @@ public class ListUtils {
 
     public static List<String> toStringList(Serializable[] array) {
         List<String> list = new ArrayList<String>();
+        if (array == null) {
+            return list;
+        }
         for (Serializable element : array) {
             list.add(element.toString());
         }

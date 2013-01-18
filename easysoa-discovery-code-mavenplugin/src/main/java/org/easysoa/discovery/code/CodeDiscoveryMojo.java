@@ -61,9 +61,9 @@ public class CodeDiscoveryMojo extends AbstractMojo {
     private String password;
     
     /**
-     * @parameter
+     * @parameter default-value="/default-domain/MyProject/Realisation_v"
      */
-    private String subproject = null;
+    private String subproject;
     
     /**
      * @parameter
@@ -207,7 +207,7 @@ public class CodeDiscoveryMojo extends AbstractMojo {
             log.info("Sending found SoaNodes to " + nuxeoSitesUrl);
             if (discoveredNodes.size() > 0) {
                 for (SoaNodeInformation soaNode : discoveredNodes) {
-                    log.info("> " + soaNode.toString());
+                    log.info("> " + soaNode.getSoaNodeId().toString());
                     OperationResult result = registryApi.post(soaNode);
                     if (!result.isSuccessful()) {
                         IOException ioException = new IOException(result.getMessage());
@@ -304,6 +304,10 @@ public class CodeDiscoveryMojo extends AbstractMojo {
 
     public String getSubproject() {
         return subproject;
+    }
+
+    public void setSubproject(String subproject) {
+        this.subproject = subproject;
     }
 
     public String getApplication() {

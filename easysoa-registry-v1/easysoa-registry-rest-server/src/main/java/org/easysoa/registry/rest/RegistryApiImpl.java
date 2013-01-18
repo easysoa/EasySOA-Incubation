@@ -13,7 +13,6 @@ import javax.ws.rs.core.Context;
 import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SubprojectServiceImpl;
-import org.easysoa.registry.indicators.rest.IndicatorProvider;
 import org.easysoa.registry.rest.marshalling.OperationResult;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.ids.SoaNodeId;
@@ -21,7 +20,6 @@ import org.easysoa.registry.utils.DocumentModelHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
@@ -64,7 +62,9 @@ public class RegistryApiImpl implements RegistryApi {
             documentManager.save();
             return new OperationResult(true);
         } catch (Exception e) {
-            return new OperationResult(false, "Failed to update or create one the documents", e);
+            return new OperationResult(false, "Error while discovering " + soaNodeInfo
+                    + " with properties " + soaNodeInfo.getProperties()
+                    + " and parents " + soaNodeInfo.getParentIds(), e);
         }
     }
     
@@ -79,8 +79,7 @@ public class RegistryApiImpl implements RegistryApi {
             if (subprojectId == null || subprojectId.length() == 0) {
                 subprojectPathCriteria = "";
             } else {
-                subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH
-                        + documentManager.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
+                subprojectPathCriteria = " AND " + SubprojectServiceImpl.buildCriteriaFromId(subprojectId);
             }
         	
             DocumentModelList modelList = docService.query(documentManager, query
@@ -106,7 +105,7 @@ public class RegistryApiImpl implements RegistryApi {
             subprojectPathCriteria = "";
         } else {
             subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH
-                    + documentManager.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
+                    + subprojectId.split("_v")[0] + "'";
         }*/
         
         DocumentModel document = documentManager.getDocument(new PathRef(
@@ -125,8 +124,7 @@ public class RegistryApiImpl implements RegistryApi {
         if (subprojectId == null || subprojectId.length() == 0) {
             subprojectPathCriteria = "";
         } else {
-            subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH
-                    + documentManager.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
+            subprojectPathCriteria = " " + SubprojectServiceImpl.buildCriteriaFromId(subprojectId);
         }
 
         // Fetch SoaNode list
@@ -167,7 +165,7 @@ public class RegistryApiImpl implements RegistryApi {
         }
         catch (Exception e) {
         	// TODO 500
-            throw new Exception("Failed to fetch document " + soaNodeId.toString(), e);
+            throw new Exception("Failed to fetch document " + soaNodeId, e);
         }
     }
 
@@ -185,7 +183,7 @@ public class RegistryApiImpl implements RegistryApi {
 
             return new OperationResult(true);
         } catch (Exception e) {
-            return new OperationResult(false, "Failed to delete document " + soaNodeId.toString(), e);
+            return new OperationResult(false, "Failed to delete document " + soaNodeId, e);
         }
     }
     

@@ -27,6 +27,7 @@
     <easysoa.discovery.code.nuxeoSitesUrl>http://localhost:8080/nuxeo/site</easysoa.discovery.code.nuxeoSitesUrl>
     <easysoa.discovery.code.username>Administrator</easysoa.discovery.code.username>
     <easysoa.discovery.code.password>Administrator</easysoa.discovery.code.password>
+    <easysoa.discovery.code.subproject>/default-domain/Intégration DPS - DCV/Realisation_v</easysoa.discovery.code.subproject>
     <easysoa.discovery.code.application>AXXX DPS APV</easysoa.discovery.code.application>
   </properties>
 

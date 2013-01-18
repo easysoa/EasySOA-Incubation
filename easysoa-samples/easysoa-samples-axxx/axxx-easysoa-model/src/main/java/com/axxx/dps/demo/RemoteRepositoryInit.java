@@ -123,7 +123,7 @@ public class RemoteRepositoryInit {
         String deploiementSubprojectId = (String) getDocByPath(deploiementPath).getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
 
         //String platformArchitecturePath = "/default-domain/repository/Platform";
-        String platformArchitecturePath = specificationsPath + "/Platform";//TODO within project or out (i.e. global) ??
+        String platformArchitecturePath = specificationsPath + "/repository/Platform";//TODO within project or out (i.e. global) ??
         String platformSubprojectId = specificationsSubprojectId;
 		
         

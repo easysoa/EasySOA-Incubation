@@ -5,6 +5,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.systems.IntelligentSystemTreeService;
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.RepositoryHelper;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -173,7 +174,10 @@ public class RepositoryManagementListener implements EventListener {
 		if (!sourceDocument.isProxy() && !parentModel.getPathAsString().equals(sourceFolderPath)
 		        || sourceDocument.isProxy() && parentModel.hasSchema(SoaNode.SCHEMA)
 		        && !sourceDocument.getPathAsString().startsWith(
-		                RepositoryHelper.getRepositoryPath(documentManager, soaNodeId.getSubprojectId()))) {
+		                RepositoryHelper.getRepositoryPath(documentManager,
+		                        (String) parentModel.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT)))) {
+            //&& !sourceDocument.getPathAsString().startsWith(
+            //        RepositoryHelper.getRepositoryPath(documentManager, soaNodeId.getSubprojectId()))) {
 		    
 		    documentService.getSourceFolder(documentManager, sourceDocument); // ensuring it exists
 		    

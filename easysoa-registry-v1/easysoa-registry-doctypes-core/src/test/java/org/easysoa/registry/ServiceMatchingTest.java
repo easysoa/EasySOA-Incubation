@@ -92,8 +92,6 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // cross-subproject ids
         SoaNodeId CSP_INFORMATIONSERVICE_ID = new SoaNodeId(specificationsSubprojectId,
                 InformationService.DOCTYPE, "nsxxx:namexxx");
-        SoaNodeId CSP_FIRST_SERVICEIMPL_ID = new SoaNodeId(realisationSubprojectId,
-                ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx");
         SoaNodeId CSP_COMPONENT_ID = new SoaNodeId(specificationsSubprojectId, Component.DOCTYPE, "xxx component");
         // - SUBPROJECT
 
@@ -120,22 +118,24 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         Snapshot snapshot = snapshotable.createSnapshot(VersioningOption.MINOR);
         // TODO TODOOOOOOOOOO update IDs in listener of event ABOUT_TO_CREATE_LEAF_VERSION_EVENT
         //DocumentModel specificationsSubprojectV01Model = snapshot.getDocument();
-        DocumentModel specificationsSubprojectV01Model = documentManager.getLastDocumentVersion(new IdRef(((String[]) realisationSubprojectModel
-                .getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS))[0])); // TODO updateToVersion
-        DocumentModel versioningRealisationSubprojectModel = SubprojectServiceImpl.createSubproject(
-                documentManager, "Realisation", projectModel, list(specificationsSubprojectV01Model));
-        ///realisationSubprojectModel.setPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS, new String[]{ specificationsSubprojectV01Model.getId() });
-        //SubprojectServiceImpl.computeAndSetVisibleSubprojects(documentManager, realisationSubprojectModel); //TODO auto
-        SubprojectServiceImpl.computeAndSetVisibleSubprojects(documentManager, versioningRealisationSubprojectModel); //TODO auto
         documentManager.save();
-
-        DocumentModel foundInfoServV01 = documentService.find(documentManager, new SoaNodeId(specificationsSubprojectV01Model.getId(),
+        DocumentModel specificationsSubprojectV01Model = documentManager.getLastDocumentVersion(new IdRef(((String[]) realisationSubprojectModel
+                .getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS))[0])); // TODO updateToVersio
+        ///realisationSubprojectModel.setPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS, new String[]{ specificationsSubprojectV01Model.getId() });
+        DocumentModel foundInfoServV01 = documentService.find(documentManager, new SoaNodeId(
+                SubprojectServiceImpl.subprojectToId(specificationsSubprojectV01Model),
                 InformationService.DOCTYPE, "nsxxx:namexxx"));
         Assert.assertNotNull(foundInfoServV01);
         Assert.assertNotSame("Once versioned, InformationService should have different Nuxeo ID",
                 foundInfoServ.getId(), foundInfoServV01.getId());
         
+        DocumentModel versioningRealisationSubprojectModel = SubprojectServiceImpl.createSubproject(
+                documentManager, "Realisation", projectModel, list(specificationsSubprojectV01Model));
+        
         // Discover service impl
+        String versioningRealisationSubprojectId = SubprojectServiceImpl.subprojectToId(specificationsSubprojectModel);
+        SoaNodeId CSP_FIRST_SERVICEIMPL_ID = new SoaNodeId(versioningRealisationSubprojectId,
+                ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx");
         HashMap<String, Object> implProperties = new HashMap<String, Object>();
         //implProperties.put(SubprojectNode.XPATH_SUBPROJECT, realisationSubprojectId); // SUBPROJECT
         ///implProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV, realisationSubprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV)); // SUBPROJECT

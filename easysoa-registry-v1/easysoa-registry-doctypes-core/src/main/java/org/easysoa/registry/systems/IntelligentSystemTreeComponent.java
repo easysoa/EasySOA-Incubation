@@ -122,8 +122,8 @@ public class IntelligentSystemTreeComponent extends DefaultComponent implements 
                 // Handling when model is accepted
                 if (classification != null) {
                     // Fetch or create the IST model
-	            	if (!intelligentSystemTreeApi.intelligentSystemTreeExists(null, treeName)) {
-	            		intelligentSystemTreeApi.createIntelligentSystemTree(null, treeName, istDescriptor.getTitle());
+	            	if (!intelligentSystemTreeApi.intelligentSystemTreeExists(soaNodeId.getSubprojectId(), treeName)) {
+	            		intelligentSystemTreeApi.createIntelligentSystemTree(soaNodeId.getSubprojectId(), treeName, istDescriptor.getTitle());
 	            	}
 	            	// TODO TODOOOOOOOOOOOOOOOOOOO case of non-default ITS !!!!!
                     
@@ -132,7 +132,7 @@ public class IntelligentSystemTreeComponent extends DefaultComponent implements 
                 }
                 
                 // Handling when model is rejected
-                else if (intelligentSystemTreeApi.intelligentSystemTreeExists(null, treeName)) {
+                else if (intelligentSystemTreeApi.intelligentSystemTreeExists(soaNodeId.getSubprojectId(), treeName)) {
 	            	intelligentSystemTreeApi.deleteSoaNode(treeName, soaNodeId);
                 }
             }

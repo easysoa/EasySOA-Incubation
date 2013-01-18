@@ -96,7 +96,7 @@ public class ServiceDocumentationController extends ModuleRoot {
         DocumentModelList tags = session.query("SELECT " + "*" + " FROM " + TaggingFolder.DOCTYPE
                 + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
         DocumentModelList serviceProxies = session.query("SELECT " + "*" + " FROM " + InformationService.DOCTYPE
-                + DocumentService.NXQL_WHERE_PROXY + DocumentService.NXQL_PATH_STARTSWITH
+                + DocumentService.NXQL_WHERE_PROXY + DocumentService.NXQL_AND + DocumentService.NXQL_PATH_STARTSWITH
                 + RepositoryHelper.getRepositoryPath(session, subprojectId) + TaggingFolder.DOCTYPE + "'");
         //DocumentModelList serviceProxyIds = session.query("SELECT " + "ecm:uuid, ecm:parentid" + " FROM " + Service.DOCTYPE + DocumentService.NXQL_WHERE_PROXY
         //        + DocumentService.NXQL_AND + DocumentService.NXQL_PATH_STARTSWITH + RepositoryHelper.getRepositoryPath(session, subprojectId) + TaggingFolder.DOCTYPE + "'");
@@ -137,9 +137,11 @@ public class ServiceDocumentationController extends ModuleRoot {
             }
             tagId2ServiceNbs.put(serviceProxyParentId, serviceProxyNb);
         }*/
+        String proxiedServicesIdLiteralList = getProxiedIdLiteralList(session, serviceProxies);
+        String proxiedServicesCriteria = proxiedServicesIdLiteralList.length() == 2 ? "" :
+            DocumentService.NXQL_AND + " NOT ecm:uuid IN " + proxiedServicesIdLiteralList;
         DocumentModelList untaggedServices = session.query("SELECT " + SERVICE_LIST_PROPS + " FROM " + InformationService.DOCTYPE
-                + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria
-                + DocumentService.NXQL_AND + " NOT ecm:uuid IN " + getProxiedIdLiteralList(session, serviceProxies));
+                + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria + proxiedServicesCriteria);
         
         return getView("services")
                 .arg("services", services)

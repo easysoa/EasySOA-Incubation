@@ -3,7 +3,6 @@ package org.easysoa.registry;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.test.AbstractRegistryTest;
 import org.easysoa.registry.types.Deliverable;
-import org.easysoa.registry.types.Repository;
 import org.easysoa.registry.types.SystemTreeRoot;
 import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.types.ids.SoaNodeId;
@@ -15,6 +14,7 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 
@@ -43,9 +43,10 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
     @Test
     public void testRepositoryCreation() throws ClientException {
         // Check that the repository document doesn't exist
-        Assume.assumeTrue(!documentManager.exists(RepositoryHelper.REPOSITORY_REF));
+        Assume.assumeTrue(!documentManager.exists(new PathRef(RepositoryHelper
+                .getRepositoryPath(documentManager, defaultSubprojectId))));
 
-        DocumentModel repositoryInstance = RepositoryHelper.getRepositoryInstance(documentManager);
+        DocumentModel repositoryInstance = RepositoryHelper.getRepository(documentManager, defaultSubprojectId);
         Assert.assertNotNull("Repository must be created on first access", repositoryInstance);
     }
 
@@ -53,8 +54,8 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
     public void testDocumentRelocation() throws Exception {
         // Create SystemTreeRoot
         strModel = documentService.createDocument(documentManager,
-                SystemTreeRoot.DOCTYPE, "MyRoot",
-                DocumentModelHelper.WORKSPACEROOT_REF.toString(), "MyRoot");
+                SystemTreeRoot.DOCTYPE, "MyRoot", DocumentModelHelper
+                .getWorkspacesPath(documentManager, defaultSubprojectId), "MyRoot");
 
         // Create System in it
         systemModel = documentService.create(documentManager,
@@ -74,7 +75,7 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
                         systemInstance.isProxy());
                 hasSystemTreeRootAsParent = true;
             } else if (systemInstance.getPathAsString().startsWith(
-                    RepositoryHelper.REPOSITORY_REF.toString())) {
+                    RepositoryHelper.getRepositoryPath(documentManager, defaultSubprojectId))) {
                 hasRepositoryAsParent = true;
             }
         }
@@ -102,7 +103,8 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
         boolean sourceFound = false;
         DocumentModelList allInstances = documentService.findAllInstances(documentManager, duplicateModel);
         for (DocumentModel instance : allInstances) {
-            if (instance.getPathAsString().startsWith(Repository.REPOSITORY_PATH)) {
+            if (instance.getPathAsString().startsWith(
+                    RepositoryHelper.getRepositoryPath(documentManager, defaultSubprojectId))) {
                 Assert.assertFalse("System created twice should still have only one source", sourceFound);
                 sourceFound = true;
             }
@@ -152,10 +154,11 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
         assertAllProxiesAreSetOnTheSources(proxies);
     }
 
-    private void assertAllProxiesAreSetOnTheSources(DocumentModelList proxies) {
+    private void assertAllProxiesAreSetOnTheSources(DocumentModelList proxies) throws ClientException {
         for (DocumentModel proxy : proxies) {
             Assert.assertTrue("All proxies must be set on the source SoaNodes",
-                    proxy.getPathAsString().startsWith("/default-domain/repository"));
+                    proxy.getPathAsString().startsWith(
+                            RepositoryHelper.getRepositoryPath(documentManager, defaultSubprojectId)));
         }
     }
 }

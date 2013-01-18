@@ -17,8 +17,19 @@ public class EndpointId extends SoaNodeId {
 	@JsonIgnore
 	private final String url;
 
-	public EndpointId(String environment, String url) {
-		super(Endpoint.DOCTYPE, buildName(environment, url));
+    /**
+     * With default subproject. Convenience for testing.
+     * @param environment
+     * @param url
+     */
+    public EndpointId(String environment, String url) {
+        super(Endpoint.DOCTYPE, buildName(environment, url));
+        this.environment = environment;
+        this.url = url;
+    }
+
+	public EndpointId(String subprojectId, String environment, String url) {
+		super(subprojectId, Endpoint.DOCTYPE, buildName(environment, url));
 		this.environment = environment;
 		this.url = url;
 	}

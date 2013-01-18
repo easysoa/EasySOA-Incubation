@@ -41,17 +41,17 @@ public class EnvironmentClassifierTest extends AbstractRegistryTest {
     public void testClassification() throws ClientException {
         // Create manual SystemTreeRoot
         DocumentModel strModel = documentService.createDocument(documentManager,
-                SystemTreeRoot.DOCTYPE, "MyRoot",
-                DocumentModelHelper.WORKSPACEROOT_REF.toString(), "MyRoot");
+                SystemTreeRoot.DOCTYPE, "MyRoot", DocumentModelHelper
+                .getWorkspacesPath(documentManager, defaultSubprojectId), "MyRoot");
 
         // Create System in it
         DocumentModel systemModel = documentService.create(documentManager,
-                new SoaNodeId(TaggingFolder.DOCTYPE, "MySystem"),
+                new SoaNodeId(defaultSubprojectId, TaggingFolder.DOCTYPE, "MySystem"),
                 strModel.getPathAsString());
 
         // Create Endpoint in it
         DocumentModel endpointModel  = documentService.create(documentManager,
-                new EndpointId("Production", "MyEndpoint"),
+                new EndpointId(defaultSubprojectId, "Production", "MyEndpoint"),
                 systemModel.getPathAsString());
         documentManager.saveDocument(endpointModel);
         
@@ -60,13 +60,13 @@ public class EnvironmentClassifierTest extends AbstractRegistryTest {
         // Make sure that there are now the endpoint in the By Environment tree
         
         DocumentModel istrModel = documentService.findDocument(documentManager,
-                IntelligentSystemTreeRoot.DOCTYPE, "environment:environment");
+                defaultSubprojectId, IntelligentSystemTreeRoot.DOCTYPE, "environment:environment");
         Assert.assertNotNull("A By Environment intelligent system tree root must have been created",
                 istrModel);
         Assert.assertEquals("The By Environment STR must contain 1 system", 1, documentManager.getChildren(istrModel.getRef()).size());
         
         DocumentModel productionSystem = documentService.findDocument(documentManager,
-                IntelligentSystem.DOCTYPE, "Production");
+                defaultSubprojectId, IntelligentSystem.DOCTYPE, "Production");
         Assert.assertNotNull("A 'Production' system must have been created", productionSystem);
 
         DocumentModelList productionSystemChildren = documentManager.getChildren(productionSystem.getRef());

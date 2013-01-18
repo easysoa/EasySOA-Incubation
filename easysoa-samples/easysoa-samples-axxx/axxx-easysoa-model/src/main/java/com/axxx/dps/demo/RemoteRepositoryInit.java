@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 
-import org.easysoa.registry.types.ids.SoaNodeId;
-import org.easysoa.registry.facets.WsdlInfoFacet;
 import org.easysoa.registry.rest.RegistryApi;
 import org.easysoa.registry.rest.client.ClientBuilder;
 import org.easysoa.registry.rest.integration.EndpointStateService;
@@ -19,9 +17,11 @@ import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.Platform;
+import org.easysoa.registry.types.Project;
 import org.easysoa.registry.types.Repository;
-import org.easysoa.registry.types.SystemTreeRoot;
-import org.easysoa.registry.types.TaggingFolder;
+import org.easysoa.registry.types.Subproject;
+import org.easysoa.registry.types.SubprojectNode;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
 import org.nuxeo.ecm.automation.client.Session;
@@ -29,8 +29,6 @@ import org.nuxeo.ecm.automation.client.jaxrs.impl.HttpAutomationClient;
 import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
-
-import com.sun.jersey.api.client.WebResource;
 
 
 /**
@@ -79,32 +77,56 @@ public class RemoteRepositoryInit {
 	    
 		initClients();
 
-        String rootName = "Projets collaboratifs";
+        //String rootName = "Projets collaboratifs";
+        String projectName = "Intégration DPS - DCV";
         
 		if (steps.isEmpty() || steps.contains("clean")) {
 		 
 		// Reset repository and root
-		delete("SELECT * FROM " + SystemTreeRoot.DOCTYPE + " WHERE dc:title = '" + rootName + "'");
+		/*delete("SELECT * FROM " + SystemTreeRoot.DOCTYPE + " WHERE dc:title = '" + rootName + "'");
 		delete("SELECT * FROM " + Repository.DOCTYPE);
 		
 		// Root
-		delete("SELECT * FROM " + SystemTreeRoot.DOCTYPE + " WHERE dc:title = '" + rootName + "'");
+		delete("SELECT * FROM " + SystemTreeRoot.DOCTYPE + " WHERE dc:title = '" + rootName + "'");*/
+        delete("SELECT * FROM " + Project.DOCTYPE + " WHERE dc:title = '" + projectName + "'");
         
         }
         
         //if (steps.isEmpty() || steps.contains("Specifications")) {
 		
-		String rootPath = createDocument(SystemTreeRoot.DOCTYPE, rootName, "/default-domain/workspaces");
-
-        String platformArchitecturePath = "/default-domain/repository/Platform";//TODO or null ??
+		//String rootPath = createDocument(SystemTreeRoot.DOCTYPE, rootName, "/default-domain/workspaces");
+        String rootPath = "/default-domain";
 		
 		// Project and its folders
-		String projectPath = createSoaNode(new SoaNodeId(TaggingFolder.DOCTYPE, "Intégration APV Web - Pivotal"), rootPath);
-		String specificationsPath = createDocument("Folder", "1. Spécifications", projectPath);
+		//String projectPath = createSoaNode(new SoaNodeId(TaggingFolder.DOCTYPE, "Intégration APV Web - Pivotal"), rootPath);
+        String projectPath = createDocument(Project.DOCTYPE, projectName, rootPath);
+		/*String specificationsPath = createDocument("Folder", "1. Spécifications", projectPath);
 		createDocument("Folder", "2. Réalisation", projectPath);
-		createDocument("Folder", "3. Déploiements", projectPath);
+		createDocument("Folder", "3. Déploiements", projectPath);*/
+        
+        String specificationsPath = projectPath + '/' + Subproject.SPECIFICATIONS_SUBPROJECT_NAME;
+        //String specificationsSubprojectId = (String) getDocByPath(specificationsPath).getProperties().get("spnode:subproject");
+        Document specificationsSubprojectDoc = getDocByPath(specificationsPath);
+        String specificationsSubprojectId = (String) specificationsSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
+        
+        String realisationPath = createDocument(Subproject.DOCTYPE, Subproject.REALISATION_SUBPROJECT_NAME, projectPath,
+                Subproject.XPATH_PARENT_SUBPROJECTS + "=" + specificationsSubprojectDoc.getId());
+        ///String realisationPath = projectPath + '/' + Subproject.REALISATION_SUBPROJECT_NAME;
+        //String realisationSubprojectId = (String) getDocByPath(realisationPath).getProperties().get("spnode:subproject");
+        Document realisationSubprojectDoc = getDocByPath(realisationPath);
+        String realisationSubprojectId = (String) realisationSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
+
+        String deploiementPath = createDocument(Subproject.DOCTYPE, Subproject.DEPLOIEMENT_SUBPROJECT_NAME, projectPath,
+                Subproject.XPATH_PARENT_SUBPROJECTS + "=" + realisationSubprojectDoc.getId());
+        ///String deploiementPath = projectPath + '/' + Subproject.DEPLOIEMENT_SUBPROJECT_NAME;
+        //String deploiementSubprojectId = (String) getDocByPath(deploiementPath).getProperties().get("spnode:subproject");
+        String deploiementSubprojectId = (String) getDocByPath(deploiementPath).getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
+
+        //String platformArchitecturePath = "/default-domain/repository/Platform";
+        String platformArchitecturePath = specificationsPath + "/Platform";//TODO within project or out (i.e. global) ??
+        String platformSubprojectId = specificationsSubprojectId;
 		
-		
+        
 		// PHASE 1: Specs
 		
 		// Specifications sub-folders
@@ -113,18 +135,18 @@ public class RemoteRepositoryInit {
 		String compArchitecturePath = createDocument("Folder", "3. Component architecture", specificationsPath);
 		
 		// Actors
-		SoaNodeId actUniId = new SoaNodeId(ACTOR_DOCTYPE, "Uniserv"); createSoaNode(actUniId);
-		SoaNodeId actCommId = new SoaNodeId(ACTOR_DOCTYPE, "Commercial_AXXX"); createSoaNode(actCommId);
-		SoaNodeId actCRMId = new SoaNodeId(ACTOR_DOCTYPE, "CRM DCV"); createSoaNode(actCRMId);
-        SoaNodeId actPartSoc = new SoaNodeId(ACTOR_DOCTYPE, "Partenaires_Sociaux"); createSoaNode(actPartSoc);
-		SoaNodeId actSIDPSId = new SoaNodeId(ACTOR_DOCTYPE, "SI DPS"); createSoaNode(actSIDPSId);
-		SoaNodeId actSIDCVId = new SoaNodeId(ACTOR_DOCTYPE, "SI DCV"); createSoaNode(actSIDCVId);
+		SoaNodeId actUniId = new SoaNodeId(specificationsSubprojectId, ACTOR_DOCTYPE, "Uniserv"); createSoaNode(actUniId);
+		SoaNodeId actCommId = new SoaNodeId(specificationsSubprojectId, ACTOR_DOCTYPE, "Commercial_AXXX"); createSoaNode(actCommId);
+		SoaNodeId actCRMId = new SoaNodeId(specificationsSubprojectId, ACTOR_DOCTYPE, "CRM DCV"); createSoaNode(actCRMId);
+        SoaNodeId actPartSoc = new SoaNodeId(specificationsSubprojectId, ACTOR_DOCTYPE, "Partenaires_Sociaux"); createSoaNode(actPartSoc);
+		SoaNodeId actSIDPSId = new SoaNodeId(specificationsSubprojectId, ACTOR_DOCTYPE, "SI DPS"); createSoaNode(actSIDPSId);
+		SoaNodeId actSIDCVId = new SoaNodeId(specificationsSubprojectId, ACTOR_DOCTYPE, "SI DCV"); createSoaNode(actSIDCVId);
 		
 		
 		// Business services
 		
 		// OPT Event "demande création précompte"
-		SoaNodeId bsDdeCrePrecompteId = new SoaNodeId(BUSINESS_SERVICE_DOCTYPE, "Dde_Cré_Précompte");
+		SoaNodeId bsDdeCrePrecompteId = new SoaNodeId(specificationsSubprojectId, BUSINESS_SERVICE_DOCTYPE, "Dde_Cré_Précompte");
 		String bsDdeCrePrecomptePath = createSoaNode(bsDdeCrePrecompteId, businessArchitecturePath,
 				BUSINESS_SERVICE_PROVIDER_ACTOR + "=" + getIdRef(actSIDCVId),
 				BUSINESS_SERVICE_CONSUMER_ACTOR + "=" + getIdRef(actCommId)
@@ -133,12 +155,12 @@ public class RemoteRepositoryInit {
 		createDocument("File", "SpecificationsExternes (=DocUtilisateur).doc", businessArchitecturePath);
 		createSoaNode(actCommId, bsDdeCrePrecomptePath);
 		createSoaNode(actSIDCVId, bsDdeCrePrecomptePath);
-		SoaNodeId slaDdeCrePrecompteId = new SoaNodeId(SLA_DOCTYPE, "SLA Dde_Cré_Précompte");
+		SoaNodeId slaDdeCrePrecompteId = new SoaNodeId(specificationsSubprojectId, SLA_DOCTYPE, "SLA Dde_Cré_Précompte");
 		createSoaNode(slaDdeCrePrecompteId, bsDdeCrePrecomptePath,
 		        "dc:description=temps de réponse, taux de disponibilité par période ; Nb_Benef_Prev_N / Ancienneté");
         
 		// OPT Event "demande projet vacances"
-		SoaNodeId bsDdeProjetVacancesId = new SoaNodeId(BUSINESS_SERVICE_DOCTYPE, "Dde_Projet_Vacances");
+		SoaNodeId bsDdeProjetVacancesId = new SoaNodeId(specificationsSubprojectId, BUSINESS_SERVICE_DOCTYPE, "Dde_Projet_Vacances");
         String bsDdeProjetVacancesPath = createSoaNode(bsDdeProjetVacancesId, businessArchitecturePath,
                 BUSINESS_SERVICE_PROVIDER_ACTOR + "=" + getIdRef(actSIDPSId),
                 BUSINESS_SERVICE_CONSUMER_ACTOR + "=" + getIdRef(actPartSoc)
@@ -147,22 +169,22 @@ public class RemoteRepositoryInit {
         //createDocument("File", "SpecificationsExternes (=DocUtilisateur).doc", businessArchitecturePath);
         createSoaNode(actPartSoc, bsDdeProjetVacancesPath);
         createSoaNode(actSIDPSId, bsDdeProjetVacancesPath);
-        SoaNodeId slaDdeProjetVacancesId = new SoaNodeId(SLA_DOCTYPE, "SLA Dde_Projet_Vacances");
+        SoaNodeId slaDdeProjetVacancesId = new SoaNodeId(specificationsSubprojectId, SLA_DOCTYPE, "SLA Dde_Projet_Vacances");
         createSoaNode(slaDdeProjetVacancesId, bsDdeProjetVacancesPath,
                 "dc:description=tps de réponse max, taux de disponibilité par période ; Nb_Benef_N / Nb_Benef_Prev_N");
  
         
 		// Information services
         
-        createSoaNode(new SoaNodeId(InformationService.DOCTYPE, "Cré_Précpte"), infoArchitecturePath,
+        createSoaNode(new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "Cré_Précpte"), infoArchitecturePath,
                 InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actSIDCVId),
                 InformationService.XPATH_LINKED_BUSINESS_SERVICE + "=" + getIdRef(bsDdeCrePrecompteId));
         
-        createSoaNode(new SoaNodeId(InformationService.DOCTYPE, "Projet_Vacances"), infoArchitecturePath,
+        createSoaNode(new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "Projet_Vacances"), infoArchitecturePath,
                 InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actSIDPSId),
                 InformationService.XPATH_LINKED_BUSINESS_SERVICE + "=" + getIdRef(bsDdeProjetVacancesId));
         
-		SoaNodeId isCheckAddressId = new SoaNodeId(InformationService.DOCTYPE, "checkAddress");
+		SoaNodeId isCheckAddressId = new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "checkAddress");
 		String isCheckAddressPath = createSoaNode(isCheckAddressId, infoArchitecturePath,
 		        InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actUniId)/*,
                 InformationService.XPATH_WSDL_PORTTYPE_NAME + "={http://ipf.webservice.rt.saas.uniserv.com}InternationalPostalValidationPortType"*/);
@@ -171,11 +193,11 @@ public class RemoteRepositoryInit {
         ///isCheckAddressId = new SoaNodeId(isCheckAddressId.getType(), "ws:http://ipf.webservice.rt.saas.uniserv.com:InternationalPostalValidationPortType");
             // updating soaname to what the wsdl upload has set it to
             // TODO or never let it change ?!
-        SoaNodeId olaCheckAddressId = new SoaNodeId(OLA_DOCTYPE, "OLA checkAddress");
+        SoaNodeId olaCheckAddressId = new SoaNodeId(specificationsSubprojectId, OLA_DOCTYPE, "OLA checkAddress");
         createSoaNode(olaCheckAddressId, isCheckAddressPath,
                 "dc:description=temps de réponse max, taux de disponibilité par période");
 
-        SoaNodeId isTdrWebServiceId = new SoaNodeId(InformationService.DOCTYPE, "TdrWebService");
+        SoaNodeId isTdrWebServiceId = new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "TdrWebService");
         String isTdrWebServicePath = createSoaNode(isTdrWebServiceId, infoArchitecturePath,
                 InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actSIDPSId)/*,
 		        InformationService.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService"*/);
@@ -184,16 +206,16 @@ public class RemoteRepositoryInit {
 		///isTdrWebServiceId = new SoaNodeId(isTdrWebServiceId.getType(), "ws:http://www.axxx.com/dps/apv:PrecomptePartenaireService");
 		    // updating soaname to what the wsdl upload has set it to
 		    // TODO or never let it change ?!
-		SoaNodeId olaTdrWebServiceId = new SoaNodeId(OLA_DOCTYPE, "OLA TdrWebService");
+		SoaNodeId olaTdrWebServiceId = new SoaNodeId(specificationsSubprojectId, OLA_DOCTYPE, "OLA TdrWebService");
 		createSoaNode(olaTdrWebServiceId, isTdrWebServicePath,
 		        "dc:description=temps de réponse max, taux de disponibilité par période");
 		
-		SoaNodeId isInformationAPVId = new SoaNodeId(InformationService.DOCTYPE, "Information_APV");
+		SoaNodeId isInformationAPVId = new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "Information_APV");
 		String isInformationAPVPath = createSoaNode(isInformationAPVId, infoArchitecturePath,
                 InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actSIDCVId)/*,
                 InformationService.XPATH_WSDL_PORTTYPE_NAME + "={http://pivotal.axxx.fr/}ContactSvcSoap"*/);
         uploadWsdl(isInformationAPVPath, "../axxx-dcv-pivotal/src/main/resources/api/ContactSvc.asmx.wsdl");
-        SoaNodeId olaInformationAPVId = new SoaNodeId(OLA_DOCTYPE, "OLA Information_APV");
+        SoaNodeId olaInformationAPVId = new SoaNodeId(specificationsSubprojectId, OLA_DOCTYPE, "OLA Information_APV");
         createSoaNode(olaInformationAPVId, isInformationAPVPath,
                 "dc:description=temps de réponse max, taux de disponibilité par période");
 		
@@ -202,7 +224,7 @@ public class RemoteRepositoryInit {
 		
 		// Platforms
         
-        SoaNodeId axxxDotNETWSPlatform = new SoaNodeId(Platform.DOCTYPE, "AXXX .NET WS");
+        SoaNodeId axxxDotNETWSPlatform = new SoaNodeId(platformSubprojectId, Platform.DOCTYPE, "AXXX .NET WS");
         createSoaNode(axxxDotNETWSPlatform, platformArchitecturePath,
                 Platform.XPATH_IDE + "=" + "Visual Studio",
                 Platform.XPATH_LANGUAGE + "=" + "C#",
@@ -216,7 +238,7 @@ public class RemoteRepositoryInit {
                 Platform.XPATH_APP_SERVER_RUNTIME + "=" + ".NET" // ?
                         );
 		
-        SoaNodeId axxxJavaWSPlatform = new SoaNodeId(Platform.DOCTYPE, "AXXX Java WS");
+        SoaNodeId axxxJavaWSPlatform = new SoaNodeId(platformSubprojectId, Platform.DOCTYPE, "AXXX Java WS");
         createSoaNode(axxxJavaWSPlatform, platformArchitecturePath,
                 //Platform.XPATH_IDE + "=" + "Eclipse", // let open
                 Platform.XPATH_LANGUAGE + "=" + "Java",
@@ -230,12 +252,12 @@ public class RemoteRepositoryInit {
                 Platform.XPATH_APP_SERVER_RUNTIME + "=" + "Tomcat" // TODO Spring / Tomcat ??
                 		); // NB. no security for now
         
-        SoaNodeId genericWSPlatform = new SoaNodeId(Platform.DOCTYPE, "Generic WS");
+        SoaNodeId genericWSPlatform = new SoaNodeId(platformSubprojectId, Platform.DOCTYPE, "Generic WS");
         createSoaNode(genericWSPlatform, platformArchitecturePath,
                 Platform.XPATH_SERVICE_PROTOCOL + "=" + "SOAP",
                 Platform.XPATH_TRANSPORT_PROTOCOL + "=" + "HTTP");
 
-        SoaNodeId axxxTalendESBPlatform = new SoaNodeId(Platform.DOCTYPE, "AXXX Talend ESB");
+        SoaNodeId axxxTalendESBPlatform = new SoaNodeId(platformSubprojectId, Platform.DOCTYPE, "AXXX Talend ESB");
         createSoaNode(axxxTalendESBPlatform, platformArchitecturePath,
                 Platform.XPATH_IDE + "=" + "Talend Open Studio",
                 Platform.XPATH_LANGUAGE + "=" + "Talend Open Studio",
@@ -250,40 +272,40 @@ public class RemoteRepositoryInit {
         
 		// Components
         
-        SoaNodeId cptCheckAddressId = new SoaNodeId(COMPONENT_DOCTYPE, "checkAddress");
+        SoaNodeId cptCheckAddressId = new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "checkAddress");
         createSoaNode(cptCheckAddressId, compArchitecturePath,
 				COMPONENT_TYPE + "=Application",
 				COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isCheckAddressId)); // réalise IS checkAddress TODO not the other way ??
         createSoaNode(cptCheckAddressId, getPath(genericWSPlatform)); // again, to give it its platform
 		
-		SoaNodeId cptTdrWebServiceId = new SoaNodeId(COMPONENT_DOCTYPE, "TdrWebService");
+		SoaNodeId cptTdrWebServiceId = new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "TdrWebService");
 		createSoaNode(cptTdrWebServiceId, compArchitecturePath,
 				COMPONENT_TYPE + "=Application",
 				/*"platform:serviceLanguage=JAX-WS",*/
                 COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isTdrWebServiceId));
         createSoaNode(cptTdrWebServiceId, getPath(axxxJavaWSPlatform)); // again, to give it its platform
 		
-        SoaNodeId cptInformationAPVId = new SoaNodeId(COMPONENT_DOCTYPE, "Information_APV");
+        SoaNodeId cptInformationAPVId = new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "Information_APV");
         createSoaNode(cptInformationAPVId, compArchitecturePath,
 				COMPONENT_TYPE + "=Application",
                 COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isInformationAPVId));
         createSoaNode(cptInformationAPVId, getPath(axxxDotNETWSPlatform)); // again, to give it its platform
 		
-        SoaNodeId cptOrchestrationDCVId = new SoaNodeId(COMPONENT_DOCTYPE, "Orchestration_DCV");
+        SoaNodeId cptOrchestrationDCVId = new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "Orchestration_DCV");
         createSoaNode(cptOrchestrationDCVId, compArchitecturePath,
 				COMPONENT_TYPE + "=Application"); // TODO réalise IS Cré_Précpte
         createSoaNode(cptOrchestrationDCVId, getPath(axxxTalendESBPlatform)); // again, to give it its platform
 
         // TODO ??!!??
-        SoaNodeId cptOrchestrationDPSId = new SoaNodeId(COMPONENT_DOCTYPE, "Orchestration_DPS");
+        SoaNodeId cptOrchestrationDPSId = new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "Orchestration_DPS");
         createSoaNode(cptOrchestrationDPSId, compArchitecturePath,
 				COMPONENT_TYPE + "=Application"); // TODO réalise IS Projet_Vacances
         createSoaNode(cptOrchestrationDPSId, getPath(axxxTalendESBPlatform)); // again, to give it its platform
 		
-        createSoaNode(new SoaNodeId(COMPONENT_DOCTYPE, "Pivotal"), compArchitecturePath,
+        createSoaNode(new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "Pivotal"), compArchitecturePath,
 				COMPONENT_TYPE + "=Application");
 		
-        createSoaNode(new SoaNodeId(COMPONENT_DOCTYPE, "APV_Web"), compArchitecturePath,
+        createSoaNode(new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "APV_Web"), compArchitecturePath,
 				COMPONENT_TYPE + "=Application");
         
         // OPT contactClient
@@ -297,19 +319,19 @@ public class RemoteRepositoryInit {
 		// (checkout AXXX source and)
 		// do a source discovery
 		//publish(specificationsPath, realizationPath);
-//		createSoaNode(new SoaNodeId(???.DOCTYPE, "checkAddress"), realizationPath);
-//		createSoaNode(new SoaNodeId(???.DOCTYPE, "TdrWebService"), realizationPath,
+//		createSoaNode(new SoaNodeId(realisationSubprojectId, ???.DOCTYPE, "checkAddress"), realizationPath);
+//		createSoaNode(new SoaNodeId(realisationSubprojectId, ???.DOCTYPE, "TdrWebService"), realizationPath,
 //				?????? + "=" + getIdRef(new SoaNodeId(COMPONENT_DOCTYPE, "TdrWebService")));
-//		createSoaNode(new SoaNodeId(???.DOCTYPE, "Information_APV"), realizationPath);
-//		createSoaNode(new SoaNodeId(???.DOCTYPE, "Orchestration_DCV"), realizationPath);
-//		createSoaNode(new SoaNodeId(???.DOCTYPE, "Orchestration_DPS"), realizationPath);
+//		createSoaNode(new SoaNodeId(realisationSubprojectId, ???.DOCTYPE, "Information_APV"), realizationPath);
+//		createSoaNode(new SoaNodeId(realisationSubprojectId, ???.DOCTYPE, "Orchestration_DCV"), realizationPath);
+//		createSoaNode(new SoaNodeId(realisationSubprojectId, ???.DOCTYPE, "Orchestration_DPS"), realizationPath);
 
 		//}
 
         
-        SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(Endpoint.DOCTYPE, "Prod:http://localhost:7080/apv/services/PrecomptePartenaireService");//TODO host
-        SoaNodeId checkAddressProdEndpointId = new SoaNodeId(Endpoint.DOCTYPE, "Prod:" + fromEnc("iuuq;00xxx/ebub.rvbmjuz.tfswjdf/dpn0npdlxtr5220tfswjdft0JoufsobujpobmQptubmWbmjebujpo/JoufsobujpobmQptubmWbmjebujpoIuuqTpbq22Foeqpjou0"));//checkAddressProdEndpoint
-        SoaNodeId informationAPVProdEndpointId = new SoaNodeId(Endpoint.DOCTYPE, "Prod:http://localhost:7080/pivotal/WS/ContactSvc.asmx");//TODO host // 18000
+        SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://localhost:7080/apv/services/PrecomptePartenaireService");//TODO host
+        SoaNodeId checkAddressProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:" + fromEnc("iuuq;00xxx/ebub.rvbmjuz.tfswjdf/dpn0npdlxtr5220tfswjdft0JoufsobujpobmQptubmWbmjebujpo/JoufsobujpobmQptubmWbmjebujpoIuuqTpbq22Foeqpjou0"));//checkAddressProdEndpoint
+        SoaNodeId informationAPVProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://localhost:7080/pivotal/WS/ContactSvc.asmx");//TODO host // 18000
         
 		if (steps.isEmpty() || steps.contains("Deploiement")) {
 		
@@ -414,7 +436,7 @@ public class RemoteRepositoryInit {
 	
 	private static Document getDocByPath(String path) throws Exception {
 		Documents docs = (Documents) session
-				.newRequest("Document.Query")
+				.newRequest("Document.Query").setHeader("X-NXDocumentProperties", "*")
 				.set("query", "SELECT * FROM Document WHERE ecm:path = '" + path + "'").execute();
 		if (docs != null && !docs.isEmpty()) {
 			return docs.get(0);
@@ -509,7 +531,7 @@ public class RemoteRepositoryInit {
 	}
 	
 	public static String getSourceFolderPath(String doctype) {
-        return Repository.REPOSITORY_PATH + '/' + doctype; 
+        return Subproject.DEFAULT_SUBPROJECT_PATH + '/' + Repository.REPOSITORY_NAME + '/' + doctype; 
     }
 
 }

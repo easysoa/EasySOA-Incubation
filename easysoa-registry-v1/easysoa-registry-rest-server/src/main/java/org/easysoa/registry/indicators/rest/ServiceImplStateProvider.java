@@ -13,6 +13,7 @@ import org.easysoa.registry.types.ServiceImplementation;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
 
 public class ServiceImplStateProvider implements IndicatorProvider {
@@ -25,10 +26,19 @@ public class ServiceImplStateProvider implements IndicatorProvider {
     }
 
     @Override
-    public Map<String, IndicatorValue> computeIndicators(CoreSession session,
+    public Map<String, IndicatorValue> computeIndicators(CoreSession session, String subprojectId,
             Map<String, IndicatorValue> computedIndicators) throws Exception {
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
         DocumentService documentService = Framework.getService(DocumentService.class);
+
+        //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
+        // TODO default or not ??
+        String subprojectPathCriteria;
+        if (subprojectId == null) {
+            subprojectPathCriteria = "";
+        } else {
+            subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH + session.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
+        }
 
         // Count indicators - ServiceImplementation-specific
         final int IDEAL_DOCUMENTATION_LINES = 40, DOCUMENTATION_LINES_TOLERANCE = 20;
@@ -38,7 +48,7 @@ public class ServiceImplStateProvider implements IndicatorProvider {
         Map<Serializable, Boolean> hasMock = new HashMap<Serializable, Boolean>();
         int mockedImplsCount = 0, testedImplsCount = 0, nonMockImplsCount = 0;
         DocumentModelList serviceImplModels = session.query(NXQL_SELECT_FROM
-                + ServiceImplementation.DOCTYPE + NXQL_WHERE_NO_PROXY);
+                + ServiceImplementation.DOCTYPE + NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
         
         for (DocumentModel serviceImplModel : serviceImplModels) {
             ServiceImplementation serviceImpl = serviceImplModel.getAdapter(ServiceImplementation.class);

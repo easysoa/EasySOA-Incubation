@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 
@@ -28,8 +29,18 @@ public abstract class QueryCountIndicator extends Indicator {
     }
 
     @Override
-    public IndicatorValue compute(CoreSession session, Map<String, IndicatorValue> computedIndicators) throws ClientException {
-        IterableQueryResult queryResult = session.queryAndFetch(valueQuery, NXQL.NXQL);
+    public IndicatorValue compute(CoreSession session,  String subprojectId,
+            Map<String, IndicatorValue> computedIndicators) throws ClientException {
+        //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
+        // TODO default or not ??
+        String subprojectPathCriteria;
+        if (subprojectId == null) {
+            subprojectPathCriteria = "";
+        } else {
+            subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH + session.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
+        }
+        
+        IterableQueryResult queryResult = session.queryAndFetch(valueQuery + subprojectPathCriteria, NXQL.NXQL);
         try {
             if (this.totalQuery == null) {
                 return new IndicatorValue((int) queryResult.size(), -1);

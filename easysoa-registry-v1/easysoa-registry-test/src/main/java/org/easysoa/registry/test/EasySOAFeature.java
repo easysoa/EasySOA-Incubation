@@ -25,6 +25,9 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
     "org.nuxeo.ecm.platform.classification.api",
     "org.nuxeo.ecm.platform.classification.core",
     
+    // Nuxeo tree snapshot add-on
+    "org.nuxeo.snapshot",
+    
     // Minimal EasySOA requirements
     "org.easysoa.registry.doctypes.api",
     "studio.extensions.easy-soa-open-wide",

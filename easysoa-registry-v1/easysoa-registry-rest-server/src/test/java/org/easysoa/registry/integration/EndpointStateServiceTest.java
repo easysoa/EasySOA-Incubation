@@ -41,7 +41,7 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
 
     private static Logger logger = Logger.getLogger(EndpointStateServiceTest.class);
 
-    private EndpointStateServiceHelper endpointStateService = new EndpointStateServiceHelper(this);
+    private String endpointStateServiceUrl = this.getURL(EndpointStateServiceImpl.class);
     
     @Inject
     DirectoryService directoryService;
@@ -144,7 +144,7 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         
         // Run first test request to get all indicators
         Client client = createAuthenticatedHTTPClient();
-        WebResource discoveryRequest = client.resource(endpointStateService.getRootURL()).path("/slaOlaIndicators");
+        WebResource discoveryRequest = client.resource(endpointStateServiceUrl).path("/slaOlaIndicators");
         SlaOrOlaIndicators slaOrOlaIndicators = discoveryRequest.get(SlaOrOlaIndicators.class);        
         
         Assert.assertNotNull(slaOrOlaIndicators);
@@ -165,7 +165,7 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         
         // Run first test request with endpointId and slaOrOlaName params
         Client client = createAuthenticatedHTTPClient();
-        WebResource discoveryRequest = client.resource(endpointStateService.getRootURL()).path("/slaOlaIndicators")
+        WebResource discoveryRequest = client.resource(endpointStateServiceUrl).path("/slaOlaIndicators")
                 .queryParam("endpointId", ENDPOINT_ID).queryParam("slaOrOlaName", INDICATOR_NAME);
         SlaOrOlaIndicators slaOrOlaIndicators = discoveryRequest.get(SlaOrOlaIndicators.class);        
         
@@ -182,7 +182,7 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         periodStart.clear();
         periodStart.set(2012, 11, 1, 0, 0, 1);
         SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        discoveryRequest = client.resource(endpointStateService.getRootURL()).path("/slaOlaIndicators")
+        discoveryRequest = client.resource(endpointStateServiceUrl).path("/slaOlaIndicators")
                 .queryParam("endpointId", ENDPOINT_ID)
                 .queryParam("periodStart", dateFormater.format(periodStart.getTime()));
                 // NB. to mean "now", no "periodEnd" parameter at all is better
@@ -209,7 +209,7 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         
         // Check original values
         Client client = createAuthenticatedHTTPClient();
-        WebResource listRequest = client.resource(endpointStateService.getRootURL()).path("/slaOlaIndicators")
+        WebResource listRequest = client.resource(endpointStateServiceUrl).path("/slaOlaIndicators")
                 .queryParam("endpointId", ENDPOINT_ID).queryParam("slaOrOlaName", INDICATOR_NAME);
         SlaOrOlaIndicators slaOrOlaIndicators = listRequest.get(SlaOrOlaIndicators.class);        
         
@@ -222,7 +222,7 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         Assert.assertEquals(false, indicator.isServiceLevelViolation());
         
         // Run update test request
-        WebResource createUpdateRequest = client.resource(endpointStateService.getRootURL()).path("/slaOlaIndicators");
+        WebResource createUpdateRequest = client.resource(endpointStateServiceUrl).path("/slaOlaIndicators");
         
         SlaOrOlaIndicators slaOrOlaIndicatorsUpdate = new SlaOrOlaIndicators();
         SlaOrOlaIndicator indicatorUpdate = new SlaOrOlaIndicator();
@@ -284,7 +284,7 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         createUpdateRequest.post(slaOrOlaIndicatorsCreate);        
 
         // Check creation
-        WebResource anotherListRequest = client.resource(endpointStateService.getRootURL()).path("/slaOlaIndicators")
+        WebResource anotherListRequest = client.resource(endpointStateServiceUrl).path("/slaOlaIndicators")
                 .queryParam("endpointId", "anotherEndpoint").queryParam("slaOrOlaName", "anotherIndicator");
         slaOrOlaIndicators = anotherListRequest.get(SlaOrOlaIndicators.class); 
         
@@ -318,7 +318,7 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         periodStart.set(2012, 0, 1, 0, 0, 1);
         Calendar periodEnd = new GregorianCalendar(); // now
         SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        WebResource discoveryRequest = client.resource(endpointStateService.getRootURL()).path("/slaOlaIndicators")
+        WebResource discoveryRequest = client.resource(endpointStateServiceUrl).path("/slaOlaIndicators")
                 .queryParam("periodStart", dateFormater.format(periodStart.getTime())).queryParam("periodEnd", dateFormater.format(periodEnd.getTime()));
         SlaOrOlaIndicators slaOrOlaIndicators = discoveryRequest.get(SlaOrOlaIndicators.class);        
         
@@ -327,7 +327,7 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         Assert.assertEquals(7, slaOrOlaIndicators.getSlaOrOlaIndicatorList().size());
 
         // Re-Run test request with date range params and pagination params to get the first page
-        discoveryRequest = client.resource(endpointStateService.getRootURL()).path("/slaOlaIndicators")
+        discoveryRequest = client.resource(endpointStateServiceUrl).path("/slaOlaIndicators")
                 .queryParam("periodStart", dateFormater.format(periodStart.getTime())).queryParam("periodEnd", dateFormater.format(periodEnd.getTime())).queryParam("pageSize", "3").queryParam("pageStart", "0");
         slaOrOlaIndicators = discoveryRequest.get(SlaOrOlaIndicators.class);        
         
@@ -336,7 +336,7 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         Assert.assertEquals(3, slaOrOlaIndicators.getSlaOrOlaIndicatorList().size());
 
         // Re-Run test request with date range params and pagination params to get the second page
-        discoveryRequest = client.resource(endpointStateService.getRootURL()).path("/slaOlaIndicators")
+        discoveryRequest = client.resource(endpointStateServiceUrl).path("/slaOlaIndicators")
                 .queryParam("periodStart", dateFormater.format(periodStart.getTime())).queryParam("periodEnd", dateFormater.format(periodEnd.getTime())).queryParam("pageSize", "3").queryParam("pageStart", "2");
         slaOrOlaIndicators = discoveryRequest.get(SlaOrOlaIndicators.class);
         

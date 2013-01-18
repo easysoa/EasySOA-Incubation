@@ -13,6 +13,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.annotate.JsonTypeInfo.As;
 import org.codehaus.jackson.annotate.JsonTypeInfo.Id;
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ListUtils;
 
@@ -50,6 +51,10 @@ public class SoaNodeInformation implements SoaNode {
     public String getSoaName() {
         return id.getName();
     }
+
+    public String getSubprojectId() {
+        return (String) properties.get(SubprojectNode.XPATH_SUBPROJECT);
+    }
     
     public Map<String, Serializable> getProperties() {
         return properties;
@@ -77,6 +82,10 @@ public class SoaNodeInformation implements SoaNode {
 
     public void addParentDocument(SoaNodeId correlatedDocument) {
         this.parentDocuments.add(correlatedDocument);
+    }
+
+    public String getName() {
+        return (String) properties.get(SoaNode.XPATH_NAME);
     }
 
     public String getTitle() {

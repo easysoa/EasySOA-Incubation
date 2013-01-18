@@ -48,7 +48,8 @@ public class DocumentServiceTest extends AbstractRegistryTest {
         Assert.assertNotNull("Created system must be found by name", systemModel);
         Assert.assertEquals(MYSYSTEM_ID.getName(), systemModel.getTitle());
         Assert.assertTrue("Returned document must be in the repository, in the System folder",
-                systemModel.getPathAsString().startsWith(RepositoryHelper.REPOSITORY_REF.toString()));
+                systemModel.getPathAsString().startsWith(RepositoryHelper
+                        .getRepositoryPath(documentManager, MYSYSTEM_ID.getSubprojectId())));
     }
 
     @Test

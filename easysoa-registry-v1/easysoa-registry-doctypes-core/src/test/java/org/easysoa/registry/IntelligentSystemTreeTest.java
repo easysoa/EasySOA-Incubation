@@ -38,8 +38,8 @@ public class IntelligentSystemTreeTest extends AbstractRegistryTest {
     public void testEnvironmentTrees() throws ClientException {
         // Create manual SystemTreeRoot
         DocumentModel strModel = documentService.createDocument(documentManager,
-                SystemTreeRoot.DOCTYPE, "MyRoot",
-                DocumentModelHelper.WORKSPACEROOT_REF.toString(), "MyRoot");
+                SystemTreeRoot.DOCTYPE, "MyRoot", DocumentModelHelper
+                .getWorkspacesPath(documentManager, defaultSubprojectId), "MyRoot");
 
         // Create System in it
         DocumentModel systemModel = documentService.create(documentManager,
@@ -62,13 +62,13 @@ public class IntelligentSystemTreeTest extends AbstractRegistryTest {
         // By environment
         
         DocumentModel istrModel = documentService.findDocument(documentManager,
-                IntelligentSystemTreeRoot.DOCTYPE, "environment:environment");
+                defaultSubprojectId, IntelligentSystemTreeRoot.DOCTYPE, "environment:environment");
         Assert.assertNotNull("A By Environment intelligent system tree root must have been created",
                 istrModel);
         Assert.assertEquals("The By Environment STR must contain 1 system", 1, documentManager.getChildren(istrModel.getRef()).size());
         
         DocumentModel productionSystem = documentService.findDocument(documentManager,
-                IntelligentSystem.DOCTYPE, "Production");
+                defaultSubprojectId, IntelligentSystem.DOCTYPE, "Production");
         Assert.assertNotNull("A 'Production' system must have been created", productionSystem);
 
         DocumentModelList productionSystemChildren = documentManager.getChildren(productionSystem.getRef());
@@ -81,13 +81,17 @@ public class IntelligentSystemTreeTest extends AbstractRegistryTest {
         
         // By alphabetical order
         
-        endpointModel = documentManager.getDocument(new PathRef("/default-domain/workspaces/alphabeticalOrder:first2Letters/M/Y/Production:MyEndpoint"));
+        endpointModel = documentManager.getDocument(new PathRef(
+                DocumentModelHelper.getWorkspacesPath(documentManager, defaultSubprojectId)
+                + "/alphabeticalOrder:first2Letters/M/Y/Production:MyEndpoint"));
         Assert.assertNotNull("The endpoint must be classified by alphabetical order " +
         		"(= in a multiple-levels hierarchy defined with parameters)", endpointModel);
         
         // Flat documents
         
-        endpointModel = documentManager.getDocument(new PathRef("/default-domain/workspaces/everythingFlat:everythingFlat/Production:MyEndpoint"));
+        endpointModel = documentManager.getDocument(new PathRef(
+                DocumentModelHelper.getWorkspacesPath(documentManager, defaultSubprojectId)
+                + "/everythingFlat:everythingFlat/Production:MyEndpoint"));
         Assert.assertNotNull("The endpoint must be added to the flat document list", endpointModel);
        
     }

@@ -7,6 +7,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.easysoa.registry.rest.marshalling.OperationResult;
@@ -22,26 +23,28 @@ public interface RegistryApi {
     @POST
     @Path("query")
     @Consumes(MediaType.TEXT_PLAIN)
-    SoaNodeInformation[] query(String query) throws Exception;
+    SoaNodeInformation[] query(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId,
+            String query) throws Exception;
     
     @GET
-    SoaNodeInformation get() throws Exception;
+    SoaNodeInformation get(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId) throws Exception;
 
     @GET
     @Path("{doctype}")
-    SoaNodeInformation[] get(@PathParam("doctype") String doctype) throws Exception;
+    SoaNodeInformation[] get(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId, @PathParam("doctype") String doctype) throws Exception;
 
     @GET
     @Path("{doctype}/{name}")
-    SoaNodeInformation get(@PathParam("doctype") String doctype, @PathParam("name") String name) throws Exception;
+    SoaNodeInformation get(@QueryParam("subproject") String subprojectId, @PathParam("doctype") String doctype, @PathParam("name") String name) throws Exception;
 
     @DELETE
     @Path("{doctype}/{name}")
-    OperationResult delete(@PathParam("doctype") String doctype, @PathParam("name") String name) throws Exception;
+    OperationResult delete(@QueryParam("subproject") String subprojectId, @PathParam("doctype") String doctype, @PathParam("name") String name) throws Exception;
 
     @DELETE
     @Path("{doctype}/{name}/{correlatedDoctype}/{correlatedName}")
-    OperationResult delete(@PathParam("doctype") String doctype, @PathParam("name") String name,
+    OperationResult delete(@QueryParam("subproject") String subprojectId, @PathParam("doctype") String doctype, @PathParam("name") String name,
+            @QueryParam("correlatedSubprojectId") String correlatedSubprojectId, 
             @PathParam("correlatedDoctype") String correlatedDoctype,
             @PathParam("correlatedName") String correlatedName) throws Exception;
 

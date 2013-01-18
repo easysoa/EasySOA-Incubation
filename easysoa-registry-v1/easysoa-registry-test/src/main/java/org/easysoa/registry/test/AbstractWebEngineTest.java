@@ -20,8 +20,6 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
-import static org.easysoa.registry.test.EasySOAWebEngineFeature.NUXEO_URL;
-
 @RunWith(FeaturesRunner.class)
 @Features({EasySOAFeature.class, EasySOAWebEngineFeature.class})
 @RepositoryConfig(cleanup = Granularity.METHOD)
@@ -35,6 +33,8 @@ public abstract class AbstractWebEngineTest {
     protected RepositoryLogger repositoryLogger;
     
     protected boolean logRepositoryAfterEachTest = false;
+    
+    protected static String defaultSubprojectId; // static because initialized once (if any)
 
     @Rule
     public TestName name = new TestName();
@@ -60,7 +60,7 @@ public abstract class AbstractWebEngineTest {
     @Before
     public void testAvailability() {
         try {
-            URLConnection connection = new URL(NUXEO_URL).openConnection();
+            URLConnection connection = new URL(EasySOAWebEngineFeature.NUXEO_URL).openConnection();
             connection.connect();
         }
         catch (Exception e) {
@@ -71,11 +71,11 @@ public abstract class AbstractWebEngineTest {
     }
     
     public String getURL(Class<?> c) {
-        return NUXEO_URL + PathExtractor.getPath(c);
+        return EasySOAWebEngineFeature.NUXEO_URL + PathExtractor.getPath(c);
     }
 
     public String getURL(Class<?> c, String methodName, Class<?>... parameterTypes) throws SecurityException, NoSuchMethodException {
-        return NUXEO_URL + PathExtractor.getPath(c, methodName, parameterTypes);
+        return EasySOAWebEngineFeature.NUXEO_URL + PathExtractor.getPath(c, methodName, parameterTypes);
     }
     
     public void logTestName(Logger logger) {

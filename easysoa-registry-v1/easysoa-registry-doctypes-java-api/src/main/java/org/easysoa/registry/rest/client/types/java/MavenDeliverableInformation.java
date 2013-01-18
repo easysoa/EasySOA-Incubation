@@ -5,12 +5,12 @@ import org.easysoa.registry.types.java.MavenDeliverable;
 
 public class MavenDeliverableInformation extends DeliverableInformation implements MavenDeliverable {
 
-    public MavenDeliverableInformation(String groupId, String artifactId) throws Exception {
-        this(groupId + ":" + artifactId);
+    public MavenDeliverableInformation(String subprojectId, String groupId, String artifactId) throws Exception {
+        this(subprojectId, groupId + ":" + artifactId);
     }
     
-    public MavenDeliverableInformation(String name) throws Exception {
-        super(name);
+    public MavenDeliverableInformation(String subprojectId, String name) throws Exception {
+        super(subprojectId, name);
         this.setNature(MavenDeliverable.NATURE);
     }
 

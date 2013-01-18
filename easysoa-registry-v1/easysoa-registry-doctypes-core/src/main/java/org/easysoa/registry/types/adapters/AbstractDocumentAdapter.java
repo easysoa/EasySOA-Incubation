@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.InvalidDoctypeException;
 import org.easysoa.registry.SoaMetamodelService;
 import org.easysoa.registry.types.Document;
+import org.easysoa.registry.types.SubprojectNode;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -90,4 +91,11 @@ public abstract class AbstractDocumentAdapter implements Document {
         documentModel.setPropertyValue(xpath, value);
     }
 
+    public String getSubprojectId() throws Exception {
+        if (!documentModel.hasFacet(SubprojectNode.FACET)) {
+            return null;
+        }
+        return (String) documentModel.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+    }
+    
 }

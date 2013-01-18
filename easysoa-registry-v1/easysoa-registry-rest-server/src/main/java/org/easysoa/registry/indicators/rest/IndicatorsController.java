@@ -29,9 +29,11 @@ import java.util.Map.Entry;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
+import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.DeployedDeliverable;
 import org.easysoa.registry.types.Endpoint;
@@ -42,6 +44,7 @@ import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.SoftwareComponent;
 import org.easysoa.registry.types.TaggingFolder;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
@@ -99,8 +102,20 @@ public class IndicatorsController extends ModuleRoot {
 
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetHTML() throws Exception {
-        Map<String, Map<String, IndicatorValue>> indicatorsByCategory = computeIndicators();
+    public Object doGetHTML(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId) throws Exception {
+        CoreSession session = SessionFactory.getSession(request);
+
+        // using all subprojects or getting default one is let to indicator impls TODO better
+        //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
+        // TODO default or not ??
+        /*String subprojectPathCriteria;
+        if (subprojectId == null) {
+            subprojectPathCriteria = "";
+        } else {
+            subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH + session.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
+        }*/
+        
+        Map<String, Map<String, IndicatorValue>> indicatorsByCategory = computeIndicators(subprojectId);
         
         // Create and return view
         HashMap<String, Integer> nbMap = new HashMap<String, Integer>();
@@ -123,11 +138,16 @@ public class IndicatorsController extends ModuleRoot {
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Object doGetJSON() throws Exception {
-        return computeIndicators();
+    public Object doGetJSON(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId) throws Exception {
+        CoreSession session = SessionFactory.getSession(request);
+        
+        subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
+        // TODO default or not ??
+        
+        return computeIndicators(subprojectId);
     }
     
-    private Map<String, Map<String, IndicatorValue>> computeIndicators() throws Exception {
+    private Map<String, Map<String, IndicatorValue>> computeIndicators(String subprojectId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         
         List<IndicatorProvider> computedProviders = new ArrayList<IndicatorProvider>();
@@ -167,7 +187,7 @@ public class IndicatorsController extends ModuleRoot {
                             Map<String, IndicatorValue> indicators = null;
                             try {
                                 indicators = indicatorProvider
-                                        .computeIndicators(session, computedIndicators);
+                                        .computeIndicators(session, subprojectId, computedIndicators);
                             }
                             catch (Exception e) {
                                 logger.warn("Failed to compute indicator '" + indicatorProvider.toString() + "': " + e.getMessage());

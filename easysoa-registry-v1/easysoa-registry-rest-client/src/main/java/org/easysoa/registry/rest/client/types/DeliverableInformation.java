@@ -10,8 +10,8 @@ import org.easysoa.registry.utils.ListUtils;
 
 public class DeliverableInformation extends SoaNodeInformation implements Deliverable {
 
-    public DeliverableInformation(String name) {
-        super(new SoaNodeId(Deliverable.DOCTYPE, name), null, null);
+    public DeliverableInformation(String subprojectId, String name) {
+        super(new SoaNodeId(subprojectId, Deliverable.DOCTYPE, name), null, null);
     }
 
     public String getNature() throws Exception {

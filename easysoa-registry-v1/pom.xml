@@ -200,11 +200,6 @@
       </dependency>
       <dependency>
         <groupId>org.easysoa.registry</groupId>
-        <artifactId>easysoa-registry-doctypes-preview</artifactId>
-        <version>${easysoa.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.easysoa.registry</groupId>
         <artifactId>easysoa-registry-rest-core</artifactId>
         <version>${easysoa.version}</version>
       </dependency>

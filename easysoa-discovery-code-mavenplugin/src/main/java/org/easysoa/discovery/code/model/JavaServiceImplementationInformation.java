@@ -15,27 +15,28 @@ public class JavaServiceImplementationInformation extends ServiceImplementationI
 
     public JavaServiceImplementationInformation(SoaNodeId deliverable, String implementationClass,
             String implementedInterface, String implementedInterfaceLocation) {
-        this(new ServiceImplementationName(ServiceNameType.JAVA_INTERFACE,
+        this(deliverable.getSubprojectId(), new ServiceImplementationName(ServiceNameType.JAVA_INTERFACE,
         		deliverable.getName(), implementedInterface, implementationClass).toString());
         this.properties.put(XPATH_IMPLEMENTATIONCLASS, implementationClass);
         this.properties.put(XPATH_IMPLEMENTEDINTERFACE, implementedInterface);
         this.properties.put(XPATH_IMPLEMENTEDINTERFACELOCATION, implementedInterfaceLocation);
     }
     
-    public JavaServiceImplementationInformation(String namespace, String name, String servicename) {
-    	this(new ServiceImplementationName(ServiceNameType.WEB_SERVICE, namespace, name, servicename).toString());
+    public JavaServiceImplementationInformation(String subprojectId,
+            String namespace, String name, String servicename) {
+    	this(subprojectId, new ServiceImplementationName(ServiceNameType.WEB_SERVICE, namespace, name, servicename).toString());
         this.properties.put(XPATH_WSDL_PORTTYPE_NAME, new QName(namespace, name).toString());
         this.properties.put(XPATH_WSDL_SERVICE_NAME, new QName(namespace, servicename).toString());
     }
     
-    public JavaServiceImplementationInformation(String soaname) {
-        super(JavaServiceImplementation.DOCTYPE, soaname);
+    public JavaServiceImplementationInformation(String subprojectId, String soaname) {
+        super(subprojectId, JavaServiceImplementation.DOCTYPE, soaname);
     }
 
 	public static JavaServiceImplementationInformation create(SoaNodeInformation soaNodeInfo) {
         // TODO Convertor service, or anything cleaner that this?
         JavaServiceImplementationInformation result = new JavaServiceImplementationInformation(
-                soaNodeInfo.getSoaNodeId().getName());
+                soaNodeInfo.getSoaNodeId().getSubprojectId(), soaNodeInfo.getSoaNodeId().getName());
         result.setProperties(soaNodeInfo.getProperties());
         result.setParentDocuments(soaNodeInfo.getParentDocuments());
         return result;

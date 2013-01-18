@@ -196,6 +196,7 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
         DocumentService documentService = getDocumentService();
 		
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + Platform.DOCTYPE);
+    	// TODO subproject ? NO...
 		for (String property : MatchingHelper.implPlatformPropsToMatch ) {
 	    	query.addConstraintMatchCriteriaIfSet(property,
 	    			modelWithPlatformFacet.getPropertyValue(property));

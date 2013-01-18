@@ -27,6 +27,8 @@ public class AbstractRegistryTest {
     
     protected boolean logRepositoryAfterEachTest = true;
 
+    protected String defaultSubprojectId = null;
+    
     @Rule
     public TestName name = new TestName();
 

@@ -1,5 +1,7 @@
 package org.easysoa.registry;
 
+import java.io.Serializable;
+
 import org.apache.log4j.Logger;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
@@ -34,6 +36,12 @@ public class SoaNodeMatchingListener implements EventListener {
         DocumentEventContext documentContext = (DocumentEventContext) context;
         DocumentModel sourceDocument = documentContext.getSourceDocument();
         CoreSession documentManager = documentContext.getCoreSession();
+        
+        // TODO check isSoaNode() ??
+        
+        DocumentModel previousDocumentModel = (DocumentModel) documentContext.getProperty("previousDocumentModel");
+        // TODO check matching properties changes, in order to match only if they changed ??
+        // TODO compute spnode props if subproject changed ??? NO would require to save (which would trigger event loop)
         
         match(documentManager, sourceDocument);
     }

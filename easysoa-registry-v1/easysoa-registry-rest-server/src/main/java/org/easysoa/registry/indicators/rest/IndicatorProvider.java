@@ -45,7 +45,7 @@ public interface IndicatorProvider {
      * @return The new indicators to register
      * @throws Exception
      */
-    Map<String, IndicatorValue> computeIndicators(CoreSession session,
+    Map<String, IndicatorValue> computeIndicators(CoreSession session, String subprojectId,
             Map<String, IndicatorValue> computedIndicators) throws Exception;
     
 }

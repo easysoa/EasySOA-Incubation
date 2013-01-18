@@ -9,8 +9,6 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
-import org.easysoa.registry.DiscoveryService;
-import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.rest.marshalling.OperationResult;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.Endpoint;
@@ -22,7 +20,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 
-import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource.Builder;
 
@@ -31,14 +28,6 @@ import com.sun.jersey.api.client.WebResource.Builder;
 public class EndpointRegistryApiTest extends AbstractRestApiTest {
 
     private static Logger logger = Logger.getLogger(EndpointRegistryApiTest.class);
-
-    private RegistryApiHelper discoveryApi = new RegistryApiHelper(this);
-
-    @Inject
-    DiscoveryService discoveryService;
-
-    @Inject
-    DocumentService documentService;
 
 //    private final int SERVICE_COUNT = 5;
 
@@ -91,7 +80,7 @@ public class EndpointRegistryApiTest extends AbstractRestApiTest {
 
         // Run request
         Client client = createAuthenticatedHTTPClient();
-        Builder discoveryRequest = client.resource(discoveryApi.getRootURL()).type(MediaType.APPLICATION_JSON);
+        Builder discoveryRequest = client.resource(discoveryApiUrl).type(MediaType.APPLICATION_JSON);
         /*OperationResult result = */discoveryRequest.post(OperationResult.class, soaNodeInfo);
 
         // on server side, before creating DiscoveryService first attempts to match existing Endpoint

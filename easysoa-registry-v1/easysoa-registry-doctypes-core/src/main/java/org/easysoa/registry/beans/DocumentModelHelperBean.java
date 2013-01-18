@@ -6,9 +6,10 @@ import java.util.Map;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.IntelligentSystem;
 import org.easysoa.registry.types.IntelligentSystemTreeRoot;
-import org.easysoa.registry.types.Repository;
+import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.utils.DocumentModelHelper;
+import org.easysoa.registry.utils.RepositoryHelper;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
@@ -65,8 +66,17 @@ public class DocumentModelHelperBean {
     	}
     }
     
+    /**
+     * Should be SoaNode TODO ??
+     * @param documentModel
+     * @return
+     * @throws Exception
+     */
     public Map<String, DocumentModelList> findAllParentsByType(DocumentModel documentModel) throws Exception {
     	Map<String, DocumentModelList> parentsByType = new HashMap<String, DocumentModelList>();
+    	
+    	String repositoryPath = null;
+    	
     	DocumentModelList parentModels = findAllParents(documentModel);
         for (DocumentModel parentModel : parentModels) {
         	if (TaggingFolder.DOCTYPE.equals(parentModel.getType())) {
@@ -74,7 +84,13 @@ public class DocumentModelHelperBean {
         	}
         	else if (IntelligentSystem.DOCTYPE.equals(parentModel.getType())
         			|| IntelligentSystemTreeRoot.DOCTYPE.equals(parentModel.getType())) {
-        		if (parentModel.getPathAsString().startsWith(Repository.REPOSITORY_PATH)) {
+        	    if (repositoryPath == null) {
+        	        // lazily computing repositoryPath
+        	        String subprojectId = (String) documentModel.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+        	        repositoryPath = RepositoryHelper.getRepositoryPath(documentManager, subprojectId);
+        	    }
+        	    
+        		if (parentModel.getPathAsString().startsWith(repositoryPath)) {
             		addParent(parentsByType, PARENT_TYPE_DOCTYPE, parentModel);
         		}
         		else {

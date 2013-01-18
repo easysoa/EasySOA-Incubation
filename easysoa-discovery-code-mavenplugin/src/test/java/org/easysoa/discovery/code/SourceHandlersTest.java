@@ -59,6 +59,8 @@ public class SourceHandlersTest extends AbstractWebEngineTest {
 
     @Test
     public void testSourceHandlers() throws Exception {
+        String subprojectId = null; // default
+        
         // Init registry client
         ClientBuilder clientBuilder = new ClientBuilder();
         clientBuilder.setNuxeoSitesUrl(EasySOAWebEngineFeature.NUXEO_URL);
@@ -70,7 +72,7 @@ public class SourceHandlersTest extends AbstractWebEngineTest {
         JavaSource[] sources = builder.getSources();
         
         // Run code discovery
-        MavenDeliverableInformation mavenDeliverable = new MavenDeliverableInformation("TestDeliverable");
+        MavenDeliverableInformation mavenDeliverable = new MavenDeliverableInformation(subprojectId, "TestDeliverable");
         List<SoaNodeInformation> soaNodeResults = runHandlers(sources, mavenDeliverable,
                 new CodeDiscoveryRegistryClient(registryApi), new SystemStreamLog());
         

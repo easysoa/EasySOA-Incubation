@@ -8,6 +8,7 @@ import org.easysoa.registry.test.AbstractRegistryTest;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.SoftwareComponent;
 import org.easysoa.registry.types.ids.EndpointId;
+import org.easysoa.registry.utils.DocumentModelHelper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -46,7 +47,8 @@ public class ModelIntegrityTests extends AbstractRegistryTest {
     @Test
     public void testSoaNameGeneration() throws ClientException {
     	// Create endpoint without SOA name & make sure it has been generated
-    	DocumentModel endpointModel = documentManager.createDocumentModel("/default-domain/workspaces",
+    	DocumentModel endpointModel = documentManager.createDocumentModel(
+                DocumentModelHelper.getWorkspacesPath(documentManager, defaultSubprojectId),
     			"endpoint", Endpoint.DOCTYPE);
     	endpointModel.setPropertyValue(Endpoint.XPATH_ENDP_ENVIRONMENT, "Production");
     	endpointModel.setPropertyValue(Endpoint.XPATH_URL, "MyEndpointURL");
@@ -54,7 +56,8 @@ public class ModelIntegrityTests extends AbstractRegistryTest {
     	Assert.assertEquals("Production:MyEndpointURL", endpointModel.getPropertyValue(Endpoint.XPATH_SOANAME));
 
     	// Create endpoint without SOA name nor sufficient info to generate it & make sure it has failed
-    	endpointModel = documentManager.createDocumentModel("/default-domain/workspaces", "endpoint2", Endpoint.DOCTYPE);
+    	endpointModel = documentManager.createDocumentModel(DocumentModelHelper
+                .getWorkspacesPath(documentManager, defaultSubprojectId), "endpoint2", Endpoint.DOCTYPE);
     	try {
     		documentManager.createDocument(endpointModel);
     		Assert.fail("Creation of an incomplete SoaNode must not work");
@@ -65,7 +68,8 @@ public class ModelIntegrityTests extends AbstractRegistryTest {
 
     	// Create Software Component without SOA name: in that case, there's no rule to manage the SOA name,
     	// so it must be created using the document title
-    	DocumentModel softCompModel = documentManager.createDocumentModel("/default-domain/workspaces",
+    	DocumentModel softCompModel = documentManager.createDocumentModel(DocumentModelHelper
+                .getWorkspacesPath(documentManager, defaultSubprojectId),
     			"softwarecomponent", SoftwareComponent.DOCTYPE);
     	softCompModel.setPropertyValue(SoftwareComponent.XPATH_TITLE, "MySoftwareComponent");
     	softCompModel = documentManager.createDocument(softCompModel); // XXX SoaName is not set on the createDocument() result, but is be saved eventually

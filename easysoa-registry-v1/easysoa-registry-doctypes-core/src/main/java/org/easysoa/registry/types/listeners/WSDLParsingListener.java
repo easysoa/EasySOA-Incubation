@@ -1,6 +1,7 @@
 package org.easysoa.registry.types.listeners;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -123,22 +124,34 @@ public class WSDLParsingListener implements EventListener {
             QName portTypeName = wsdl.getInterfaces().get(0).getQName();
             QName serviceName = wsdl.getServices().get(0).getQName();
             String wsdlVersion = wsdl.getVersion().name();
+            boolean changed = false;
             if (InformationService.DOCTYPE.equals(sourceDocument.getType())) {
                 if (false) { // TODO [soaname change]
                 sourceDocument.setPropertyValue(InformationService.XPATH_SOANAME,
                         new InformationServiceName(ServiceNameType.WEB_SERVICE,
                                 portTypeName.getNamespaceURI(), portTypeName.getLocalPart()).toString());
                 }
-                sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString());
-                sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_SERVICE_NAME, serviceName.toString());
-                sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_VERSION, wsdlVersion);
+                changed = setIfChanged(sourceDocument, InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString()) || changed;
+                changed = setIfChanged(sourceDocument, InformationService.XPATH_WSDL_SERVICE_NAME, serviceName.toString()) || changed;
+                changed = setIfChanged(sourceDocument, InformationService.XPATH_WSDL_VERSION, wsdlVersion) || changed;
             }
             else {
-                sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString());
-                sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_SERVICE_NAME, serviceName.toString());
-                sourceDocument.setPropertyValue(Endpoint.XPATH_WSDL_VERSION, wsdlVersion);
+                changed = setIfChanged(sourceDocument, Endpoint.XPATH_WSDL_PORTTYPE_NAME, portTypeName.toString()) || changed;
+                changed = setIfChanged(sourceDocument, Endpoint.XPATH_WSDL_SERVICE_NAME, serviceName.toString()) || changed;
+                changed = setIfChanged(sourceDocument, Endpoint.XPATH_WSDL_VERSION, wsdlVersion) || changed;
             }
 
+            return changed;
+        }
+        return false;
+    }
+
+    private boolean setIfChanged(DocumentModel doc, String prop, Serializable newValue)
+            throws PropertyException, ClientException {
+        Serializable oldValue = doc.getPropertyValue(prop);
+        if (newValue == null && oldValue != null
+                || newValue != null && !newValue.equals(oldValue)) {
+            doc.setPropertyValue(prop, newValue);
             return true;
         }
         return false;

@@ -12,6 +12,7 @@ import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.runtime.api.Framework;
 
 public class ServiceConsumptionIndicatorProvider implements IndicatorProvider {
@@ -22,12 +23,21 @@ public class ServiceConsumptionIndicatorProvider implements IndicatorProvider {
     }
 
     @Override
-    public Map<String, IndicatorValue> computeIndicators(CoreSession session,
+    public Map<String, IndicatorValue> computeIndicators(CoreSession session, String subprojectId,
             Map<String, IndicatorValue> computedIndicators) throws Exception {
         DocumentService documentService = Framework.getService(DocumentService.class);
         
-        List<SoaNodeId> servicesIds = documentService.createSoaNodeIds(
-                    session.query(NXQL_SELECT_FROM + InformationService.DOCTYPE + NXQL_WHERE_NO_PROXY)
+        //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
+        // TODO default or not ??
+        String subprojectPathCriteria;
+        if (subprojectId == null) {
+            subprojectPathCriteria = "";
+        } else {
+            subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH + session.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
+        }
+        
+        List<SoaNodeId> servicesIds = documentService.createSoaNodeIds(session.query(
+                NXQL_SELECT_FROM + InformationService.DOCTYPE + NXQL_WHERE_NO_PROXY + subprojectPathCriteria)
                     .toArray(new DocumentModel[]{}));
         List<SoaNodeId> unconsumedServiceIds = new ArrayList<SoaNodeId>(servicesIds);
         DocumentModelList serviceConsumptionModels = session.query(NXQL_SELECT_FROM + ServiceConsumption.DOCTYPE + NXQL_WHERE_NO_PROXY);

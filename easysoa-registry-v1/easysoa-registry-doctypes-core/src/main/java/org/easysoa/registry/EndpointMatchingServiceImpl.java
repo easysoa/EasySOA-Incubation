@@ -44,7 +44,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
                 + " WHERE " + NXQL.ECM_ISPROXY + " = 0 AND "
                 + NXQL.ECM_UUID + "='" + endpointDocument.getId() + "' AND "
                 // NB. %ServiceImplementation to also handle JavaServiceImplementations
-                + Endpoint.XPATH_PARENTSIDS + "/* LIKE '%ServiceImplementation%'").isEmpty();
+                + Endpoint.XPATH_PARENTSIDS + "/* LIKE '%ServiceImplementation:%'").isEmpty();
     }
     
     
@@ -338,7 +338,8 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		
 		// Create placeholder impl
 		String portTypeName = (String) endpoint.getPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME);
-		SoaNodeId implId = new SoaNodeId(ServiceImplementation.DOCTYPE, portTypeName);
+		String subprojectId = (String) informationService.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+		SoaNodeId implId = new SoaNodeId(subprojectId, ServiceImplementation.DOCTYPE, portTypeName);
 		
 		HashMap<String, Serializable> nuxeoProperties = new HashMap<String, Serializable>(2);
 		nuxeoProperties.put(ServiceImplementation.XPATH_ISPLACEHOLDER, true);

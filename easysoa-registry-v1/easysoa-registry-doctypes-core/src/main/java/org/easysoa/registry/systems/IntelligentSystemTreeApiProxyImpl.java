@@ -8,6 +8,7 @@ import org.easysoa.registry.types.IntelligentSystem;
 import org.easysoa.registry.types.IntelligentSystemTreeRoot;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
+import org.easysoa.registry.utils.DocumentModelHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -32,20 +33,19 @@ public class IntelligentSystemTreeApiProxyImpl implements IntelligentSystemTreeA
 		}
 	}
 
-	public boolean intelligentSystemTreeExists(String name) throws ClientException {
-        return findISTModel(name) != null;
+	public boolean intelligentSystemTreeExists(String subprojectId, String name) throws ClientException {
+        return findISTModel(subprojectId, name) != null;
 	}
 
-	public void createIntelligentSystemTree(String name, String title) throws ClientException {
-		documentService.createDocument(documentManager,
-				IntelligentSystemTreeRoot.DOCTYPE,
-				name, "/default-domain/workspaces", title);
+	public void createIntelligentSystemTree(String subprojectId, String name, String title) throws ClientException {
+		documentService.createDocument(documentManager, IntelligentSystemTreeRoot.DOCTYPE,
+				name, DocumentModelHelper.getWorkspacesPath(documentManager, subprojectId), title);
 		documentManager.save();
 	}
 
 	@Override
 	public void classifySoaNode(String treeName, SoaNodeId identifier, String classification) throws ClientException {
-		DocumentModel istModel = findISTModel(treeName);
+		DocumentModel istModel = findISTModel(identifier.getSubprojectId(), treeName);
 		if (istModel == null) {
 			throw new ClientException("Tree '" + treeName + "' doesn't exist, can't classify SoaNode " + identifier);
 		}
@@ -86,7 +86,7 @@ public class IntelligentSystemTreeApiProxyImpl implements IntelligentSystemTreeA
 	@Override
 	public void deleteSoaNode(String treeName, SoaNodeId identifier) throws ClientException {
 		 // If the model was in the IST, delete it
-		DocumentModel istModel = findISTModel(treeName);
+		DocumentModel istModel = findISTModel(identifier.getSubprojectId(), treeName);
 		if (istModel == null) {
 			throw new ClientException("Tree '" + treeName + "' doesn't exist, can't remove SoaNode " + identifier);
 		}
@@ -112,14 +112,15 @@ public class IntelligentSystemTreeApiProxyImpl implements IntelligentSystemTreeA
 	    }
 	}
 
-	private DocumentModel findISTModel(String name) throws ClientException {
-		return documentService.findDocument(documentManager, IntelligentSystemTreeRoot.DOCTYPE, name);
+	private DocumentModel findISTModel(String subprojectId, String name) throws ClientException {
+		return documentService.findDocument(documentManager,
+		        subprojectId, IntelligentSystemTreeRoot.DOCTYPE, name);
 	}
 
 	private DocumentModel findSoaNodeModel(DocumentModel istModel, String treeName, SoaNodeId identifier) throws ClientException {
 		String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE ecm:path STARTSWITH '?' AND ? = '?'",
 				new Object[]{ identifier.getType(), istModel.getPathAsString(),
-				SoaNode.XPATH_SOANAME, identifier.getName() },
+				SoaNode.XPATH_SOANAME, identifier.getName() },//TODO path enough or also subprojectId ??
 				false, true);
 		DocumentModelList matchingSoaNodes = documentService.query(documentManager, query, false, true);
 		if (matchingSoaNodes.size() > 0) {

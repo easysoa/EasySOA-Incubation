@@ -20,6 +20,7 @@ import org.easysoa.registry.types.SystemTreeRoot;
 import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
+import org.easysoa.registry.utils.DocumentModelHelper;
 import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -73,7 +74,7 @@ public class DoctypesTest extends AbstractRegistryTest {
         // Create a deliverable
         DocumentModel deliverableModel = documentService.create(documentManager, 
                 new SoaNodeId(Deliverable.DOCTYPE, "MyDeliverable"),
-                "/default-domain/workspaces");
+                DocumentModelHelper.getWorkspacesPath(documentManager, defaultSubprojectId));
         
         // Use its adapter
         Deliverable deliverable = deliverableModel.getAdapter(Deliverable.class);

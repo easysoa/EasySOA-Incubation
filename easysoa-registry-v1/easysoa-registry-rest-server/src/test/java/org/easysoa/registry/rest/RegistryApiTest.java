@@ -8,10 +8,9 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
-import org.easysoa.registry.DiscoveryService;
-import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.rest.marshalling.OperationResult;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
@@ -23,7 +22,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 
-import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
@@ -34,18 +32,27 @@ public class RegistryApiTest extends AbstractRestApiTest {
 
     private static Logger logger = Logger.getLogger(RegistryApiTest.class);
 
-    private RegistryApiHelper discoveryApi = new RegistryApiHelper(this);
-
-    @Inject
-    DiscoveryService discoveryService;
-
-    @Inject
-    DocumentService documentService;
-
     private final int SERVICE_COUNT = 5;
 
     private SoaNodeId deliverableId = new SoaNodeId(Deliverable.DOCTYPE, "org.easysoa:deliverable");
 
+    @Test
+    public void initDefaultSubprojectId() throws Exception {
+        logTestName(logger);
+        defaultSubprojectId = null;
+        discoveryService.runDiscovery(documentManager, new SoaNodeId(Component.DOCTYPE,
+                "ComponentForDefaultSubprojectIdInit"), null, null);
+
+        // Fetch disco'd Component
+        Client client = createAuthenticatedHTTPClient();
+        WebResource discoveryRequest = client.resource(discoveryApiUrl)
+                .path(Component.DOCTYPE).path("ComponentForDefaultSubprojectIdInit");
+        SoaNodeInformation soaNodeInformation = discoveryRequest.get(SoaNodeInformation.class);
+        
+        defaultSubprojectId = soaNodeInformation.getSubprojectId();
+        Assert.assertNotNull(defaultSubprojectId, "defaultSubprojectId should not be null");
+    }
+    
     @Test
     public void getOne() throws Exception {
         logTestName(logger);
@@ -59,13 +66,13 @@ public class RegistryApiTest extends AbstractRestApiTest {
 
         // Fetch one service
         Client client = createAuthenticatedHTTPClient();
-        WebResource discoveryRequest = client.resource(discoveryApi.getRootURL())
+        WebResource discoveryRequest = client.resource(discoveryApiUrl)
                 .path(InformationService.DOCTYPE).path("MyService0");
         SoaNodeInformation soaNodeInformation = discoveryRequest.get(SoaNodeInformation.class);
 
         // Check result
         Assert.assertEquals("Returned SoaNode must have the expected ID", 
-        		new SoaNodeId(InformationService.DOCTYPE, "MyService0").toString(),
+        		new SoaNodeId(defaultSubprojectId, InformationService.DOCTYPE, "MyService0").toString(),
                 soaNodeInformation.getSoaNodeId().toString());
         Map<String, Serializable> properties = soaNodeInformation.getProperties();
         Assert.assertTrue("Properties must be provided for the document", properties != null
@@ -80,7 +87,7 @@ public class RegistryApiTest extends AbstractRestApiTest {
 
         // Run request
         Client client = createAuthenticatedHTTPClient();
-        WebResource discoveryRequest = client.resource(discoveryApi.getRootURL()).path(InformationService.DOCTYPE);
+        WebResource discoveryRequest = client.resource(discoveryApiUrl).path(InformationService.DOCTYPE);
         SoaNodeInformation[] soaNodes = discoveryRequest.get(SoaNodeInformation[].class);
 
         // Check result
@@ -104,12 +111,12 @@ public class RegistryApiTest extends AbstractRestApiTest {
 
         // Run request
         Client client = createAuthenticatedHTTPClient();
-        Builder discoveryRequest = client.resource(discoveryApi.getRootURL()).type(MediaType.APPLICATION_JSON);
+        Builder discoveryRequest = client.resource(discoveryApiUrl).type(MediaType.APPLICATION_JSON);
         OperationResult result = discoveryRequest.post(OperationResult.class, soaNodeInfo);
 
         // Check result
         Assert.assertTrue("Creation request must be successful", result.isSuccessful());
-        SoaNodeInformation resultSoaNodeInfo = client.resource(discoveryApi.getRootURL())
+        SoaNodeInformation resultSoaNodeInfo = client.resource(discoveryApiUrl)
                     .path(deliverableId.getType())
                     .path(deliverableId.getName())
                     .get(SoaNodeInformation.class);
@@ -136,7 +143,7 @@ public class RegistryApiTest extends AbstractRestApiTest {
 
         // Delete only proxy (TODO test as array)
         Client client = createAuthenticatedHTTPClient();
-        Builder discoveryRequest = client.resource(discoveryApi.getRootURL())
+        Builder discoveryRequest = client.resource(discoveryApiUrl)
                 .path(deliverableId.getType()).path(deliverableId.getName())
                 .path(endpointId.getType()).path(endpointId.getName())
                 .type(MediaType.APPLICATION_JSON);
@@ -156,7 +163,7 @@ public class RegistryApiTest extends AbstractRestApiTest {
         documentService.create(documentManager, endpointToQuery);
         
         Client client = createAuthenticatedHTTPClient();
-        Builder discoveryRequest = client.resource(discoveryApi.getRootURL())
+        Builder discoveryRequest = client.resource(discoveryApiUrl)
                 .path("query")
                 .type(MediaType.TEXT_PLAIN);
        SoaNodeInformation[] foundEndpoints = discoveryRequest.post(SoaNodeInformation[].class,

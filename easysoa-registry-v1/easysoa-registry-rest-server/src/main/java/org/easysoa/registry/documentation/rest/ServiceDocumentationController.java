@@ -88,7 +88,7 @@ public class ServiceDocumentationController extends ModuleRoot {
             subprojectPathCriteria = "";
         } else {
             subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaFromId(subprojectId);
+                    + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
         }
         
         DocumentModelList services = session.query("SELECT " + SERVICE_LIST_PROPS + " FROM " + InformationService.DOCTYPE
@@ -214,7 +214,7 @@ public class ServiceDocumentationController extends ModuleRoot {
             subprojectPathCriteria = "";
         } else {
             subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaFromId(subprojectId);
+                    + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
         }
         
         String query = DocumentService.NXQL_SELECT_FROM
@@ -244,7 +244,7 @@ public class ServiceDocumentationController extends ModuleRoot {
             subprojectPathCriteria = "";
         } else {
             subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaFromId(subprojectId);
+                    + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
         }
         
         DocumentModel service = docService.find(session, new SoaNodeId(subprojectId, InformationService.DOCTYPE, serviceName));

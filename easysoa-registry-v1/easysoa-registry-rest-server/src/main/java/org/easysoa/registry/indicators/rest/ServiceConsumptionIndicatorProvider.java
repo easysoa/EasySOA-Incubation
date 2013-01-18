@@ -33,12 +33,13 @@ public class ServiceConsumptionIndicatorProvider implements IndicatorProvider {
         if (subprojectId == null) {
             subprojectPathCriteria = "";
         } else {
-            subprojectPathCriteria = " " + SubprojectServiceImpl.buildCriteriaFromId(subprojectId);
+            subprojectPathCriteria = " " + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
         }
         
         List<SoaNodeId> servicesIds = documentService.createSoaNodeIds(session.query(
-                DocumentService.NXQL_SELECT_FROM + InformationService.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria)
-                    .toArray(new DocumentModel[]{}));
+                DocumentService.NXQL_SELECT_FROM + InformationService.DOCTYPE
+                + DocumentService.NXQL_WHERE_NO_PROXY + DocumentService.NXQL_AND
+                + subprojectPathCriteria).toArray(new DocumentModel[]{}));
         List<SoaNodeId> unconsumedServiceIds = new ArrayList<SoaNodeId>(servicesIds);
         DocumentModelList serviceConsumptionModels = session.query(DocumentService.NXQL_SELECT_FROM + ServiceConsumption.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY);
         for (DocumentModel serviceConsumptionModel : serviceConsumptionModels) {

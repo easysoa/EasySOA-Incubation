@@ -38,8 +38,8 @@ public abstract class QueryCountIndicator extends Indicator {
         if (subprojectId == null) {
             subprojectPathCriteria = "";
         } else {
-            subprojectPathCriteria = " " + DocumentService.NXQL_PATH_STARTSWITH
-                    + SubprojectServiceImpl.buildCriteriaFromId(subprojectId);
+            subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
         }
         
         IterableQueryResult queryResult = session.queryAndFetch(valueQuery + subprojectPathCriteria, NXQL.NXQL);

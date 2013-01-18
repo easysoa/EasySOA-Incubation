@@ -38,7 +38,7 @@ public class ServiceImplStateProvider implements IndicatorProvider {
             subprojectPathCriteria = "";
         } else {
             subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaFromId(subprojectId);
+                    + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
         }
 
         // Count indicators - ServiceImplementation-specific

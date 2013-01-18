@@ -38,7 +38,7 @@ public class ServiceStateProvider implements IndicatorProvider {
             subprojectPathCriteria = "";
         } else {
             subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaFromId(subprojectId);
+                    + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
         }
         
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();

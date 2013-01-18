@@ -34,7 +34,7 @@ public class TagsIndicatorProvider implements IndicatorProvider {
             subprojectPathCriteria = "";
         } else {
             subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaFromId(subprojectId);
+                    + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
         }
         
         // Count users

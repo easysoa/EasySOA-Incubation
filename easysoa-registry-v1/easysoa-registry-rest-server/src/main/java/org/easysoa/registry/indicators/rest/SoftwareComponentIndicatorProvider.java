@@ -58,17 +58,17 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                 + DocumentService.NXQL_WHERE_PROXY + DocumentService.NXQL_AND + DocumentService.NXQL_PATH_STARTSWITH
                 + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/SoftwareComponent" + DocumentService.NXQL_QUOTE);
         DocumentModelList deliverableInNoSoftwareComponent = session.query(DocumentService.NXQL_SELECT_FROM + Deliverable.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY
-                + " AND ecm:uuid NOT IN " + getProxiedIdLiteralList(session, deliverableProxyInASoftwareComponent));
+                + getNotInLiteralIfAnyCriteria("ecm:uuid", getProxiedIdLiteralList(session, deliverableProxyInASoftwareComponent)));
         int deliverableInNoSoftwareComponentCount = deliverableInNoSoftwareComponent.size();
         int deliverableCount = computedIndicators.get(DoctypeCountIndicator.getName(Deliverable.DOCTYPE)).getCount();
         indicators.put("deliverableInNoSoftwareComponent", 
                 new IndicatorValue(deliverableInNoSoftwareComponentCount,
                 (deliverableCount > 0) ? 100 * deliverableInNoSoftwareComponentCount / deliverableCount : -1));
-        
+
         DocumentModelList deliverableInNoSoftwareComponentsImplementations = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
                 + DocumentService.NXQL_WHERE_PROXY
                 + " AND ecm:path STARTSWITH '" + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/" + Deliverable.DOCTYPE + "'"
-                + " AND ecm:parentId NOT IN " + getProxiedIdLiteralList(session, deliverableProxyInASoftwareComponent));
+                +  getNotInLiteralIfAnyCriteria("ecm:parentId", getProxiedIdLiteralList(session, deliverableProxyInASoftwareComponent)));
         indicators.put("deliverableInNoSoftwareComponentsImplementations", 
                 new IndicatorValue(deliverableInNoSoftwareComponentsImplementations.size(),
                         -1));
@@ -77,7 +77,7 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                 + DocumentService.NXQL_WHERE_PROXY
                 + " AND ecm:path STARTSWITH '" + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/" + Deliverable.DOCTYPE + "'");
         DocumentModelList implementationInNoDeliverable = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY
-                + " AND ecm:uuid NOT IN " + getProxiedIdLiteralList(session, implementationProxyInADeliverable));
+                + getNotInLiteralIfAnyCriteria("ecm:uuid", getProxiedIdLiteralList(session, implementationProxyInADeliverable)));
         int serviceImplCount = computedIndicators.get(DoctypeCountIndicator.getName(ServiceImplementation.DOCTYPE)).getCount();
         indicators.put("implementationInNoDeliverable", 
                 new IndicatorValue(implementationInNoDeliverable.size(),
@@ -129,7 +129,7 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                 + DocumentService.NXQL_WHERE_PROXY
                 + " AND ecm:path STARTSWITH '" + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/" + TaggingFolder.DOCTYPE + "'");
         DocumentModelList softwareComponentInNoTaggingFolder = session.query(DocumentService.NXQL_SELECT_FROM + "SoftwareComponent" + DocumentService.NXQL_WHERE_NO_PROXY
-                + " AND ecm:uuid NOT IN " + getProxiedIdLiteralList(session, softwareComponentProxyInATaggingFolder)); // TODO bof
+                + getNotInLiteralIfAnyCriteria("ecm:uuid", getProxiedIdLiteralList(session, softwareComponentProxyInATaggingFolder))); // TODO bof
         int softwareComponentCount = computedIndicators.get(DoctypeCountIndicator.getName(SoftwareComponent.DOCTYPE)).getCount();
         indicators.put("softwareComponentInNoTaggingFolder",
                 new IndicatorValue(softwareComponentInNoTaggingFolder.size(),
@@ -137,7 +137,7 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
         HashSet<String> softwareComponentInNoTaggingFoldersDeliverableIds = new HashSet<String>(getProxiedIds(session, session.query(DocumentService.NXQL_SELECT_FROM + Deliverable.DOCTYPE
                 + DocumentService.NXQL_WHERE_PROXY
                 + " AND ecm:path STARTSWITH '" + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/SoftwareComponent" + "'"
-                + " AND ecm:parentId NOT IN " + getProxiedIdLiteralList(session, softwareComponentProxyInATaggingFolder))));
+                + getNotInLiteralIfAnyCriteria("ecm:parentId", getProxiedIdLiteralList(session, softwareComponentProxyInATaggingFolder)))));
         indicators.put("softwareComponentInNoTaggingFoldersDeliverables", 
                 new IndicatorValue(softwareComponentInNoTaggingFoldersDeliverableIds.size(),
                         -1));
@@ -151,7 +151,7 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                 session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
                 + DocumentService.NXQL_WHERE_PROXY
                 + " AND ecm:path STARTSWITH '" + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/" + Deliverable.DOCTYPE
-                + " AND ecm:parentId IN " + toLiteral(deliverableInNoSoftwareComponentOrWhoseIsInNoTaggingFolderIds))));
+                + "' AND ecm:parentId IN " + toLiteral(deliverableInNoSoftwareComponentOrWhoseIsInNoTaggingFolderIds))));
         indicators.put("deliverableInNoSoftwareComponentOrWhoseIsInNoTaggingFolderImplementation",
                 new IndicatorValue(deliverableInNoSoftwareComponentOrWhoseIsInNoTaggingFolderImplementationIds.size(),
                         (serviceCount > 0) ? 100 * deliverableInNoSoftwareComponentOrWhoseIsInNoTaggingFolderImplementationIds.size() / serviceCount : -1));
@@ -179,6 +179,10 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
                 (serviceCount > 0) ? 100 * serviceInNoTaggingFolderIds.size() / serviceCount : -1));
         
         return indicators;
+    }
+    
+    private String getNotInLiteralIfAnyCriteria(String propXpath, String literalList) {
+        return (literalList.length() == 2) ? "" : " AND " + propXpath + " NOT IN " + literalList;
     }
     
 }

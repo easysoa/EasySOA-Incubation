@@ -66,16 +66,8 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     	boolean anyExactCriteria = false;
 		MatchingQuery query = new MatchingQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE);
 
-        // SUBPROJECT :
         // Filter by subproject
-        String endpointVisibleSubprojectIds = (String) endpoint.getPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV);
-        if (endpoint.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT) != null) { // TODO remove ; only to allow still to work as usual
-            if (endpointVisibleSubprojectIds == null) {
-                throw new ClientException("visibleSubprojects should not be null on " + endpoint);
-            }
-            query.addCriteria(SubprojectNode.XPATH_SUBPROJECT + " IN (" + endpointVisibleSubprojectIds + ")");
-        }
-        // - SUBPROJECT
+        query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint));
 
     	// Match platform properties :
     	
@@ -194,16 +186,8 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
         
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
 
-        // SUBPROJECT :
         // Filter by subproject
-        String endpointVisibleSubprojectIds = (String) endpoint.getPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV);
-        if (endpoint.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT) != null) { // TODO remove ; only to allow still to work as usual
-            if (endpointVisibleSubprojectIds == null) {
-                throw new ClientException("visibleSubprojects should not be null on " + endpoint);
-            }
-            query.addCriteria(SubprojectNode.XPATH_SUBPROJECT + " IN (" + endpointVisibleSubprojectIds + ")");
-        }
-        // - SUBPROJECT
+        query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint));
 
         // 1. IF A LINKED PLATFORM HAS BEEN PROVIDED FOR THE ENDPOINT BY THE PROBE EX. WEB DISCO
     	if (endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM) != null) {
@@ -265,13 +249,8 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 
         MatchingQuery query = new MatchingQuery("SELECT * FROM " + Endpoint.DOCTYPE);
 
-        // SUBPROJECT :
         // Filter by subproject
-        String serviceImplSubproject = (String) serviceImpl.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
-        if (serviceImplSubproject != null) { // TODO remove ; only to allow still to work as usual
-            query.addCriteria(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS + "='" + serviceImplSubproject + "'"); // NB. multivalued prop
-        }
-        // - SUBPROJECT
+        query.addCriteria(SubprojectServiceImpl.buildCriteriaSeesSubproject(serviceImpl)); // NB. multivalued prop
         
         if (MatchingHelper.isWsdlInfo(serviceImpl)) { // consistency logic
             //query.addCriteria("ecm:mixinType = '" + InformationService.FACET_WSDLINFO + "'"); // NO should be added dynamically but hard to do in DiscoveryServiceImpl

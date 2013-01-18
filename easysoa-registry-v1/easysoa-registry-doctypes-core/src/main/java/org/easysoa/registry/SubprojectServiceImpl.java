@@ -113,10 +113,6 @@ public class SubprojectServiceImpl {
         return subprojectId.substring(0, lastVersionSeparatorId);
     }
     
-    public static String buildCriteriaFromId(String subprojectId) {
-        return DocumentService.NXQL_PATH_STARTSWITH + getPathFromId(subprojectId) + "'";
-    }
-    
     public static boolean isBeingVersionedSubprojectNode(DocumentModel subprojectNode)
             throws PropertyException, ClientException {
         String subprojectId = (String) subprojectNode.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
@@ -300,6 +296,33 @@ public class SubprojectServiceImpl {
             project = projectResults.get(0);
         }
         return project;
+    }
+    
+    public static String buildCriteriaInSubprojectUsingPathFromId(String subprojectId) {
+        return DocumentService.NXQL_PATH_STARTSWITH + getPathFromId(subprojectId) + "'";
+    }
+
+    public static String buildCriteriaSeenFromSubproject(DocumentModel subprojectNode)
+            throws PropertyException, ClientException {
+        // Filter by subproject
+        String implVisibleSubprojectIds = (String) subprojectNode
+                .getPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV);
+        ///if (impl.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT) != null) { // TODO remove ; only to allow still to work as usual
+            if (implVisibleSubprojectIds == null) {
+                throw new ClientException("visibleSubprojects should not be null on " + subprojectNode);
+            }
+        ///}
+        // ex. "AXXXSpecifications"; // or in 2 pass & get it from subProject ??
+        return SubprojectNode.XPATH_SUBPROJECT + " IN (" + implVisibleSubprojectIds + ")";
+    }
+
+    public static String buildCriteriaSeesSubproject(DocumentModel subprojectNode)
+            throws PropertyException, ClientException {
+        String subproject = (String) subprojectNode.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+        ///if (serviceImplSubproject != null) { // TODO remove ; only to allow still to work as usual
+            
+        ///}
+        return SubprojectNode.XPATH_VISIBLE_SUBPROJECTS + "='" + subproject + "'"; // NB. multivalued prop
     }
     
 }

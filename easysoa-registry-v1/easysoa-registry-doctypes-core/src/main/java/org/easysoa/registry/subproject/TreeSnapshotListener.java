@@ -18,6 +18,7 @@ import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
  * (aboutToCreateLeafVersionEvent)
  * 
  * @author mdutoo
+ * @obsolete replaced by logic before and after snapshotting, see SubprojectServiceImpl.createSubprojectVersion()
  *
  */
 public class TreeSnapshotListener implements EventListener {
@@ -46,7 +47,8 @@ public class TreeSnapshotListener implements EventListener {
         
         if (sourceDocument.hasSchema("subproject")) {
             // TODO NOO needs to be created first to get id
-            SubprojectServiceImpl.computeAndSetVisibleSubprojects(documentManager, sourceDocument);
+            ///SubprojectServiceImpl.computeAndSetVisibleSubprojects(documentManager, sourceDocument);
+            // TODO increment 
             // TODO also on change ?!?
         } else
         // TODO if if (!sourceDocument.hasFacet("SubprojectNode")) add it ?!!? ex. ITS...

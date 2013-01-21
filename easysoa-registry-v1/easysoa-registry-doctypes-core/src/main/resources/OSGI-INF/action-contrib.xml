@@ -10,13 +10,35 @@
   
     <!-- Override. Enable common "New" button on workspace roots -->
     <filter id="create">
+      <!-- original value : -->
+      <!-- rule grant="true">
+        <permission>AddChildren</permission>
+        <type>Root</type>
+        <type>Domain</type>
+        <facet>Folderish</facet>
+        <type>Workspace</type>
+        <type>TemplateRoot</type>
+        <type>Section</type>
+        <type>Folder</type>
+        <type>OrderedFolder</type>
+        <type>Project</type><!- suppl ->
+        <type>Subproject</type><!- suppl ->
+        <condition>
+          #{typeManager.getAllowedSubTypes(document.getType(),
+          document).size()
+          > 0}
+        </condition>
+      </rule -->
+    
       <rule grant="true">
         <permission>AddChildren</permission>
         <type>WorkspaceRoot</type>
         <type>SystemTreeRoot</type>
+        <type>Project</type><!-- suppl -->
+        <type>Subproject</type><!-- suppl -->
       </rule>
       <rule grant="true">
-        <contition>#{document.hasFacet("SoaNode") and document.hasFacet("Folderish")}</contition>
+        <condition>#{document.hasFacet("SoaNode") and document.hasFacet("Folderish")}</condition>
       </rule>
       <rule grant="false">
         <type>Repository</type>
@@ -46,7 +68,18 @@
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view</filter-id>
     </action>
-  </extension>
+  
+    <action id="createSubprojectVersion" link="#{subprojectActions.createSubprojectVersion()}"
+      label="command.createSubprojectVersion" icon="/icons/action_add.gif">
+      <category>SUBVIEW_UPPER_LIST</category>
+      <filter id="createSubprojectVersion">
+        <rule grant="true">
+          <permission>AddChildren</permission><!-- TODO -->
+          <type>Subproject</type>
+        </rule>
+      </filter>
+    </action>
     
+  </extension>
 
 </component>

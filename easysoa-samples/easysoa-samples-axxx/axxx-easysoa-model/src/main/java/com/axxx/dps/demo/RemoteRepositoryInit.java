@@ -82,53 +82,53 @@ public class RemoteRepositoryInit {
         
 		if (steps.isEmpty() || steps.contains("clean")) {
 		 
+		System.out.println("RemoteRepositoryInit clean");
+		    
 		// Reset repository and root
 		/*delete("SELECT * FROM " + SystemTreeRoot.DOCTYPE + " WHERE dc:title = '" + rootName + "'");
 		delete("SELECT * FROM " + Repository.DOCTYPE);
 		
 		// Root
 		delete("SELECT * FROM " + SystemTreeRoot.DOCTYPE + " WHERE dc:title = '" + rootName + "'");*/
-        delete("SELECT * FROM " + Project.DOCTYPE + " WHERE dc:title = '" + projectName + "'");
+        delete("SELECT * FROM " + Project.DOCTYPE/* + " WHERE dc:title = '" + projectName + "'"*/);
+        delete("SELECT * FROM " + Subproject.DOCTYPE);
         
         }
-        
-        //if (steps.isEmpty() || steps.contains("Specifications")) {
 		
 		//String rootPath = createDocument(SystemTreeRoot.DOCTYPE, rootName, "/default-domain/workspaces");
         String rootPath = "/default-domain";
-		
-		// Project and its folders
-		//String projectPath = createSoaNode(new SoaNodeId(TaggingFolder.DOCTYPE, "Intégration APV Web - Pivotal"), rootPath);
-        String projectPath = createDocument(Project.DOCTYPE, projectName, rootPath);
-		/*String specificationsPath = createDocument("Folder", "1. Spécifications", projectPath);
-		createDocument("Folder", "2. Réalisation", projectPath);
-		createDocument("Folder", "3. Déploiements", projectPath);*/
-        
+
+        String projectPath = rootPath + "/" + projectName;
         String specificationsPath = projectPath + '/' + Subproject.SPECIFICATIONS_SUBPROJECT_NAME;
+
+        
+        
+        // PHASE 1: Specs
+        
+        if (steps.isEmpty() || steps.contains("Specifications")) {
+
+        // Project and its folders
+        //String projectPath = createSoaNode(new SoaNodeId(TaggingFolder.DOCTYPE, "Intégration APV Web - Pivotal"), rootPath);
+        /*String projectPath = */createDocument(Project.DOCTYPE, projectName, rootPath);
+        /*String specificationsPath = createDocument("Folder", "1. Spécifications", projectPath);
+        createDocument("Folder", "2. Réalisation", projectPath);
+        createDocument("Folder", "3. Déploiements", projectPath);*/
+
+        System.out.println("RemoteRepositoryInit Specifications");
+        
         //String specificationsSubprojectId = (String) getDocByPath(specificationsPath).getProperties().get("spnode:subproject");
-        Document specificationsSubprojectDoc = getDocByPath(specificationsPath);
+        Document specificationsSubprojectDoc = getSubproject(specificationsPath + "_v");
+        if (specificationsSubprojectDoc == null) {
+            /*String realisationPath = */createDocument(Subproject.DOCTYPE, Subproject.SPECIFICATIONS_SUBPROJECT_NAME, projectPath);
+            specificationsSubprojectDoc = getSubproject(specificationsPath + "_v");
+        }
         String specificationsSubprojectId = (String) specificationsSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
         
-        String realisationPath = createDocument(Subproject.DOCTYPE, Subproject.REALISATION_SUBPROJECT_NAME, projectPath,
-                Subproject.XPATH_PARENT_SUBPROJECTS + "=" + specificationsSubprojectDoc.getId());
-        ///String realisationPath = projectPath + '/' + Subproject.REALISATION_SUBPROJECT_NAME;
-        //String realisationSubprojectId = (String) getDocByPath(realisationPath).getProperties().get("spnode:subproject");
-        Document realisationSubprojectDoc = getDocByPath(realisationPath);
-        String realisationSubprojectId = (String) realisationSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
-
-        String deploiementPath = createDocument(Subproject.DOCTYPE, Subproject.DEPLOIEMENT_SUBPROJECT_NAME, projectPath,
-                Subproject.XPATH_PARENT_SUBPROJECTS + "=" + realisationSubprojectDoc.getId());
-        ///String deploiementPath = projectPath + '/' + Subproject.DEPLOIEMENT_SUBPROJECT_NAME;
-        //String deploiementSubprojectId = (String) getDocByPath(deploiementPath).getProperties().get("spnode:subproject");
-        String deploiementSubprojectId = (String) getDocByPath(deploiementPath).getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
-
         //String platformArchitecturePath = "/default-domain/repository/Platform";
         String platformArchitecturePath = specificationsPath + "/repository/Platform";//TODO within project or out (i.e. global) ??
         String platformSubprojectId = specificationsSubprojectId;
-		
         
-		// PHASE 1: Specs
-		
+        
 		// Specifications sub-folders
 		String businessArchitecturePath = createDocument("Folder", "1. Business architecture", specificationsPath);
 		String infoArchitecturePath = createDocument("Folder", "2. Information architecture", specificationsPath);
@@ -313,11 +313,33 @@ public class RemoteRepositoryInit {
         // OPT contactClient
 
 		//}
-		
         
-		//if (steps.isEmpty() || steps.contains("Realisation")) {
-		
-		// PHASE 2: Realisation
+        }
+
+        
+        
+        // PHASE 2: Realisation
+
+        String realisationPath = projectPath + '/' + Subproject.REALISATION_SUBPROJECT_NAME;
+        
+		if (steps.isEmpty() || steps.contains("Realisation")) {
+        
+        System.out.println("RemoteRepositoryInit Realisation");
+
+        Document realisationSubprojectDoc = getSubproject(realisationPath + "_v"); // trying to reuse existing one
+        if (realisationSubprojectDoc != null) {
+            System.out.println("   reusing existing Realisation subproject");
+        } else {
+            Document realisationSubprojectParentSpecificationsDoc = getExistingVersionedElseLiveSubprojectId(specificationsPath);
+            
+            System.out.println("   creating Realisation subproject");
+            /*String realisationPath = */createDocument(Subproject.DOCTYPE, Subproject.REALISATION_SUBPROJECT_NAME, projectPath,
+                    Subproject.XPATH_PARENT_SUBPROJECTS + "=" + realisationSubprojectParentSpecificationsDoc.getId());
+            //String realisationSubprojectId = (String) getDocByPath(realisationPath).getProperties().get("spnode:subproject");
+            realisationSubprojectDoc = getDocByPath(realisationPath);
+        }
+        String realisationSubprojectId = (String) realisationSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
+        
 		// (checkout AXXX source and)
 		// do a source discovery
 		//publish(specificationsPath, realizationPath);
@@ -328,16 +350,35 @@ public class RemoteRepositoryInit {
 //		createSoaNode(new SoaNodeId(realisationSubprojectId, ???.DOCTYPE, "Orchestration_DCV"), realizationPath);
 //		createSoaNode(new SoaNodeId(realisationSubprojectId, ???.DOCTYPE, "Orchestration_DPS"), realizationPath);
 
-		//}
+		}
 
+        
+        // PHASE 3: Deploiement
+		
+        String deploiementPath = projectPath + '/' + Subproject.DEPLOIEMENT_SUBPROJECT_NAME;
+        
+		if (steps.isEmpty() || steps.contains("Deploiement")) {
+	        
+        System.out.println("RemoteRepositoryInit Deploiement");
+
+        Document deploiementSubprojectDoc = getSubproject(deploiementPath + "_v"); // trying to reuse existing one
+        if (deploiementSubprojectDoc != null) {
+            System.out.println("   reusing existing Deploiement subproject");
+        } else {
+            Document deploiementSubprojectParentRealisationDoc = getExistingVersionedElseLiveSubprojectId(realisationPath);
+            
+            System.out.println("   creating Realisation subproject");
+            /*String deploiementPath = */createDocument(Subproject.DOCTYPE, Subproject.DEPLOIEMENT_SUBPROJECT_NAME, projectPath,
+                    Subproject.XPATH_PARENT_SUBPROJECTS + "=" + deploiementSubprojectParentRealisationDoc.getId());
+            //String realisationSubprojectId = (String) getDocByPath(realisationPath).getProperties().get("spnode:subproject");
+            deploiementSubprojectDoc = getDocByPath(deploiementPath);
+        }
+        String deploiementSubprojectId = (String) deploiementSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
         
         SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://localhost:7080/apv/services/PrecomptePartenaireService");//TODO host
         SoaNodeId checkAddressProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:" + fromEnc("iuuq;00xxx/ebub.rvbmjuz.tfswjdf/dpn0npdlxtr5220tfswjdft0JoufsobujpobmQptubmWbmjebujpo/JoufsobujpobmQptubmWbmjebujpoIuuqTpbq22Foeqpjou0"));//checkAddressProdEndpoint
         SoaNodeId informationAPVProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://localhost:7080/pivotal/WS/ContactSvc.asmx");//TODO host // 18000
-        
-		if (steps.isEmpty() || steps.contains("Deploiement")) {
-		
-        // PHASE 3: Deploiement
+
 		// manually : do a web discovery
 		// TODO web discovery : upload wsdl
 		    
@@ -372,7 +413,25 @@ public class RemoteRepositoryInit {
 		
 		if (steps.isEmpty() || steps.contains("Exploitation")) {
 		    // (Phase 4) Exploitation
-		    
+	        
+	        System.out.println("RemoteRepositoryInit Exploitation");
+            
+            Document specificationsSubprojectDoc = getExistingVersionedElseLiveSubprojectId(specificationsPath);
+            String specificationsSubprojectId = (String) specificationsSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
+	        
+	        Document deploiementSubprojectDoc = getExistingVersionedElseLiveSubprojectId(deploiementPath);
+	        String deploiementSubprojectId = (String) deploiementSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
+
+	        // copied from Specifications
+	        SoaNodeId isTdrWebServiceId = new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "TdrWebService");
+	        String isTdrWebServicePath = createSoaNode(isTdrWebServiceId);
+	        SoaNodeId olaTdrWebServiceId = new SoaNodeId(specificationsSubprojectId, OLA_DOCTYPE, "OLA TdrWebService");
+	        createSoaNode(olaTdrWebServiceId);
+	        
+	        // copied from Deploiement
+	        SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://localhost:7080/apv/services/PrecomptePartenaireService");//TODO host
+	        String tdrWebServiceProdEndpointPath = createSoaNode(tdrWebServiceProdEndpointId);
+	        
 	        SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();
 	        slaOrOlaIndicators.setSlaOrOlaIndicatorList(new ArrayList<SlaOrOlaIndicator>());
 	        SlaOrOlaIndicator slaOrOlaIndicator = new SlaOrOlaIndicator();
@@ -388,6 +447,22 @@ public class RemoteRepositoryInit {
             // for now, rather use the other Jersey client like in EndpointStateServiceImpl
 		}
 	}
+
+	
+	
+    private static Document getExistingVersionedElseLiveSubprojectId(String subprojectPath) throws Exception {
+        Document deploiementSubprojectDoc = getSubproject(subprojectPath + "_v0.1"); // trying to use versioned one
+        if (deploiementSubprojectDoc != null) {
+            System.out.println("   reusing versioned subproject " + subprojectPath);
+        } else {
+            System.out.println("   reusing live subproject " + subprojectPath);
+            deploiementSubprojectDoc = getSubproject(subprojectPath + "_v"); // reusing live one
+            if (deploiementSubprojectDoc == null) {
+                throw new Exception("Exploitation : missing subproject " + subprojectPath);
+            }
+        }
+        return deploiementSubprojectDoc;
+    }
 
     protected static String toEnc(String s) {
         char[] sChars = s.toCharArray();
@@ -447,6 +522,18 @@ public class RemoteRepositoryInit {
 			return null;
 		}
 	}
+    
+    private static Document getSubproject(String subprojectId) throws Exception {
+        Documents docs = (Documents) session
+                .newRequest("Document.Query").setHeader("X-NXDocumentProperties", "*")
+                .set("query", "SELECT * FROM Subproject WHERE spnode:subproject = '" + subprojectId + "'").execute();
+        if (docs != null && !docs.isEmpty()) {
+            return docs.get(0);
+        }
+        else {
+            return null;
+        }
+    }
 
 	public static String createDocument(String doctype, String title, String path, String... properties) throws Exception {
 		if (path == null) {

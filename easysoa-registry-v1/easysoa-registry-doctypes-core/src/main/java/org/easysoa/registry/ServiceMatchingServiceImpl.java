@@ -167,7 +167,8 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
     			new Object[] { serviceModel.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME) },
     			false, true);*/
     	String serviceImplQuery = query.build();
-    	return documentService.query(documentManager, serviceImplQuery, true, false);
+    	DocumentModelList foundImpls = documentService.query(documentManager, serviceImplQuery, true, false);
+    	return foundImpls;
 	}
 	
 	/* (non-Javadoc)

@@ -3,6 +3,8 @@
 
   <extension point="types" target="org.nuxeo.ecm.core.lifecycle.LifeCycleService">
     <types>
+      <type name="Subproject">default</type><!-- for Subproject versioning (tree snapshotting) ?? -->
+      
       <!-- Transversal -->
       <type name="TaggingFolder">default</type>
       
@@ -20,5 +22,30 @@
       <type name="Endpoint">default</type>
     </types>
   </extension>
+  
+  <extension-point name="versioningRules" target="org.nuxeo.ecm.core.versioning.VersioningService">
+	<!-- defaultVersioningRule>
+	  <initialState major="1" minor="0" />
+	  <options lifeCycleState="*">
+	    <none default="true" />
+	    <minor />
+	    <major />
+	  </options>
+	  <options lifeCycleState="approved">
+	    <none default="true" />
+	    <minor />
+	  </options>
+	</defaultVersioningRule -->
+	
+	<versioningRule typeName="Subproject" enabled="true">
+	  <initialState major="0" minor="0" />
+	  <options lifeCycleState="*"><!-- project -->
+	    <none /><!-- TODO only for light -->
+	    <minor default="true" />
+	    <major />
+	  </options>
+	  <options lifeCycleState="approved" />
+	</versioningRule>
+  </extension-point>
 
 </component>

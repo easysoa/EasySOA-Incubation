@@ -295,8 +295,8 @@ public class DocumentServiceImpl implements DocumentService {
     	String filteredQuery = query +
         		((filterProxies) ? PROXIES_QUERY_FILTER : "") + 
                 ((filterNonProxies) ? NON_PROXIES_QUERY_FILTER : "") + 
-        		DELETED_DOCUMENTS_QUERY_FILTER +
-        		VERSIONS_QUERY_FILTER;
+        		DELETED_DOCUMENTS_QUERY_FILTER/* +
+        		VERSIONS_QUERY_FILTER*/;// TODO why filter versions ??
     	if (!filteredQuery.contains("WHERE")) {
     		filteredQuery = filteredQuery.replaceFirst("AND", "WHERE");
     	}

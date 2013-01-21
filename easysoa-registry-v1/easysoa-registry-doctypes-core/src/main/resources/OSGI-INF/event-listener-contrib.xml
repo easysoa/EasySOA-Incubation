@@ -35,12 +35,14 @@
     <listener name="subprojectListener" class="org.easysoa.registry.subproject.SubprojectNodeListener"
       priority="150">
       <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event><!-- TODO test -->
     </listener>
     
-    <listener name="treeSnapshotListener" class="org.easysoa.registry.subproject.TreeSnapshotListener"
+    <!-- OBSOLETE replaced by logic before and after snapshotting, see SubprojectServiceImpl.createSubprojectVersion() -->
+    <!-- listener name="treeSnapshotListener" class="org.easysoa.registry.subproject.TreeSnapshotListener"
       priority="151">
       <event>aboutToCreateLeafVersionEvent</event>
-    </listener>
+    </listener -->
   </extension>
 
 </component>

@@ -1,5 +1,7 @@
 package org.easysoa.registry.subproject;
 
+import java.util.Arrays;
+
 import org.apache.log4j.Logger;
 import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.types.Subproject;
@@ -7,7 +9,7 @@ import org.easysoa.registry.types.SubprojectNode;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -45,36 +47,47 @@ public class SubprojectNodeListener implements EventListener {
         
         //match(documentManager, sourceDocument);
         
-        if (sourceDocument.hasSchema("subproject")) {
+        if (sourceDocument.hasSchema(Subproject.SCHEMA)) {
             // TODO NOO needs to be created first to get id
-            SubprojectServiceImpl.onSubprojectAboutToCreate(documentManager, sourceDocument);
-            // TODO also on change ?!?
+            if (DocumentEventTypes.ABOUT_TO_CREATE.equals(event.getName())) {
+                SubprojectServiceImpl.onSubprojectAboutToCreate(documentManager, sourceDocument);
+                
+            } else { // DocumentEventTypes.BEFORE_DOC_UPDATE.equals(event.getName())
+                DocumentModel subproject = sourceDocument;
+                DocumentModel previousSubproject = (DocumentModel) context.getProperty("previousDocumentModel");
+                
+                String subprojectId = (String) subproject.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+                String previousSubprojectId = (String) previousSubproject.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+                boolean subprojectIdChanged = !subprojectId.equals(previousSubprojectId);
+                if (subprojectIdChanged) {
+                    // case 1 : changing subprojectId before or after tree snapshot versioning
+                    // case 2 : TODO check if rename changes path
+                    logger.warn("Changing subprojectId from  " + previousSubprojectId
+                            + " to " + subprojectId + " on " + previousSubproject);
+                }
+                
+                String[] parentSubprojects = (String[]) subproject.getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS);
+                String[] previousParentSubprojects = (String[]) previousSubproject.getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS);
+                
+                boolean parentSubprojectsChanged = parentSubprojects == null && previousParentSubprojects != null
+                        || parentSubprojects != null && previousParentSubprojects == null
+                        || parentSubprojects != null && previousParentSubprojects != null
+                        && !Arrays.asList(previousParentSubprojects).equals(Arrays.asList(previousParentSubprojects));
+                if (subprojectIdChanged || parentSubprojectsChanged) {
+                    // parentSubprojects changed
+                    // update computed metas :
+                    SubprojectServiceImpl.computeAndSetVisibleSubprojects(documentManager, sourceDocument);
+                    // recursively set them on subnodes :
+                    SubprojectServiceImpl.copySubprojectNodePropertiesOnChildrenRecursive(subproject);
+                }
+            }
             
-        } else {
-            DocumentModel spnodeModel = null;
+        } else if (DocumentEventTypes.ABOUT_TO_CREATE.equals(event.getName())) {
+            // anything that is under a subproject
+            
             DocumentModel parentDocument = documentManager.getDocument(sourceDocument.getParentRef());
-            if (parentDocument.hasFacet(SubprojectNode.FACET)) {
-                // subproject known through parent => recopy spnode properties from it
-                spnodeModel = parentDocument;
-                if (!sourceDocument.hasFacet(SubprojectNode.FACET)) {
-                    sourceDocument.addFacet(SubprojectNode.FACET);
-                }
-                if (sourceDocument.getPropertyValue(Subproject.XPATH_SUBPROJECT) == null) { // TODO rm ?! (if spnode:subproject not set anymore in newSoaNodeDocument())
-                sourceDocument.setPropertyValue(Subproject.XPATH_SUBPROJECT,
-                        parentDocument.getPropertyValue(Subproject.XPATH_SUBPROJECT));
-                }
-            } else if (sourceDocument.hasFacet(SubprojectNode.FACET)) { // TODO not required ?!
-                // subproject should be provided through property => get spnode properties from subproject
-                String subprojectId = (String) sourceDocument.getPropertyValue(Subproject.XPATH_SUBPROJECT);
-                spnodeModel = documentManager.getDocument(new IdRef(subprojectId));
-            } else {
-                logger.info("About to create document outside a subproject " + sourceDocument);
-            }
-            if (spnodeModel != null) {
-                sourceDocument.setPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS, spnodeModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS));
-                sourceDocument.setPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV, spnodeModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV));
-                // TODO or using facet inheritance through spnode:subproject ?? NOOO documentService.createDocument() ex. ITS...
-            }
+            
+            SubprojectServiceImpl.copySubprojectNodeProperties(parentDocument, sourceDocument);
         }
     }
 

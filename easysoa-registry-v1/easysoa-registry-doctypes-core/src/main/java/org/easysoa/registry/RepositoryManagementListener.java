@@ -50,7 +50,7 @@ public class RepositoryManagementListener implements EventListener {
             return; // nothing to do on non SOA nodes
         }
         
-        if (SubprojectServiceImpl.isBeingVersionedSubprojectNode(sourceDocument)) {
+        if (SubprojectServiceImpl.isBeingVersionedSubprojectNodeEvent(event, sourceDocument)) {
             return; // this document is currently being tree snapshotted, do nothing here
         }
         

@@ -27,6 +27,7 @@ public interface DocumentService {
 
     static final String NXQL_IS_NOT_DELETED = NXQL.ECM_LIFECYCLESTATE + " != 'deleted'";
     static final String NXQL_IS_NOT_VERSIONED = NXQL.ECM_ISVERSION + " = 0";
+    static final String NXQL_IS_VERSIONED = NXQL.ECM_ISVERSION + " = 1";
     static final String NXQL_IS_PROXY = NXQL.ECM_ISPROXY + " = 0";
     static final String NXQL_IS_NO_PROXY = NXQL.ECM_ISPROXY + " = 1";
     static final String NXQL_PATH_STARTSWITH = NXQL.ECM_PATH + " STARTSWITH '";

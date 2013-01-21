@@ -77,17 +77,20 @@
     </doctype>
     
     <!-- Project & Systems hierarchies -->
-    <doctype extends="Document" name="Project">
+    <doctype extends="Folder" name="Project">
       <schema name="common" />
       <schema name="dublincore" />
-      <facet name="Folderish" />
+      <!-- facet name="Folderish" / -->
     </doctype>
-    <doctype extends="Document" name="Subproject">
+    <doctype extends="Folder" name="Subproject">
       <schema name="common" />
       <schema name="dublincore" />
       <schema name="subproject" />
-      <facet name="Folderish" />
-      <facet name="Snapshotable" />
+      <schema name="uid" /><!-- for Subproject versioning (tree snapshotting) : for major_version ! -->
+      <!-- facet name="Folderish" / --><!-- NB. already a Folder -->
+      <facet name="Versionable" /><!-- for Subproject versioning (tree snapshotting) : for major_version ?? -->
+      <!-- facet name="Publishable" / -->
+      <facet name="Snapshotable" /><!-- for Subproject versioning (tree snapshotting) -->
       <facet name="SubprojectNode" />
     </doctype>
     <doctype extends="Document" name="Repository">

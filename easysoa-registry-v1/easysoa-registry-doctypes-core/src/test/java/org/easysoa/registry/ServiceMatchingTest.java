@@ -2,6 +2,7 @@ package org.easysoa.registry;
 
 import static org.easysoa.registry.utils.NuxeoListUtils.list;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.inject.Inject;
@@ -22,13 +23,12 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.snapshot.Snapshot;
-import org.nuxeo.snapshot.Snapshotable;
 
 /**
  * 
@@ -66,7 +66,114 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     SoaMetamodelService soaMetamodelService;
     
     
+    /**
+     * This test's goal is only to help understand nuxeo versioning.
+     * @throws Exception
+     */
     //@Test
+    public void testCheckin() throws Exception {
+        
+        DocumentModel testFile = documentManager.createDocumentModel("File");
+        testFile.setPathInfo("/default-domain", "test.txt");
+        documentManager.createDocument(testFile);
+        documentManager.save();
+        System.err.println("testFile : " + testFile.getVersionLabel());
+        
+        // SUBPROJECT :
+        // creating projects
+        DocumentModel projectModel = SubprojectServiceImpl.createProject(documentManager, "MySoaProject");
+
+        DocumentModel otherProjectModel = SubprojectServiceImpl.createProject(documentManager, "MyOtherSoaProject");
+
+        documentManager.save(); // to trigger creation of auto Specifications subprojects
+        
+        // creating subprojects
+        // reusing auto created Specifications subproject (else guard explodes) :
+        // TODO the same for the others
+        ///DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.createSubproject(
+        ///        documentManager, "Specifications", projectModel, null);
+        DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.getSubprojectByName(
+                documentManager, projectModel, "Specifications");
+        String specificationsSubprojectId = SubprojectServiceImpl.buildSubprojectId(specificationsSubprojectModel);
+
+        DocumentModel realisationSubprojectModel = SubprojectServiceImpl.createSubproject(
+                documentManager, "Realisation", projectModel, list(specificationsSubprojectModel));
+        String realisationSubprojectId = SubprojectServiceImpl.buildSubprojectId(realisationSubprojectModel);
+
+        DocumentModel anotherRealisationSubprojectModel = SubprojectServiceImpl.createSubproject(
+                documentManager, "RealisationPhase2", projectModel, null);
+        
+        documentManager.save();
+
+        String anotherRealisationSubprojectId = anotherRealisationSubprojectModel.getId();
+        System.err.println("anotherRealisationSubprojectModel: " + anotherRealisationSubprojectModel
+                + "\n   uuid=" + anotherRealisationSubprojectModel.getId()
+                + "\n   isCheckedOut=" + anotherRealisationSubprojectModel.isCheckedOut()
+                + "\n   isVersion=" + anotherRealisationSubprojectModel.isVersion()
+                + "\n   isLatestVersion=" + anotherRealisationSubprojectModel.isLatestVersion()
+                + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectModel.isVersionSeriesCheckedOut()
+                + "\n   versionLabel=" + anotherRealisationSubprojectModel.getVersionLabel()
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectModel.getVersionSeriesId());
+        
+        DocumentRef anotherRealisationSubprojectv01Ref = anotherRealisationSubprojectModel.checkIn(VersioningOption.MINOR, "test 0.1");
+        DocumentModel anotherRealisationSubprojectv01Model = documentManager.getDocument(anotherRealisationSubprojectv01Ref);
+        System.err.println("anotherRealisationSubprojectv01Ref: " + anotherRealisationSubprojectv01Ref + " - " + anotherRealisationSubprojectv01Model
+                + "\n   uuid=" + anotherRealisationSubprojectv01Model.getId()
+                + "\n   isCheckedOut=" + anotherRealisationSubprojectv01Model.isCheckedOut()
+                + "\n   isVersion=" + anotherRealisationSubprojectv01Model.isVersion()
+                + "\n   isLatestVersion=" + anotherRealisationSubprojectv01Model.isLatestVersion()
+                + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectv01Model.isVersionSeriesCheckedOut()
+                + "\n   versionLabel=" + anotherRealisationSubprojectv01Model.getVersionLabel()
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectv01Model.getVersionSeriesId());
+        System.err.println("post 01 anotherRealisationSubprojectModel: " + anotherRealisationSubprojectModel
+                + "\n   uuid=" + anotherRealisationSubprojectModel.getId()
+                + "\n   isCheckedOut=" + anotherRealisationSubprojectModel.isCheckedOut()
+                + "\n   isVersion=" + anotherRealisationSubprojectModel.isVersion()
+                + "\n   isLatestVersion=" + anotherRealisationSubprojectModel.isLatestVersion()
+                + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectModel.isVersionSeriesCheckedOut()
+                + "\n   versionLabel=" + anotherRealisationSubprojectModel.getVersionLabel()
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectModel.getVersionSeriesId());
+        anotherRealisationSubprojectModel.checkOut();
+        System.err.println("post 01 checkout anotherRealisationSubprojectModel: " + anotherRealisationSubprojectModel
+                + "\n   uuid=" + anotherRealisationSubprojectModel.getId()
+                + "\n   isCheckedOut=" + anotherRealisationSubprojectModel.isCheckedOut()
+                + "\n   isVersion=" + anotherRealisationSubprojectModel.isVersion()
+                + "\n   isLatestVersion=" + anotherRealisationSubprojectModel.isLatestVersion()
+                + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectModel.isVersionSeriesCheckedOut()
+                + "\n   versionLabel=" + anotherRealisationSubprojectModel.getVersionLabel()
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectModel.getVersionSeriesId());
+        System.err.println("post 01 checkout anotherRealisationSubprojectv01Ref: " + anotherRealisationSubprojectv01Ref + " - " + anotherRealisationSubprojectv01Model
+                + "\n   uuid=" + anotherRealisationSubprojectv01Model.getId()
+                + "\n   isCheckedOut=" + anotherRealisationSubprojectv01Model.isCheckedOut()
+                + "\n   isVersion=" + anotherRealisationSubprojectv01Model.isVersion()
+                + "\n   isLatestVersion=" + anotherRealisationSubprojectv01Model.isLatestVersion()
+                + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectv01Model.isVersionSeriesCheckedOut()
+                + "\n   versionLabel=" + anotherRealisationSubprojectv01Model.getVersionLabel()
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectv01Model.getVersionSeriesId());
+        
+        anotherRealisationSubprojectModel = documentManager.getDocument(new IdRef(anotherRealisationSubprojectId));
+        DocumentRef anotherRealisationSubprojectv10Ref = anotherRealisationSubprojectModel.checkIn(VersioningOption.MAJOR, "test 1.0");
+        DocumentModel anotherRealisationSubprojectv10Model = documentManager.getDocument(anotherRealisationSubprojectv10Ref);
+        System.err.println("anotherRealisationSubprojectv10Ref: " + anotherRealisationSubprojectv10Ref + " - " + anotherRealisationSubprojectv10Model
+                + "\n   uuid=" + anotherRealisationSubprojectv10Model.getId()
+                + "\n   isCheckedOut=" + anotherRealisationSubprojectv10Model.isVersionSeriesCheckedOut()
+                + "\n   isVersion=" + anotherRealisationSubprojectv10Model.isVersion()
+                + "\n   isLatestVersion=" + anotherRealisationSubprojectv10Model.isLatestVersion()
+                + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectv10Model.isVersionSeriesCheckedOut()
+                + "\n   versionLabel=" + anotherRealisationSubprojectv10Model.getVersionLabel()
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectv10Model.getVersionSeriesId());
+        System.err.println("post 10 anotherRealisationSubprojectModel: " + anotherRealisationSubprojectModel
+                + "\n   uuid=" + anotherRealisationSubprojectModel.getId()
+                + "\n   isCheckedOut=" + anotherRealisationSubprojectModel.isCheckedOut()
+                + "\n   isVersion=" + anotherRealisationSubprojectModel.isVersion()
+                + "\n   isLatestVersion=" + anotherRealisationSubprojectModel.isLatestVersion()
+                + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectModel.isVersionSeriesCheckedOut()
+                + "\n   versionLabel=" + anotherRealisationSubprojectModel.getVersionLabel()
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectModel.getVersionSeriesId());
+    }
+    
+    
+    @Test
     public void testDiscoveryAcrossVersionedSubproject() throws Exception {
         
         // SUBPROJECT :
@@ -120,13 +227,51 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         DocumentModel foundComponent = discoveryService.runDiscovery(documentManager, CSP_COMPONENT_ID, compProperties, null);
 
         // Create versioned snapshot out of Specifications
-        Snapshotable snapshotable = specificationsSubprojectModel.getAdapter(Snapshotable.class);
+        /*Snapshotable snapshotable = specificationsSubprojectModel.getAdapter(Snapshotable.class);
         Snapshot snapshot = snapshotable.createSnapshot(VersioningOption.MINOR);
         // TODO TODOOOOOOOOOO update IDs in listener of event ABOUT_TO_CREATE_LEAF_VERSION_EVENT
         //DocumentModel specificationsSubprojectV01Model = snapshot.getDocument();
-        documentManager.save();
-        DocumentModel specificationsSubprojectV01Model = documentManager.getLastDocumentVersion(new IdRef(((String[]) realisationSubprojectModel
-                .getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS))[0])); // TODO updateToVersio
+        documentManager.save();*/
+        DocumentModel specificationsSubprojectV01Model = SubprojectServiceImpl
+                .createSubprojectVersion(specificationsSubprojectModel, VersioningOption.MINOR);
+        
+        // checks
+        String specificationsSubprojectV01Id = (String) specificationsSubprojectV01Model
+                .getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+        Assert.assertEquals("Once versioned, live subproject should still have same subproject ID",
+                specificationsSubprojectModel.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT),
+                specificationsSubprojectId);
+        // TODO with Realisation :
+        //Assert.assertEquals("Once versioned, live subproject should still have same parent subprojects",
+        //        specificationsSubprojectModel.getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS),
+        //        specificationsSubprojectModel.getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS));
+        Assert.assertNotSame("Versioned subproject should have different subproject ID",
+                specificationsSubprojectV01Id, specificationsSubprojectId);
+        Assert.assertNotSame("Versioned subproject should have different visible parent subprojects",
+                specificationsSubprojectV01Model.getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS),
+                specificationsSubprojectModel.getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS));
+        Assert.assertNotSame("Versioned subproject should have different visible subprojects",
+                Arrays.asList((String[]) specificationsSubprojectV01Model.getPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS)),
+                Arrays.asList((String[]) specificationsSubprojectModel.getPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS)));
+        Assert.assertNotSame("Versioned subproject should have different visible subprojects CSV",
+                specificationsSubprojectV01Model.getPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV),
+                specificationsSubprojectModel.getPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV));
+        DocumentModel realisationSubprojectModelParentSubproject = documentManager.getDocument(
+                new IdRef(((String[]) realisationSubprojectModel
+                .getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS))[0]));
+        Assert.assertEquals("Once versioned, child subproject's parent live Subproject should not have automatically changed",
+                realisationSubprojectModelParentSubproject.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT),
+                specificationsSubprojectId);
+        DocumentModel realisationSubprojectModelParentSubprojectLatestVersion = documentManager.getLastDocumentVersion(
+                new IdRef(((String[]) realisationSubprojectModel
+                .getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS))[0]));
+        Assert.assertEquals("Once versioned, child subproject's parent live Subproject last version "
+                + "should be the newly versioned one (for later updateToVersion)",
+                realisationSubprojectModelParentSubprojectLatestVersion.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT),
+                specificationsSubprojectV01Id);
+        
+        // TODO updateToVersion
+        
         ///realisationSubprojectModel.setPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS, new String[]{ specificationsSubprojectV01Model.getId() });
         DocumentModel foundInfoServV01 = documentService.find(documentManager, new SoaNodeId(
                 SubprojectServiceImpl.buildSubprojectId(specificationsSubprojectV01Model),
@@ -134,12 +279,17 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         Assert.assertNotNull(foundInfoServV01);
         Assert.assertNotSame("Once versioned, InformationService should have different Nuxeo ID",
                 foundInfoServ.getId(), foundInfoServV01.getId());
+        Assert.assertEquals("Once versioned, InformationService should have subproject ID of its subproject",
+                specificationsSubprojectV01Id, foundInfoServV01.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT));
+        Assert.assertEquals("Once versioned, InformationService should have visible subproject IDs CSV of its subproject",
+                specificationsSubprojectV01Model.getPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV),
+                foundInfoServV01.getPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV));
         
         DocumentModel versioningRealisationSubprojectModel = SubprojectServiceImpl.createSubproject(
-                documentManager, "Realisation", projectModel, list(specificationsSubprojectV01Model));
+                documentManager, "RealisationOnFixedSpecs", projectModel, list(specificationsSubprojectV01Model));
         
         // Discover service impl
-        String versioningRealisationSubprojectId = SubprojectServiceImpl.buildSubprojectId(specificationsSubprojectModel);
+        String versioningRealisationSubprojectId = (String) versioningRealisationSubprojectModel.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
         SoaNodeId CSP_FIRST_SERVICEIMPL_ID = new SoaNodeId(versioningRealisationSubprojectId,
                 ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx");
         HashMap<String, Object> implProperties = new HashMap<String, Object>();

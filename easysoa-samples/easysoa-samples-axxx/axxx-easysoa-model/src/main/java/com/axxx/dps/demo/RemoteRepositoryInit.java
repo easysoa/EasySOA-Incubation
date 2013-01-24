@@ -627,7 +627,9 @@ public class RemoteRepositoryInit {
 	}
 	
 	public static void initClients(String username, String password) {
+                System.out.println("Logging in " + username + "/" + password);
 		ClientBuilder clientBuilder = new ClientBuilder();
+                clientBuilder.setCredentials(username, password);
 		registryApi = clientBuilder.constructRegistryApi();
         simpleRegistryService = clientBuilder.constructSimpleRegistryService();
 		endpointStateService = clientBuilder.constructEndpointStateService();

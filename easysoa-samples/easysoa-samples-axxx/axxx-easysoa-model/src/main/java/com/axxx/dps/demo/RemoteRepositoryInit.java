@@ -73,9 +73,27 @@ public class RemoteRepositoryInit {
     private static EndpointStateService endpointStateService;
 
 	public static final void main(String[] args) throws Exception {
-	    HashSet<String> steps = new HashSet<String>(Arrays.asList(args));
+            String username = "Administrator";
+            String password = "Administrator";
+            HashSet<String> steps = new HashSet<String>(args.length);
+	    for (String arg : Arrays.asList(args)) {
+	        String[] keyValueArg = arg.split("=");
+                if (keyValueArg.length > 1) {
+                    String key = keyValueArg[0];
+                    String value = keyValueArg[1];
+                    if ("username".equals(key)) {
+                        username = value;
+                    } else if ("password".equals(key)) {
+                        password = value;
+                    } else {
+                        System.err.println("Unknown key value argument " + keyValueArg);
+                    }
+                } else {
+                    steps.add(arg);
+                }
+	    }
 	    
-		initClients();
+		initClients(username, password);
 
         //String rootName = "Projets collaboratifs";
         String projectName = "Intégration DPS - DCV";
@@ -608,7 +626,7 @@ public class RemoteRepositoryInit {
 		}
 	}
 	
-	public static void initClients() {
+	public static void initClients(String username, String password) {
 		ClientBuilder clientBuilder = new ClientBuilder();
 		registryApi = clientBuilder.constructRegistryApi();
         simpleRegistryService = clientBuilder.constructSimpleRegistryService();
@@ -616,7 +634,7 @@ public class RemoteRepositoryInit {
 		
 		HttpAutomationClient client = new HttpAutomationClient(
 		           "http://localhost:8080/nuxeo/site/automation");
-		session = client.getSession("Administrator", "Administrator");
+		session = client.getSession(username, password);
 	}
 	
 	public static String getSourceFolderPath(String doctype) {

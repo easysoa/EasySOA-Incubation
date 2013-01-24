@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
+
+import org.easysoa.registry.DocumentService;
+import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.facets.WsdlInfoFacet;
 import org.easysoa.registry.rest.integration.EndpointInformations;
 import org.easysoa.registry.rest.integration.ServiceInformation;
@@ -15,6 +18,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Simple service registry implementation
@@ -38,27 +42,43 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
     public ServiceInformations queryWSDLInterfaces(String search, String subProjectId) throws Exception {
         
         CoreSession documentManager = SessionFactory.getSession(request);
-
+        DocumentService documentService = Framework.getService(DocumentService.class);
+        
+        boolean searchParamIncluded = false;
+        
         ArrayList<String> parameters = new ArrayList<String>();
         StringBuffer query = new StringBuffer(); 
         query.append("SELECT * FROM InformationService ");
         // Search parameter
         if(search != null && !"".equals(search)){
             String searchParam = "%"+search+"%";
-            query.append("WHERE dc:title like '?' " +
+            query.append("WHERE (dc:title like '?' " +
                     "OR " + SoaNode.XPATH_SOANAME + " like '?' " +
                             "OR dc:description like '?' " +
-                                    "OR " + WsdlInfoFacet.XPATH_WSDL_PORTTYPE_NAME + " like '?'");
+                                    "OR " + WsdlInfoFacet.XPATH_WSDL_PORTTYPE_NAME + " like '?')");
             parameters.add(searchParam);
             parameters.add(searchParam);
             parameters.add(searchParam);
             parameters.add(searchParam);
+            searchParamIncluded = true;
         }
         // Project ID parameter
         if(subProjectId != null && !"".equals(subProjectId)){ 
             // TODO : not implemented yet in Nuxeo registry
             //[and projectId=appGivenProjectId || projectId in (allProjectIdsReferredByFraSCAtiStudioProject)]
-        }
+            String subProjectCriterias = "";
+            DocumentModel subProjectModel = SubprojectServiceImpl.getSubprojectById(documentManager, subProjectId);
+            if(subProjectModel != null){
+               subProjectCriterias  = SubprojectServiceImpl.buildCriteriaSeenFromSubproject(subProjectModel);
+               if(searchParamIncluded){
+                   query.append(" AND " + subProjectCriterias);    
+               } else {
+                   query.append(" WHERE " + subProjectCriterias);
+               }
+            } else {
+                throw new Exception("subProjectId '" + subProjectId + "' is not a valid subproject !");
+            }
+       }
         
         // LATER
         // Platform parameter
@@ -87,12 +107,13 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
 
         // Execute query
         String nxqlQuery = NXQLQueryBuilder.getQuery(query.toString(), parameters.toArray(), false, true);
-        DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);        
+        //DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);
+        DocumentModelList soaNodeModelList = documentService.query(documentManager, nxqlQuery, true, false);
         
         // Write response
         ServiceInformations serviceInformations = new ServiceInformations();
         for (DocumentModel soaNodeModel : soaNodeModelList) {
-            serviceInformations.addServiceInformation(SoaNodeInformationToWSDLInformationMapper.mapToServiceInformation(soaNodeModel, NUXEO_BASE_URL));
+            serviceInformations.addServiceInformation(SoaNodeInformationToWSDLInformationMapper.mapToServiceInformation(soaNodeModel, NUXEO_BASE_URL, documentManager));
         }
         return serviceInformations;
     }
@@ -104,12 +125,15 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
     public EndpointInformations queryEndpoints(String search, String subProjectId) throws Exception {
 
         CoreSession documentManager = SessionFactory.getSession(request);
-
+        DocumentService documentService = Framework.getService(DocumentService.class);
+        
+        boolean searchParamIncluded = false;
+        
         // Fetch SoaNode list
         ArrayList<String> parameters = new ArrayList<String>(); 
         StringBuffer query = new StringBuffer(); 
         query.append("SELECT * FROM Endpoint ");
- 
+
         // Search parameter
         if(search != null && !"".equals(search)){
             String searchParam = "%"+search+"%";
@@ -121,15 +145,29 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
             parameters.add(searchParam);
             parameters.add(searchParam);
             parameters.add(searchParam);
+            searchParamIncluded = true;
         }
         // Project ID parameter
         if(subProjectId != null && !"".equals(subProjectId)){
             // TODO : not implemented yet in Nuxeo registry
             //[and projectId=appGivenProjectId || projectId in (allProjectIdsReferredByFraSCAtiStudioProject)]
+            String subProjectCriterias = "";
+            DocumentModel subProjectModel = SubprojectServiceImpl.getSubprojectById(documentManager, subProjectId);
+            if(subProjectModel != null){
+               subProjectCriterias  = SubprojectServiceImpl.buildCriteriaSeenFromSubproject(subProjectModel);
+               if(searchParamIncluded){
+                   query.append(" AND " + subProjectCriterias);    
+               } else {
+                   query.append(" WHERE " + subProjectCriterias);
+               }
+            } else {
+                throw new Exception("subProjectId '" + subProjectId + "' is not a valid subproject !");
+            }            
         }        
         
         String nxqlQuery = NXQLQueryBuilder.getQuery(query.toString(), parameters.toArray(), false, true);
-        DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);        
+        //DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);
+        DocumentModelList soaNodeModelList = documentService.query(documentManager, nxqlQuery, true, false);
         
         // Write response
         EndpointInformations endpointInformations = new EndpointInformations();

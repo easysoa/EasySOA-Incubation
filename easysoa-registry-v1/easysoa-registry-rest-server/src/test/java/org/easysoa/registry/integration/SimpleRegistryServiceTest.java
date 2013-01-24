@@ -19,6 +19,7 @@ import org.easysoa.registry.rest.integration.ServiceInformations;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.Platform;
+import org.easysoa.registry.types.Subproject;
 import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
@@ -157,7 +158,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
 
         // Run first test request
         Client client = createAuthenticatedHTTPClient();
-        WebResource discoveryRequest = client.resource(simpleRegistryServiceUrl).path("/queryWSDLInterfaces").queryParam("search", "test").queryParam("subProjectId", "test");
+        WebResource discoveryRequest = client.resource(simpleRegistryServiceUrl).path("/queryWSDLInterfaces").queryParam("search", "test").queryParam("subProjectId", Subproject.DEFAULT_SUBPROJECT_PATH + "_v");
         ServiceInformations serviceInformations = discoveryRequest.get(ServiceInformations.class);
         // Check a result is returned
         Assert.assertNotNull(serviceInformations);

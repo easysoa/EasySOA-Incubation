@@ -172,9 +172,9 @@ td:first-child {
 		<h1>Dashboards</h1>
 
 		<ul>
-			<li><a href="http://localhost:8080/nuxeo/site/easysoa/dashboard/">Easysoa Matching dashboard</a></li>
-			<li><a href="http://localhost:8080/nuxeo/site/easysoa/services/">Easysoa Service documentation dashboard</a></li>
-			<li><a href="http://localhost:8080/nuxeo/site/easysoa/monitoring/">Easysoa Endpoint indicators dashboard</a></li>
+			<li><a href="${Root.path}/dashboard/">Easysoa Matching dashboard</a></li>
+			<li><a href="${Root.path}/services/">Easysoa Service documentation dashboard</a></li>
+			<li><a href="${Root.path}/monitoring/">Easysoa Endpoint indicators dashboard</a></li>
 		</ul>
 
 	</div>

@@ -26,11 +26,15 @@
 
 	<div id="container">
 
-	<#include "/views/EasySOA/macros.ftl">	
+		<#include "/views/EasySOA/macros.ftl">	
 		
-		<h1>Endpoints</h1>
+		<h1>Indicators for endpoint</h1>
 
-		<@displayEndpointsShort endpoints/>
+		<@displayIndicatorsShort indicators/>
+		
+		<br/>
+		
+		<a href="${Root.path}">Back to endpoint list<a>
 		
 	</div>
 </body>

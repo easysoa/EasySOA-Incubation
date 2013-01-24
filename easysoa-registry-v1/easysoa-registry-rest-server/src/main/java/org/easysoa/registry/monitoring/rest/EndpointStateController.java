@@ -31,7 +31,17 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
+import org.easysoa.registry.integration.EndpointStateServiceImpl;
+import org.easysoa.registry.integration.SimpleRegistryServiceImpl;
+import org.easysoa.registry.rest.integration.EndpointInformation;
+import org.easysoa.registry.rest.integration.EndpointInformations;
+import org.easysoa.registry.rest.integration.EndpointStateService;
+import org.easysoa.registry.rest.integration.ServiceInformations;
+import org.easysoa.registry.rest.integration.SimpleRegistryService;
+import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
+import org.easysoa.registry.rest.integration.SlaOrOlaIndicators;
 import org.easysoa.registry.types.Endpoint;
+import org.easysoa.registry.types.Subproject;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -41,6 +51,9 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+
 /**
  * Indicators
  * 
@@ -49,19 +62,19 @@ import org.nuxeo.runtime.api.Framework;
  * @author mdutoo, jguillemotte
  * 
  */
-@WebObject(type = "EasySOA")
+@WebObject(type = "monitoring")
 @Path("easysoa/monitoring")
-public class ServiceDocumentationController extends ModuleRoot {
+public class EndpointStateController extends ModuleRoot {
 
     private static final String SERVICE_LIST_PROPS = "*"; // "ecm:title"
     
     @SuppressWarnings("unused")
-    private static Logger logger = Logger.getLogger(ServiceDocumentationController.class);
+    private static Logger logger = Logger.getLogger(EndpointStateController.class);
     
     /**
      * Default constructor
      */
-    public ServiceDocumentationController() {
+    public EndpointStateController() {
         
     }
     
@@ -77,36 +90,50 @@ public class ServiceDocumentationController extends ModuleRoot {
         for(DocumentModel model : environments){
             envs.add((String)model.getPropertyValue(Endpoint.XPATH_ENDP_ENVIRONMENT));
         }
+        
+        //EndpointStateService endpointStateService = Framework.getService(EndpointStateService.class);
+        //endpointStateService.getSlaOrOlaIndicatorsByEnv(environment, projectId, periodStart, periodEnd, pageSize, pageStart);
+        
+        // Get endpoints
+        //SimpleRegistryService simpleRegistryService = Framework.getService(SimpleRegistryService.class);
+        //SimpleRegistryService simpleRegistryService = new SimpleRegistryServiceImpl();
+       
+        CoreSession documentManager = SessionFactory.getSession(request);
+        List<EndpointInformation> endpoints = SimpleRegistryServiceImpl.queryEndpoints(documentManager, "", "").getEndpointInformationList();
+        
         return getView("dashboard") // TODO see services.ftl, dashboard/*.ftl...
-                .arg("envs", envs); // TODO later by (sub)project
+                .arg("envs", envs) // TODO later by (sub)project
+                .arg("endpoints", endpoints);
     }
     
     @GET
-    @Path("env/{envName:.+}") // TODO encoding
+    @Path("envIndicators/{endpointId:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetByPathHTML(@PathParam("envName") String envName) throws Exception {
+    public Object doGetByPathHTML(@PathParam("endpointId") String endpointId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
         
         // Check there is at least on environment
-        if(envName == null || "".equals(envName)){
-            throw new IllegalArgumentException("At least one environment must be specified");
+        if(endpointId == null || "".equals(endpointId)){
+            throw new IllegalArgumentException("At least one endpointID must be specified");
         }
         
         Template view = getView("envIndicators"); // TODO see services.ftl, dashboard/*.ftl...
         
         // Get the enpoints associated with the environment
-        DocumentModelList endpointsModel = session.query("SELECT * FROM " + Endpoint.DOCTYPE + " WHERE " + Endpoint.XPATH_ENDP_ENVIRONMENT + " = " + envName);
+        //DocumentModelList endpointsModel = session.query("SELECT * FROM " + Endpoint.DOCTYPE + " WHERE " + Endpoint.XPATH_ENDP_ENVIRONMENT + " = " + envName);
         
-        for(DocumentModel endpointModel : endpointsModel){
+        /*for(DocumentModel endpointModel : endpointsModel){
             
-        }
+        }*/
         
-        List<DocumentModel> endpoints = null;
+        //List<DocumentModel> endpoints = null;
 
+        EndpointStateService endpointStateService = new EndpointStateServiceImpl();
+        List<SlaOrOlaIndicator> indicators =  endpointStateService.getSlaOrOlaIndicators(endpointId, "", null, null, 10, 0).getSlaOrOlaIndicatorList();
         
-        if (endpoints != null) {
-            view = view.arg("endpoints", endpoints);
+        if (indicators != null) {
+            view = view.arg("indicators", indicators);
         }
         return view; 
     }

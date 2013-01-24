@@ -169,7 +169,7 @@ public class ServiceDocumentationController extends ModuleRoot {
         Template view = getView("servicedoc");
         if (service != null) {
             // WARNING IS NULL DOESN'T WORK IN RELEASE BUT IN JUNIT OK
-            List<DocumentModel> actualImpls = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
+            List<DocumentModel> actualImpls = new java.util.ArrayList<DocumentModel>();/* = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
                     + DocumentService.NXQL_WHERE_NO_PROXY
                     + DocumentService.NXQL_AND + "ecm:uuid IN "
                     + getProxiedIdLiteralList(session,
@@ -177,19 +177,17 @@ public class ServiceDocumentationController extends ModuleRoot {
                     + DocumentService.NXQL_WHERE_PROXY + DocumentService.NXQL_AND
                     + DocumentService.NXQL_PATH_STARTSWITH + RepositoryHelper.getRepositoryPath(session, subprojectId) + InformationService.DOCTYPE + "'"
                     + DocumentService.NXQL_AND + "ecm:parentId='" + service.getId() + "'"
-                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + " IS NULL"))); // WARNING use IS NULL instead of !='true'
+                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + " IS NULL"))); // WARNING use IS NULL instead of !='true'*/
             List<DocumentModel> mockImpls = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
-                    + DocumentService.NXQL_WHERE_NO_PROXY + DocumentService.NXQL_AND + "ecm:uuid IN "
-                    + getProxiedIdLiteralList(session,
-                            session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
-                    + DocumentService.NXQL_WHERE_PROXY + DocumentService.NXQL_AND
-                    + DocumentService.NXQL_PATH_STARTSWITH + RepositoryHelper.getRepositoryPath(session, subprojectId) + InformationService.DOCTYPE + "'"
-                    + DocumentService.NXQL_AND + "ecm:parentId='" + service.getId() + "'"
-                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + "='true'")));
-            actualImpls = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
-                    + DocumentService.NXQL_WHERE_NO_PROXY
-                    + DocumentService.NXQL_AND + "ecm:uuid NOT IN "
-                    + toLiteral(getIds(mockImpls))); // WARNING use IS NULL instead of !='true'
+                    + DocumentService.NXQL_WHERE + "ecm:currentLifeCycleState != 'deleted' AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0" + DocumentService.NXQL_AND // TODO isProxy
+                    + /*ServiceImplementationDataFacet.XPATH_PROVIDED_INFORMATION_SERVICE*/ "impl:providedInformationService='" + service.getId() + "'"
+                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + "='true'");
+            if (!mockImpls.isEmpty()) {
+                actualImpls = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
+                        + DocumentService.NXQL_WHERE_NO_PROXY
+                        + DocumentService.NXQL_AND + "ecm:uuid NOT IN "
+                        + toLiteral(getIds(mockImpls))); // WARNING use IS NULL instead of !='true'
+            }
             view = view
                     .arg("service", service)
                     .arg("actualImpls", actualImpls)

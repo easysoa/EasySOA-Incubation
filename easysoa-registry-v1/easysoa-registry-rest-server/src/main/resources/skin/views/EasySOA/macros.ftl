@@ -1,5 +1,5 @@
 		<#macro displayServiceShort service>
-       <a href="${Root.path}/path/${service['soan:name']?xml}"><@displayDocShort service/></a>
+       <a href="${Root.path}/path/${service['soan:name']?xml}?subproject=${service['spnode:subproject']}"><@displayDocShort service/></a>
 		</#macro>
 		<#macro displayServicesShort services>
 			<ul>
@@ -9,16 +9,48 @@
 			</ul>
 		</#macro>
 		<#macro displayTagShort tag>
-         <a href="${Root.path}/tag/${tag['soan:name']?xml}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - ${tag['path']}</a>
+         <a href="${Root.path}/tag/${tag['soan:name']?xml}?subproject=${tag['spnode:subproject']}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - ${tag['path']}</a>
 		</#macro>
-
 
 		<#macro displayDocShort doc>
          ${doc['title']} - ${doc['path']}
 		</#macro>
+		
 		<#macro displayDocsShort docs>
          <#list docs as doc><@displayDocShort doc/> ; </#list>
 		</#macro>
+		
+		<#macro displayEndpointShort endpoint>
+         <li><a href="${Root.path}/envIndicators/${endpoint.nuxeoID}">${endpoint.name}</a></li>
+		</#macro>
+		
+		<#macro displayEndpointsShort endpoints>
+         <ul>
+         <#list endpoints as endpoint><@displayEndpointShort endpoint/></#list>
+         </ul>
+		</#macro>		
+		
+		<#macro displayIndicatorShort indicator>
+         <tr>
+         	<td>${indicator.slaOrOlaName}</td>
+         	<td>${indicator.timestamp?datetime?string.long}</td>
+         	<td>${indicator.serviceLevelHealth}</td>
+         	<td>${indicator.serviceLevelViolation}</td>
+          </tr>
+		</#macro>
+		
+		<#macro displayIndicatorsShort indicators>
+         <table>
+         	<tr>
+         		<td>Indicator name</td>
+         		<td>Timestamp</td>
+         		<td>Service level health</td>
+         		<td>Service level violation</td>
+         	</tr>
+         <#list indicators as indicator><@displayIndicatorShort indicator/></#list>
+         </table>
+		</#macro>		
+		
 
 <#assign documentPropNames=["lifeCyclePolicy", "versionLabel", "facets", "children", "type", "sourceId", "id", "author", "title", "repository", "created", "name", "path", "schemas", "parent", "lifeCycleState", "allowedStateTransitions", "isLocked", "modified", "content", "ref", "versions", "isFolder", "sessionId", "session", "proxies"]/>
 <#assign shortDocumentPropNames=["title", "type", "path", "author", "versionLabel"]/>

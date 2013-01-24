@@ -123,8 +123,12 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
      */
     @Override
     public EndpointInformations queryEndpoints(String search, String subProjectId) throws Exception {
-
         CoreSession documentManager = SessionFactory.getSession(request);
+        return SimpleRegistryServiceImpl.queryEndpoints(documentManager, search, subProjectId);
+    }
+
+    // TODO : make a service with this method
+    public static EndpointInformations queryEndpoints(CoreSession documentManager, String search, String subProjectId) throws Exception {
         DocumentService documentService = Framework.getService(DocumentService.class);
         
         boolean searchParamIncluded = false;
@@ -176,7 +180,7 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
         }
         return endpointInformations;
     }
-
+    
     @Override
     public ServiceInformations queryServicesWithEndpoints(String search, String subProjectId) throws Exception {
         

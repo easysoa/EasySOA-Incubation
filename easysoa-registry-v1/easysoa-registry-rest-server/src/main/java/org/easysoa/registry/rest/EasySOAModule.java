@@ -3,15 +3,18 @@ package org.easysoa.registry.rest;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.easysoa.registry.rest.marshalling.JsonMessageReader;
-import org.easysoa.registry.rest.marshalling.JsonMessageWriter;
 import org.easysoa.registry.dashboard.rest.MatchingDashboard;
 import org.easysoa.registry.dbb.rest.ServiceFinderRest;
 import org.easysoa.registry.documentation.rest.ServiceDocumentationController;
 import org.easysoa.registry.indicators.rest.IndicatorsController;
 import org.easysoa.registry.integration.EndpointStateServiceImpl;
 import org.easysoa.registry.integration.SimpleRegistryServiceImpl;
+import org.easysoa.registry.monitoring.rest.EndpointStateController;
+import org.easysoa.registry.rest.marshalling.JsonMessageReader;
+import org.easysoa.registry.rest.marshalling.JsonMessageWriter;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
+
+import services.ServiceListController;
 
 /**
  * 
@@ -37,7 +40,9 @@ public class EasySOAModule extends WebEngineModule {
                 IndicatorsController.class,
                 ServiceDocumentationController.class,
                 MatchingDashboard.class,
-                ServiceFinderRest.class
+                ServiceFinderRest.class,
+                EndpointStateController.class//,
+                //ServiceListController.class                
                 };
     }
 

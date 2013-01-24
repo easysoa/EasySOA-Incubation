@@ -168,5 +168,15 @@ td:first-child {
 		</ul>
 
 	</div>
+	<div id="container">
+		<h1>Dashboards</h1>
+
+		<ul>
+			<li><a href="http://localhost:8080/nuxeo/site/easysoa/dashboard/">Easysoa Matching dashboard</a></li>
+			<li><a href="http://localhost:8080/nuxeo/site/easysoa/services/">Easysoa Service documentation dashboard</a></li>
+			<li><a href="http://localhost:8080/nuxeo/site/easysoa/monitoring/">Easysoa Endpoint indicators dashboard</a></li>
+		</ul>
+
+	</div>
 
 </body>

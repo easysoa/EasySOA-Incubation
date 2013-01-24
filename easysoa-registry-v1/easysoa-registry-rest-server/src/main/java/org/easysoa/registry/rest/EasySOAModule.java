@@ -14,8 +14,6 @@ import org.easysoa.registry.rest.marshalling.JsonMessageReader;
 import org.easysoa.registry.rest.marshalling.JsonMessageWriter;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
-import services.ServiceListController;
-
 /**
  * 
  * @author mkalam-alami
@@ -41,8 +39,7 @@ public class EasySOAModule extends WebEngineModule {
                 ServiceDocumentationController.class,
                 MatchingDashboard.class,
                 ServiceFinderRest.class,
-                EndpointStateController.class//,
-                //ServiceListController.class                
+                EndpointStateController.class                
                 };
     }
 

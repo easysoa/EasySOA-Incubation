@@ -418,7 +418,7 @@ public class RemoteRepositoryInit {
         
         SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService");//TODO host
         SoaNodeId checkAddressProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:" + fromEnc("iuuq;00xxx/ebub.rvbmjuz.tfswjdf/dpn0npdlxtr5220tfswjdft0JoufsobujpobmQptubmWbmjebujpo/JoufsobujpobmQptubmWbmjebujpoIuuqTpbq22Foeqpjou0"));//checkAddressProdEndpoint
-        SoaNodeId informationAPVProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getPivotalHost() + ":7080/pivotal/WS/ContactSvc.asmx");//TODO host // 18000
+        SoaNodeId informationAPVProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getPivotalHost() + ":7080/WS/ContactSvc.asmx");//TODO host // 18000
 
 		// manually : do a web discovery
 		// TODO web discovery : upload wsdl
@@ -441,7 +441,7 @@ public class RemoteRepositoryInit {
 
         String informationAPVProdEndpointPath = createSoaNode(informationAPVProdEndpointId, (String) null,
                 Endpoint.XPATH_ENDP_ENVIRONMENT + "=Prod", // required even with soaname else integrity check fails
-                Endpoint.XPATH_URL + "=http://" + getPivotalHost() + ":7080/pivotal/WS/ContactSvc.asmx"/*, // required even with soaname else integrity check fails
+                Endpoint.XPATH_URL + "=http://" + getPivotalHost() + ":7080/WS/ContactSvc.asmx"/*, // required even with soaname else integrity check fails
                 Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://ipf.webservice.rt.saas.uniserv.com}InternationalPostalValidationPortType"*/);
         uploadWsdl(informationAPVProdEndpointPath, "../axxx-dcv-pivotal/src/main/resources/api/ContactSvc.asmx.wsdl");
             // or do a web discovery

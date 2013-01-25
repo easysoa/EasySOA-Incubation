@@ -33,13 +33,23 @@ Running :
  * * from Maven command line :
  * mvn clean install exec:java -Dexec.mainClass="com.axxx.dps.demo.RemoteRepositoryInit"
  * 
- * The following arguments may be given (in maven by -Dexec.args="<space separated arguments>") to
- * specify which step to play (if none are given, all of them will be played) :
+ * In arguments may be given (in maven by -Dexec.args="[space separated arguments]") :
+ * 
+ * A. which step to play (if none are given, all of them will be played) :
  * * clean : deletes the existing model
  * * (Specifications are always (updated or) created)
  * * (Realisation must be done by source discovery)
  * * Deploiement : creates a Prod endpoint for TdrWebService
  * * Exploitation : creates an SOA monitoring indicator for it (by calling EndpointStateService)
+ * 
+ * B. properties, in [key]=[value] syntax
+ * * username (default : Administrator
+ * * password (default : Administrator
+ * 
+ * For instance, if you which to wipe the registry out, then fill Specifications and
+ * create Realisation subproject, do :
+ * 
+ * mvn clean install -Dexec.mainClass="com.axxx.dps.demo.RemoteRepositoryInit" -Dexec.args="clean Specifications Realisation username=Administrator password=Administrator"
  * 
  * WARNING: Requires a running EasySOA Registry on port 8080 (or at least a launched Nuxeo DM
  * with the Nuxeo Studio project "EasySOA" deployed)

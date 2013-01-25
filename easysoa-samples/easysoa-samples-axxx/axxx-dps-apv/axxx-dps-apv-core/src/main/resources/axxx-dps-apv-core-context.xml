@@ -32,6 +32,14 @@
 		<property name="ignoreResourceNotFound" value="false" />
 	</bean>
 
+	<!-- transversal conf util for autowired services -->
+	<bean id="com.axxx.dps.apv.util.AxxxConfUtil" class="com.axxx.dps.apv.util.AxxxConfUtil">
+		<!-- property name="offlineMode" value="${com.axxx.dps.apv.offlineMode}" / -->
+		<property name="precomptePartenaireWebServiceDelayFixed" value="${com.axxx.dps.apv.ws.precomptePartenaireWebServiceDelayFixed}" />
+		<property name="precomptePartenaireWebServiceDelayRandom" value="${com.axxx.dps.apv.ws.precomptePartenaireWebServiceDelayRandom}" />
+	</bean>
+	
+
 
  	<!-- WEBSERVICES -->
 

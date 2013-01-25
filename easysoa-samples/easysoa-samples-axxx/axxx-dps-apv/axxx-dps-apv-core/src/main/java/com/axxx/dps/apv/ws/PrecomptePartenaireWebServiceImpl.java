@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.axxx.dps.apv.model.Tdr;
 import com.axxx.dps.apv.model.TdrTdb;
 import com.axxx.dps.apv.service.TdrService;
+import com.axxx.dps.apv.util.AxxxConfUtil;
 
 
 /**
@@ -58,6 +59,8 @@ public class PrecomptePartenaireWebServiceImpl implements PrecomptePartenaireWeb
 
 	@Override
 	public void creerPrecompte(PrecomptePartenaire precomptePartenaire) {
+	    AxxxConfUtil.getInstance().sleep();
+	    
 		Tdr newTdr = new Tdr();
 		// TODO fields
 		newTdr.setAdresse(precomptePartenaire.getAdresse());

@@ -470,7 +470,7 @@ public class RemoteRepositoryInit {
 	        createSoaNode(olaTdrWebServiceId);
 	        
 	        // copied from Deploiement
-	        SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://localhost:7080/apv/services/PrecomptePartenaireService");//TODO host
+	        SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService");//TODO host
 	        String tdrWebServiceProdEndpointPath = createSoaNode(tdrWebServiceProdEndpointId);
 	        
 	        SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();

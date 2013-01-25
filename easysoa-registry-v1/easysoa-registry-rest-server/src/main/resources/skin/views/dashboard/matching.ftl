@@ -1,5 +1,6 @@
 <#if unmatched?has_content>
 <h1 style="color: red; border-color: red">${doctypeTitle}s to classify</h1>
+<#assign matchingPrefix = doctypeTitle?replace(" ", "_") + "_to_" + targetDoctypeTitle?replace(" ", "_") + "_">
   
 <table style="width: 500px">
 <tr>
@@ -8,6 +9,7 @@
 <#list unmatched as unmatched>
   <tr>
   	<td class="clickable unmatchedModel" id="${unmatched.id}">
+  	  <div class="selectedFormInputName">${matchingPrefix}unmatchedModelId</div>
   	  <div style="float: right">
   	  	<input class="components" type="button" value="Select component" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/components/${unmatched.id}'" />
   	  	<input class="suggestions" type="button" value="Get suggestions" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/suggest/${unmatched.id}'" />
@@ -24,6 +26,7 @@
        <#list suggestions as suggestion>
           <tr>
           	<td class="clickable target">
+              <div class="selectedFormInputName">${matchingPrefix}targetId</div>
           	  <#assign document = suggestion>
           	  <#include "/views/dashboard/document.ftl">
           	</td>
@@ -41,6 +44,7 @@
          <#list anyPlatformSuggestions as suggestion>
             <tr>
             	<td class="clickable target">
+                  <div class="selectedFormInputName">${matchingPrefix}targetId</div>
             	  <#assign document = suggestion>
             	  <#include "/views/dashboard/document.ftl">
             	</td>
@@ -62,6 +66,7 @@
          <#list allFromComponent as suggestion>
             <tr>
             	<td class="clickable target">
+            	  <div class="selectedFormInputName">${matchingPrefix}targetId</div>
             	  <#assign document = suggestion>
             	  <#include "/views/dashboard/document.ftl">
             	</td>
@@ -93,8 +98,8 @@
 	<fieldset style="width: 400px; padding: 10px;">
 	Click on an a ${doctypeTitle} and a ${targetDoctypeTitle}, then click:<br />
 	<input type="submit" value="Create a link" />
-	<input id="unmatchedModelId" name="unmatchedModelId" type="hidden" />
-	<input id="targetId" name="targetId" type="hidden" />
+	<input id="${matchingPrefix}unmatchedModelId" name="unmatchedModelId" type="hidden" />
+	<input id="${matchingPrefix}targetId" name="targetId" type="hidden" />
 	</fieldset>    
 </form>
   

@@ -238,22 +238,16 @@ public class MatchingDashboard extends ModuleRoot {
 	private List<DocumentModel> fetchSuggestions(CoreSession session, DocumentModel model, String componentUuid,
 			boolean skipPlatformMatching) throws Exception {
 		if (model != null) {
-			// Fetch component
-			DocumentModel componentModel = null;
-			if (componentUuid != null) {
-				componentModel = session.getDocument(new IdRef(componentUuid));
-			}
-			
 			// Run matching service according to doctype
 			if (Endpoint.DOCTYPE.equals(model.getType())) {
 				EndpointMatchingService matchingService = Framework.getService(EndpointMatchingService.class);
 				return matchingService.findServiceImplementations(session,
-				        model, componentModel.getId(), skipPlatformMatching, false);
+				        model, componentUuid, skipPlatformMatching, false);
 			}
-			else {
+			else { // ServiceImplementation
 				ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);
 				return matchingService.findInformationServices(session,
-				        model, componentModel.getId(), skipPlatformMatching, false);
+				        model, componentUuid, skipPlatformMatching, false);
 			}
 		}
 		else {

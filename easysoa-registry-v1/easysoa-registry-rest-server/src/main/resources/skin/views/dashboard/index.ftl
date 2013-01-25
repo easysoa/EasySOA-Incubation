@@ -87,17 +87,23 @@
     return $('.id', $el).html();
   }
   
+  function getSelectedFormInputName($el) {
+    return $('.selectedFormInputName', $el).html();
+  }
+  
   $('.clickable').click(function() {
     var $el = $(this);
     if ($el.hasClass('target')) {
       $('.target').removeClass('selected');
       $el.addClass('selected');
-      $('#targetId').attr('value', getId($el));
+      var selectedFormInputName = getSelectedFormInputName($el);
+      $('#' + selectedFormInputName).attr('value', getId($el));
     }
     else {
       $('.unmatchedModel').removeClass('selected');
       $el.addClass('selected');
-      $('#unmatchedModelId').attr('value', getId($el));
+      var selectedFormInputName = getSelectedFormInputName($el);
+      $('#' + selectedFormInputName).attr('value', getId($el));
     }
   });
   

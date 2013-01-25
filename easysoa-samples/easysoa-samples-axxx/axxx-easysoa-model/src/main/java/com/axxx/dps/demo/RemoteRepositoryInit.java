@@ -52,6 +52,9 @@ import org.nuxeo.ecm.automation.client.model.FileBlob;
  * B. properties, in [key]=[value] syntax
  * * username (default : Administrator
  * * password (default : Administrator
+ * * apvHost (default : localhost
+ * * pivotalHost (default : localhost
+ * * registryHost (default : localhost
  * 
  * For instance, if you which to wipe the registry out, then fill Specifications and
  * create Realisation subproject, do :
@@ -81,6 +84,10 @@ public class RemoteRepositoryInit {
 	private static Session session;
     private static SimpleRegistryService simpleRegistryService;
     private static EndpointStateService endpointStateService;
+    
+    private static String apvHost = null;
+    private static String pivotalHost = null;
+    private static String registryHost = null;
 
 	public static final void main(String[] args) throws Exception {
             String username = "Administrator";
@@ -95,6 +102,12 @@ public class RemoteRepositoryInit {
                         username = value;
                     } else if ("password".equals(key)) {
                         password = value;
+                    } else if ("apvHost".equals(key)) {
+                        apvHost = value;
+                    } else if ("pivotalHost".equals(key)) {
+                        pivotalHost = value;
+                    } else if ("registryHost".equals(key)) {
+                        registryHost = value;
                     } else {
                         System.err.println("Unknown key value argument " + keyValueArg);
                     }
@@ -403,16 +416,16 @@ public class RemoteRepositoryInit {
         }
         String deploiementSubprojectId = (String) deploiementSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
         
-        SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://localhost:7080/apv/services/PrecomptePartenaireService");//TODO host
+        SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService");//TODO host
         SoaNodeId checkAddressProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:" + fromEnc("iuuq;00xxx/ebub.rvbmjuz.tfswjdf/dpn0npdlxtr5220tfswjdft0JoufsobujpobmQptubmWbmjebujpo/JoufsobujpobmQptubmWbmjebujpoIuuqTpbq22Foeqpjou0"));//checkAddressProdEndpoint
-        SoaNodeId informationAPVProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://localhost:7080/pivotal/WS/ContactSvc.asmx");//TODO host // 18000
+        SoaNodeId informationAPVProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getPivotalHost() + ":7080/WS/ContactSvc.asmx");//TODO host // 18000
 
 		// manually : do a web discovery
 		// TODO web discovery : upload wsdl
 		    
         String tdrWebServiceProdEndpointPath = createSoaNode(tdrWebServiceProdEndpointId, (String) null,
                 Endpoint.XPATH_ENDP_ENVIRONMENT + "=Prod", // required even with soaname else integrity check fails
-                Endpoint.XPATH_URL + "=http://localhost:7080/apv/services/PrecomptePartenaireService"/*, // required even with soaname else integrity check fails
+                Endpoint.XPATH_URL + "=http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService"/*, // required even with soaname else integrity check fails
                 Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService"*/);
         uploadWsdl(tdrWebServiceProdEndpointPath, "../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
             // or do a web discovery
@@ -428,7 +441,7 @@ public class RemoteRepositoryInit {
 
         String informationAPVProdEndpointPath = createSoaNode(informationAPVProdEndpointId, (String) null,
                 Endpoint.XPATH_ENDP_ENVIRONMENT + "=Prod", // required even with soaname else integrity check fails
-                Endpoint.XPATH_URL + "=http://localhost:7080/pivotal/WS/ContactSvc.asmx"/*, // required even with soaname else integrity check fails
+                Endpoint.XPATH_URL + "=http://" + getPivotalHost() + ":7080/WS/ContactSvc.asmx"/*, // required even with soaname else integrity check fails
                 Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://ipf.webservice.rt.saas.uniserv.com}InternationalPostalValidationPortType"*/);
         uploadWsdl(informationAPVProdEndpointPath, "../axxx-dcv-pivotal/src/main/resources/api/ContactSvc.asmx.wsdl");
             // or do a web discovery
@@ -457,7 +470,7 @@ public class RemoteRepositoryInit {
 	        createSoaNode(olaTdrWebServiceId);
 	        
 	        // copied from Deploiement
-	        SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://localhost:7080/apv/services/PrecomptePartenaireService");//TODO host
+	        SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService");//TODO host
 	        String tdrWebServiceProdEndpointPath = createSoaNode(tdrWebServiceProdEndpointId);
 	        
 	        SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();
@@ -476,8 +489,27 @@ public class RemoteRepositoryInit {
 		}
 	}
 
-	
-	
+    private static String getApvHost() {
+        if (apvHost == null) {
+            return "localhost";
+        }
+        return apvHost;
+    }
+
+    private static String getPivotalHost() {
+        if (pivotalHost == null) {
+            return "localhost";
+        }
+        return pivotalHost;
+    }
+
+    private static String getRegistryHost() {
+        if (registryHost == null) {
+            return "localhost";
+        }
+        return registryHost;
+    }    
+    
     private static Document getExistingVersionedElseLiveSubprojectId(String subprojectPath) throws Exception {
         Document deploiementSubprojectDoc = getSubproject(subprojectPath + "_v0.1"); // trying to use versioned one
         if (deploiementSubprojectDoc != null) {

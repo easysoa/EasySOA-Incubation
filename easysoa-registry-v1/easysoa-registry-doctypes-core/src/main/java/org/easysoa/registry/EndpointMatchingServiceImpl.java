@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.apache.log4j.Logger;
+import org.easysoa.registry.facets.ServiceImplementationDataFacet;
 import org.easysoa.registry.matching.MatchingHelper;
 import org.easysoa.registry.matching.MatchingQuery;
 import org.easysoa.registry.types.Deliverable;
@@ -72,7 +73,10 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     	// Match platform properties :
     	
     	// 1. IF A LINKED PLATFORM HAS BEEN PROVIDED FOR THE ENDPOINT BY THE PROBE EX. WEB DISCO
-    	if (!skipPlatformMatching && endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM) != null) {
+    	if (!skipPlatformMatching) {
+    	    if (endpoint.hasFacet(Endpoint.SCHEMA_ENDPOINT)
+    	            && endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM) != null) {
+    	        
     		DocumentModel platformDocument = documentManager.getDocument(
     				new IdRef((String) endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM)));
     		
@@ -85,12 +89,13 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 			// TODO rather match platform ID (if any) than criteria
 	    	//query.addConstraintMatchCriteriaWithAltIfSet("iserv:linkedPlatform", "impl:platform",
 	    	//		endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM));
-    	}
+
+            }
     	
     	// TODO ELSE MATCH DISCOVERED PLATFORM CRITERIA OF THE ENDPOINT
     	// AGAINST THE IMPL'S SERVICE'S PLATFORM IF ANY ELSE AGAINST THE IMPL'S DISCOVERED PLATFORM CRITERIA
     	// TODO make it possible in disco (?) & model (yes)
-    	else if (!skipPlatformMatching) {
+    	    else if (endpoint.hasFacet(ServiceImplementationDataFacet.FACET_SERVICEIMPLEMENTATIONDATA)) {
     	    // TODO rather match platform only if known as "actual" (or linked platform provided ??), rather than ...IfSet
 	    	query.addConstraintMatchCriteriaWithAltIfSet(Platform.XPATH_IDE,
 	    			ServiceImplementation.XPATH_IMPL_IDE,
@@ -108,6 +113,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 	    			Deliverable.XPATH_REPOSITORY_URL,
 	    			endpoint.getPropertyValue(Deliverable.XPATH_REPOSITORY_URL)); // TODO Q rather Endpoint.xx ?!?
     		
+	    	if (endpoint.hasFacet(Endpoint.SCHEMA_ENDPOINT)) {
     		// endpoint platform criteria : match those provided on the endpoint against required platform
     		String endpointServiceProtocol = (String) endpoint.getPropertyValue(Endpoint.XPATH_ENDP_SERVICE_PROTOCOL);
     		String endpointTansportProtocol = (String) endpoint.getPropertyValue(Endpoint.XPATH_ENDP_TRANSPORT_PROTOCOL);
@@ -117,7 +123,10 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 	    	query.addConstraintMatchCriteriaIfSet(Platform.XPATH_TRANSPORT_PROTOCOL, endpointTansportProtocol); // HTTP (HTTPS ?)...
 	    	query.addConstraintMatchCriteriaIfSet(Platform.XPATH_SERVICE_RUNTIME, endpointServiceRuntime); // CXF (, Axis2...)
 	    	query.addConstraintMatchCriteriaIfSet(Platform.XPATH_APP_SERVER_RUNTIME, endpointAppServerRuntime); // ApacheTomcat, Jetty...
-    	}
+    	    }
+	    	
+    	    }
+    	} // else find impl for "matchingFirst" impl (see DiscoveryService)
     	
     	// TODO IF FOUND PLATFORM LINK TO IT ?????
     	
@@ -190,7 +199,8 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
         query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint));
 
         // 1. IF A LINKED PLATFORM HAS BEEN PROVIDED FOR THE ENDPOINT BY THE PROBE EX. WEB DISCO
-    	if (endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM) != null) {
+        if (endpoint.hasFacet(Endpoint.SCHEMA_ENDPOINT)
+                && endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM) != null) {
     		DocumentModel platformDocument = documentManager.getDocument(
     				new IdRef((String) endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM)));
     		
@@ -328,7 +338,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
         // NB. don't do a documentManager.create() here, else triggers documentCreated event
         // (and from there event loop) , even though properties have not been set yet
         DocumentModel implModel = DiscoveryServiceImpl.createOrUpdate(documentManager, Framework.getService(DocumentService.class),
-                null, implId, nuxeoProperties, false);
+                null, null, implId, nuxeoProperties, false);
 		
 		// Attach placeholder impl to information service
 		try {

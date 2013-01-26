@@ -61,7 +61,8 @@ public class MatchingHelper {
     public static String appendComponentFilterToQuery(CoreSession documentManager,
             MatchingQuery query, String filterComponentId, DocumentModel soaNodeToMatch) throws ClientException {
         String filterComponentIdToUse = filterComponentId;
-        if (filterComponentId == null && soaNodeToMatch.getPropertyValue(Endpoint.XPATH_COMPONENT_ID) != null) {
+        if (filterComponentId == null && soaNodeToMatch.hasFacet(Component.FACET_ARCHITECTURECOMPONENT)
+                && soaNodeToMatch.getPropertyValue(Endpoint.XPATH_COMPONENT_ID) != null) {
             filterComponentIdToUse = (String) soaNodeToMatch.getPropertyValue(Endpoint.XPATH_COMPONENT_ID);
         }
         if (filterComponentIdToUse != null) {

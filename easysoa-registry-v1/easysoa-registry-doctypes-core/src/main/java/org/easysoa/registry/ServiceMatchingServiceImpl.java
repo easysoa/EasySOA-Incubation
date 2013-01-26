@@ -1,6 +1,7 @@
 package org.easysoa.registry;
 
 import org.apache.log4j.Logger;
+import org.easysoa.registry.facets.ServiceImplementationDataFacet;
 import org.easysoa.registry.matching.MatchingHelper;
 import org.easysoa.registry.matching.MatchingQuery;
 import org.easysoa.registry.types.Deliverable;
@@ -58,13 +59,13 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
         // Filter by subproject
         query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(impl)); // ex. "AXXXSpecifications"; // or in 2 pass & get it from subProject ??
         
+        if (impl.hasFacet(ServiceImplementationDataFacet.FACET_SERVICEIMPLEMENTATIONDATA)) {
     	String implIde = (String) impl.getPropertyValue(ServiceImplementation.XPATH_IMPL_IDE); // OPT only set by ex. FraSCatiStudio, TalendStudio, ScarboModeler
     	String implLanguage = (String) impl.getPropertyValue(ServiceImplementation.XPATH_IMPL_LANGUAGE); // "Java"; // TODO from source disco
     	String implBuild = (String) impl.getPropertyValue(ServiceImplementation.XPATH_IMPL_BUILD); // "Maven" (rather "MavenPom" ?), "Ivy" ; who builds it. TODO Q on top-level DevApp / deliverable only ?!? TODO from source disco or deduced from del:nature if possible
     	String implDeliverableNature = (String) impl.getPropertyValue(Deliverable.XPATH_NATURE); // "Maven" ; MavenArtifact ? copied from Deliverable
     	String implDeliverableRepositoryUrl = (String) impl.getPropertyValue(Deliverable.XPATH_REPOSITORY_URL); // "http://maven.nuxeo.org/nexus/content/groups/public" ; acts as id, copied from Deliverable TODO add in source disco
     	String implServiceLanguage = (String) impl.getPropertyValue(ServiceImplementation.XPATH_TECHNOLOGY); // JAXWS, JAXRS
-
     	if (!skipPlatformMatching) {
             // TODO rather match platform only if known as "actual" (or linked platform provided ??), rather than ...IfSet
 	    	query.addConstraintMatchCriteriaIfSet(Platform.XPATH_IDE, implIde);
@@ -74,23 +75,11 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 	    	query.addConstraintMatchCriteriaIfSet(Platform.XPATH_DELIVERABLE_REPOSITORY_URL, implDeliverableRepositoryUrl);
 	    	query.addConstraintMatchCriteriaIfSet(Platform.XPATH_SERVICE_LANGUAGE, implServiceLanguage);
     	}
+        } // else find IS for "matchingFirst" IS (see DiscoveryService)
     	
     	// Filter by component
-        //String matchingGuideComponentId = (String) impl.getPropertyValue(ServiceImplementation.XPATH_COMPONENT_ID); // in MatchingHelper ; TODO check existence at source disco start
         filterComponentId = MatchingHelper.appendComponentFilterToQuery(documentManager, query, filterComponentId, impl);
         anyExactCriteria = anyExactCriteria || filterComponentId != null;
-    	
-    	/*
-    			" WHERE  " +
-    			//"soan:subProjectId IN " + implReferredSubProjectIds + "' OR soan:subProjectId='" + implSubProjectId + "'" +
-    			//" AND impl:componentId='" + matchingGuideComponentId + "'" + // if any
-    			
-    			"    platform:language='" + implLanguage + "'" + // if any ; OPT multiple options (consistency handled in logic)
-            	" AND platform:build='" + implBuild + "'" + // if any
-            	" AND platform:deliverableNature='" + implDeliverableNature + "'" + // if any
-            	" AND platform:deliverableRepositoryUrl='" + implDeliverableRepositoryUrl + "'" + // if any
-    			" AND platform:serviceLanguage='" + implServiceLanguage + "'"; // if any ; OPT multiple options (consistency handled in logic)
-    	*/
     	
     	if (MatchingHelper.isWsdlInfo(impl)) { // consistency logic
             //query.addCriteria("ecm:mixinType = '" + InformationService.FACET_WSDLINFO + "'"); // not required unless added dynamically but hard to do in DiscoveryServiceImpl
@@ -162,10 +151,6 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 
         // TODO handle the case of impl-endpoint links that are now wrong i.e. SOA validation
     	
-    	/*String serviceImplQuery = NXQLQueryBuilder.getQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE + 
-    			" WHERE " + ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME + " = '?'",
-    			new Object[] { serviceModel.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME) },
-    			false, true);*/
     	String serviceImplQuery = query.build();
     	DocumentModelList foundImpls = documentService.query(documentManager, serviceImplQuery, true, false);
     	return foundImpls;

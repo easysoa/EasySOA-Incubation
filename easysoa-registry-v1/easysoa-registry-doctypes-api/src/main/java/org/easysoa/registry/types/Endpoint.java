@@ -9,6 +9,8 @@ public interface Endpoint extends SoaNode, RestInfoFacet, WsdlInfoFacet,
 		ArchitectureComponentFacet, ServiceImplementationDataFacet {
 
     static final String DOCTYPE = "Endpoint";
+
+    static final String SCHEMA_ENDPOINT = "endpoint";
     
     static final String XPATH_ENDP_ENVIRONMENT = "env:environment";
     

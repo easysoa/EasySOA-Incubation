@@ -13,6 +13,7 @@ import org.easysoa.registry.matching.MatchingQuery;
 import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
+import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
@@ -22,6 +23,7 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -48,7 +50,6 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         			+ " - " + properties + " - " + parentDocuments);
         }
 
-        // SUBPROJECT :
         // find subproject (or create default one), from SOA node id or properties :
         String subproject = identifier.getSubprojectId();
         if ((subproject == null || subproject.trim().length() == 0) && properties != null) {
@@ -61,25 +62,13 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         if (subprojectDocModel == null) {
             throw new Exception("EasySOA DiscoveryService : can't find given subproject "
                     + subproject + " (create it first), aborting discovery of " + identifier);
-            // TODO rather auto creation if not exist mode ??
         }
         
-        // complete disco'd SOA node by subproject infos
-        ///properties.put(SubprojectNode.XPATH_PARENT_SUBPROJECTS, subprojectDocModel.getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS));
-        //properties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS, subprojectDocModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS)); // TODO or recompute ??
-        /*DocumentModel tmpDocumentModel = documentManager.createDocumentModel(identifier.getType()); NOO
-        tmpDocumentModel.addFacet(SubprojectNode.FACET);
-        tmpDocumentModel.setProperties("soanode", properties); // TODO
-        tmpDocumentModel.setProperties("dublincore", properties);
-        tmpDocumentModel.setProperties("informationservice", properties);
-        tmpDocumentModel.setProperties("platform", properties);
-        tmpDocumentModel.setProperties("architecturecomponent", properties);
-        tmpDocumentModel.setProperties("wsdlinfo", properties);*/
-        // TODO compute visibleSubprojectIds, elsewhere
-        // - SUBPROJECT
-        
         // Fetch or create document
-        DocumentModel documentModel = null;
+        DocumentModel newDocumentModel = null;
+        DocumentModel foundDocumentModel = null;
+
+        Map<String, Serializable> nuxeoProperties = toNuxeoProperties(properties);
         
         // matching first mode :
         // (for nodes that the probe does't control but wants to refer to, ex. InformationService in source disco)
@@ -87,44 +76,42 @@ public class DiscoveryServiceImpl implements DiscoveryService {
                 || identifier.getName().startsWith("matchFirst:");
         if (matchFirst) { // TODO extract to API // TODO or == null ??!?? (NOO)
             // try to find an existing one that matches on at least one exact prop
-            DocumentModel matchingSoaNode = findMatching(documentManager, documentService,
-                    serviceMatchingService, endpointMatchingService, identifier, properties);
-            // FIXME merge with *MatchingService
-            /*String filterComponentId = null;
-            DocumentModelList matchingFirstResults = serviceMatchingService.findInformationServices(documentManager,
-                    tmpDocumentModel, filterComponentId, false, true);
-            DocumentModel matchingSoaNode = null;
-            if (matchingFirstResults.size() == 1) {
-                matchingSoaNode = matchingFirstResults.get(0);
-            }*/
             
-            if (matchingSoaNode != null) { // TODO documentService ?
+            // create temporary model as a support to matching :
+            newDocumentModel = documentService.newSoaNodeDocument(documentManager, identifier, nuxeoProperties);
+            SubprojectServiceImpl.copySubprojectNodeProperties(subprojectDocModel, newDocumentModel);
+            
+            // finding existing through maching :
+            DocumentModelList matchingFirstResults = null;
+            String filterComponentId = null; //TODO ??
+            if (documentService.isTypeOrSubtype(documentManager, identifier.getType(), InformationService.DOCTYPE)) {
+            matchingFirstResults = serviceMatchingService.findInformationServices(documentManager,
+                    newDocumentModel, filterComponentId, false, true);
+            } else if (documentService.isTypeOrSubtype(documentManager, identifier.getType(), ServiceImplementation.DOCTYPE)) {
+            matchingFirstResults = endpointMatchingService.findServiceImplementations(documentManager,
+                    newDocumentModel, filterComponentId, false, true);
+            }
+            
+            if (matchingFirstResults.size() == 1) {
+                DocumentModel matchingSoaNode = matchingFirstResults.get(0);
                 identifier = documentService.createSoaNodeId(matchingSoaNode);
-                documentModel = matchingSoaNode;
+                foundDocumentModel = matchingSoaNode;
             } else {
                 // removing "implicit:" prefix
                 identifier = new SoaNodeId(identifier.getSubprojectId(), identifier.getType(),
                         identifier.getName().substring(11));
             }
         }
-
-        Map<String, Serializable> nuxeoProperties = toNuxeoProperties(properties);
         
-        // SUBPROJECT :
-        // NB. about spnode props : id is provided through SoaNodeId, visible are computed on aboutToCreate
-        /*if (nuxeoProperties == null) {
-            // for subproject props
-            // TODO may trigger event loop, try better for setting subproject props:
-            // only if incomplete or change, in event listener...
-            nuxeoProperties =  new HashMap<String, Serializable>(3);
+        if (foundDocumentModel == null) {
+            // finding existing using SOA node ID :
+            foundDocumentModel = documentService.find(documentManager, identifier);
         }
-        nuxeoProperties.put(SubprojectNode.XPATH_SUBPROJECT, subprojectDocModel.getPropertyValue(Subproject.XPATH_SUBPROJECT));
-        nuxeoProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS, subprojectDocModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS)); // TODO or recompute ??
-        nuxeoProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV, subprojectDocModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV)); // TODO or recompute ??*/
-        // - SUBPROJECT
+        
+        DocumentModel documentModel = null;
         
         documentModel = createOrUpdate(documentManager, documentService,
-                documentModel, identifier, nuxeoProperties, matchFirst);
+                foundDocumentModel, newDocumentModel, identifier, nuxeoProperties, matchFirst);
         
         linkToParentDocuments(documentManager, documentService, identifier, parentDocuments);
 
@@ -134,44 +121,23 @@ public class DiscoveryServiceImpl implements DiscoveryService {
     }
 
     public static DocumentModel createOrUpdate(CoreSession documentManager, DocumentService documentService,
-            DocumentModel documentModel, SoaNodeId identifier,
+            DocumentModel foundDocumentModel, DocumentModel newDocumentModel, SoaNodeId identifier,
             Map<String, Serializable> nuxeoProperties, boolean dontOverrideProperties) throws Exception {
-        if (documentModel == null) {
-            documentModel = documentService.find(documentManager, identifier);
-        }
-        
-        // TODO subproject: new param ? prefix soaname ? map to subproject strategies ?? SubprojectDocumentService ?
-        // TODO subproject: computeVisibleSubprojects here ? in listener ?
-        boolean shouldCreate = false;
-        if (documentModel == null) {
-            shouldCreate = true;
-            documentModel = documentService.newSoaNodeDocument(documentManager, identifier, nuxeoProperties);
 
+        if (foundDocumentModel == null) {
+            if (newDocumentModel == null) {
+                newDocumentModel = documentService.newSoaNodeDocument(documentManager, identifier, nuxeoProperties);
+            }
             // only now that props are OK, create or save document
             // (required below for handling parents by creating proxies to it)
-            documentModel = documentManager.createDocument(documentModel);
+            return documentManager.createDocument(newDocumentModel);
         }
         else {
+        
             SoaMetamodelService metamodelService = Framework.getService(SoaMetamodelService.class);
-            metamodelService.validateWriteRightsOnProperties(documentModel, nuxeoProperties);
+            metamodelService.validateWriteRightsOnProperties(foundDocumentModel, nuxeoProperties);
 
-            // Set properties
-            boolean changed = false;
-            if (nuxeoProperties != null) {
-                for (Entry<String, Serializable> nuxeoProperty : nuxeoProperties.entrySet()) {
-                    // FIXME Non-serializable error handling
-                    String propertyKey = nuxeoProperty.getKey();
-                    Serializable propertyValue = nuxeoProperty.getValue();
-                    Serializable docPropertyValue = documentModel.getPropertyValue(propertyKey);
-                    if (dontOverrideProperties && docPropertyValue != null
-                        // in dontOverrideProperties (ex.matchFirst mode), only set if doesn't exist yet
-                        || propertyEquals(docPropertyValue, propertyValue)) { // don't set if the same
-                        continue;
-                    }
-                    documentModel.setPropertyValue(propertyKey, propertyValue);
-                    changed = true;
-                }
-            }
+            boolean changed = setNuxeoPropertiesIfChanged(foundDocumentModel, nuxeoProperties, dontOverrideProperties);
             
             if (changed) {
                 // only now that props are OK, create or save document
@@ -180,11 +146,57 @@ public class DiscoveryServiceImpl implements DiscoveryService {
                 // don't save if properties null, else triggers event loop with matching
                 // (findAndMatchServiceImplementation, linkInformationServiceThroughPlaceholder,
                 // linkServiceImplementation, runDiscovery)
-                documentModel = documentManager.saveDocument(documentModel);
+                foundDocumentModel = documentManager.saveDocument(foundDocumentModel);
             }
+            return foundDocumentModel;
+        }
+    }
+
+    public static boolean setNuxeoPropertiesIfChanged(DocumentModel documentModel,
+            Map<String, Serializable> nuxeoProperties,
+            boolean dontOverrideProperties) throws PropertyException, ClientException {
+        if (nuxeoProperties == null) {
+            return false;
         }
         
-        return documentModel;
+        boolean changed = false;
+        for (Entry<String, Serializable> nuxeoProperty : nuxeoProperties.entrySet()) {
+            String propertyKey = nuxeoProperty.getKey();
+            Serializable propertyValue = nuxeoProperty.getValue();
+            Serializable docPropertyValue = documentModel.getPropertyValue(propertyKey);
+            if (dontOverrideProperties && docPropertyValue != null
+                // in dontOverrideProperties (ex.matchFirst mode), only set if doesn't exist yet
+                || propertyEquals(docPropertyValue, propertyValue)) { // don't set if the same
+                continue;
+            }
+            documentModel.setPropertyValue(propertyKey, propertyValue);
+            changed = true;
+        }
+        return changed;
+    }
+
+    public static boolean setPropertiesIfChanged(DocumentModel documentModel, Map<String, Object> properties,
+            boolean dontOverrideProperties) throws PropertyException, ClientException {
+        if (properties == null) {
+            return false;
+        }
+        
+        boolean changed = false;
+        for (Entry<String, Object> property : properties.entrySet()) {
+            // FIXME Non-serializable error handling
+            String propertyKey = property.getKey();
+            Object propertyValue = property.getValue();
+            Serializable docPropertyValue = documentModel.getPropertyValue(propertyKey);
+            if (dontOverrideProperties && docPropertyValue != null
+                // in dontOverrideProperties (ex.matchFirst mode), only set if doesn't exist yet
+                || propertyEquals(docPropertyValue, propertyValue)) { // don't set if the same
+                continue;
+            }
+            // FIXME Non-serializable error handling
+            documentModel.setPropertyValue(propertyKey, (Serializable) propertyValue);
+            changed = true;
+        }
+        return changed;
     }
 
     /**
@@ -195,7 +207,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
      * @param propertyValue
      * @return
      */
-    private static boolean propertyEquals(Serializable docPropertyValue, Serializable propertyValue) {
+    private static boolean propertyEquals(Serializable docPropertyValue, Object propertyValue) {
         if (docPropertyValue == null && propertyValue == null) {
             return true;
         }
@@ -332,12 +344,13 @@ public class DiscoveryServiceImpl implements DiscoveryService {
      * @param endpointMatchingService
      * @param identifier
      * @param properties
+     * @param subprojectDocModel 
      * @return
      * @throws ClientException
      */
     private DocumentModel findMatching(CoreSession documentManager, DocumentService documentService,
             ServiceMatchingService serviceMatchingService, EndpointMatchingService endpointMatchingService,
-            SoaNodeId identifier, Map<String, Object> properties) throws ClientException {
+            SoaNodeId identifier, Map<String, Object> properties, DocumentModel subprojectDocModel) throws ClientException {
         boolean anyExactCriteria = false;
         MatchingQuery query = null;
         
@@ -362,22 +375,8 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         if (query == null) {
             return null;
         }
-
-        // SUBPROJECT :        
-        // implReferredSubProjectIds = "AXXXSpecifications"; // or in 2 pass & get it from subProject ?? 
-        //String implSubProjectId = "AXXXRealisation";
-        String implVisibleSubprojectIds = (String) properties.get(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV); // "AXXXSpecifications"; // or in 2 pass & get it from subProject ?? 
-        //String implSubProjectId = // "AXXXRealisation";
-
         // Filter by subproject
-        if (properties.get(SubprojectNode.XPATH_SUBPROJECT) != null) { // TODO remove ; only to allow still to work as usual
-            if (implVisibleSubprojectIds == null) {
-                throw new ClientException("visibleSubprojects should not be null on " + identifier
-                        + " " + properties);
-            }
-            query.addCriteria(SubprojectNode.XPATH_SUBPROJECT + " IN (" + implVisibleSubprojectIds + ")");
-        }
-        // - SUBPROJECT
+        query.addCriteria(SubprojectServiceImpl.buildCriteriaSeesSubproject(subprojectDocModel)); // NB. multivalued prop
 
         // Filter by component
         // TODO component also as parent ?!?!??

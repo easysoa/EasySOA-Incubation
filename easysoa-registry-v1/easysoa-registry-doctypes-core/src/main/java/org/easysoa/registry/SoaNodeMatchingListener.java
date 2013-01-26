@@ -37,6 +37,12 @@ public class SoaNodeMatchingListener implements EventListener {
         DocumentModel sourceDocument = documentContext.getSourceDocument();
         CoreSession documentManager = documentContext.getCoreSession();
         
+        if (sourceDocument.isVersion()) {
+            // ex. "documentCreated" because new version created :
+            // can't match better above now, not seen by more below until updateToVersion() 
+            return;
+        }
+        
         // TODO check isSoaNode() ??
         
         DocumentModel previousDocumentModel = (DocumentModel) documentContext.getProperty("previousDocumentModel");

@@ -41,7 +41,7 @@ public class RepositoryManagementListener implements EventListener {
         }
         DocumentEventContext documentContext = (DocumentEventContext) context;
         DocumentModel sourceDocument = documentContext.getSourceDocument();
-        if (sourceDocument.isVersion()) {
+        if (/*!sourceDocument.isCheckedOut() || */sourceDocument.isVersion()) {
             return; // nothing can be done on it since it is a version, internal proxies
             // are handled by tree snapshot itself (TODO nuxeo ID properties), and
             // outside references to it can only change through explicit action (updateToVersion)

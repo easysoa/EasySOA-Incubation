@@ -47,6 +47,11 @@ public class SubprojectNodeListener implements EventListener {
         
         //match(documentManager, sourceDocument);
         
+        if (sourceDocument.isProxy()) {
+            logger.warn("SubprojectNodeListener avoiding proxy " + sourceDocument);
+            return;
+        }
+        
         if (sourceDocument.hasSchema(Subproject.SCHEMA)) {
             // TODO NOO needs to be created first to get id
             if (DocumentEventTypes.ABOUT_TO_CREATE.equals(event.getName())) {

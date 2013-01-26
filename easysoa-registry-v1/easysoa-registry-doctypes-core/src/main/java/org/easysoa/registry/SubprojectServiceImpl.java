@@ -420,20 +420,27 @@ public class SubprojectServiceImpl {
     public static String buildCriteriaSeenFromSubproject(DocumentModel subprojectNode)
             throws PropertyException, ClientException {
         // Filter by subproject
-        String implVisibleSubprojectIds = (String) subprojectNode
-                .getPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV);
-        ///if (impl.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT) != null) { // TODO remove ; only to allow still to work as usual
-            if (implVisibleSubprojectIds == null) {
-                throw new ClientException("visibleSubprojects should not be null on " + subprojectNode);
-            }
-        ///}
+        String implVisibleSubprojectIds = null;
+        if (subprojectNode.hasFacet(SubprojectNode.FACET)) {
+            implVisibleSubprojectIds = (String) subprojectNode
+                    .getPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV);
+        }
+        if (implVisibleSubprojectIds == null) {
+            throw new ClientException("visibleSubprojects should not be null on " + subprojectNode);
+        }
         // ex. "AXXXSpecifications"; // or in 2 pass & get it from subProject ??
         return SubprojectNode.XPATH_SUBPROJECT + " IN (" + implVisibleSubprojectIds + ")";
     }
 
     public static String buildCriteriaSeesSubproject(DocumentModel subprojectNode)
             throws PropertyException, ClientException {
-        String subprojectId = (String) subprojectNode.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+        String subprojectId = null;
+        if (subprojectNode.hasFacet(SubprojectNode.FACET)) {
+            subprojectId = (String) subprojectNode.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+        }
+        if (subprojectId == null) {
+            throw new ClientException("subproject should not be null on " + subprojectNode);
+        }
         ///DocumentModel subproject = getSubprojectOfNode(subprojectNode);
         ///return SubprojectNode.XPATH_VISIBLE_SUBPROJECTS + "='" + subproject.getId() + "'"; // NB. multivalued prop
         return SubprojectNode.XPATH_VISIBLE_SUBPROJECTS + "='" + subprojectId + "'"; // NB. multivalued prop
@@ -521,6 +528,10 @@ public class SubprojectServiceImpl {
         DocumentModelIterator childrenIt = subproject.getCoreSession().getChildrenIterator(subproject.getRef());
         while (childrenIt.hasNext()) {
             DocumentModel child = childrenIt.next();
+            if (child.isProxy()) {
+                logger.warn("   copySubprojectNodePropertiesOnChildrenRecursive avoiding proxy " + child);
+                continue;
+            }
             copySubprojectNodeProperties(subproject, child);
             child.getCoreSession().saveDocument(child); // else not persisted
             copySubprojectNodePropertiesOnChildrenRecursive(child);

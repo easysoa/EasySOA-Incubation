@@ -48,7 +48,7 @@ public class SubprojectNodeListener implements EventListener {
         //match(documentManager, sourceDocument);
         
         if (sourceDocument.isProxy()) {
-            logger.warn("SubprojectNodeListener avoiding proxy " + sourceDocument);
+            logger.debug("SubprojectNodeListener : skipping because proxy " + sourceDocument);
             return;
         }
         

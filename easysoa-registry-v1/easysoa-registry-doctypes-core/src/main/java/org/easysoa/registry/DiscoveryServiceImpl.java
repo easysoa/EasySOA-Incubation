@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.log4j.Logger;
 import org.easysoa.registry.facets.WsdlInfoFacet;
 import org.easysoa.registry.matching.MatchingQuery;
 import org.easysoa.registry.types.Component;
@@ -37,6 +38,8 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class DiscoveryServiceImpl implements DiscoveryService {
+
+    private static Logger logger = Logger.getLogger(DiscoveryServiceImpl.class);
 
     public DocumentModel runDiscovery(CoreSession documentManager, SoaNodeId identifier,
             Map<String, Object> properties, List<SoaNodeId> parentDocuments) throws Exception {
@@ -139,7 +142,8 @@ public class DiscoveryServiceImpl implements DiscoveryService {
 
             boolean changed = setNuxeoPropertiesIfChanged(foundDocumentModel, nuxeoProperties, dontOverrideProperties);
             
-            if (changed) {
+            if (changed) { // TODO or isDirty ?!
+                if (!foundDocumentModel.isDirty()) logger.error("DiscoveryServiceImpl : SAVING CHANGED BUT NOT DIRTY " + foundDocumentModel);
                 // only now that props are OK, create or save document
                 // (required below for handling parents by creating proxies to it)
                 
@@ -163,14 +167,8 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         for (Entry<String, Serializable> nuxeoProperty : nuxeoProperties.entrySet()) {
             String propertyKey = nuxeoProperty.getKey();
             Serializable propertyValue = nuxeoProperty.getValue();
-            Serializable docPropertyValue = documentModel.getPropertyValue(propertyKey);
-            if (dontOverrideProperties && docPropertyValue != null
-                // in dontOverrideProperties (ex.matchFirst mode), only set if doesn't exist yet
-                || propertyEquals(docPropertyValue, propertyValue)) { // don't set if the same
-                continue;
-            }
-            documentModel.setPropertyValue(propertyKey, propertyValue);
-            changed = true;
+            changed = setPropertyIfChanged(documentModel, propertyKey,
+                    (Serializable) propertyValue, dontOverrideProperties) || changed; // TODO or isDirty ?!
         }
         return changed;
     }
@@ -183,20 +181,26 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         
         boolean changed = false;
         for (Entry<String, Object> property : properties.entrySet()) {
-            // FIXME Non-serializable error handling
             String propertyKey = property.getKey();
             Object propertyValue = property.getValue();
-            Serializable docPropertyValue = documentModel.getPropertyValue(propertyKey);
-            if (dontOverrideProperties && docPropertyValue != null
-                // in dontOverrideProperties (ex.matchFirst mode), only set if doesn't exist yet
-                || propertyEquals(docPropertyValue, propertyValue)) { // don't set if the same
-                continue;
-            }
             // FIXME Non-serializable error handling
-            documentModel.setPropertyValue(propertyKey, (Serializable) propertyValue);
-            changed = true;
+            changed = setPropertyIfChanged(documentModel, propertyKey,
+                    (Serializable) propertyValue, dontOverrideProperties) || changed; // TODO or isDirty ?!
         }
         return changed;
+    }
+
+    private static boolean setPropertyIfChanged(DocumentModel documentModel,
+            String propertyKey, Serializable propertyValue, boolean dontOverrideProperties)
+                    throws PropertyException, ClientException {
+        Serializable docPropertyValue = documentModel.getPropertyValue(propertyKey);
+        if (dontOverrideProperties && docPropertyValue != null
+            // in dontOverrideProperties (ex.matchFirst mode), only set if doesn't exist yet
+            || propertyEquals(docPropertyValue, propertyValue)) { // don't set if the same
+            return false;
+        }
+        documentModel.setPropertyValue(propertyKey, (Serializable) propertyValue);
+        return true;
     }
 
     /**

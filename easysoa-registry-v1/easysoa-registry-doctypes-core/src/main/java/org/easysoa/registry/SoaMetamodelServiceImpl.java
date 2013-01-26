@@ -143,18 +143,23 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 						for (DocumentModel modelToWriteOn : modelsToWriteOn) {
 						    if (!modelToWriteOn.isCheckedOut()) {
 						        // ex. on proxy when tree snapshotting ; can't & don't update it 
+						        logger.warn("SoaMetamodelService : skipping because trying to copy inherited facets to checked out (maybe proxy when tree snapshotting) " + modelToWriteOn);
 						        continue;
 						    }
 							CompositeType facetToCopy = schemaManager.getFacet(facet);
 							boolean changed = false;
 							for (String schemaToCopy : facetToCopy.getSchemaNames()) {
+							    // only copy property if it is different
 							    changed = DiscoveryServiceImpl.setPropertiesIfChanged(modelToWriteOn,
-							            model.getProperties(schemaToCopy), true) || changed;
+							            model.getProperties(schemaToCopy), false) || changed;
 								//modelToWriteOn.setProperties(schemaToCopy,
 								//		model.getProperties(schemaToCopy));
 								//documentManager.saveDocument(modelToWriteOn);
 							}
-                            documentManager.saveDocument(modelToWriteOn);
+							if (changed) { // TODO or isDirty ?!
+							    if (!modelToWriteOn.isDirty()) logger.error("SoaMetamodelServiceImpl : SAVING CHANGED BUT NOT DIRTY " + modelToWriteOn);
+							    documentManager.saveDocument(modelToWriteOn);
+							}
 						}
 					}
 				}

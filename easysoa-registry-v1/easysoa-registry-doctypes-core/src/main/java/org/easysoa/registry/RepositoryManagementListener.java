@@ -41,16 +41,19 @@ public class RepositoryManagementListener implements EventListener {
         }
         DocumentEventContext documentContext = (DocumentEventContext) context;
         DocumentModel sourceDocument = documentContext.getSourceDocument();
+        if (!sourceDocument.hasSchema(SoaNode.SCHEMA)) {
+            return; // nothing to do on non SOA nodes
+        }
+
         if (/*!sourceDocument.isCheckedOut() || */sourceDocument.isVersion()) {
+            logger.warn("RepositoryManagementListener : skipping because isVersion, maybe isCheckedOut " + sourceDocument.isCheckedOut() + " " + sourceDocument);
             return; // nothing can be done on it since it is a version, internal proxies
             // are handled by tree snapshot itself (TODO nuxeo ID properties), and
             // outside references to it can only change through explicit action (updateToVersion)
         }
-        if (!sourceDocument.hasSchema(SoaNode.SCHEMA)) {
-            return; // nothing to do on non SOA nodes
-        }
         
         if (SubprojectServiceImpl.isBeingVersionedSubprojectNodeEvent(event, sourceDocument)) {
+            logger.warn("RepositoryManagementListener : skipping because isBeingVersionedSubprojectNodeEvent" + sourceDocument);
             return; // this document is currently being tree snapshotted, do nothing here
         }
         
@@ -152,6 +155,7 @@ public class RepositoryManagementListener implements EventListener {
 		    				metamodelService.applyFacetInheritance(documentManager, sourceDocument, false);
 					    	if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())
 					    			|| DocumentEventTypes.DOCUMENT_MOVED.equals(event.getName())) {
+					    	    // NB. only actually saves if a property has been set (only if it has changed) // TODO (isDirty) ??
 			    				documentManager.saveDocument(sourceDocument);
 					    	}
 		    			}

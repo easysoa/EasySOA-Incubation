@@ -8,6 +8,89 @@
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
     
+    <!-- Layout for subproject schema -->
+    <layout name="subproject">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>subproject_parentSubprojects</widget>
+        </row>
+      </rows>
+      <!-- widget name="subproject_parentSubprojects" type="template">
+         <labels>
+           <label mode="any">label.easysoa.layout.subproject.parentSubprojects</label>
+         </labels>
+         <translated>true</translated>
+         <fields>
+           <field>subproject:parentSubprojects</field>
+         </fields>
+         <properties widgetMode="any">
+           <property name="template">/widgets/list_widget_template.xhtml</property>
+           <property name="listTemplateItem">/widgets/document_id_link_template.xhtml</property>
+         </properties>
+      </widget -->
+      <widget name="subproject_parentSubprojects" type="list">
+         <labels>
+           <label mode="any">label.easysoa.layout.subproject.parentSubprojects</label>
+         </labels>
+         <translated>true</translated>
+         <fields>
+           <field>subproject:parentSubprojects</field>
+         </fields>
+         <subWidgets>
+	       <widget name="informationservice_linkedBusinessService" type="template">
+	         <labels>
+	           <label mode="any"></label><!-- label.easysoa.layout.subproject.parentSubproject -->
+	         </labels>
+	         <!-- translated>true</translated -->
+	         <fields>
+	           <field></field>
+	         </fields>
+	         <properties widgetMode="view">
+ 	           <property name="template">/widgets/document_id_link_template.xhtml</property>
+ 	         </properties>
+ 	       </widget>
+         </subWidgets>
+         <!-- properties widgetMode="any">
+           <- property name="directory">subject</property ->
+           <- propertyList name="list">
+             <value>fooListItem</value>
+             <value>barListItem</value>
+           </propertyList ->
+           <property name="listTemplateItem">/widgets/document_id_link_template.xhtml</property>
+         </properties -->
+      </widget>
+      
+    </layout>
+    
+    <!-- Layout for subproject-node schema -->
+    <layout name="subprojectnode">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>spnode_subproject</widget>
+        </row>
+      </rows>
+      <widget name="spnode_subproject" type="text">
+         <labels>
+           <label mode="any">label.easysoa.layout.spnode.subproject</label>
+         </labels>
+         <translated>true</translated>
+         <fields>
+           <field>spnode:subproject</field>
+         </fields>
+         <widgetModes>
+          <mode value="create">hidden</mode>
+          <mode value="edit">hidden</mode>
+         </widgetModes>
+      </widget>
+      
+    </layout>
+    
     <!-- Layout for soanode schema -->
     <layout name="soanode">
       <templates>
@@ -263,6 +346,39 @@
         <row>
           <widget>endpoint_url</widget>
         </row>
+        <row>
+          <widget>endpoint_serviceProtocol</widget>
+        </row>
+        <row>
+          <widget>endpoint_transportProtocol</widget>
+        </row>
+        <row>
+          <widget>endpoint_serviceRuntime</widget>
+        </row>
+        <row>
+          <widget>endpoint_appServerRuntime</widget>
+        </row>
+        <row>
+          <widget>endpoint_serviceSecurity</widget>
+        </row>
+        <row>
+          <widget>endpoint_serviceSecurityManagerUrl</widget>
+        </row>
+        <row>
+          <widget>endpoint_serviceMonitoring</widget>
+        </row>
+        <row>
+          <widget>endpoint_serviceMonitoringManagerUrl</widget>
+        </row>
+        <row>
+          <widget>endpoint_serviceMonitoringConfiguration</widget>
+        </row>
+        <row>
+          <widget>endpoint_serviceMonitoringManagerConfigurationId</widget>
+        </row>
+        <row>
+          <widget>endpoint_linkedPlatform</widget>
+        </row>
       </rows>
       <widget name="endpoint_url" type="text">
         <labels>
@@ -281,6 +397,99 @@
           <property name="styleClass">dataInputText</property>
         </properties>
       </widget>
+      <widget name="endpoint_serviceProtocol" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpoint.serviceProtocol</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>endp:serviceProtocol</field>
+        </fields>
+      </widget>
+      <widget name="endpoint_transportProtocol" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpoint.transportProtocol</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>endp:transportProtocol</field>
+        </fields>
+      </widget>
+      <widget name="endpoint_serviceRuntime" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpoint.serviceRuntime</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>endp:serviceRuntime</field>
+        </fields>
+      </widget>
+      <widget name="endpoint_appServerRuntime" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpoint.appServerRuntime</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>endp:appServerRuntime</field>
+        </fields>
+      </widget>
+      <widget name="endpoint_serviceSecurity" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpoint.serviceSecurityManagerUrl</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>endp:serviceSecurityManagerUrl</field>
+        </fields>
+      </widget>
+      <widget name="endpoint_serviceMonitoring" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpoint.serviceMonitoring</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>endp:serviceMonitoring</field>
+        </fields>
+      </widget>
+      <widget name="endpoint_serviceMonitoringManagerUrl" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpoint.serviceMonitoringManagerUrl</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>endp:serviceMonitoringManagerUrl</field>
+        </fields>
+      </widget>
+      <widget name="endpoint_serviceMonitoringConfiguration" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpoint.serviceMonitoringConfiguration</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>endp:serviceMonitoringConfiguration</field>
+        </fields>
+      </widget>
+      <widget name="endpoint_serviceMonitoringManagerConfigurationId" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpoint.serviceMonitoringManagerConfigurationId</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>endp:serviceMonitoringManagerConfigurationId</field>
+        </fields>
+      </widget>
+      <widget name="endpoint_linkedPlatform" type="template">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpoint.linkedPlatform</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>endp:linkedPlatform</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
+      </widget>
     </layout>
     
     <!-- Layout for platform schema -->
@@ -290,6 +499,9 @@
         </template>
       </templates>
       <rows>
+        <row>
+          <widget>platform_ide</widget>
+        </row>
         <row>
           <widget>platform_language</widget>
         </row>
@@ -305,7 +517,40 @@
         <row>
           <widget>platform_deliverableRepositoryUrl</widget>
         </row>
+        <row>
+          <widget>platform_serviceProtocol</widget>
+        </row>
+        <row>
+          <widget>platform_transportProtocol</widget>
+        </row>
+        <row>
+          <widget>platform_serviceRuntime</widget>
+        </row>
+        <row>
+          <widget>platform_appServerRuntime</widget>
+        </row>
+        <row>
+          <widget>platform_serviceSecurity</widget>
+        </row>
+        <row>
+          <widget>platform_serviceSecurityManagerUrl</widget>
+        </row>
+        <row>
+          <widget>platform_serviceMonitoring</widget>
+        </row>
+        <row>
+          <widget>platform_serviceMonitoringManagerUrl</widget>
+        </row>
       </rows>
+      <widget name="platform_ide" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.platform.ide</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>platform:ide</field>
+        </fields>
+      </widget>
       <widget name="platform_language" type="selectOneDirectory">
         <labels>
           <label mode="any">label.easysoa.layout.platform.language</label>
@@ -363,6 +608,78 @@
           <field>platform:deliverableRepositoryUrl</field>
         </fields>
       </widget>
+      <widget name="platform_serviceProtocol" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.platform.serviceProtocol</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>platform:serviceProtocol</field>
+        </fields>
+      </widget>
+      <widget name="platform_transportProtocol" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.platform.transportProtocol</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>platform:transportProtocol</field>
+        </fields>
+      </widget>
+      <widget name="platform_serviceRuntime" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.platform.serviceRuntime</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>platform:serviceRuntime</field>
+        </fields>
+      </widget>
+      <widget name="platform_appServerRuntime" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.platform.appServerRuntime</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>platform:appServerRuntime</field>
+        </fields>
+      </widget>
+      <widget name="platform_serviceSecurity" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.platform.serviceSecurity</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>platform:serviceSecurity</field>
+        </fields>
+      </widget>
+      <widget name="platform_serviceSecurityManagerUrl" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.platform.serviceSecurityManagerUrl</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>platform:serviceSecurityManagerUrl</field>
+        </fields>
+      </widget>
+      <widget name="platform_serviceMonitoring" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.platform.serviceMonitoring</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>platform:serviceMonitoring</field>
+        </fields>
+      </widget>
+      <widget name="platform_serviceMonitoringManagerUrl" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.platform.serviceMonitoringManagerUrl</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>platform:serviceMonitoringManagerUrl</field>
+        </fields>
+      </widget>
     </layout>
       
     <!-- Layout for serviceimpl schema -->
@@ -373,6 +690,21 @@
       <rows>
         <row>
           <widget>serviceimpl_providedInformationService</widget>
+        </row>
+        <row>
+          <widget>serviceimpl_component</widget>
+        </row>
+        <row>
+          <widget>serviceimpl_platform</widget>
+        </row>
+        <row>
+          <widget>serviceimpl_ide</widget>
+        </row>
+        <row>
+          <widget>serviceimpl_language</widget>
+        </row>
+        <row>
+          <widget>serviceimpl_build</widget>
         </row>
         <row>
           <widget>serviceimpl_technology</widget>
@@ -402,7 +734,64 @@
           <property name="template">/widgets/document_id_link_template.xhtml</property>
         </properties>
       </widget>
-      <widget name="serviceimpl_technology" type="text">
+      <widget name="serviceimpl_component" type="template">
+        <labels>
+          <label mode="any">label.easysoa.layout.serviceimpl.component</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>impl:component</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
+      </widget>
+      <widget name="serviceimpl_platform" type="template">
+        <labels>
+          <label mode="any">label.easysoa.layout.serviceimpl.platform</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>impl:platform</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
+      </widget>
+      <widget name="serviceimpl_language" type="selectOneDirectory">
+        <labels>
+          <label mode="any">label.easysoa.layout.serviceimpl.language</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>serviceimpl:language</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">platform_language</property>
+        </properties>
+      </widget>
+      <widget name="serviceimpl_ide" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.serviceimpl.ide</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>impl:ide</field>
+        </fields>
+      </widget>
+      <widget name="serviceimpl_build" type="selectOneDirectory">
+        <labels>
+          <label mode="any">label.easysoa.layout.serviceimpl.build</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>serviceimpl:build</field>
+        </fields>
+        <properties mode="any">
+          <property name="directoryName">platform_build</property>
+        </properties>
+      </widget>
+      <widget name="serviceimpl_technology" type="selectOneDirectory">
         <labels>
           <label mode="any">label.easysoa.layout.serviceimpl.technology</label>
         </labels>
@@ -410,6 +799,9 @@
         <fields>
           <field>impl:technology</field>
         </fields>
+        <properties mode="any">
+          <property name="directoryName">platform_serviceLanguage</property>
+        </properties>
       </widget>
       <widget name="serviceimpl_documentation" type="textarea">
         <labels>
@@ -478,6 +870,9 @@
         <row>
           <widget>wsdlinfo_wsdlVersion</widget>
         </row>
+        <row>
+          <widget>wsdlinfo_transport</widget>
+        </row>
       </rows>
       <widget name="wsdlinfo_wsdlPortTypeName" type="text">
         <labels>
@@ -504,6 +899,60 @@
         <translated>true</translated>
         <fields>
           <field>wsdl:wsdlVersion</field>
+        </fields>
+      </widget>
+      <widget name="wsdlinfo_transport" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.wsdlinfo.transport</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>wsdl:transport</field>
+        </fields>
+      </widget>
+    </layout>
+    
+    <!-- Layout for restinfo schema -->
+    <layout name="restinfo">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>restinfo_path</widget>
+        </row>
+        <row>
+          <widget>restinfo_accepts</widget>
+        </row>
+        <row>
+          <widget>restinfo_contentType</widget>
+        </row>
+      </rows>
+      <widget name="restinfo_path" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.restinfo.path</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rest:path</field>
+        </fields>
+      </widget>
+      <widget name="restinfo_accepts" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.restinfo.accepts</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rest:accepts</field>
+        </fields>
+      </widget>
+      <widget name="restinfo_contentType" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.restinfo.contentType</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rest:contentType</field>
         </fields>
       </widget>
     </layout>

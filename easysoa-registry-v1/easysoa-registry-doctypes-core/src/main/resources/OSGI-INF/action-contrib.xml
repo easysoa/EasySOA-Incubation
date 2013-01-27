@@ -8,10 +8,9 @@
   <!-- ======= -->
   <extension target="org.nuxeo.ecm.platform.actions.ActionService" point="filters">
   
-    <!-- Override. Enable common "New" button on workspace roots -->
-    <filter id="create">
-      <!-- original value : -->
-      <!-- rule grant="true">
+    <!-- original value : -->
+    <!-- filter id="create" append="true">
+      <rule grant="true">
         <permission>AddChildren</permission>
         <type>Root</type>
         <type>Domain</type>
@@ -21,27 +20,36 @@
         <type>Section</type>
         <type>Folder</type>
         <type>OrderedFolder</type>
-        <type>Project</type><!- suppl ->
-        <type>Subproject</type><!- suppl ->
         <condition>
           #{typeManager.getAllowedSubTypes(document.getType(),
           document).size()
           > 0}
         </condition>
-      </rule -->
+      </rule>
+    </filter -->
     
+    <filter id="create" append="true">
+      <rule grant="false">
+        <type>Repository</type>
+      </rule>
+    </filter>
+    
+    <filter id="create" append="true">
       <rule grant="true">
         <permission>AddChildren</permission>
-        <type>WorkspaceRoot</type>
+        <type>Domain</type><!-- reenabling it, see http://answers.nuxeo.com/questions/1090/how-to-create-document-into-the-default-domain -->
+        <type>WorkspaceRoot</type><!-- reenabling it -->
         <type>SystemTreeRoot</type>
         <type>Project</type><!-- suppl -->
         <type>Subproject</type><!-- suppl -->
       </rule>
+    </filter>
+    
+    <filter id="create" append="true">
       <rule grant="true">
-        <condition>#{document.hasFacet("SoaNode") and document.hasFacet("Folderish")}</condition>
-      </rule>
-      <rule grant="false">
-        <type>Repository</type>
+        <permission>AddChildren</permission>
+        <facet>SoaNode</facet>
+        <facet>Folderish</facet>
       </rule>
     </filter>
     

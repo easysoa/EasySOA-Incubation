@@ -15,6 +15,7 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
       </layouts>
       <layouts mode="listing">
         <layout>document_listing</layout>
@@ -30,11 +31,20 @@
         </contentView>
       </contentViews>
     </type>
-    <!-- type id="WorkspaceRoot" coretype="WorkspaceRoot">
-      <label>Projects</label>
+    <!-- type id="WorkspaceRoot">
+      <label>WorkspaceRoot</label>
       <icon>/icons/workspace.gif</icon>
       <bigIcon>/icons/workspace_100.png</bigIcon>
+      <category>SuperDocument</category>
+      <description>WorkspaceRoot.description</description>
+      <icon-expanded>/icons/workspace_open.gif</icon-expanded>
       <default-view>view_documents</default-view>
+      <subtypes>
+        <type>Workspace</type>
+        <type>Project</type>
+        <type>SystemTreeRoot</type>
+        <type>IntelligentSystemTreeRoot</type>
+      </subtypes>
       <layouts mode="any">
         <layout>heading</layout>
         <layout>files</layout>
@@ -45,6 +55,10 @@
         <layout>document_listing_icon_2_columns</layout>
         <layout>default_summary_layout</layout>
       </layouts>
+      <layouts mode="edit">
+        <layout>heading</layout>
+        <layout>dublincore</layout>
+      </layouts>
       <contentViews category="content">
         <contentView>document_content</contentView>
       </contentViews>
@@ -53,13 +67,8 @@
           document_trash_content
         </contentView>
       </contentViews>
-      <subtypes>
-        <type>Project</type>
-        <type>SystemTreeRoot</type>
-        <type>IntelligentSystemTreeRoot</type>
-      </subtypes>
     </type -->
-    <type id="ProjectRoot" coretype="Domain">
+    <type id="Domain" coretype="Domain"><!-- ProjectRoot -->
       <label>Domain</label>
       <icon>/icons/workspace.gif</icon>
       <bigIcon>/icons/workspace_100.png</bigIcon>
@@ -131,6 +140,8 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
+        <layout>subproject</layout>
         <layout>files</layout>
       </layouts>
       <layouts mode="listing">
@@ -161,6 +172,7 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
       </layouts>
       <layouts mode="listing">
         <layout>document_listing</layout>
@@ -186,6 +198,7 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
       </layouts>
       <layouts mode="listing">
         <layout>document_listing</layout>
@@ -211,6 +224,7 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
         <layout>soanode</layout>
         <layout>files</layout>
       </layouts>
@@ -247,6 +261,7 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
       </layouts>
       <layouts mode="listing">
         <layout>document_listing</layout>
@@ -270,6 +285,7 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
         <layout>soanode</layout>
         <layout>platform</layout>
         <layout>files</layout>
@@ -297,6 +313,7 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
         <layout>soanode</layout>
         <layout>files</layout>
       </layouts>
@@ -324,9 +341,11 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
         <layout>soanode</layout>
         <layout>informationservice</layout>
         <layout>wsdlinfo</layout>
+        <layout>restinfo</layout>
         <layout>files</layout>
       </layouts>
       <layouts mode="listing">
@@ -352,6 +371,7 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
         <layout>soanode</layout>
         <layout>soaversion</layout>
         <layout>deliverable</layout>
@@ -383,9 +403,11 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
         <layout>soanode</layout>
         <layout>serviceimpl</layout>
         <layout>wsdlinfo</layout>
+        <layout>restinfo</layout>
         <layout>files</layout>
       </layouts>
       <layouts mode="listing">
@@ -412,6 +434,7 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
         <layout>soanode</layout>
         <layout>files</layout>
       </layouts>
@@ -441,6 +464,7 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
         <layout>soanode</layout>
         <layout>environment</layout>
         <layout>files</layout>
@@ -469,9 +493,11 @@
       <default-view>view_documents</default-view>
       <layouts mode="any">
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
         <layout>soanode</layout>
         <layout>endpoint</layout>
         <layout>wsdlinfo</layout>
+        <layout>restinfo</layout>
         <layout>environment</layout>
         <layout>file</layout><!-- TODO to allow upload using CMIS in JWT export -->
         <layout>files</layout>

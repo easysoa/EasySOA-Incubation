@@ -90,15 +90,18 @@ public class RemoteRepositoryInit {
     private static String registryHost = null;
 
 	public static final void main(String[] args) throws Exception {
-            String username = "Administrator";
-            String password = "Administrator";
-            HashSet<String> steps = new HashSet<String>(args.length);
+	    String url = "http://localhost:8080/nuxeo/site";
+        String username = "Administrator";
+        String password = "Administrator";
+        HashSet<String> steps = new HashSet<String>(args.length);
 	    for (String arg : Arrays.asList(args)) {
 	        String[] keyValueArg = arg.split("=");
                 if (keyValueArg.length > 1) {
                     String key = keyValueArg[0];
                     String value = keyValueArg[1];
-                    if ("username".equals(key)) {
+                    if ("url".equals(key)) {
+                        url = value;
+                    } else if ("username".equals(key)) {
                         username = value;
                     } else if ("password".equals(key)) {
                         password = value;
@@ -116,7 +119,7 @@ public class RemoteRepositoryInit {
                 }
 	    }
 	    
-		initClients(username, password);
+		initClients(url, username, password);
 
         //String rootName = "Projets collaboratifs";
         String projectName = "Intégration DPS - DCV";
@@ -508,7 +511,7 @@ public class RemoteRepositoryInit {
             return "localhost";
         }
         return registryHost;
-    }    
+    }
     
     private static Document getExistingVersionedElseLiveSubprojectId(String subprojectPath) throws Exception {
         Document deploiementSubprojectDoc = getSubproject(subprojectPath + "_v0.1"); // trying to use versioned one
@@ -668,16 +671,16 @@ public class RemoteRepositoryInit {
 		}
 	}
 	
-	public static void initClients(String username, String password) {
+	public static void initClients(String url, String username, String password) {
                 System.out.println("Logging in " + username + "/" + password);
 		ClientBuilder clientBuilder = new ClientBuilder();
-                clientBuilder.setCredentials(username, password);
+        clientBuilder.setNuxeoSitesUrl(url);
+        clientBuilder.setCredentials(username, password);
 		registryApi = clientBuilder.constructRegistryApi();
         simpleRegistryService = clientBuilder.constructSimpleRegistryService();
 		endpointStateService = clientBuilder.constructEndpointStateService();
 		
-		HttpAutomationClient client = new HttpAutomationClient(
-		           "http://localhost:8080/nuxeo/site/automation");
+		HttpAutomationClient client = new HttpAutomationClient(url + "/automation");
 		session = client.getSession(username, password);
 	}
 	

@@ -38,12 +38,12 @@
       </template>
     </factoryBinding>
 
-    <!-- SUBPROJECT TODO remove -->
-    <!-- factoryBinding name="WorkspaceRootFactory" factoryName="SimpleTemplateFactory" targetType="WorkspaceRoot">
+    <factoryBinding name="DomainFactory" factoryName="SimpleTemplateFactory" targetType="Subproject">
       <template>
-        <templateItem typeName="SystemTreeRoot" id="mysoa" title="My SOA documents" description="Default SOA document tree"/>
+        <templateItem typeName="SystemTreeRoot" id="workspaces" title="My SOA documents" description="Default SOA document tree"/>
+        <templateItem typeName="Repository" id="repository" title="Repository" description="SOA Repository tree"/>
       </template>
-    </factoryBinding -->
+    </factoryBinding>
 
   </extension>
 

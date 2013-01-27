@@ -79,7 +79,7 @@ public class RegistryApiImpl implements RegistryApi {
             if (subprojectId == null || subprojectId.length() == 0) {
                 subprojectPathCriteria = "";
             } else {
-                subprojectPathCriteria = " AND " + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
+                subprojectPathCriteria = DocumentService.NXQL_AND + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
             }
         	
             DocumentModelList modelList = docService.query(documentManager, query
@@ -124,7 +124,7 @@ public class RegistryApiImpl implements RegistryApi {
         if (subprojectId == null || subprojectId.length() == 0) {
             subprojectPathCriteria = "";
         } else {
-            subprojectPathCriteria = " " + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
+            subprojectPathCriteria = DocumentService.NXQL_AND + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
         }
 
         // Fetch SoaNode list

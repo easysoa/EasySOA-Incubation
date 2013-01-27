@@ -34,7 +34,8 @@ public abstract class AbstractWebEngineTest {
     
     protected boolean logRepositoryAfterEachTest = false;
     
-    protected static String defaultSubprojectId; // static because initialized once (if any)
+    protected static String defaultSubprojectId = "/default-domain"
+            + "/MyProject" + "/Realisation" + "_v"; // static because initialized once (if any)
 
     @Rule
     public TestName name = new TestName();

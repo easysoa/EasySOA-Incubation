@@ -233,7 +233,9 @@
       <dependency>
         <groupId>org.nuxeo.features</groupId>
         <artifactId>nuxeo-tree-snapshot</artifactId>
-        <version>${nuxeo.version}</version>
+        <!-- version>${nuxeo.version}</version -->
+        <!-- version>5.7-SNAPSHOT</version -->
+        <version>5.7.easysoa</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>

@@ -34,11 +34,11 @@ public interface RegistryApi {
     SoaNodeInformation[] get(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId, @PathParam("doctype") String doctype) throws Exception;
 
     @GET
-    @Path("{doctype}/{name}")
+    @Path("{doctype}/{name:.+}")
     SoaNodeInformation get(@QueryParam("subproject") String subprojectId, @PathParam("doctype") String doctype, @PathParam("name") String name) throws Exception;
 
     @DELETE
-    @Path("{doctype}/{name}")
+    @Path("{doctype}/{name:.+}")
     OperationResult delete(@QueryParam("subproject") String subprojectId, @PathParam("doctype") String doctype, @PathParam("name") String name) throws Exception;
 
     @DELETE

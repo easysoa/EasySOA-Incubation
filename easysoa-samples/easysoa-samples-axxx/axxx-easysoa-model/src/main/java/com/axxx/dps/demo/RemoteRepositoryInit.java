@@ -30,6 +30,8 @@ import org.nuxeo.ecm.automation.client.model.Document;
 import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
 
+import com.sun.jersey.api.client.UniformInterfaceException;
+
 
 /**
  * Inits a (remote) EasySOA registry with the SOA model of the AXXX use case.
@@ -475,20 +477,29 @@ public class RemoteRepositoryInit {
 	        // copied from Deploiement
 	        SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService");//TODO host
 	        String tdrWebServiceProdEndpointPath = createSoaNode(tdrWebServiceProdEndpointId);
+	        //String tdrWebServiceProdEndpointNuxeoId = getIdRef(tdrWebServiceProdEndpointId); // alt, does not work in jasmine
+	        String tdrWebServiceProdEndpointNuxeoId = registryApi.get(tdrWebServiceProdEndpointId.getSubprojectId(),
+	                tdrWebServiceProdEndpointId.getType(), tdrWebServiceProdEndpointId.getName()).getUuid();
 	        
 	        SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();
 	        slaOrOlaIndicators.setSlaOrOlaIndicatorList(new ArrayList<SlaOrOlaIndicator>());
 	        SlaOrOlaIndicator slaOrOlaIndicator = new SlaOrOlaIndicator();
-	        slaOrOlaIndicator.setEndpointId(getIdRef(tdrWebServiceProdEndpointId));
+	        slaOrOlaIndicator.setEndpointId(tdrWebServiceProdEndpointNuxeoId);
 	        slaOrOlaIndicator.setSlaOrOlaName(olaTdrWebServiceId.getName());
 	        slaOrOlaIndicator.setTimestamp(new Date());
 	        slaOrOlaIndicator.setServiceLevelHealth(ServiceLevelHealth.gold);
 	        slaOrOlaIndicator.setServiceLevelViolation(false);
             slaOrOlaIndicators.getSlaOrOlaIndicatorList().add(slaOrOlaIndicator);
-            endpointStateService.createSlaOlaIndicators(slaOrOlaIndicators);
-            // TODO still pb :
-            // Exception in thread "main" com.sun.jersey.api.client.UniformInterfaceException: POST http://localhost:8080/nuxeo/site/easysoa/endpointStateService/slaOlaIndicators returned a response status of 204 No Content
-            // for now, rather use the other Jersey client like in EndpointStateServiceImpl
+            try {
+                endpointStateService.createSlaOlaIndicators(slaOrOlaIndicators);
+                // TODO still pb :
+                // Exception in thread "main" com.sun.jersey.api.client.UniformInterfaceException: POST http://localhost:8080/nuxeo/site/easysoa/endpointStateService/slaOlaIndicators returned a response status of 204 No Content
+                // for now, rather use the other Jersey client like in EndpointStateServiceImpl
+            } catch  (UniformInterfaceException uiex) {
+                if (!uiex.getMessage().contains("returned a response status of 204 No Content")) {
+                    throw uiex; // TODO catch & log
+                } // else expected error because of void return
+            }
 		}
 	}
 
@@ -688,4 +699,8 @@ public class RemoteRepositoryInit {
         return Subproject.DEFAULT_SUBPROJECT_PATH + '/' + Repository.REPOSITORY_NAME + '/' + doctype; 
     }
 
+    public RegistryApi getRegistryApi() {
+        return registryApi;
+    }
+    
 }

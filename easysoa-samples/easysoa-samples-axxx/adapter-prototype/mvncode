@@ -1,0 +1,72 @@
+  <parent>
+    <artifactId>modules</artifactId>
+    <groupId>org.ow2.jasmine.probe</groupId>
+    <version>1.1.1-M7-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+  
+  <parent>
+    <groupId>org.ow2.jasmine</groupId>
+    <artifactId>jasmine-monitoring</artifactId>
+    <version>1.4.1-M1-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
+  </parent>
+ 
+  
+  <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-ipojo-plugin</artifactId>
+      </plugin>
+      
+      
+      <deployment id="proto.dbaccess:prototype-bd-acess:jar" xsi:type="m2:maven2-deploymentType" reloadable="false" start="true" reference="true" startlevel="1" starttransient="true">
+    <m2:groupId>proto.dbaccess</m2:groupId>
+    <m2:artifactId>prototype-bd-acess</m2:artifactId>
+    <m2:version>1.0-SNAPSHOT</m2:version>
+    <m2:type>jar</m2:type>
+  </deployment>
+  
+  
+  
+  <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <version>${maven.bundle.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-ipojo-plugin</artifactId>
+          <version>${maven.ipojo.version}</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>ipojo-bundle</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        
+        
+        
+        
+        
+        
+        DynamicImport-Package org.ow2.jasmine.event.api,\
+                      org.ow2.jasmine.event.beans,\
+                      org.ow2.jasmine.event.messages,\
+                      org.ow2.jasmine.event.component,\
+                      org.objectweb.jotm.*, \
+                      org.objectweb.transaction.jta, \
+                      org.ow2.jasmine.probe.*, \
+                      org.ow2.jasmine.rules.osgi.api,\
+                      org.ow2.carol.jndi.spi,\
+                      org.ow2.carol.jndi.intercept.spi,\
+                      org.ow2.cmi.jndi.context,\
+                      org.ow2.easybeans.rpc,\
+                      org.objectweb.joram.*,\
+                      org.mule.providers.vm.*
+        

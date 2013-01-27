@@ -1,0 +1,25 @@
+{
+"from":"2013-01-14_22:00",
+"to":"2013-01-15_10:00",
+"BusinessSLA":[
+				{"maxGold":70,
+				"maxSilver":70,
+				"maxBronze":70,
+				"goldPeriod":{"beginning":0,"end":1440},
+				"silverPeriod":{"beginning":420,"end":1320},
+				"bronzePeriod":{"beginning":600,"end":1080},
+				"provider":"owsi-vm-easysoa-axxx-pivotal.accelance.net",
+				"service":"PrecomptePartenaireService"},
+				"slaOrOlaName":"SLA Dde_Précompte"
+				
+				{"maxGold":80,
+				"maxSilver":85,
+				"maxBronze":90,
+				"goldPeriod":{"beginning":0,"end":1440},
+				"silverPeriod":{"beginning":420,"end":1320},
+				"bronzePeriod":{"beginning":600,"end":1080},
+				"provider":"owsi-vm-easysoa-axxx-pivotal.accelance.net",
+				"service":"InternatioanlPostalValidationPortType"}
+				"slaOrOlaName":"OLA check Address"
+			  ]
+}

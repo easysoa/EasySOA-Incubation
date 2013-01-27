@@ -37,7 +37,7 @@ public class AdapterServiceRestTest {
 
         // init
         exportREST.initClients("http://" + registryHost + ":8080/nuxeo/site",
-                "Administrator", "Administrator");
+                "Administrator", "s0a");
         ///String tdrWebServiceProdEndpointNuxeoId = exportREST.getIdRef(tdrWebServiceProdEndpointSoaId); // alt, does not work in jasmine
         String tdrWebServiceProdEndpointNuxeoId = exportREST.getRegistryApi().get(
                 tdrWebServiceProdEndpointSoaId.getSubprojectId(),

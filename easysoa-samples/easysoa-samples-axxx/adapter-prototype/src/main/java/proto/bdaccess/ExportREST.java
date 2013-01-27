@@ -39,9 +39,10 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 public class ExportREST {
 	
 	// todo: not resolved
-    private String url = "http://localhost:8080/nuxeo/site";
+    private String host = "owsi-vm-easysoa-axxx-registry.accelance.net";
+    private String url = "http://" + host + ":8080/nuxeo/site";
     private String username = "Administrator";
-    private String password = "Administrator";
+    private String password = "s0a";
 
     private String endpointStateServiceUrl; // = url + "/site/easysoa/endpointStateService";
     

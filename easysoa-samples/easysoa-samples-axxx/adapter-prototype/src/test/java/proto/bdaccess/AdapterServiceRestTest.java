@@ -19,10 +19,12 @@ public class AdapterServiceRestTest {
     @Test
     public void easysoaRestTest() throws Exception{
         // demo setup
-        String pivotalHost = "localhost";
-        String apvHost = "localhost";
-        //String pivotalHost = "owsi-vm-easysoa-axxx-pivotal.accelance.net";
-        //String apvHost = "owsi-vm-easysoa-axxx-pivotal.accelance.net";
+        //String pivotalHost = "localhost";
+        //String apvHost = "localhost";
+        //String registryHost = "localhost";
+        String pivotalHost = "owsi-vm-easysoa-axxx-pivotal.accelance.net";
+        String apvHost = "owsi-vm-easysoa-axxx-pivotal.accelance.net";
+        String registryHost = "owsi-vm-easysoa-axxx-registry.accelance.net";
         
         String deploiementSubprojectId = "/default-domain/Intégration DPS - DCV/Deploiement_v";
         SoaNodeId tdrWebServiceProdEndpointSoaId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + apvHost + ":7080/apv/services/PrecomptePartenaireService");//TODO host
@@ -34,7 +36,7 @@ public class AdapterServiceRestTest {
         //exportREST.setPassword("s0a"); // on VM
 
         // init
-        exportREST.initClients("http://localhost:8080/nuxeo", "Administrator", "http://localhost:8080/nuxeo");
+        exportREST.initClients("http://" + registryHost + ":8080/nuxeo", "Administrator", "http://localhost:8080/nuxeo");
         String tdrWebServiceProdEndpointId = exportREST.getIdRef(tdrWebServiceProdEndpointSoaId);
         
         // data

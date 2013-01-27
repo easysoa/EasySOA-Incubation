@@ -103,7 +103,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
                 // removing "implicit:" prefix
                 identifier = new SoaNodeId(identifier.getSubprojectId(), identifier.getType(),
                         identifier.getName().substring(11));
-            }
+            } // TOOD if > 1 don't create it else many new ones ??
         }
         
         if (foundDocumentModel == null) {

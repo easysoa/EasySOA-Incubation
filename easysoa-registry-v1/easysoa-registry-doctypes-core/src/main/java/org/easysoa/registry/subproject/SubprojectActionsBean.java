@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.types.Subproject;
+import org.easysoa.registry.types.SubprojectNode;
 import org.jboss.seam.ScopeType;
 import org.jboss.seam.annotations.Create;
 import org.jboss.seam.annotations.In;
@@ -39,7 +40,9 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
+import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.snapshot.Snapshot;
@@ -104,6 +107,17 @@ public class SubprojectActionsBean implements Serializable {
         
         DocumentModel versionedSubprojectModel = SubprojectServiceImpl
                 .createSubprojectVersion(subproject, VersioningOption.MINOR); // TODO also MAJOR
+        
+        CoreSession coreSession = subproject.getCoreSession();
+        String publishedSectionName = coreSession.getDocument(versionedSubprojectModel.getParentRef()).getName()
+                + "_" + versionedSubprojectModel.getName() + "_v" + versionedSubprojectModel.getVersionLabel();
+        DocumentModel publishedSection = coreSession.createDocumentModel("Section");
+        publishedSection.setPathInfo("/default-domain/sections", publishedSectionName);
+        publishedSection.setPropertyValue("dc:title", publishedSectionName);
+        publishedSection = coreSession.createDocument(publishedSection);
+        coreSession.save();
+        
+        coreSession.createProxy(versionedSubprojectModel.getRef(), publishedSection.getRef());
 
         outputMessage = "Successfully created new version " + versionedSubprojectModel.getVersionLabel();
 

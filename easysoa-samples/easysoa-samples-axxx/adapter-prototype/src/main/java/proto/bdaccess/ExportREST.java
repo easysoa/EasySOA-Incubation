@@ -26,6 +26,7 @@ import org.nuxeo.ecm.automation.client.model.Documents;
 import org.nuxeo.ecm.automation.client.model.FileBlob;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
@@ -38,7 +39,7 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 public class ExportREST {
 	
 	// todo: not resolved
-    private String url = "http://localhost:8080/nuxeo";
+    private String url = "http://localhost:8080/nuxeo/site";
     private String username = "Administrator";
     private String password = "Administrator";
 
@@ -63,13 +64,13 @@ public class ExportREST {
 	 */
 	public Boolean exportData(Date dateFrom, Date dateTo, String endPointId, String slaOrOlaName, String level) throws Exception {
 		
-		if (this.client == null) {
+		if (this.registryApi == null) {
 		    initClients(url, username, password);
 		    this.endpointStateServiceUrl = url + "/site/easysoa/endpointStateService";
 		}
 	     	    	    
 	    // Run update test request
-        WebResource createUpdateRequest = client.resource(endpointStateServiceUrl).path("/slaOlaIndicators");
+        ///WebResource createUpdateRequest = client.resource(endpointStateServiceUrl).path("/slaOlaIndicators");
         
         SlaOrOlaIndicators slaOrOlaIndicatorsCreate = new SlaOrOlaIndicators();
         SlaOrOlaIndicator indicatorCreate = new SlaOrOlaIndicator();
@@ -96,7 +97,15 @@ public class ExportREST {
         GregorianCalendar calendar = new GregorianCalendar(); // now
         indicatorCreate.setTimestamp(calendar.getTime());
         slaOrOlaIndicatorsCreate.getSlaOrOlaIndicatorList().add(indicatorCreate);
-        createUpdateRequest.post(slaOrOlaIndicatorsCreate);
+        
+        ///createUpdateRequest.post(slaOrOlaIndicatorsCreate);
+        try {
+            endpointStateService.createSlaOlaIndicators(slaOrOlaIndicatorsCreate);
+        } catch (UniformInterfaceException uiex) {
+            if (!uiex.getMessage().contains("returned a response status of 204 No Content")) {
+                throw uiex; // TODO catch & log
+            } // else expected error because of void return
+        }
                         
 		return true;			
 	}
@@ -109,13 +118,16 @@ public class ExportREST {
     
     
     private RegistryApi registryApi;
-    private Session session;
+    ///private Session session;
     private SimpleRegistryService simpleRegistryService;
     private EndpointStateService endpointStateService;
 
+    /*
     private ClientConfig clientConfig;
     private Client client;
+    */
 
+    /*
     public String getIdRef(SoaNodeId soaNodeId) throws Exception {
         Documents info = (Documents) session
                 .newRequest("Document.Query")
@@ -244,6 +256,7 @@ public class ExportREST {
             session.newRequest("Document.Delete").setInput(doc).execute();
         }
     }
+    */
     
     public void initClients(String url, String username, String password) {
                 System.out.println("Logging in " + username + "/" + password);
@@ -253,19 +266,25 @@ public class ExportREST {
         registryApi = clientBuilder.constructRegistryApi();
         simpleRegistryService = clientBuilder.constructSimpleRegistryService();
         endpointStateService = clientBuilder.constructEndpointStateService();
-
+        
+        /*
         this.clientConfig = new DefaultClientConfig();
         clientConfig.getSingletons().add(new JsonMessageReader());
         clientConfig.getSingletons().add(new JsonMessageWriter());
         client = Client.create(this.clientConfig);
         client.addFilter(new HTTPBasicAuthFilter(username, password));
+        */
         
-        HttpAutomationClient client = new HttpAutomationClient(url);
-        session = client.getSession(username, password);
+        ///HttpAutomationClient client = new HttpAutomationClient(url + "/automation");
+        ///session = client.getSession(username, password);
     }
     
     public static String getSourceFolderPath(String doctype) {
         return Subproject.DEFAULT_SUBPROJECT_PATH + '/' + Repository.REPOSITORY_NAME + '/' + doctype; 
+    }
+
+    public RegistryApi getRegistryApi() {
+        return registryApi;
     }
     
 }

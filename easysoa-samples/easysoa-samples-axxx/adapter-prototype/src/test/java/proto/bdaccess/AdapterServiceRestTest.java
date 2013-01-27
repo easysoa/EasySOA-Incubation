@@ -36,13 +36,18 @@ public class AdapterServiceRestTest {
         //exportREST.setPassword("s0a"); // on VM
 
         // init
-        exportREST.initClients("http://" + registryHost + ":8080/nuxeo", "Administrator", "http://localhost:8080/nuxeo");
-        String tdrWebServiceProdEndpointId = exportREST.getIdRef(tdrWebServiceProdEndpointSoaId);
+        exportREST.initClients("http://" + registryHost + ":8080/nuxeo/site",
+                "Administrator", "Administrator");
+        ///String tdrWebServiceProdEndpointNuxeoId = exportREST.getIdRef(tdrWebServiceProdEndpointSoaId); // alt, does not work in jasmine
+        String tdrWebServiceProdEndpointNuxeoId = exportREST.getRegistryApi().get(
+                tdrWebServiceProdEndpointSoaId.getSubprojectId(),
+                tdrWebServiceProdEndpointSoaId.getType(),
+                tdrWebServiceProdEndpointSoaId.getName()).getUuid();
         
         // data
         Date dateFrom = new Date(0);
         Date dateTo = new Date(); // now
-        String endPointId = tdrWebServiceProdEndpointId;
+        String endPointId = tdrWebServiceProdEndpointNuxeoId;
         String slaOrOlaName = "SLA Dde_Cré_Précompte";
         String level = "silver";
         

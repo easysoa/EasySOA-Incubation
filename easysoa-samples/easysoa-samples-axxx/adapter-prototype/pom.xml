@@ -2,17 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <!-- parent>
+  <parent>
     <groupId>org.easysoa.registry</groupId>
     <artifactId>easysoa-registry</artifactId>
     <version>1.0-SNAPSHOT</version>
     <relativePath>../../../easysoa-registry-v1</relativePath>
-  </parent -->
+  </parent>
 
   
   <groupId>proto.dbaccess</groupId>
   <artifactId>prototype-bd-acess</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <!-- version>1.0-SNAPSHOT</version -->
   <name>prototype-bd-acess</name>
   <packaging>bundle</packaging>
   <description>osgi service test</description>
@@ -24,7 +24,7 @@
   <repositories>
   
     <!-- EasySOA -->
-    <repository>
+    <!-- repository>
       <id>public</id>
       <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
       <releases>
@@ -78,10 +78,10 @@
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
-    </repository>
+    </repository -->
     
     <!-- pour jersey -->
-	<repository>
+	<!-- repository>
         <id>glassfish-repository</id>
         <name>Repository for Glassfish</name>
         <url>http://maven.glassfish.org/content/groups/glassfish</url>
@@ -92,7 +92,7 @@
 		<name>Java.net Repository for Maven</name>
 		<url>http://download.java.net/maven/2/</url>
 		<layout>default</layout>
-	</repository> 
+	</repository --> 
 
   </repositories>
   
@@ -158,6 +158,11 @@
     <easysoa.discovery.code.password>Administrator</easysoa.discovery.code.password>
     <easysoa.discovery.code.application>AXXX DPS APV</easysoa.discovery.code.application>
   </properties>
+
+  <scm>
+    <connection>scm:git:git://github.com/easysoa/EasySOA-Incubation.git</connection>
+    <url>scm:git:https://github.com/easysoa/EasySOA-Incubation.git</url>
+  </scm>
   
   
   <dependencies>
@@ -240,7 +245,7 @@
     <!-- dependency>
     	<groupId>com.sun.jersey</groupId>
     	<artifactId>jersey-client</artifactId>
-    	<version>1.11</version><- 1.8 ; easysoa : 1.11 ->
+    	<version>1.11</version>
  		<type>jar</type>
         <scope>compile</scope>
      </dependency>
@@ -248,7 +253,7 @@
     <dependency>
     	<groupId>com.sun.jersey</groupId>
     	<artifactId>jersey-server</artifactId>
-    	<version>1.11</version><- 1.8 ; easysoa : 1.11 ->
+    	<version>1.11</version>
 	</dependency>
 
     <dependency>

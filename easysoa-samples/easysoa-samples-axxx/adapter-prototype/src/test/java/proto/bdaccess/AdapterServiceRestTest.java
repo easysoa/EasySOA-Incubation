@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.easysoa.registry.types.Endpoint;
+import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Test;
 import org.ow2.jasmine.event.beans.JasmineEventEB;
@@ -19,12 +20,12 @@ public class AdapterServiceRestTest {
     @Test
     public void easysoaRestTest() throws Exception{
         // demo setup
-        //String pivotalHost = "localhost";
-        //String apvHost = "localhost";
-        //String registryHost = "localhost";
-        String pivotalHost = "owsi-vm-easysoa-axxx-pivotal.accelance.net";
-        String apvHost = "owsi-vm-easysoa-axxx-pivotal.accelance.net";
-        String registryHost = "owsi-vm-easysoa-axxx-registry.accelance.net";
+        String pivotalHost = "localhost";
+        String apvHost = "localhost";
+        String registryHost = "localhost";
+        //String pivotalHost = "owsi-vm-easysoa-axxx-pivotal.accelance.net";
+        //String apvHost = "owsi-vm-easysoa-axxx-pivotal.accelance.net";
+        //String registryHost = "owsi-vm-easysoa-axxx-registry.accelance.net";
         
         String deploiementSubprojectId = "/default-domain/Intégration DPS - DCV/Deploiement_v";
         SoaNodeId tdrWebServiceProdEndpointSoaId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + apvHost + ":7080/apv/services/PrecomptePartenaireService");//TODO host
@@ -37,13 +38,18 @@ public class AdapterServiceRestTest {
 
         // init
         exportREST.initClients("http://" + registryHost + ":8080/nuxeo/site",
-                "Administrator", "s0a");
-        ///String tdrWebServiceProdEndpointNuxeoId = exportREST.getIdRef(tdrWebServiceProdEndpointSoaId); // alt, does not work in jasmine
-        String tdrWebServiceProdEndpointNuxeoId = exportREST.getRegistryApi().get(
+                "Administrator", "Administrator");
+        ///String tdrWebServiceProdEndpointNuxeoId = exportREST.getIdRef(tdrWebServiceProdEndpointSoaId); // alternative, does not work in jasmine
+        /*String tdrWebServiceProdEndpointNuxeoId = exportREST.getRegistryApi().get(
                 tdrWebServiceProdEndpointSoaId.getSubprojectId(),
                 tdrWebServiceProdEndpointSoaId.getType(),
-                tdrWebServiceProdEndpointSoaId.getName()).getUuid();
-        
+                tdrWebServiceProdEndpointSoaId.getName()).getUuid();*/// alternative
+        String serviceNameFromJsonConf = "PrecomptePartenaireService";
+        String tdrWebServiceProdEndpointNuxeoId = exportREST.getRegistryApi().query(
+                tdrWebServiceProdEndpointSoaId.getSubprojectId(),
+                //"select * from Endpoint where serviceimpl:providedInformationService='"
+                "SELECT * FROM Endpoint WHERE endp:url LIKE '%"
+                + serviceNameFromJsonConf + "%'")[0].getUuid();
         // data
         Date dateFrom = new Date(0);
         Date dateTo = new Date(); // now

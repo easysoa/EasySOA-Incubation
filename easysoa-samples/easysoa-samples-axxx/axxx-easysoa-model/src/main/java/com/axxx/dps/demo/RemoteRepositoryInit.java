@@ -113,6 +113,12 @@ public class RemoteRepositoryInit {
                         pivotalHost = value;
                     } else if ("registryHost".equals(key)) {
                         registryHost = value;
+                    } else if ("hostMode".equals(key)) {
+                        if (true) { // TODO more modes ??
+                            pivotalHost = "owsi-vm-easysoa-axxx-pivotal.accelance.net";
+                            apvHost = "owsi-vm-easysoa-axxx-apv.accelance.net";
+                            registryHost = "owsi-vm-easysoa-axxx-registry.accelance.net";
+                        }
                     } else {
                         System.err.println("Unknown key value argument " + keyValueArg);
                     }
@@ -413,7 +419,7 @@ public class RemoteRepositoryInit {
         } else {
             Document deploiementSubprojectParentRealisationDoc = getExistingVersionedElseLiveSubprojectId(realisationPath);
             
-            System.out.println("   creating Realisation subproject");
+            System.out.println("   creating Deploiement subproject");
             /*String deploiementPath = */createDocument(Subproject.DOCTYPE, Subproject.DEPLOIEMENT_SUBPROJECT_NAME, projectPath,
                     Subproject.XPATH_PARENT_SUBPROJECTS + "=" + deploiementSubprojectParentRealisationDoc.getId());
             //String realisationSubprojectId = (String) getDocByPath(realisationPath).getProperties().get("spnode:subproject");

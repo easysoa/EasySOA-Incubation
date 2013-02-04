@@ -27,6 +27,12 @@ pushd $EASYSOA_PATH/easysoa-discovery-code-mavenplugin/m2_repo
 
 mkdir -p org/easysoa/discovery/code/easysoa-discovery-code-mavenplugin/1.0-SNAPSHOT/
 cp ~/.m2/repository/org/easysoa/discovery/code/easysoa-discovery-code-mavenplugin/1.0-SNAPSHOT/easysoa-discovery-code-mavenplugin-* org/easysoa/discovery/code/easysoa-discovery-code-mavenplugin/1.0-SNAPSHOT/
+mkdir -p easysoa/easy-soa-open-wide/0.0.0-SNAPSHOT
+cp ~/.m2/repository/easysoa/easy-soa-open-wide/0.0.0-SNAPSHOT/easy-soa-open-wide-* easysoa/easy-soa-open-wide/0.0.0-SNAPSHOT/
+mkdir -p org/nuxeo/features/nuxeo-tree-snapshot/5.7.easysoa
+cp ~/.m2/repository/org/nuxeo/features/nuxeo-tree-snapshot/5.7.easysoa/nuxeo-tree-snapshot-* org/nuxeo/features/nuxeo-tree-snapshot/5.7.easysoa
+mkdir -p org/easysoa/registry/easysoa-registry-test/1.0-SNAPSHOT
+cp ~/.m2/repository/org/easysoa/registry/easysoa-registry-test/1.0-SNAPSHOT/easysoa-registry-* org/easysoa/registry/easysoa-registry-test/1.0-SNAPSHOT
 mkdir -p org/easysoa/registry/easysoa-registry/1.0-SNAPSHOT
 cp ~/.m2/repository/org/easysoa/registry/easysoa-registry/1.0-SNAPSHOT/easysoa-registry-* org/easysoa/registry/easysoa-registry/1.0-SNAPSHOT
 mkdir -p org/easysoa/registry/easysoa-registry-doctypes-api/1.0-SNAPSHOT

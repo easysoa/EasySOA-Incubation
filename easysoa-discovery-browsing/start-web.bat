@@ -1,7 +1,5 @@
 @echo off
 
-set NODE=node
-
 set LINE=----------------------------------------------------
 
 echo %LINE%
@@ -13,5 +11,5 @@ echo %LINE%
 
 rem Default port: 8083
 cd js
-"../../node/node.exe" -v
-"../../node/node.exe" easysoa.js
+"node.exe" -v
+"node.exe" easysoa.js

@@ -59,10 +59,11 @@ public class ContextController extends ModuleRoot {
 
         // Get the projects
         DocumentModelList projectsList = session.query("SELECT * FROM " + Project.DOCTYPE);
-        // Fill the envs list
-        /*for(DocumentModel model : projectsList){
-            projects.add((String)model.getPropertyValue(Project.XPATH_NAME));
-        }*/
+        for(DocumentModel model : projectsList){
+            projects.add((String)model.getPropertyValue(Project.XPATH_TITLE));
+        }
+        
+        // For each project, get the subprojects
         
         // Pass projects map in the view
         view.arg("projects", projects);

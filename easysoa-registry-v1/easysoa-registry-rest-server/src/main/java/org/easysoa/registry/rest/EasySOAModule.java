@@ -2,10 +2,10 @@ package org.easysoa.registry.rest;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import org.easysoa.registry.dashboard.rest.MatchingDashboard;
 import org.easysoa.registry.dbb.rest.ServiceFinderRest;
 import org.easysoa.registry.documentation.rest.ServiceDocumentationController;
+import org.easysoa.registry.context.rest.ContextController;
 import org.easysoa.registry.indicators.rest.IndicatorsController;
 import org.easysoa.registry.integration.EndpointStateServiceImpl;
 import org.easysoa.registry.integration.SimpleRegistryServiceImpl;
@@ -39,7 +39,8 @@ public class EasySOAModule extends WebEngineModule {
                 ServiceDocumentationController.class,
                 MatchingDashboard.class,
                 ServiceFinderRest.class,
-                EndpointStateController.class                
+                EndpointStateController.class,
+                ContextController.class
                 };
     }
 

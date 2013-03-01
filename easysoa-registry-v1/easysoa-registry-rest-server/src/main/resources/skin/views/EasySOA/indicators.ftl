@@ -168,7 +168,11 @@ td:first-child {
 		</ul>
 
 	</div>
-	<div id="container">
+        <div id="container">
+            <h1>Context</h1>
+            <a href="${Root.path}/context/">Change context</a>
+        </div>
+        <div id="container">
 		<h1>Dashboards</h1>
 
 		<ul>

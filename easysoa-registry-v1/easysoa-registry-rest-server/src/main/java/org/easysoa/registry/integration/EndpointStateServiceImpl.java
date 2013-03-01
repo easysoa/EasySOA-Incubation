@@ -22,7 +22,6 @@ import org.easysoa.registry.rest.integration.ServiceLevelHealth;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicators;
 import org.easysoa.registry.types.Endpoint;
-import org.mvel2.ast.AssertNode;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -180,7 +179,7 @@ public class EndpointStateServiceImpl implements EndpointStateService {
         
         // Fetch SoaNode list
         ArrayList<String> parameters = new ArrayList<String>(); 
-        StringBuffer query = new StringBuffer(); 
+        StringBuilder query = new StringBuilder(); 
         query.append("SELECT * FROM Endpoint WHERE ");
  
         // Search parameters

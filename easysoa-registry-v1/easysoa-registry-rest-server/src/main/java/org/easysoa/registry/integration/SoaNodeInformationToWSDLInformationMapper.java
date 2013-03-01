@@ -5,8 +5,6 @@ package org.easysoa.registry.integration;
 
 import java.util.List;
 import java.util.Map;
-
-import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.matching.MatchingHelper;
 import org.easysoa.registry.rest.integration.EndpointInformation;
 import org.easysoa.registry.rest.integration.ServiceInformation;
@@ -15,9 +13,6 @@ import org.easysoa.registry.types.InformationService;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.blobholder.BlobHolder;
-import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * 
@@ -195,7 +190,7 @@ public class SoaNodeInformationToWSDLInformationMapper {
         if(nuxeoBaseUrl == null || "".equals(nuxeoBaseUrl)){
             throw new IllegalArgumentException("nuxeoBaseUrl param must not be null or empty");
         }
-        StringBuffer url = new StringBuffer();
+        StringBuilder url = new StringBuilder();
         url.append(nuxeoBaseUrl);
         if(!nuxeoBaseUrl.endsWith("/")){
             url.append("/");
@@ -205,10 +200,9 @@ public class SoaNodeInformationToWSDLInformationMapper {
         // TODO : Find a better solution to generate the url, avoid hardcoded substrings
         // Always the first file ??
         //url.append("/files:files/0/file/");
-        url.append("/" + nuxeoFilePath + "/");
+        url.append("/").append(nuxeoFilePath).append("/");
         url.append(fileName);
         return url.toString();
     }
-    
     
 }

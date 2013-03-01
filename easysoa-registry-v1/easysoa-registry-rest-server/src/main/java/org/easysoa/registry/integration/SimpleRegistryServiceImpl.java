@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.facets.WsdlInfoFacet;
 import org.easysoa.registry.rest.integration.EndpointInformations;
 import org.easysoa.registry.rest.integration.ServiceInformation;
-import org.easysoa.registry.rest.integration.SimpleRegistryService;
 import org.easysoa.registry.rest.integration.ServiceInformations;
+import org.easysoa.registry.rest.integration.SimpleRegistryService;
 import org.easysoa.registry.types.SoaNode;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -47,7 +46,7 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
         boolean searchParamIncluded = false;
         
         ArrayList<String> parameters = new ArrayList<String>();
-        StringBuffer query = new StringBuffer(); 
+        StringBuilder query = new StringBuilder(); 
         query.append("SELECT * FROM InformationService ");
         // Search parameter
         if(search != null && !"".equals(search)){
@@ -71,9 +70,9 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
             if(subProjectModel != null){
                subProjectCriterias  = SubprojectServiceImpl.buildCriteriaSeenFromSubproject(subProjectModel);
                if(searchParamIncluded){
-                   query.append(" AND " + subProjectCriterias);    
+                   query.append(" AND ").append(subProjectCriterias);    
                } else {
-                   query.append(" WHERE " + subProjectCriterias);
+                   query.append(" WHERE ").append(subProjectCriterias);
                }
             } else {
                 throw new Exception("subProjectId '" + subProjectId + "' is not a valid subproject !");
@@ -135,7 +134,7 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
         
         // Fetch SoaNode list
         ArrayList<String> parameters = new ArrayList<String>(); 
-        StringBuffer query = new StringBuffer(); 
+        StringBuilder query = new StringBuilder(); 
         query.append("SELECT * FROM Endpoint ");
 
         // Search parameter
@@ -160,9 +159,9 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
             if(subProjectModel != null){
                subProjectCriterias  = SubprojectServiceImpl.buildCriteriaSeenFromSubproject(subProjectModel);
                if(searchParamIncluded){
-                   query.append(" AND " + subProjectCriterias);    
+                   query.append(" AND ").append(subProjectCriterias);    
                } else {
-                   query.append(" WHERE " + subProjectCriterias);
+                   query.append(" WHERE ").append(subProjectCriterias);
                }
             } else {
                 throw new Exception("subProjectId '" + subProjectId + "' is not a valid subproject !");
@@ -208,7 +207,7 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
         
         // Fetch SoaNode list
         ArrayList<String> parameters = new ArrayList<String>(); 
-        StringBuffer query = new StringBuffer(); 
+        StringBuilder query = new StringBuilder(); 
         query.append("SELECT * FROM Endpoint WHERE impl:providedInformationService = '?'");
         parameters.add(serviceId);
 
@@ -220,7 +219,6 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
         }        
     
         return endpoints;
-        
     }
     
 }

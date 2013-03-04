@@ -20,15 +20,16 @@
 
 package org.easysoa.registry.context.rest;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
+import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.Project;
-import org.nuxeo.ecm.core.api.ClientException;
+import org.easysoa.registry.types.Subproject;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -53,20 +54,23 @@ public class ContextController extends ModuleRoot {
     public Template doGetHtml() throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         Template view = getView("context");
-        
-        // Get the project list with the subprojects and version
-        List<String> projects = new ArrayList<String>();
 
         // Get the projects
         DocumentModelList projectsList = session.query("SELECT * FROM " + Project.DOCTYPE);
-        for(DocumentModel model : projectsList){
-            projects.add((String)model.getPropertyValue(Project.XPATH_TITLE));
+
+        HashMap<String, HashSet<DocumentModel>> projectIdToSubproject = new HashMap<String, HashSet<DocumentModel>>();
+
+        for(DocumentModel project : projectsList){
+            HashSet<DocumentModel> subProjects = new HashSet<DocumentModel>();
+            DocumentModelList subProjectsList = session.query("SELECT * FROM " + Subproject.DOCTYPE + " WHERE " + DocumentService.NXQL_PATH_STARTSWITH + project.getPathAsString() + "'");
+            for(DocumentModel subProject : subProjectsList){
+                subProjects.add(subProject);
+            }
+            projectIdToSubproject.put((String)project.getPropertyValue(Project.XPATH_TITLE), subProjects);
         }
         
-        // For each project, get the subprojects
-        
         // Pass projects map in the view
-        view.arg("projects", projects);
+        view.arg("projectIdToSubproject", projectIdToSubproject);
         
         return view;
     }

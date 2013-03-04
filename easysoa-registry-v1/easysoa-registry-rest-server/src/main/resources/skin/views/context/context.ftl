@@ -23,9 +23,17 @@
 	</div>
     </div>
 
+    Projects and subprojects :
     <ul>
-    <#list projects as projectName>
-        <li>${projectName}</li>
+    <#list projectIdToSubproject?keys as project>
+        <li>${project}
+            <ul>
+            <#list projectIdToSubproject[project] as subProject>
+                <li><a href="">${subProject['dc:title']} - ${subProject.versionLabel}</a></li>
+            </#list>
+            </ul>
+       </li>
     </#list>
     </ul>
+
 </body>

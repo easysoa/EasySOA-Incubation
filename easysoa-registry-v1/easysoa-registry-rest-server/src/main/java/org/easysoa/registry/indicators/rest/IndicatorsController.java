@@ -112,6 +112,10 @@ public class IndicatorsController extends ModuleRoot {
             subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH + session.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
         }*/
         
+        if("".equals(subprojectId)){
+            subprojectId = null;
+        }
+        
         Map<String, Map<String, IndicatorValue>> indicatorsByCategory = computeIndicators(subprojectId);
         
         // Create and return view

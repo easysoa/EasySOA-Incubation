@@ -118,6 +118,10 @@
     
 </div>
   
+<div id="container">
+    <a href="${Root.path}/../?subprojectId=${subprojectId}">Back to dashboard</a>
+</div>
+
 </body>
 
 </html>

@@ -40,9 +40,15 @@
   <#assign targetDoctypeTitle = "service">
   <#assign unmatched = servWithoutSpecs>
   <#include "/views/dashboard/matching.ftl">
+
+    <#if subprojectId>
+    Matching dashboard for version : ${subprojectId}
+    <#else>
+    Global matching dashboard
+    </#if>
 		
   <h1>My services</h1>
-  
+
   <table>
     <tr>
 	    <th>Information service</th>

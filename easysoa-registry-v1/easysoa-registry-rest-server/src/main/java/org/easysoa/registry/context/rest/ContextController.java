@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
@@ -80,23 +79,5 @@ public class ContextController extends ModuleRoot {
         
         return view;
     }
-
-    /**
-     * 
-     * @param projectId
-     * @return 
-     */
-    /*@GET
-    @Path("path/{projectId}")
-    @Produces(MediaType.TEXT_HTML)
-    public Template doGetByPathHTML(@PathParam("projectId") String projectId){
-        
-        CoreSession session = SessionFactory.getSession(request);
-        Template view = getView("context");
-        
-        // Set 'current' project
-        
-        return view;
-    }*/
     
 }

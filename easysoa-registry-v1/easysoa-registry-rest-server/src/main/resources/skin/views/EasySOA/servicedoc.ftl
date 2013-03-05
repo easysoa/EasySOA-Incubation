@@ -27,6 +27,12 @@
 
 		<#include "/views/EasySOA/macros.ftl">
 
+                <#if subprojectId>
+                Services documentation for version : ${subprojectId}
+                <#else>
+                Global services documentation
+                </#if>
+
 		<h1>Documentation du service ${service.path} ${service.title} (${service['soan:name']})</h1>
 
 		Vous voulez :

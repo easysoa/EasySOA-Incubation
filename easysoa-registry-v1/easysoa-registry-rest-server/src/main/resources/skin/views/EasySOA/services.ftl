@@ -28,6 +28,12 @@
 
 		<#include "/views/EasySOA/macros.ftl">
 
+                <#if subprojectId>
+                Services documentation for version : ${subprojectId}
+                <#else>
+                Global services documentation
+                </#if>
+
 		<h1>Services</h1>
 
 		<@displayServicesShort services/>
@@ -56,6 +62,10 @@
 		</ul>
 
 	</div>
+
+        <div id="container">
+            <a href="${Root.path}/../?subprojectId=${subprojectId}">Back to dashboard</a>
+        </div>
 
 </body>
 

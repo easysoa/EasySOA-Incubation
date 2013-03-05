@@ -40,7 +40,7 @@
 		<#list service['proxies'] as serviceProxy>
 			<#if serviceProxy['parent'].type = 'TaggingFolder'>
 					<li><@displayTagShort serviceProxy['parent']/> -
-					<form method="POST" action="${Root.path}/proxy${serviceProxy['soan:name']}?subproject=${serviceProxy['spnode:subproject']}">
+					<form method="POST" action="${Root.path}/proxy${serviceProxy['soan:name']}?subprojectId=${serviceProxy['spnode:subproject']}">
 						<input name="delete" type="hidden" value=""/>
 						<a href="##" onClick="this.parentNode.submit();">Untag</a>
 					</form>
@@ -55,7 +55,7 @@
 
 		<#list tags as tag>
 			<#if !currentTagIds?seq_contains(tag.id)>
-			<form method="POST" action="${Root.path}${service['soan:name']}/tags?subproject=${service['spnode:subproject']}">
+			<form method="POST" action="${Root.path}${service['soan:name']}/tags?subprojectId=${service['spnode:subproject']}">
 				<input name="tagName" type="hidden" value="${tag['soan:name']}"/>
 				<a href="##" onClick="this.parentNode.submit();">Tag</a> in <@displayTagShort tag/>
 			</form>

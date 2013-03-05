@@ -30,11 +30,17 @@
 		
 		<h1>Indicators for endpoint</h1>
 
+                <#if subprojectId>
+                Indicators for version : ${subprojectId}
+                <#else>
+                Global indicators
+                </#if>
+
 		<@displayIndicatorsShort indicators/>
 		
 		<br/>
 		
-		<a href="${Root.path}">Back to endpoint list<a>
+		<a href="${Root.path}?subprojectId=${subprojectId}">Back to endpoint list<a>
 		
 	</div>
 </body>

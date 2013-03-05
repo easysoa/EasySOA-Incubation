@@ -27,7 +27,7 @@
 <div id="container">
   <div id="selectedServiceImpl" style="display: none">${selectedServiceImpl}</div>
 
-  <form action="/nuxeo/site/easysoa/dashboard/samples" method="post" style="position: absolute; right: 20px; top: 20px">
+  <form action="/nuxeo/site/easysoa/dashboard/samples?subprojectId=${subprojectId}" method="post" style="position: absolute; right: 20px; top: 20px">
   	<input type="submit" value="Fill with samples" />
   </form>
   

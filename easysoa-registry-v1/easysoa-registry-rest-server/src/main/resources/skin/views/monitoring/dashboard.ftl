@@ -27,12 +27,23 @@
 	<div id="container">
 
 	<#include "/views/EasySOA/macros.ftl">	
-		
+
 		<h1>Endpoints</h1>
 
-		<@displayEndpointsShort endpoints/>
+                <#if subprojectId>
+                Endpoints for version : ${subprojectId}
+                <#else>
+                Global endpoints
+                </#if>
+
+		<@displayEndpointsShort endpoints subprojectId/>
 		
 	</div>
+
+        <div id="container">
+            <a href="${Root.path}/../?subprojectId=${subprojectId}">Back to dashboard</a>
+        </div>
+
 </body>
 
 </html>

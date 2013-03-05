@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
@@ -49,6 +50,11 @@ public class ContextController extends ModuleRoot {
     // Logger
     private static Logger logger = Logger.getLogger(ContextController.class);
     
+    /**
+     * Returns the context veiw
+     * @return The context view
+     * @throws Exception If a problem occurs
+     */
     @GET
     @Produces(MediaType.TEXT_HTML)    
     public Template doGetHtml() throws Exception {
@@ -59,10 +65,10 @@ public class ContextController extends ModuleRoot {
         DocumentModelList projectsList = session.query("SELECT * FROM " + Project.DOCTYPE);
 
         HashMap<String, HashSet<DocumentModel>> projectIdToSubproject = new HashMap<String, HashSet<DocumentModel>>();
-
+        // For each project, get the subprojects
         for(DocumentModel project : projectsList){
             HashSet<DocumentModel> subProjects = new HashSet<DocumentModel>();
-            DocumentModelList subProjectsList = session.query("SELECT * FROM " + Subproject.DOCTYPE + " WHERE " + DocumentService.NXQL_PATH_STARTSWITH + project.getPathAsString() + "'");
+            DocumentModelList subProjectsList = session.query(DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE + DocumentService.NXQL_PATH_STARTSWITH + project.getPathAsString() + DocumentService.NXQL_QUOTE);
             for(DocumentModel subProject : subProjectsList){
                 subProjects.add(subProject);
             }
@@ -75,4 +81,22 @@ public class ContextController extends ModuleRoot {
         return view;
     }
 
+    /**
+     * 
+     * @param projectId
+     * @return 
+     */
+    /*@GET
+    @Path("path/{projectId}")
+    @Produces(MediaType.TEXT_HTML)
+    public Template doGetByPathHTML(@PathParam("projectId") String projectId){
+        
+        CoreSession session = SessionFactory.getSession(request);
+        Template view = getView("context");
+        
+        // Set 'current' project
+        
+        return view;
+    }*/
+    
 }

@@ -26,6 +26,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
@@ -71,10 +72,10 @@ public class EndpointStateController extends ModuleRoot {
     
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetHTML() throws Exception {
+    public Object doGetHTML(@QueryParam("subprojectId") String subProjectId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         List<String> envs = new ArrayList<String>();
-
+        
         // Get the environments
         DocumentModelList environments = session.query("SELECT DISTINCT " + Endpoint.XPATH_ENDP_ENVIRONMENT + " FROM " + Endpoint.DOCTYPE);
         // Fill the envs list
@@ -90,17 +91,18 @@ public class EndpointStateController extends ModuleRoot {
         //SimpleRegistryService simpleRegistryService = new SimpleRegistryServiceImpl();
        
         CoreSession documentManager = SessionFactory.getSession(request);
-        List<EndpointInformation> endpoints = SimpleRegistryServiceImpl.queryEndpoints(documentManager, "", "").getEndpointInformationList();
+        List<EndpointInformation> endpoints = SimpleRegistryServiceImpl.queryEndpoints(documentManager, "", subProjectId).getEndpointInformationList();
         
         return getView("dashboard") // TODO see services.ftl, dashboard/*.ftl...
                 .arg("envs", envs) // TODO later by (sub)project
-                .arg("endpoints", endpoints);
+                .arg("endpoints", endpoints)
+                .arg("subprojectId", subProjectId);
     }
     
     @GET
     @Path("envIndicators/{endpointId:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetByPathHTML(@PathParam("endpointId") String endpointId) throws Exception {
+    public Object doGetByPathHTML(@PathParam("endpointId") String endpointId, @QueryParam("subprojectId") String subProjectId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
         
@@ -126,6 +128,8 @@ public class EndpointStateController extends ModuleRoot {
         if (indicators != null) {
             view = view.arg("indicators", indicators);
         }
+        view.arg("subprojectId", subProjectId);
+        
         return view; 
     }
     

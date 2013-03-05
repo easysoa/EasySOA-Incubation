@@ -74,7 +74,7 @@
 		</ul>
 		</#if>
 
-		<br/><a href="${Root.path}/${service['soan:name']?xml}/tags">Also tag in...</a>
+		<br/><a href="${Root.path}/${service['soan:name']?xml}/tags?subprojectId=${subprojectId}">Also tag in...</a>
 
 		<br/>exemples d'appel
 
@@ -99,7 +99,6 @@
 		Déployé à : URL
 		<br/>Et a déploiements de test :
 
-
 		<h1>test</h1>
 
 		<h2>Contenu dans</h2>
@@ -111,6 +110,10 @@
 		<h2>log : all props</h2>
 		<@displayDoc service/>
 	</div>
+
+        <div id="container">
+            <a href="${Root.path}?subprojectId=${subprojectId}">Back to services</a>
+        </div>
 
 </body>
 

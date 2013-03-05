@@ -78,7 +78,7 @@ public class ServiceDocumentationController extends ModuleRoot {
     
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetHTML(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId) throws Exception {
+    public Object doGetHTML(/*@DefaultValue(null) */@QueryParam("subprojectId") String subprojectId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
 
         //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
@@ -148,7 +148,8 @@ public class ServiceDocumentationController extends ModuleRoot {
                 .arg("tags", tags)
                 .arg("tagId2Services", tagId2Services)
                 //.arg("tagId2ServiceNbs", tagId2ServiceNbs)
-                .arg("untaggedServices", untaggedServices);
+                .arg("untaggedServices", untaggedServices)
+                .arg("subprojectId", subprojectId);
         // services.get(0).getProperty(schemaName, name)
         // services.get(0).getProperty(xpath)
     }
@@ -157,7 +158,7 @@ public class ServiceDocumentationController extends ModuleRoot {
     @Path("path/{serviceName:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doGetByPathHTML(@PathParam("serviceName") String serviceName,
-            @QueryParam("subproject") String subprojectId) throws Exception {
+            @QueryParam("subprojectId") String subprojectId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
 
@@ -192,7 +193,8 @@ public class ServiceDocumentationController extends ModuleRoot {
                     .arg("service", service)
                     .arg("actualImpls", actualImpls)
                     .arg("mockImpls", mockImpls)
-                    .arg("servicee", service.getAdapter(SoaNodeAdapter.class));
+                    .arg("servicee", service.getAdapter(SoaNodeAdapter.class))
+                    .arg("subprojectId", subprojectId);
         }
         return view; 
     }
@@ -201,7 +203,7 @@ public class ServiceDocumentationController extends ModuleRoot {
     @Path("tag/{tagName:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doGetByTagHTML(@PathParam("tagName") String tagName,
-            @QueryParam("subproject") String subprojectId) throws Exception {
+            @QueryParam("subprojectId") String subprojectId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
 
@@ -224,14 +226,15 @@ public class ServiceDocumentationController extends ModuleRoot {
         Template view = getView("tagServices");
         return view
                 .arg("tag", docService.find(session, new SoaNodeId(subprojectId, TaggingFolder.DOCTYPE, tagName)))
-                .arg("tagServices", tagServices); 
+                .arg("tagServices", tagServices)
+                .arg("subprojectId", subprojectId); 
     }
     
     @GET
     @Path("{serviceName:.+}/tags") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doGetTagsHTML(@PathParam("serviceName") String serviceName,
-            @QueryParam("subproject") String subprojectId) throws Exception {
+            @QueryParam("subprojectId") String subprojectId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
 
@@ -254,14 +257,15 @@ public class ServiceDocumentationController extends ModuleRoot {
             view.arg("service", service);
         }
         return view
-                .arg("tags", tags); 
+                .arg("tags", tags)
+                .arg("subprojectId", subprojectId); 
     }
     
     @POST
     @Path("{serviceName:.+}/tags") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doPostTagsHTML(@PathParam("serviceName") String serviceName, @FormParam("tagId") String tagId,
-            @QueryParam("subproject") String subprojectId) throws Exception {
+            @QueryParam("subprojectId") String subprojectId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
 

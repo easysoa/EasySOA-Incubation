@@ -23,17 +23,23 @@
 	</div>
     </div>
 
-    Projects and subprojects :
-    <ul>
-    <#list projectIdToSubproject?keys as project>
-        <li>${project}
-            <ul>
-            <#list projectIdToSubproject[project] as subProject>
-                <li><a href="">${subProject['dc:title']} - ${subProject.versionLabel}</a></li>
-            </#list>
-            </ul>
-       </li>
-    </#list>
-    </ul>
+    <div id="container">
+        Projects and subprojects :
+        <ul>
+        <#list projectIdToSubproject?keys as project>
+            <li>${project}
+                <ul>
+                <#list projectIdToSubproject[project] as subProject>
+                    <li><a href="${Root.path}/../?subprojectId=${subProject['spnode:subproject']}">${subProject['dc:title']} - ${subProject.versionLabel}</a></li>
+                </#list>
+                </ul>
+           </li>
+        </#list>
+        </ul>
+    </div>
+
+    <div id="container">
+        <a href="${Root.path}/../">Return to global context</a>
+    </div>
 
 </body>

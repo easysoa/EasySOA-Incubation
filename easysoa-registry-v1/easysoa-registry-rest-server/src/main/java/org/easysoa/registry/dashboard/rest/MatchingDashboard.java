@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-
+import javax.ws.rs.QueryParam;
+import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.EndpointMatchingService;
 import org.easysoa.registry.ServiceMatchingService;
@@ -39,8 +39,10 @@ import org.nuxeo.runtime.api.Framework;
 @Path("easysoa/dashboard")
 public class MatchingDashboard extends ModuleRoot {
 	
+        private static Logger logger = Logger.getLogger(MatchingDashboard.class);    
+    
 	@GET
-	public Template viewDashboard() {
+	public Template viewDashboard(@QueryParam("subprojectId") String subProjectId) {
         CoreSession session = SessionFactory.getSession(request);
 		try {
 			DocumentService docService = Framework.getService(DocumentService.class);
@@ -82,7 +84,7 @@ public class MatchingDashboard extends ModuleRoot {
 					 " WHERE " + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + " IS NULL",
 					 true, false);
 			view.arg("servWithoutSpecs", servWithoutSpecs);
-			
+			view.arg("subprojectId", subProjectId);
 			return view;
 		} catch (Exception e) {
 			return getView("error").arg("error", e);
@@ -91,20 +93,21 @@ public class MatchingDashboard extends ModuleRoot {
 
 	@GET
 	@Path("components/{uuid}")
-	public Template suggestComponents(@PathParam("uuid") String uuid) throws Exception {
+	public Template suggestComponents(@PathParam("uuid") String uuid, @QueryParam("subprojectId") String subProjectId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
-		Template view = viewDashboard();
+		Template view = viewDashboard(subProjectId);
 		view.arg("components", fetchComponents(session));
 		view.arg("selectedModel", uuid);
+                view.arg("subprojectId", subProjectId);                
 		return view;
 	}
 	
 	@GET
 	@Path("suggest/{uuid}")
-	public Template suggestServices(@PathParam("uuid") String uuid) throws Exception {
+	public Template suggestServices(@PathParam("uuid") String uuid, @QueryParam("subprojectId") String subProjectId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentModel model = session.getDocument(new IdRef(uuid));
-		Template view = viewDashboard();
+		Template view = viewDashboard(subProjectId);
 
 		// Args: suggestions
 		List<DocumentModel> suggestions = fetchSuggestions(session, model, null, false);
@@ -119,17 +122,18 @@ public class MatchingDashboard extends ModuleRoot {
 		
 		// Arg: selected document
 		view.arg("selectedModel", uuid);
-		
+		view.arg("subprojectId", subProjectId);                
 		return view;
 	}
 
 	@GET
 	@Path("suggest/{uuid}/{componentUuid}")
 	public Template suggestServicesFromComponent(@PathParam("uuid") String uuid,
-			@PathParam("componentUuid") String componentUuid) throws Exception {
+			@PathParam("componentUuid") String componentUuid, 
+                        @QueryParam("subprojectId") String subProjectId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentModel model = session.getDocument(new IdRef(uuid));
-		Template view = viewDashboard();
+		Template view = viewDashboard(subProjectId);
 
 		// Args: components
 		List<DocumentModel> components = fetchComponents(session);
@@ -167,13 +171,14 @@ public class MatchingDashboard extends ModuleRoot {
 		
 		// Arg: selected document
 		view.arg("selectedModel", uuid);
-		
+		view.arg("subprojectId", subProjectId);
 		return view;
 	}
 	
 	@POST
 	public Object submit(@FormParam("unmatchedModelId") String unmatchedModelId,
-			@FormParam("targetId") String targetId) {
+			@FormParam("targetId") String targetId, 
+                        @QueryParam("subprojectId") String subProjectId) {
 	    try {
 	    	if (unmatchedModelId != null && !unmatchedModelId.isEmpty()) {
 	    		// Fetch impl
@@ -213,7 +218,7 @@ public class MatchingDashboard extends ModuleRoot {
 							((newTargetId != null) ? docService.createSoaNodeId(session.getDocument(new IdRef(newTargetId))) : null),
 							true);
 				}
-				return viewDashboard();
+				return viewDashboard(subProjectId);
 	    	}
 	    	else {
 	    		throw new Exception("Service Implementation not selected");
@@ -225,9 +230,9 @@ public class MatchingDashboard extends ModuleRoot {
 
 	@POST
 	@Path("samples")
-	public Object submit() throws Exception {
+	public Object submit(@QueryParam("subprojectId") String subProjectId) throws Exception {
 		new DashboardMatchingSamples("http://localhost:8080").run();
-		return viewDashboard();
+		return viewDashboard(subProjectId);
 	}
 	
 	private List<DocumentModel> fetchComponents(CoreSession session) throws Exception {

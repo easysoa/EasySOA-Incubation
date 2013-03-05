@@ -25,13 +25,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-
 import org.apache.log4j.Logger;
 import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.types.Deliverable;
@@ -101,7 +99,7 @@ public class IndicatorsController extends ModuleRoot {
 
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetHTML(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId) throws Exception {
+    public Object doGetHTML(/*@DefaultValue(null) */@QueryParam("subprojectId") String subprojectId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
 
         // using all subprojects or getting default one is let to indicator impls TODO better
@@ -130,9 +128,11 @@ public class IndicatorsController extends ModuleRoot {
             }
         }
         
+        // Set args for the template
         return getView("indicators")
                 .arg("nbMap", nbMap)
-                .arg("percentMap", percentMap);
+                .arg("percentMap", percentMap)
+                .arg("subprojectId", subprojectId);
     }
     
     @GET

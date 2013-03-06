@@ -36,27 +36,27 @@
 
 		<h1>Services</h1>
 
-		<@displayServicesShort services/>
+		<@displayServicesShort services subprojectId/>
 
 		<h1>By tags</h1>
 
 		<#list tags as tag>
 		<#if tagId2Services?keys?seq_contains(tag.id)>
-		<h3>Services (${tagId2Services[tag.id]?size}) of tag <@displayTagShort tag/></h3>
-		<@displayServicesShort tagId2Services[tag.id]/>
+		<h3>Services (${tagId2Services[tag.id]?size}) of tag <@displayTagShort tag subprojectId/></h3>
+		<@displayServicesShort tagId2Services[tag.id] subprojectId/>
 		</#if>
 		</#list>
 
 		<h2>Untagged services (${untaggedServices?size})</h2>
 
-		<@displayServicesShort untaggedServices/>
+		<@displayServicesShort untaggedServices subprojectId/>
 
 		<h2>Tags without services (${tags?size - tagId2Services?keys?size})</h2>
 
 		<ul>
 			<#list tags as tag>
 			<#if !tagId2Services?keys?seq_contains(tag.id)>
-			<li><@displayTagShort tag/></li>
+			<li><@displayTagShort tag subprojectId/></li>
 			</#if>
 			</#list>
 		</ul>

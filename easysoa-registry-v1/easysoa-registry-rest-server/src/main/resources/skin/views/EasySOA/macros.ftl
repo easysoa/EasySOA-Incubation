@@ -1,15 +1,17 @@
-		<#macro displayServiceShort service>
-       <a href="${Root.path}/path/${service['soan:name']?xml}?subprojectId=${service['spnode:subproject']}"><@displayDocShort service/></a>
+		<#macro displayServiceShort service subprojectId>
+       <a href="${Root.path}/path/${service['soan:name']?xml}?subproject=${service['spnode:subproject']}&subprojectId=${subprojectId}"><@displayDocShort service/></a>
 		</#macro>
-		<#macro displayServicesShort services>
+
+		<#macro displayServicesShort services subprojectId>
 			<ul>
 			<#list services as service>
-				<li><@displayServiceShort service/></li>
+				<li><@displayServiceShort service subprojectId/></li>
 			</#list>
 			</ul>
 		</#macro>
-		<#macro displayTagShort tag>
-         <a href="${Root.path}/tag/${tag['soan:name']?xml}?subprojectId=${tag['spnode:subproject']}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - ${tag['path']}</a>
+
+		<#macro displayTagShort tag subprojectId>
+         <a href="${Root.path}/tag/${tag['soan:name']?xml}?subproject=${tag['spnode:subproject']}&subprojectId=${subprojectId}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - ${tag['path']}</a>
 		</#macro>
 
 		<#macro displayDocShort doc>

@@ -62,7 +62,7 @@
 		<ul>
 		<#list service['proxies'] as serviceProxy>
 			<#if serviceProxy['parent'].type = 'IntelligentSystem'>
-					<li><@displayDocShort serviceProxy/></li>
+					<li><@displayDocShort serviceProxy/></li>al
 			</#if>
 		</#list>
 		</ul>
@@ -74,7 +74,7 @@
 		<ul>
 		<#list service['proxies'] as serviceProxy>
 			<#if serviceProxy['parent'].type = 'TaggingFolder'>
-					<li><@displayTagShort serviceProxy['parent']/></li>
+					<li><@displayTagShort serviceProxy['parent'] subprojectId/></li>
 			</#if>
 		</#list>
 		</ul>

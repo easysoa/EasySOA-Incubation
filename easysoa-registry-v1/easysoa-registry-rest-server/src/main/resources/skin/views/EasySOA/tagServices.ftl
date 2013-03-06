@@ -28,8 +28,8 @@
 
 		<#include "/views/EasySOA/macros.ftl">
 
-		<h1>Services (${tagServices?size}) of tag <@displayTagShort tag/></h1>
-		<@displayServicesShort tagServices/>
+		<h1>Services (${tagServices?size}) of tag <@displayTagShort tag subprojectId/></h1>
+		<@displayServicesShort tagServices subprojectId/>
 
 		<h1>Tag details<h1>
 		<@displayDoc tag/>

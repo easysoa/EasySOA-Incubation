@@ -158,7 +158,7 @@ public class ServiceDocumentationController extends ModuleRoot {
     @Path("path/{serviceName:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doGetByPathHTML(@PathParam("serviceName") String serviceName,
-            @QueryParam("subprojectId") String subprojectId) throws Exception {
+            @QueryParam("subproject") String subprojectId, @QueryParam("subprojectId") String contextSubprojectId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
 
@@ -194,7 +194,8 @@ public class ServiceDocumentationController extends ModuleRoot {
                     .arg("actualImpls", actualImpls)
                     .arg("mockImpls", mockImpls)
                     .arg("servicee", service.getAdapter(SoaNodeAdapter.class))
-                    .arg("subprojectId", subprojectId);
+                    .arg("subproject", subprojectId)
+                    .arg("subprojectId", contextSubprojectId);
         }
         return view; 
     }
@@ -203,7 +204,7 @@ public class ServiceDocumentationController extends ModuleRoot {
     @Path("tag/{tagName:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doGetByTagHTML(@PathParam("tagName") String tagName,
-            @QueryParam("subprojectId") String subprojectId) throws Exception {
+            @QueryParam("subproject") String subprojectId, @QueryParam("subprojectId") String contextSubprojectId) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
 
@@ -227,7 +228,8 @@ public class ServiceDocumentationController extends ModuleRoot {
         return view
                 .arg("tag", docService.find(session, new SoaNodeId(subprojectId, TaggingFolder.DOCTYPE, tagName)))
                 .arg("tagServices", tagServices)
-                .arg("subprojectId", subprojectId); 
+                .arg("subproject", subprojectId)
+                .arg("subprojectId", contextSubprojectId);
     }
     
     @GET
@@ -247,15 +249,15 @@ public class ServiceDocumentationController extends ModuleRoot {
             subprojectPathCriteria = DocumentService.NXQL_AND
                     + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
         }
-        
+        //TODO ?? SubprojectID mandatory to find service ....
         DocumentModel service = docService.find(session, new SoaNodeId(subprojectId, InformationService.DOCTYPE, serviceName));
         DocumentModelList tags = session.query("SELECT " + "*" + " FROM " + TaggingFolder.DOCTYPE
                 + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
         
         Template view = getView("servicetags");
-        if (service != null) {
+        //if (service != null) {
             view.arg("service", service);
-        }
+        //}
         return view
                 .arg("tags", tags)
                 .arg("subprojectId", subprojectId); 

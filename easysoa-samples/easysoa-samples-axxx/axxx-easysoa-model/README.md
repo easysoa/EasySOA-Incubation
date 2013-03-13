@@ -31,7 +31,7 @@ Running :
  * * from Eclipse : right-click > Run as Java application) to init full
  * EasySOA model of AXXX use case in running EasySOA Registry.
  * * from Maven command line :
- * mvn clean install exec:java -Dexec.mainClass="com.axxx.dps.demo.RemoteRepositoryInit"
+ * mvn clean install exec:java -Dexec.mainClass="com.axxx.dps.demo.RemoteRepositoryInit" -Dexec.args="username=Administrator password=Administrator"
  * 
  * In arguments may be given (in maven by -Dexec.args="[space separated arguments]") :
  * 
@@ -49,7 +49,7 @@ Running :
  * For instance, if you which to wipe the registry out, then fill Specifications and
  * create Realisation subproject, do :
  * 
- * mvn clean install -Dexec.mainClass="com.axxx.dps.demo.RemoteRepositoryInit" -Dexec.args="clean Specifications Realisation username=Administrator password=Administrator"
+ * mvn clean install exec:java -Dexec.mainClass="com.axxx.dps.demo.RemoteRepositoryInit" -Dexec.args="clean Specifications Realisation username=Administrator password=Administrator"
  * 
  * WARNING: Requires a running EasySOA Registry on port 8080 (or at least a launched Nuxeo DM
  * with the Nuxeo Studio project "EasySOA" deployed)

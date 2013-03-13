@@ -129,33 +129,32 @@ public class RemoteRepositoryInit {
 	    
 		initClients(url, username, password);
 
-        //String rootName = "Projets collaboratifs";
         String projectName = "Intégration DPS - DCV";
-        
-		if (steps.isEmpty() || steps.contains("clean")) {
-		 
-		System.out.println("RemoteRepositoryInit clean");
-		    
-		// Reset repository and root
-		/*delete("SELECT * FROM " + SystemTreeRoot.DOCTYPE + " WHERE dc:title = '" + rootName + "'");
-		delete("SELECT * FROM " + Repository.DOCTYPE);
-		
-		// Root
-		delete("SELECT * FROM " + SystemTreeRoot.DOCTYPE + " WHERE dc:title = '" + rootName + "'");*/
-        delete("SELECT * FROM " + Project.DOCTYPE/* + " WHERE dc:title = '" + projectName + "'"*/);
-        delete("SELECT * FROM " + Subproject.DOCTYPE);
-        
-        }
-		
-		//String rootPath = createDocument(SystemTreeRoot.DOCTYPE, rootName, "/default-domain/workspaces");
         String rootPath = "/default-domain";
-
         String projectPath = rootPath + "/" + projectName;
-        String specificationsPath = projectPath + '/' + Subproject.SPECIFICATIONS_SUBPROJECT_NAME;
 
+        
+        if (steps.isEmpty() || steps.contains("clean")) {
+         
+        System.out.println("RemoteRepositoryInit clean");
+        
+        // Delete subprojects first then project.
+        delete("SELECT * FROM " + Subproject.DOCTYPE + " WHERE spnode:subproject = '" + projectPath + "/%' AND ecm:isProxy=0");
+        delete("SELECT * FROM " + Subproject.DOCTYPE + " WHERE spnode:subproject = '" + projectPath + "/%' AND ecm:isProxy=1");
+        delete("SELECT * FROM " + Project.DOCTYPE + " WHERE ecm:path='" + projectPath + "' AND ecm:isProxy=0");
+        delete("SELECT * FROM " + Project.DOCTYPE + " WHERE ecm:path='" + projectPath + "' AND ecm:isProxy=1");
+        //TODO better import NXQL and rather use NXQL.ECM_ISPROXY
+        // NB. these exact requests are required else errors :
+        // No ORDER BY ecm:isProxy, else QueryMaker$QueryMakerException: Cannot order by column: ecm:isProxy
+        // No ecm:path LIKE, else QueryMaker$QueryMakerException: ecm:path requires = or <> operator
+        // Non-proxies first, else when their time comes (ex. subproject published version proxy) :
+        // ClientException: Failed to fetch document xxx before removal, DocumentException: Unknown document type: null
+        }
         
         
         // PHASE 1: Specs
+        
+        String specificationsPath = projectPath + '/' + Subproject.SPECIFICATIONS_SUBPROJECT_NAME;
         
         if (steps.isEmpty() || steps.contains("Specifications")) {
 

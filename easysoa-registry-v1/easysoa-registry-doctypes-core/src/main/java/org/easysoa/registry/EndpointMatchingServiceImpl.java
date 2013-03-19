@@ -51,7 +51,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     
 	public DocumentModelList findServiceImplementations(CoreSession documentManager,
 			DocumentModel endpoint, String filterComponentId,
-			boolean skipPlatformMatching, boolean requireAtLeastOneExactCriteria) throws ClientException { // TODO impl vs runtime platform matching ?
+			boolean skipPlatformMatching, boolean requireAtLeastOneExactCriteria/*, String visibility*/) throws ClientException { // TODO impl vs runtime platform matching ?
 
         // how should work matching in discovery & dashboard for :
         
@@ -68,7 +68,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		MatchingQuery query = new MatchingQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE);
 
         // Filter by subproject
-        query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint));
+        query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint)/*, visibility*/);
 
     	// Match platform properties :
     	
@@ -188,7 +188,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     @Override
 	public DocumentModelList findInformationServices(CoreSession documentManager,
 	        DocumentModel endpoint, String filterComponentId,
-	        boolean requireAtLeastOneExactCriteria) throws ClientException { // TODO impl vs runtime platform matching ?
+	        boolean requireAtLeastOneExactCriteria/*, String visibility*/) throws ClientException { // TODO impl vs runtime platform matching ?
 		// Init
 		DocumentService documentService = getDocumentService();
         boolean anyExactCriteria = false;
@@ -196,7 +196,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
 
         // Filter by subproject
-        query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint));
+        query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint)/*, visibility*/);
 
         // 1. IF A LINKED PLATFORM HAS BEEN PROVIDED FOR THE ENDPOINT BY THE PROBE EX. WEB DISCO
         if (endpoint.hasFacet(Endpoint.SCHEMA_ENDPOINT)

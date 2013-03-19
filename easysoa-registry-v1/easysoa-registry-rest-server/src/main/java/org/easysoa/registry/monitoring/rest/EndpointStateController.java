@@ -91,7 +91,7 @@ public class EndpointStateController extends ModuleRoot {
         //SimpleRegistryService simpleRegistryService = new SimpleRegistryServiceImpl();
        
         CoreSession documentManager = SessionFactory.getSession(request);
-        List<EndpointInformation> endpoints = SimpleRegistryServiceImpl.queryEndpoints(documentManager, "", subProjectId, visibility).getEndpointInformationList();
+        List<EndpointInformation> endpoints = SimpleRegistryServiceImpl.queryEndpoints(documentManager, "", subProjectId/*, visibility*/).getEndpointInformationList();
         
         return getView("dashboard") // TODO see services.ftl, dashboard/*.ftl...
                 .arg("envs", envs) // TODO later by (sub)project

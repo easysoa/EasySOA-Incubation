@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.EndpointMatchingService;
 import org.easysoa.registry.ServiceMatchingService;
+import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.rest.samples.DashboardMatchingSamples;
 import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Endpoint;
@@ -48,9 +49,17 @@ public class MatchingDashboard extends ModuleRoot {
 			DocumentService docService = Framework.getService(DocumentService.class);
 			Template view = getView("index");
 			
+                        /*String subprojectPathCriteria;
+                        if (subProjectId == null || "".equals(subProjectId)) {
+                            subprojectPathCriteria = "";
+                        } else {
+                            subprojectPathCriteria = DocumentService.NXQL_AND
+                                + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subProjectId);
+                        }*/
+                        
 			// All information services
 			DocumentModelList allInfoServices = docService.query(session, "SELECT * FROM "
-					+ InformationService.DOCTYPE, true, false);
+					+ InformationService.DOCTYPE /*+ subprojectPathCriteria*/, true, false);
 			Map<String, DocumentModel> infoServicesById = new HashMap<String, DocumentModel>();
 			for (DocumentModel infoService : allInfoServices) {
 				infoServicesById.put(infoService.getId(), infoService);
@@ -58,7 +67,7 @@ public class MatchingDashboard extends ModuleRoot {
  
 			// Find matched impls & their infoservice
 			DocumentModelList matchedImpls = docService.query(session, "SELECT * FROM " + ServiceImplementation.DOCTYPE + 
-					 " WHERE " + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + " IS NOT NULL",
+					 " WHERE " + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + " IS NOT NULL " /*+ subprojectPathCriteria*/,
 					 true, false);
 			view.arg("matchedImpls", matchedImpls);
 			view.arg("infoServicesById", infoServicesById);
@@ -75,13 +84,13 @@ public class MatchingDashboard extends ModuleRoot {
 			// List endpoints without impls
 			DocumentModelList unmatchedEndpoints = docService.query(session,
 					"SELECT * FROM " + Endpoint.DOCTYPE + " WHERE " +
-					Endpoint.XPATH_PARENTSIDS + " NOT LIKE '%" + ServiceImplementation.DOCTYPE + ":%'", true, false);
+					Endpoint.XPATH_PARENTSIDS + " NOT LIKE '%" + ServiceImplementation.DOCTYPE + ":%' " /*+ subprojectPathCriteria*/, true, false);
 			view.arg("endpointWithoutImpl", unmatchedEndpoints);
 			
 			// List impls without infoservice
 			DocumentModelList servWithoutSpecs = docService.query(session, 
 					 "SELECT * FROM " + ServiceImplementation.DOCTYPE + 
-					 " WHERE " + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + " IS NULL",
+					 " WHERE " + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + " IS NULL " /*+ subprojectPathCriteria*/,
 					 true, false);
 			view.arg("servWithoutSpecs", servWithoutSpecs);
 			view.arg("subprojectId", subProjectId);

@@ -31,7 +31,7 @@
 		<h1>Indicators for endpoint</h1>
 
                 <#if subprojectId>
-                Indicators for version : ${subprojectId}
+                Indicators for version : ${subprojectId}, visibility ${visibility}
                 <#else>
                 Global indicators
                 </#if>
@@ -40,7 +40,7 @@
 		
 		<br/>
 		
-		<a href="${Root.path}?subprojectId=${subprojectId}">Back to endpoint list<a>
+		<a href="${Root.path}?subprojectId=${subprojectId}&visibility=${visibility}">Back to endpoint list<a>
 		
 	</div>
 </body>

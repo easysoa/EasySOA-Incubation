@@ -29,7 +29,7 @@
 		<#include "/views/EasySOA/macros.ftl">
 
 		<h1>Service</h1>
-		<@displayServiceShort service subprojectId/>
+		<@displayServiceShort service subprojectId visibility/>
 
 		<h2>Tagged in</h2>
 
@@ -39,8 +39,8 @@
 		<ul>
 		<#list service['proxies'] as serviceProxy>
 			<#if serviceProxy['parent'].type = 'TaggingFolder'>
-					<li><@displayTagShort serviceProxy['parent'] subprojectId/> -
-					<form method="POST" action="${Root.path}/proxy${serviceProxy['soan:name']}?subprojectId=${serviceProxy['spnode:subproject']}">
+					<li><@displayTagShort serviceProxy['parent'] subprojectId visibility/> -
+					<form method="POST" action="${Root.path}/proxy${serviceProxy['soan:name']}?subprojectId=${serviceProxy['spnode:subproject']}&visibility=${visibility}">
 						<input name="delete" type="hidden" value=""/>
 						<a href="##" onClick="this.parentNode.submit();">Untag</a>
 					</form>
@@ -55,9 +55,9 @@
 
 		<#list tags as tag>
 			<#if !currentTagIds?seq_contains(tag.id)>
-			<form method="POST" action="${Root.path}/${service['soan:name']}/tags?subprojectId=${service['spnode:subproject']}">
+			<form method="POST" action="${Root.path}/${service['soan:name']}/tags?subprojectId=${service['spnode:subproject']}&visibility=${visibility}">
 				<input name="tagName" type="hidden" value="${tag['soan:name']}"/>
-				<a href="##" onClick="this.parentNode.submit();">Tag</a> in <@displayTagShort tag subprojectId/>
+				<a href="##" onClick="this.parentNode.submit();">Tag</a> in <@displayTagShort tag subprojectId visibility/>
 			</form>
 			</#if>
 		</#list>

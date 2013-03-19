@@ -18,7 +18,7 @@ import org.easysoa.registry.rest.integration.ServiceInformations;
 public class SimpleRegistryServiceServerImpl implements SimpleRegistryService {
 
     @Override
-    public ServiceInformations queryWSDLInterfaces(String search, String subProjectId) throws Exception {
+    public ServiceInformations queryWSDLInterfaces(String search, String subProjectId, String visibility) throws Exception {
 
         ServiceInformations serviceInformations = new ServiceInformations();
         ServiceInformation serviceInformation1 = new ServiceInformation();
@@ -54,7 +54,7 @@ public class SimpleRegistryServiceServerImpl implements SimpleRegistryService {
     }
 
     @Override
-    public EndpointInformations queryEndpoints(String search, String subProjectId) throws Exception {
+    public EndpointInformations queryEndpoints(String search, String subProjectId, String visibility) throws Exception {
         EndpointInformations endpointInformations = new EndpointInformations();
         EndpointInformation endpointInformation1 = new EndpointInformation();
 
@@ -73,7 +73,7 @@ public class SimpleRegistryServiceServerImpl implements SimpleRegistryService {
     }
 
     @Override
-    public ServiceInformations queryServicesWithEndpoints(String search, String subProjectId) throws Exception {
+    public ServiceInformations queryServicesWithEndpoints(String search, String subProjectId, String visibility) throws Exception {
 
         ServiceInformations serviceInformations = new ServiceInformations();
         ServiceInformation serviceInformation1 = new ServiceInformation();

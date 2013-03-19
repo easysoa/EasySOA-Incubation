@@ -22,21 +22,21 @@ public class TestClient implements TestClientItf {
      * @see
      */
     public ServiceInformations testQueryWSDLInterfaces(String search, String subProjectId) throws Exception {
-        return service.queryWSDLInterfaces(search, subProjectId);
+        return service.queryWSDLInterfaces(search, subProjectId, "strict");
     }
     
     /**
      * @see 
      */
     public EndpointInformations testQueryEndpoints(String search, String subProjectId) throws Exception {
-        return service.queryEndpoints(search, subProjectId);        
+        return service.queryEndpoints(search, subProjectId, "strict");
     }
     
     /**
      * @see
      */
     public ServiceInformations testQueryServicesWithEndpoints(String search, String subProjectId) throws Exception {
-        return service.queryServicesWithEndpoints(search, subProjectId);
+        return service.queryServicesWithEndpoints(search, subProjectId, "strict");
     }
     
 }

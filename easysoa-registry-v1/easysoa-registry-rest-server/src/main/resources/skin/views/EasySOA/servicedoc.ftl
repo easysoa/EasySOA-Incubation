@@ -28,7 +28,7 @@
 		<#include "/views/EasySOA/macros.ftl">
 
                 <#if subprojectId>
-                Services documentation for version : ${subprojectId}
+                Services documentation for version : ${subprojectId}, visibility ${visibility}
                 <#else>
                 Global services documentation
                 </#if>
@@ -74,13 +74,13 @@
 		<ul>
 		<#list service['proxies'] as serviceProxy>
 			<#if serviceProxy['parent'].type = 'TaggingFolder'>
-					<li><@displayTagShort serviceProxy['parent'] subprojectId/></li>
+					<li><@displayTagShort serviceProxy['parent'] subprojectId visibility/></li>
 			</#if>
 		</#list>
 		</ul>
 		</#if>
 
-		<br/><a href="${Root.path}/${service['soan:name']?xml}/tags?subprojectId=${subprojectId}">Also tag in...</a>
+		<br/><a href="${Root.path}/${service['soan:name']?xml}/tags?subprojectId=${subprojectId}&visibility=${visibility}">Also tag in...</a>
 
 		<br/>exemples d'appel
 
@@ -118,7 +118,7 @@
 	</div>
 
         <div id="container">
-            <a href="${Root.path}?subprojectId=${subprojectId}">Back to services</a>
+            <a href="${Root.path}?subprojectId=${subprojectId}&visibility=${visibility}">Back to services</a>
         </div>
 
 </body>

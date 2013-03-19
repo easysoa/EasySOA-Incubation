@@ -72,7 +72,7 @@ public class EndpointStateController extends ModuleRoot {
     
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetHTML(@QueryParam("subprojectId") String subProjectId) throws Exception {
+    public Object doGetHTML(@QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         List<String> envs = new ArrayList<String>();
         
@@ -91,18 +91,19 @@ public class EndpointStateController extends ModuleRoot {
         //SimpleRegistryService simpleRegistryService = new SimpleRegistryServiceImpl();
        
         CoreSession documentManager = SessionFactory.getSession(request);
-        List<EndpointInformation> endpoints = SimpleRegistryServiceImpl.queryEndpoints(documentManager, "", subProjectId).getEndpointInformationList();
+        List<EndpointInformation> endpoints = SimpleRegistryServiceImpl.queryEndpoints(documentManager, "", subProjectId, visibility).getEndpointInformationList();
         
         return getView("dashboard") // TODO see services.ftl, dashboard/*.ftl...
                 .arg("envs", envs) // TODO later by (sub)project
                 .arg("endpoints", endpoints)
-                .arg("subprojectId", subProjectId);
+                .arg("subprojectId", subProjectId)
+                .arg("visibility", visibility);
     }
     
     @GET
     @Path("envIndicators/{endpointId:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetByPathHTML(@PathParam("endpointId") String endpointId, @QueryParam("subprojectId") String subProjectId) throws Exception {
+    public Object doGetByPathHTML(@PathParam("endpointId") String endpointId, @QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
         
@@ -115,12 +116,6 @@ public class EndpointStateController extends ModuleRoot {
         
         // Get the enpoints associated with the environment
         //DocumentModelList endpointsModel = session.query("SELECT * FROM " + Endpoint.DOCTYPE + " WHERE " + Endpoint.XPATH_ENDP_ENVIRONMENT + " = " + envName);
-        
-        /*for(DocumentModel endpointModel : endpointsModel){
-            
-        }*/
-        
-        //List<DocumentModel> endpoints = null;
 
         EndpointStateService endpointStateService = new EndpointStateServiceImpl();
         List<SlaOrOlaIndicator> indicators =  endpointStateService.getSlaOrOlaIndicators(endpointId, "", null, null, 10, 0).getSlaOrOlaIndicatorList();
@@ -128,7 +123,8 @@ public class EndpointStateController extends ModuleRoot {
         if (indicators != null) {
             view = view.arg("indicators", indicators);
         }
-        view.arg("subprojectId", subProjectId);
+        view.arg("subprojectId", subProjectId)
+                .arg("visibility", visibility);
         
         return view; 
     }

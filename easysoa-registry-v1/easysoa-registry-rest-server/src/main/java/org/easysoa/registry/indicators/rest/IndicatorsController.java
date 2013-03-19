@@ -99,7 +99,7 @@ public class IndicatorsController extends ModuleRoot {
 
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetHTML(/*@DefaultValue(null) */@QueryParam("subprojectId") String subprojectId) throws Exception {
+    public Object doGetHTML(/*@DefaultValue(null) */@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
 
         // using all subprojects or getting default one is let to indicator impls TODO better
@@ -136,7 +136,8 @@ public class IndicatorsController extends ModuleRoot {
         return getView("indicators")
                 .arg("nbMap", nbMap)
                 .arg("percentMap", percentMap)
-                .arg("subprojectId", subprojectId);
+                .arg("subprojectId", subprojectId)
+                .arg("visibility", visibility);
     }
     
     @GET

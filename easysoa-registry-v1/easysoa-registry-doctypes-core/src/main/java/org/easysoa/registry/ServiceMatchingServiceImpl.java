@@ -41,7 +41,7 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 	 */
 	public DocumentModelList findInformationServices(CoreSession documentManager,
 	        DocumentModel impl, String filterComponentId,
-	        boolean skipPlatformMatching, boolean requireAtLeastOneExactCriteria) throws ClientException {
+	        boolean skipPlatformMatching, boolean requireAtLeastOneExactCriteria/*, String visibility*/) throws ClientException {
 
         // how should work matching in discovery & dashboard for :
         
@@ -57,7 +57,7 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
         MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
 
         // Filter by subproject
-        query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(impl)); // ex. "AXXXSpecifications"; // or in 2 pass & get it from subProject ??
+        query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(impl/*, visibility*/)); // ex. "AXXXSpecifications"; // or in 2 pass & get it from subProject ??
         
         if (impl.hasFacet(ServiceImplementationDataFacet.FACET_SERVICEIMPLEMENTATIONDATA)) {
     	String implIde = (String) impl.getPropertyValue(ServiceImplementation.XPATH_IMPL_IDE); // OPT only set by ex. FraSCatiStudio, TalendStudio, ScarboModeler

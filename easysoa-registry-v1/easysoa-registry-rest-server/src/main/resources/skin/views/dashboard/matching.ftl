@@ -11,8 +11,8 @@
   	<td class="clickable unmatchedModel" id="${unmatched.id}">
   	  <div class="selectedFormInputName">${matchingPrefix}unmatchedModelId</div>
   	  <div style="float: right">
-  	  	<input class="components" type="button" value="Select component" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/components/${unmatched.id}?subprojectId=${subprojectId}'" />
-  	  	<input class="suggestions" type="button" value="Get suggestions" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/suggest/${unmatched.id}?subprojectId=${subprojectId}'" />
+  	  	<input class="components" type="button" value="Select component" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/components/${unmatched.id}?subprojectId=${subprojectId}&visibility=${visibility}'" />
+  	  	<input class="suggestions" type="button" value="Get suggestions" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/suggest/${unmatched.id}?subprojectId=${subprojectId}&visibility=${visibility}'" />
   	  </div>
   	  <#assign document = unmatched>
   	  <#include "/views/dashboard/document.ftl">
@@ -81,7 +81,7 @@
           <th style="background-color: #DDD">Components list</th>
           <#list components as component>
             <tr>
-            	<td class="clickable component" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/suggest/${selectedModel}/${component.id}?subprojectId=${subprojectId}'">
+            	<td class="clickable component" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/suggest/${selectedModel}/${component.id}?subprojectId=${subprojectId}&visibility=${visibility}'">
             	  <#assign document = component>
             	  <#include "/views/dashboard/document.ftl">
             	</td>
@@ -94,7 +94,7 @@
 </#list>
 </table>
 	
-<form action="/nuxeo/site/easysoa/dashboard?subprojectId=${subprojectId}" method="post" style="float: left; width: 100%; margin-top: 10px">
+<form action="/nuxeo/site/easysoa/dashboard?subprojectId=${subprojectId}&visibility=${visibility}" method="post" style="float: left; width: 100%; margin-top: 10px">
 	<fieldset style="width: 400px; padding: 10px;">
 	Click on an a ${doctypeTitle} and a ${targetDoctypeTitle}, then click:<br />
 	<input type="submit" value="Create a link" />

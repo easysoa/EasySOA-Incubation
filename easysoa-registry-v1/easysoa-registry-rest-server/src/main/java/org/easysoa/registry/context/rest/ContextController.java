@@ -50,7 +50,7 @@ public class ContextController extends ModuleRoot {
     private static Logger logger = Logger.getLogger(ContextController.class);
     
     /**
-     * Returns the context veiw
+     * Returns the context view
      * @return The context view
      * @throws Exception If a problem occurs
      */

@@ -138,7 +138,7 @@ td:first-child {
 		<h1>Indicateurs sur votre SOA</h1>
 
                 <#if subprojectId>
-                Dashboard for version : ${subprojectId}
+                Dashboard for version : ${subprojectId}, visibility ${visibility}
                 <#else>
                 Global dashboard
                 </#if>
@@ -178,7 +178,7 @@ td:first-child {
             <h1>Context</h1>
             
             <#if subprojectId>
-            Current context : ${subprojectId}
+            Current context : ${subprojectId}, visibility ${visibility}
             <#else>
             Current context : no selected version
             </#if>
@@ -194,13 +194,13 @@ td:first-child {
 
 		<ul>
 			<li>
-                            <a href="${Root.path}/dashboard/?subprojectId=${subprojectId}">Easysoa Matching dashboard</a>
+                            <a href="${Root.path}/dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Easysoa Matching dashboard</a>
                         </li>
 			<li>
-                            <a href="${Root.path}/services/?subprojectId=${subprojectId}">Easysoa Service documentation dashboard</a>
+                            <a href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">Easysoa Service documentation dashboard</a>
                         </li>
 			<li>
-                            <a href="${Root.path}/monitoring/?subprojectId=${subprojectId}">Easysoa Endpoint indicators dashboard</a>
+                            <a href="${Root.path}/monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">Easysoa Endpoint indicators dashboard</a>
                         </li>
 		</ul>
 

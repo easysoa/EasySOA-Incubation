@@ -27,7 +27,7 @@
 <div id="container">
   <div id="selectedServiceImpl" style="display: none">${selectedServiceImpl}</div>
 
-  <form action="/nuxeo/site/easysoa/dashboard/samples?subprojectId=${subprojectId}" method="post" style="position: absolute; right: 20px; top: 20px">
+  <form action="/nuxeo/site/easysoa/dashboard/samples?subprojectId=${subprojectId}&visibility=${visibility}" method="post" style="position: absolute; right: 20px; top: 20px">
   	<input type="submit" value="Fill with samples" />
   </form>
   
@@ -42,7 +42,7 @@
   <#include "/views/dashboard/matching.ftl">
 
     <#if subprojectId>
-    Matching dashboard for version : ${subprojectId}
+    Matching dashboard for version : ${subprojectId}, visibility ${visibility}
     <#else>
     Global matching dashboard
     </#if>
@@ -119,7 +119,7 @@
 </div>
   
 <div id="container">
-    <a href="${Root.path}/../?subprojectId=${subprojectId}">Back to dashboard</a>
+    <a href="${Root.path}/../?subprojectId=${subprojectId}&visibility=${visibility}">Back to dashboard</a>
 </div>
 
 </body>

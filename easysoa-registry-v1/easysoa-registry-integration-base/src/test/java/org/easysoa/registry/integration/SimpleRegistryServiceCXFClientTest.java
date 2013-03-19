@@ -35,7 +35,7 @@ public class SimpleRegistryServiceCXFClientTest {
     @Test
     public void cxfClientTest() throws Exception {
         SimpleRegistryService client = (SimpleRegistryService) context.getBean("simpleRegistryServiceCXFTestClient");
-        ServiceInformations result = client.queryWSDLInterfaces(null, null);
+        ServiceInformations result = client.queryWSDLInterfaces(null, null, "strict");
         Assert.assertNotNull(result);
         Assert.assertEquals(3, result.getServiceInformationList().size());
         ServiceInformation information = result.getServiceInformationList().get(0);

@@ -51,6 +51,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -78,7 +79,7 @@ public class ServiceDocumentationController extends ModuleRoot {
     
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetHTML(/*@DefaultValue(null) */@QueryParam("subprojectId") String subprojectId) throws Exception {
+    public Object doGetHTML(/*@DefaultValue(null) */@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
 
         //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
@@ -89,6 +90,7 @@ public class ServiceDocumentationController extends ModuleRoot {
         } else {
             subprojectPathCriteria = DocumentService.NXQL_AND
                     + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
+            //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
         }
         
         DocumentModelList services = session.query("SELECT " + SERVICE_LIST_PROPS + " FROM " + InformationService.DOCTYPE
@@ -149,7 +151,8 @@ public class ServiceDocumentationController extends ModuleRoot {
                 .arg("tagId2Services", tagId2Services)
                 //.arg("tagId2ServiceNbs", tagId2ServiceNbs)
                 .arg("untaggedServices", untaggedServices)
-                .arg("subprojectId", subprojectId);
+                .arg("subprojectId", subprojectId)
+                .arg("visibility", visibility);
         // services.get(0).getProperty(schemaName, name)
         // services.get(0).getProperty(xpath)
     }
@@ -158,7 +161,7 @@ public class ServiceDocumentationController extends ModuleRoot {
     @Path("path/{serviceName:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doGetByPathHTML(@PathParam("serviceName") String serviceName,
-            @QueryParam("subproject") String subprojectId, @QueryParam("subprojectId") String contextSubprojectId) throws Exception {
+            @QueryParam("subproject") String subprojectId, @QueryParam("subprojectId") String contextSubprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
 
@@ -195,7 +198,8 @@ public class ServiceDocumentationController extends ModuleRoot {
                     .arg("mockImpls", mockImpls)
                     .arg("servicee", service.getAdapter(SoaNodeAdapter.class))
                     .arg("subproject", subprojectId)
-                    .arg("subprojectId", contextSubprojectId);
+                    .arg("subprojectId", contextSubprojectId)
+                    .arg("visibility", visibility);
         }
         return view; 
     }
@@ -204,7 +208,7 @@ public class ServiceDocumentationController extends ModuleRoot {
     @Path("tag/{tagName:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doGetByTagHTML(@PathParam("tagName") String tagName,
-            @QueryParam("subproject") String subprojectId, @QueryParam("subprojectId") String contextSubprojectId) throws Exception {
+            @QueryParam("subproject") String subprojectId, @QueryParam("subprojectId") String contextSubprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
 
@@ -229,14 +233,16 @@ public class ServiceDocumentationController extends ModuleRoot {
                 .arg("tag", docService.find(session, new SoaNodeId(subprojectId, TaggingFolder.DOCTYPE, tagName)))
                 .arg("tagServices", tagServices)
                 .arg("subproject", subprojectId)
-                .arg("subprojectId", contextSubprojectId);
+                .arg("subprojectId", contextSubprojectId)
+                .arg("visibility", visibility);
     }
     
     @GET
     @Path("{serviceName:.+}/tags") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doGetTagsHTML(@PathParam("serviceName") String serviceName,
-            @QueryParam("subprojectId") String subprojectId) throws Exception {
+            @QueryParam("subprojectId") String subprojectId, 
+            @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
 
@@ -255,19 +261,22 @@ public class ServiceDocumentationController extends ModuleRoot {
                 + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
         
         Template view = getView("servicetags");
-        //if (service != null) {
+        // TODO problem here : A freemarker arg cannot be null or absent
+        if (service != null) {
             view.arg("service", service);
-        //}
+        }
+
         return view
                 .arg("tags", tags)
-                .arg("subprojectId", subprojectId); 
+                .arg("subprojectId", subprojectId)
+                .arg("visibility", visibility); 
     }
     
     @POST
     @Path("{serviceName:.+}/tags") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doPostTagsHTML(@PathParam("serviceName") String serviceName, @FormParam("tagId") String tagId,
-            @QueryParam("subprojectId") String subprojectId) throws Exception {
+            @QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
 
@@ -281,14 +290,14 @@ public class ServiceDocumentationController extends ModuleRoot {
             documentService.create(session, documentService.createSoaNodeId(service), tag.getPathAsString());
             session.save();
         }
-        return doGetTagsHTML(serviceName, subprojectId);
+        return doGetTagsHTML(serviceName, subprojectId, visibility);
     }
     
     //@DELETE // doesn't work from browser
     @POST
     @Path("proxy/{documentId:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
-    public Object doDeleteProxyHTML(@PathParam("documentId") String documentId, @FormParam("delete") String delete) throws Exception {
+    public Object doDeleteProxyHTML(@PathParam("documentId") String documentId, @FormParam("delete") String delete, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentModel serviceProxy = session.getDocument(new IdRef(documentId));
         
@@ -297,9 +306,9 @@ public class ServiceDocumentationController extends ModuleRoot {
             session.removeDocument(serviceProxy.getRef());
             session.save();
             return doGetTagsHTML((String) proxiedService.getPropertyValue(InformationService.XPATH_SOANAME),
-                    (String) proxiedService.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT)); // removing lead slash
+                    (String) proxiedService.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT), visibility); // removing lead slash
         }
-        return doGetHTML(null); //TODO better
+        return doGetHTML(null, visibility); //TODO better
     }
     
     @GET

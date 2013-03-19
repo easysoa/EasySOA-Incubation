@@ -29,34 +29,34 @@
 		<#include "/views/EasySOA/macros.ftl">
 
                 <#if subprojectId>
-                Services documentation for version : ${subprojectId}
+                Services documentation for version : ${subprojectId}, visibility ${visibility}
                 <#else>
                 Global services documentation
                 </#if>
 
 		<h1>Services</h1>
 
-		<@displayServicesShort services subprojectId/>
+		<@displayServicesShort services subprojectId visibility/>
 
 		<h1>By tags</h1>
 
 		<#list tags as tag>
 		<#if tagId2Services?keys?seq_contains(tag.id)>
 		<h3>Services (${tagId2Services[tag.id]?size}) of tag <@displayTagShort tag subprojectId/></h3>
-		<@displayServicesShort tagId2Services[tag.id] subprojectId/>
+		<@displayServicesShort tagId2Services[tag.id] subprojectId visibility/>
 		</#if>
 		</#list>
 
 		<h2>Untagged services (${untaggedServices?size})</h2>
 
-		<@displayServicesShort untaggedServices subprojectId/>
+		<@displayServicesShort untaggedServices subprojectId visibility/>
 
 		<h2>Tags without services (${tags?size - tagId2Services?keys?size})</h2>
 
 		<ul>
 			<#list tags as tag>
 			<#if !tagId2Services?keys?seq_contains(tag.id)>
-			<li><@displayTagShort tag subprojectId/></li>
+			<li><@displayTagShort tag subprojectId visibility/></li>
 			</#if>
 			</#list>
 		</ul>
@@ -64,7 +64,7 @@
 	</div>
 
         <div id="container">
-            <a href="${Root.path}/../?subprojectId=${subprojectId}">Back to dashboard</a>
+            <a href="${Root.path}/../?subprojectId=${subprojectId}&visibility=${visibility}">Back to dashboard</a>
         </div>
 
 </body>

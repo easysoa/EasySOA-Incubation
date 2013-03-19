@@ -1,17 +1,17 @@
-		<#macro displayServiceShort service subprojectId>
-       <a href="${Root.path}/path/${service['soan:name']?xml}?subproject=${service['spnode:subproject']}&subprojectId=${subprojectId}"><@displayDocShort service/></a>
+		<#macro displayServiceShort service subprojectId visibility>
+       <a href="${Root.path}/path/${service['soan:name']?xml}?subproject=${service['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayDocShort service/></a>
 		</#macro>
 
-		<#macro displayServicesShort services subprojectId>
+		<#macro displayServicesShort services subprojectId visibility>
 			<ul>
 			<#list services as service>
-				<li><@displayServiceShort service subprojectId/></li>
+				<li><@displayServiceShort service subprojectId visibility/></li>
 			</#list>
 			</ul>
 		</#macro>
 
-		<#macro displayTagShort tag subprojectId>
-         <a href="${Root.path}/tag/${tag['soan:name']?xml}?subproject=${tag['spnode:subproject']}&subprojectId=${subprojectId}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - ${tag['path']}</a>
+		<#macro displayTagShort tag subprojectId visibility>
+         <a href="${Root.path}/tag/${tag['soan:name']?xml}?subproject=${tag['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - ${tag['path']}</a>
 		</#macro>
 
 		<#macro displayDocShort doc>
@@ -22,13 +22,13 @@
          <#list docs as doc><@displayDocShort doc/> ; </#list>
 		</#macro>
 		
-		<#macro displayEndpointShort endpoint subprojectId>
-         <li><a href="${Root.path}/envIndicators/${endpoint.nuxeoID}?subprojectId=${subprojectId}">${endpoint.name}</a></li>
+		<#macro displayEndpointShort endpoint subprojectId visibility>
+         <li><a href="${Root.path}/envIndicators/${endpoint.nuxeoID}?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint.name}</a></li>
 		</#macro>
 		
-		<#macro displayEndpointsShort endpoints subprojectId>
+		<#macro displayEndpointsShort endpoints subprojectId visibility>
          <ul>
-         <#list endpoints as endpoint><@displayEndpointShort endpoint subprojectId/></#list>
+         <#list endpoints as endpoint><@displayEndpointShort endpoint subprojectId visibility/></#list>
          </ul>
 		</#macro>		
 		

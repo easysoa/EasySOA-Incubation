@@ -417,7 +417,8 @@ public class SubprojectServiceImpl {
         return DocumentService.NXQL_PATH_STARTSWITH + getPathFromId(subprojectId) + "'";
     }
 
-    public static String buildCriteriaSeenFromSubproject(DocumentModel subprojectNode)
+    // TODO : Add a new param : visibitiy strict or depth
+    public static String buildCriteriaSeenFromSubproject(DocumentModel subprojectNode/*, String visibility*/)
             throws PropertyException, ClientException {
         // Filter by subproject
         String implVisibleSubprojectIds = null;

@@ -30,7 +30,10 @@
             <li>${project}
                 <ul>
                 <#list projectIdToSubproject[project] as subProject>
-                    <li><a href="${Root.path}/../?subprojectId=${subProject['spnode:subproject']}">${subProject['dc:title']} - ${subProject.versionLabel}</a></li>
+                    <!--<li><a href="${Root.path}/../?subprojectId=${subProject['spnode:subproject']}">${subProject['dc:title']} - ${subProject.versionLabel}</a></li>-->
+                    <li> 
+                        ${subProject['dc:title']} - ${subProject.versionLabel} (<a href="${Root.path}/../?subprojectId=${subProject['spnode:subproject']}&visibility=strict">Strict</a>, <a href="${Root.path}/../?subprojectId=${subProject['spnode:subproject']}&visibility=depth">Depth</a>)
+                    </li>
                 </#list>
                 </ul>
            </li>

@@ -38,7 +38,7 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
      * 
      */
     @Override
-    public ServiceInformations queryWSDLInterfaces(String search, String subProjectId, String visibility) throws Exception {
+    public ServiceInformations queryWSDLInterfaces(String search, String subProjectId/*, String visibility*/) throws Exception {
         
         CoreSession documentManager = SessionFactory.getSession(request);
         DocumentService documentService = Framework.getService(DocumentService.class);
@@ -120,8 +120,8 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
     /**
      * 
      */
-    @Override
-    public EndpointInformations queryEndpoints(String search, String subProjectId, String visibility) throws Exception {
+    //@Override
+    public EndpointInformations queryEndpoints(String search, String subProjectId/*, String visibility*/) throws Exception {
         CoreSession documentManager = SessionFactory.getSession(request);
         return SimpleRegistryServiceImpl.queryEndpoints(documentManager, search, subProjectId/*, visibility*/);
     }
@@ -180,11 +180,11 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
         return endpointInformations;
     }
     
-    @Override
-    public ServiceInformations queryServicesWithEndpoints(String search, String subProjectId, String visibility) throws Exception {
+    //@Override
+    public ServiceInformations queryServicesWithEndpoints(String search, String subProjectId/*, String visibility*/) throws Exception {
         
         // Get services 
-        ServiceInformations serviceInformations = this.queryWSDLInterfaces(search, subProjectId, visibility);
+        ServiceInformations serviceInformations = this.queryWSDLInterfaces(search, subProjectId/*, visibility*/);
 
         // For each service, get the corresponding endpoints
         for(ServiceInformation serviceInformation : serviceInformations.getServiceInformationList()){

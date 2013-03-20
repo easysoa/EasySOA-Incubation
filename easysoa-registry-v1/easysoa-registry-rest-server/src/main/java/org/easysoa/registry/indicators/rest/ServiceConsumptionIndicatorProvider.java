@@ -10,6 +10,7 @@ import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceConsumption;
 import org.easysoa.registry.types.ids.SoaNodeId;
+import org.easysoa.registry.utils.ContextVisibility;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -33,7 +34,7 @@ public class ServiceConsumptionIndicatorProvider implements IndicatorProvider {
         if (subprojectId == null) {
             subprojectPathCriteria = "";
         } else {
-            if("depth".equals(visibility)){
+            if(ContextVisibility.DEPTH.getValue().equals(visibility)){
                 subprojectPathCriteria = DocumentService.NXQL_AND + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));
             } else {
                 subprojectPathCriteria = DocumentService.NXQL_AND + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);

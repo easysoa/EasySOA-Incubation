@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SubprojectServiceImpl;
+import org.easysoa.registry.utils.ContextVisibility;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -39,7 +40,7 @@ public abstract class QueryCountIndicator extends Indicator {
             subprojectPathCriteria = "";
         } else {
             //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
-            if("depth".equals(visibility)){
+            if(ContextVisibility.DEPTH.getValue().equals(visibility)){
                 subprojectPathCriteria = DocumentService.NXQL_AND
                     + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
             } else {

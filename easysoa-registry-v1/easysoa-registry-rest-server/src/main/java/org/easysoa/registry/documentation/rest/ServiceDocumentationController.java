@@ -46,6 +46,7 @@ import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.types.adapters.SoaNodeAdapter;
 import org.easysoa.registry.types.ids.SoaNodeId;
+import org.easysoa.registry.utils.ContextVisibility;
 import org.easysoa.registry.utils.RepositoryHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -89,7 +90,7 @@ public class ServiceDocumentationController extends ModuleRoot {
             subprojectPathCriteria = "";
         } else {
             //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
-            if("depth".equals(visibility)){
+            if(ContextVisibility.DEPTH.getValue().equals(visibility)){
                 subprojectPathCriteria = DocumentService.NXQL_AND
                     + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
             } else {
@@ -224,7 +225,7 @@ public class ServiceDocumentationController extends ModuleRoot {
             subprojectPathCriteria = "";
         } else {
             //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
-            if("depth".equals(visibility)){
+            if(ContextVisibility.DEPTH.getValue().equals(visibility)){
                 subprojectPathCriteria = DocumentService.NXQL_AND
                     + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
             } else {
@@ -264,7 +265,7 @@ public class ServiceDocumentationController extends ModuleRoot {
             subprojectPathCriteria = "";
         } else {
             //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
-            if("depth".equals(visibility)){
+            if(ContextVisibility.DEPTH.getValue().equals(visibility)){
                 subprojectPathCriteria = DocumentService.NXQL_AND
                     + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
             } else {

@@ -15,6 +15,7 @@ import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
+import org.easysoa.registry.utils.ContextVisibility;
 import org.easysoa.registry.utils.EmptyDocumentModelList;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -23,7 +24,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
-
 
 /**
  * TODO matching should be attempted / done if at least one exact (portType, endpointUrl)
@@ -68,7 +68,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		MatchingQuery query = new MatchingQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE);
 
         // Filter by subproject
-        if("depth".equals(visibility)){
+        if(ContextVisibility.DEPTH.getValue().equals(visibility)){
             query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint));
         } else {
             query.addCriteria(SubprojectServiceImpl.buildCriteriaInSubproject(endpoint.getId()));
@@ -201,7 +201,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
 
         // Filter by subproject
-        if("depth".equals(visibility)){
+        if(ContextVisibility.DEPTH.getValue().equals(visibility)){
             query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint));
         } else {
             query.addCriteria(SubprojectServiceImpl.buildCriteriaInSubproject(endpoint.getId()));

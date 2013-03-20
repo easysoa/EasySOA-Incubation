@@ -12,6 +12,7 @@ import org.easysoa.registry.rest.integration.ServiceInformation;
 import org.easysoa.registry.rest.integration.ServiceInformations;
 import org.easysoa.registry.rest.integration.SimpleRegistryService;
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.utils.ContextVisibility;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -69,7 +70,7 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
             DocumentModel subProjectModel = SubprojectServiceImpl.getSubprojectById(documentManager, subProjectId);
             if(subProjectModel != null){
                // Get subproject according to context visibility
-               if("depth".equals(visibility)){
+               if(ContextVisibility.DEPTH.getValue().equals(visibility)){
                    subProjectCriterias = SubprojectServiceImpl.buildCriteriaSeenFromSubproject(subProjectModel);
                }
                else {
@@ -164,14 +165,14 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
             String subProjectCriterias = "";
             DocumentModel subProjectModel = SubprojectServiceImpl.getSubprojectById(documentManager, subProjectId);
             if(subProjectModel != null){
-               if("depth".equals(visibility)){
+               if(ContextVisibility.DEPTH.getValue().equals(visibility)){
                     subProjectCriterias = SubprojectServiceImpl.buildCriteriaSeenFromSubproject(subProjectModel);    
                } else {
                    subProjectCriterias = SubprojectServiceImpl.buildCriteriaInSubproject(subProjectId);
                }
                
                if(searchParamIncluded){
-                   query.append(" AND ").append(subProjectCriterias);    
+                   query.append(" AND ").append(subProjectCriterias);
                } else {
                    query.append(" WHERE ").append(subProjectCriterias);
                }

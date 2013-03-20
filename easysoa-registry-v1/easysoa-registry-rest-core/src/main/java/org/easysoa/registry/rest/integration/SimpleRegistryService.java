@@ -68,6 +68,7 @@ public interface SimpleRegistryService {
      * @param search looked up in name, description, in interface extracted metas (portType)
      * OPT in interface fulltext
      * @param subProjectId if null, looks up in all subprojects
+     * @param visibility subprojects visibility strict or depth
      * OPT in the configured entreprise-wide environment(s)
      * & version strategy (ex. "staging : latest published, integration : latest")
      * OPT may be provided from FraSCAtiStudio app (name ?)
@@ -81,7 +82,9 @@ public interface SimpleRegistryService {
     @Path("/queryWSDLInterfaces")
     public ServiceInformations queryWSDLInterfaces(
             @QueryParam("search") String search, 
-            @QueryParam("subProjectId") String subProjectId/*,
+            @QueryParam("subProjectId") String subProjectId,
+            @QueryParam("visibility") String visibility
+            /*,
             @QueryParam("platformServiceStandard") String platformServiceStandard,
             @QueryParam("wsBindingTransport") String wsBindingTransport,
             @QueryParam("platform") String platform*/ ) throws Exception;
@@ -142,13 +145,16 @@ public interface SimpleRegistryService {
      * 
      * @param search looked up in name, description, in interface extracted metas (portType)
      * @param subProjectId if null, looks up in all subprojects
+     * @param visibility subprojects visibility strict or depth
      * @return WSDLInformation array
      * @throws Exception If a problem occurs
      */
     @GET
     @Path("/queryEndpoints")
     public EndpointInformations queryEndpoints(@QueryParam("search") String search, 
-            @QueryParam("subProjectId") String subProjectId/*,
+            @QueryParam("subProjectId") String subProjectId, 
+            @QueryParam("visibility") String visibility
+            /*,
             @QueryParam("platformServiceStandard") String platformServiceStandard,
             @QueryParam("wsBindingTransport") String wsBindingTransport,
             @QueryParam("platform") String platform,
@@ -242,10 +248,12 @@ public interface SimpleRegistryService {
      * array.
      *  
      * @search if null, returns all of them
+     * 
      */
     @GET
     @Path("/queryServicesWithEndpoints")
     public ServiceInformations queryServicesWithEndpoints(@QueryParam("search") String search, 
-            @QueryParam("subProjectId") String subProjectId ) throws Exception;
+            @QueryParam("subProjectId") String subProjectId, 
+            @QueryParam("visibility") String visibility ) throws Exception;
    
 }

@@ -27,6 +27,6 @@ public interface IndicatorProvider {
      * @throws Exception
      */
     Map<String, IndicatorValue> computeIndicators(CoreSession session, String subprojectId,
-            Map<String, IndicatorValue> computedIndicators) throws Exception;
+            Map<String, IndicatorValue> computedIndicators, String visibility) throws Exception;
     
 }

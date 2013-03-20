@@ -23,7 +23,7 @@ public class TagsIndicatorProvider implements IndicatorProvider {
 
     @Override
     public Map<String, IndicatorValue> computeIndicators(CoreSession session, String subprojectId,
-            Map<String, IndicatorValue> computedIndicators) throws Exception {
+            Map<String, IndicatorValue> computedIndicators, String visibility) throws Exception {
         DocumentService documentService = Framework.getService(DocumentService.class);
         UserManager userManager = Framework.getService(UserManager.class);
 
@@ -33,8 +33,13 @@ public class TagsIndicatorProvider implements IndicatorProvider {
         if (subprojectId == null) {
             subprojectPathCriteria = "";
         } else {
-            subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
+            if("depth".equals(visibility)){
+                subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
+            } else {
+                subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);                
+            }
         }
         
         // Count users
@@ -57,7 +62,7 @@ public class TagsIndicatorProvider implements IndicatorProvider {
         
         // Count tagging folders
         DoctypeCountIndicator taggingFolderCount = new DoctypeCountIndicator(TaggingFolder.DOCTYPE);
-        IndicatorValue taggingFolderCountValue = taggingFolderCount.compute(session, subprojectId, computedIndicators);
+        IndicatorValue taggingFolderCountValue = taggingFolderCount.compute(session, subprojectId, computedIndicators, visibility);
         
         // Register indicators
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();

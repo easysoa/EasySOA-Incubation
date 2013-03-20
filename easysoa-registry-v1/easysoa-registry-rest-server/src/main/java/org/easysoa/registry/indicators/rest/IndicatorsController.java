@@ -116,7 +116,7 @@ public class IndicatorsController extends ModuleRoot {
             subprojectId = null;
         }
         
-        Map<String, Map<String, IndicatorValue>> indicatorsByCategory = computeIndicators(subprojectId);
+        Map<String, Map<String, IndicatorValue>> indicatorsByCategory = computeIndicators(subprojectId, visibility);
         
         // Create and return view
         HashMap<String, Integer> nbMap = new HashMap<String, Integer>();
@@ -142,16 +142,16 @@ public class IndicatorsController extends ModuleRoot {
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Object doGetJSON(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId) throws Exception {
+    public Object doGetJSON(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         
         subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
         // TODO default or not ??
         
-        return computeIndicators(subprojectId);
+        return computeIndicators(subprojectId, visibility);
     }
     
-    private Map<String, Map<String, IndicatorValue>> computeIndicators(String subprojectId) throws Exception {
+    private Map<String, Map<String, IndicatorValue>> computeIndicators(String subprojectId, String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         
         List<IndicatorProvider> computedProviders = new ArrayList<IndicatorProvider>();
@@ -191,7 +191,7 @@ public class IndicatorsController extends ModuleRoot {
                             Map<String, IndicatorValue> indicators = null;
                             try {
                                 indicators = indicatorProvider
-                                        .computeIndicators(session, subprojectId, computedIndicators);
+                                        .computeIndicators(session, subprojectId, computedIndicators, visibility);
                             }
                             catch (Exception e) {
                                 logger.warn("Failed to compute indicator '" + indicatorProvider.toString() + "': " + e.getMessage());

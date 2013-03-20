@@ -42,7 +42,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
     private static Logger logger = Logger.getLogger(DiscoveryServiceImpl.class);
 
     public DocumentModel runDiscovery(CoreSession documentManager, SoaNodeId identifier,
-            Map<String, Object> properties, List<SoaNodeId> parentDocuments) throws Exception {
+            Map<String, Object> properties, List<SoaNodeId> parentDocuments, String visibility) throws Exception {
     	
         DocumentService documentService = Framework.getService(DocumentService.class);
         ServiceMatchingService serviceMatchingService = Framework.getService(ServiceMatchingService.class);
@@ -89,10 +89,10 @@ public class DiscoveryServiceImpl implements DiscoveryService {
             String filterComponentId = null; //TODO ??
             if (documentService.isTypeOrSubtype(documentManager, identifier.getType(), InformationService.DOCTYPE)) {
             matchingFirstResults = serviceMatchingService.findInformationServices(documentManager,
-                    newDocumentModel, filterComponentId, false, true);
+                    newDocumentModel, filterComponentId, false, true, visibility);
             } else if (documentService.isTypeOrSubtype(documentManager, identifier.getType(), ServiceImplementation.DOCTYPE)) {
             matchingFirstResults = endpointMatchingService.findServiceImplementations(documentManager,
-                    newDocumentModel, filterComponentId, false, true);
+                    newDocumentModel, filterComponentId, false, true, visibility);
             }
             
             if (matchingFirstResults.size() == 1) {

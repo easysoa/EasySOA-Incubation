@@ -21,7 +21,7 @@ public interface ServiceMatchingService {
 	 */
 	public abstract DocumentModelList findInformationServices(CoreSession documentManager,
 	        DocumentModel impl, String filterComponentId,
-	        boolean skipPlatformMatching, boolean requireAtLeastOneExactCriteria/*, String visibility*/) throws ClientException;
+	        boolean skipPlatformMatching, boolean requireAtLeastOneExactCriteria, String visibility) throws ClientException;
 
 	/**
 	 * @param documentManager

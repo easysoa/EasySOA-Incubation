@@ -28,7 +28,7 @@ public class ServiceStateProvider implements IndicatorProvider {
     
     @Override
     public Map<String, IndicatorValue> computeIndicators(CoreSession session, String subprojectId,
-            Map<String, IndicatorValue> computedIndicators) throws Exception {
+            Map<String, IndicatorValue> computedIndicators, String visibility) throws Exception {
         DocumentService documentService = Framework.getService(DocumentService.class);
 
         //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
@@ -37,8 +37,13 @@ public class ServiceStateProvider implements IndicatorProvider {
         if (subprojectId == null) {
             subprojectPathCriteria = "";
         } else {
-            subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
+            if("depth".equals(visibility)){
+                subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));
+            } else {
+                subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);
+            }
         }
         
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();

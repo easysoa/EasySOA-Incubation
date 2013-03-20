@@ -55,7 +55,7 @@ public class ServiceConsumptionIndicatorProviderTest extends AbstractWebEngineTe
         discoveryService.runDiscovery(documentManager,
                 new SoaNodeId(JavaServiceImplementation.DOCTYPE, "ServiceImpl0"),
                 deliverableProperties, 
-                Arrays.asList(new SoaNodeId(Deliverable.DOCTYPE, "DelivOfService0")));
+                Arrays.asList(new SoaNodeId(Deliverable.DOCTYPE, "DelivOfService0")), "strict");
         
         // Make Service1 consume Service0
         SoaNodeId service1DelivId = new SoaNodeId(Deliverable.DOCTYPE, "DelivOfService1");
@@ -63,13 +63,13 @@ public class ServiceConsumptionIndicatorProviderTest extends AbstractWebEngineTe
         discoveryService.runDiscovery(documentManager,
                 new SoaNodeId(JavaServiceImplementation.DOCTYPE, "ServiceImpl1"),
                 null, 
-                Arrays.asList(service1DelivId));
+                Arrays.asList(service1DelivId), "strict");
         Map<String, Object> consumptionProperties = new HashMap<String, Object>();
         consumptionProperties.put(JavaServiceConsumption.XPATH_CONSUMEDINTERFACE, WS_ITF);
         discoveryService.runDiscovery(documentManager,
                 new SoaNodeId(JavaServiceConsumption.DOCTYPE, "Service1ConsumptionOfService0"),
                 consumptionProperties , 
-                Arrays.asList(service1DelivId));
+                Arrays.asList(service1DelivId), "strict");
         
         documentManager.save();
         

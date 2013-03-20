@@ -49,11 +49,11 @@ public class SoaNodeMatchingListener implements EventListener {
         // TODO check matching properties changes, in order to match only if they changed ??
         // TODO compute spnode props if subproject changed ??? NO would require to save (which would trigger event loop)
         
-        match(documentManager, sourceDocument);
+        match(documentManager, sourceDocument, "strict");
     }
     
     
-    private void match(CoreSession documentManager, DocumentModel sourceDocument) throws ClientException {    
+    private void match(CoreSession documentManager, DocumentModel sourceDocument, String visibility) throws ClientException {    
 		DocumentService documentService;
 		ServiceMatchingService serviceMatchingService;
 		EndpointMatchingService endpointMatchingService;
@@ -70,7 +70,7 @@ public class SoaNodeMatchingListener implements EventListener {
 
         // Endpoint: Link to service implementation
         if (documentService.isTypeOrSubtype(documentManager, sourceDocument.getType(), Endpoint.DOCTYPE)) {
-        	findAndMatchServiceImplementation(documentManager, documentService, endpointMatchingService, sourceDocument);
+        	findAndMatchServiceImplementation(documentManager, documentService, endpointMatchingService, sourceDocument, visibility);
         }
         
         // Service impl: Link to information service and endpoints
@@ -79,14 +79,14 @@ public class SoaNodeMatchingListener implements EventListener {
                 // TODO better : lock placeholder impls, merge placeholder impls... 
                 && ((Boolean) sourceDocument.getPropertyValue(ServiceImplementation.XPATH_ISPLACEHOLDER)) != true) {
             DocumentModel serviceImpl = sourceDocument;
-        	findAndMatchInformationService(documentManager, serviceMatchingService, serviceImpl);
+        	findAndMatchInformationService(documentManager, serviceMatchingService, serviceImpl, visibility);
         	
         	// notify compatible unmatched endpoints that they may have found a match
         	// (only required if impls not versioned, since impls should have been discovered before endpoints)
             DocumentModelList foundEndpoints = endpointMatchingService.findEndpointsCompatibleWithImplementation(documentManager, serviceImpl);
             if (foundEndpoints.size() > 0) {
                 for (DocumentModel foundEndpoint : foundEndpoints) {
-                    findAndMatchServiceImplementation(documentManager, documentService, endpointMatchingService, foundEndpoint);
+                    findAndMatchServiceImplementation(documentManager, documentService, endpointMatchingService, foundEndpoint, visibility);
                 }
             }
             
@@ -102,7 +102,7 @@ public class SoaNodeMatchingListener implements EventListener {
         	DocumentModelList foundServiceImpls = serviceMatchingService.findImplementationsCompatibleWithService(documentManager, sourceDocument);
         	if (foundServiceImpls.size() > 0) {
             	for (DocumentModel serviceImpl : foundServiceImpls) {
-            		findAndMatchInformationService(documentManager, serviceMatchingService, serviceImpl);
+            		findAndMatchInformationService(documentManager, serviceMatchingService, serviceImpl, visibility);
             	}
         	}
         	
@@ -117,18 +117,18 @@ public class SoaNodeMatchingListener implements EventListener {
 
 	private void findAndMatchServiceImplementation(CoreSession documentManager,
 			DocumentService docService, EndpointMatchingService endpointMatchingService,
-			DocumentModel endpointDocument) throws ClientException {
+			DocumentModel endpointDocument, String visibility) throws ClientException {
 	    if (endpointMatchingService.isEndpointAlreadyMatched(endpointDocument, documentManager)) {
 	        return;
 	    }
 	    
 		DocumentModelList foundImpls = endpointMatchingService.findServiceImplementations(
-				documentManager, endpointDocument, null, false, true);
+				documentManager, endpointDocument, null, false, true, visibility);
 		if (foundImpls.size() == 1) {
 			try { // endpointMatchingService IMPROVE THAT called 4 times when links endpoints : endpoint created, impl modified, ..., endpoint proxy created
 			    endpointMatchingService.linkServiceImplementation(documentManager,
 						docService.createSoaNodeId(endpointDocument),
-						docService.createSoaNodeId(foundImpls.get(0)), true);
+						docService.createSoaNodeId(foundImpls.get(0)), true, visibility);
 			    // TODO if impl still unmatched and endpoint enriches impl with platform metas, trigger again IS match
 			}
 			catch (Exception e) {
@@ -137,11 +137,11 @@ public class SoaNodeMatchingListener implements EventListener {
 		}
 		else { //if (foundImpls.size() == 0) { // TODO better : find IS only among foundImpls if any
 			DocumentModelList foundIS = endpointMatchingService.findInformationServices(
-					documentManager, endpointDocument, null, true);
+					documentManager, endpointDocument, null, true, visibility);
 			if (foundIS.size() == 1) {
 				try {
 				    endpointMatchingService.linkInformationServiceThroughPlaceholder(documentManager,
-					        endpointDocument, foundIS.get(0), true);
+					        endpointDocument, foundIS.get(0), true, visibility);
 				}
 				catch (Exception e) {
 					logger.error(e);
@@ -152,14 +152,14 @@ public class SoaNodeMatchingListener implements EventListener {
 	}
 
     private void findAndMatchInformationService(CoreSession documentManager,
-			ServiceMatchingService serviceMatchingService, DocumentModel implDocument)
+			ServiceMatchingService serviceMatchingService, DocumentModel implDocument, String visibility)
 			throws ClientException {
 	    if (serviceMatchingService.isServiceImplementationAlreadyMatched(implDocument)) {
 	        return;
 	    }
 	    
 		DocumentModelList foundInformationServices = serviceMatchingService.findInformationServices(
-				documentManager, implDocument, null, false, true);
+				documentManager, implDocument, null, false, true, visibility);
 		if (foundInformationServices.size() == 1) {
 		    serviceMatchingService.linkInformationService(documentManager, implDocument,
 					foundInformationServices.get(0).getId(), true);

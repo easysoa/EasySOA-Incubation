@@ -88,9 +88,14 @@ public class ServiceDocumentationController extends ModuleRoot {
         if (subprojectId == null || subprojectId.length() == 0) {
             subprojectPathCriteria = "";
         } else {
-            subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
             //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
+            if("depth".equals(visibility)){
+                subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
+            } else {
+                subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);                
+            }
         }
         
         DocumentModelList services = session.query("SELECT " + SERVICE_LIST_PROPS + " FROM " + InformationService.DOCTYPE
@@ -218,8 +223,14 @@ public class ServiceDocumentationController extends ModuleRoot {
         if (subprojectId == null || subprojectId.length() == 0) {
             subprojectPathCriteria = "";
         } else {
-            subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
+            //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
+            if("depth".equals(visibility)){
+                subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
+            } else {
+                subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);                
+            }
         }
         
         String query = DocumentService.NXQL_SELECT_FROM
@@ -252,8 +263,14 @@ public class ServiceDocumentationController extends ModuleRoot {
         if (subprojectId == null || subprojectId.length() == 0) {
             subprojectPathCriteria = "";
         } else {
-            subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
+            //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
+            if("depth".equals(visibility)){
+                subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
+            } else {
+                subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);                
+            }
         }
         //TODO ?? SubprojectID mandatory to find service ....
         DocumentModel service = docService.find(session, new SoaNodeId(subprojectId, InformationService.DOCTYPE, serviceName));

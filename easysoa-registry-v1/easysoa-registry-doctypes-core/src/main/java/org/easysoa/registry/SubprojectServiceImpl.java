@@ -413,12 +413,33 @@ public class SubprojectServiceImpl {
         return project;
     }
     
-    public static String buildCriteriaInSubprojectUsingPathFromId(String subprojectId) {
+    /**
+     * TODO probably wrong for versions (and doesn't exclude versions if not) !!
+     * @obsolete rather use buildCriteriaInSubproject() which is correct
+     * @param subprojectId
+     * @return 
+     */
+    public static String getSubprojectById(String subprojectId) {
         return DocumentService.NXQL_PATH_STARTSWITH + getPathFromId(subprojectId) + "'";
     }
+    
+    /**
+     * 
+     * @param subprojectId
+     * @return 
+     */
+    public static String buildCriteriaInSubproject(String subprojectId) {
+        return SubprojectNode.XPATH_SUBPROJECT + "='" + subprojectId + "'";
+    }
 
-    // TODO : Add a new param : visibitiy strict or depth
-    public static String buildCriteriaSeenFromSubproject(DocumentModel subprojectNode/*, String visibility*/)
+    /**
+     * Builds a criteria to add to a NXQL resquest to get the subproject and it's parents
+     * @param subprojectNode The subproject DocumentModel
+     * @return The criteria
+     * @throws PropertyException
+     * @throws ClientException 
+     */
+    public static String buildCriteriaSeenFromSubproject(DocumentModel subprojectNode)
             throws PropertyException, ClientException {
         // Filter by subproject
         String implVisibleSubprojectIds = null;
@@ -429,6 +450,7 @@ public class SubprojectServiceImpl {
         if (implVisibleSubprojectIds == null) {
             throw new ClientException("visibleSubprojects should not be null on " + subprojectNode);
         }
+        
         // ex. "AXXXSpecifications"; // or in 2 pass & get it from subProject ??
         return SubprojectNode.XPATH_SUBPROJECT + " IN (" + implVisibleSubprojectIds + ")";
     }

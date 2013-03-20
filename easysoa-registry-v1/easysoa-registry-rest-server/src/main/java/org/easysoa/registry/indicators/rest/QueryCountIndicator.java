@@ -31,16 +31,21 @@ public abstract class QueryCountIndicator extends Indicator {
 
     @Override
     public IndicatorValue compute(CoreSession session,  String subprojectId,
-            Map<String, IndicatorValue> computedIndicators) throws ClientException {
+            Map<String, IndicatorValue> computedIndicators, String visibility) throws ClientException {
         //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
         // TODO default or not ??
         String subprojectPathCriteria;
         if (subprojectId == null) {
             subprojectPathCriteria = "";
         } else {
-            subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
-            // TODO : Replace SubprojectServiceImpl.buildCriteriaSeenFromSubproject(....)
+            //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
+            if("depth".equals(visibility)){
+                subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
+            } else {
+                subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);                
+            }            
         }
         
         IterableQueryResult queryResult = session.queryAndFetch(valueQuery + subprojectPathCriteria, NXQL.NXQL);

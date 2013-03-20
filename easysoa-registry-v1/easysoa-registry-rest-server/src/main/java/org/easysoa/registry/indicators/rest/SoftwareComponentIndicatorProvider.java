@@ -41,7 +41,7 @@ public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
 
     @Override
     public Map<String, IndicatorValue> computeIndicators(CoreSession session, String subprojectId,
-            Map<String, IndicatorValue> computedIndicators) throws Exception {
+            Map<String, IndicatorValue> computedIndicators, String visibility) throws Exception {
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
 
         subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);

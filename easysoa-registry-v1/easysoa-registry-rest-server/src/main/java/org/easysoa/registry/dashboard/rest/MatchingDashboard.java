@@ -43,7 +43,7 @@ public class MatchingDashboard extends ModuleRoot {
         private static Logger logger = Logger.getLogger(MatchingDashboard.class);    
     
 	@GET
-	public Template viewDashboard(@QueryParam("subprojectId") String subProjectId) {
+	public Template viewDashboard(@QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) {
         CoreSession session = SessionFactory.getSession(request);
 		try {
 			DocumentService docService = Framework.getService(DocumentService.class);
@@ -94,6 +94,7 @@ public class MatchingDashboard extends ModuleRoot {
 					 true, false);
 			view.arg("servWithoutSpecs", servWithoutSpecs);
 			view.arg("subprojectId", subProjectId);
+                        view.arg("visibility", visibility);
 			return view;
 		} catch (Exception e) {
 			return getView("error").arg("error", e);
@@ -102,21 +103,22 @@ public class MatchingDashboard extends ModuleRoot {
 
 	@GET
 	@Path("components/{uuid}")
-	public Template suggestComponents(@PathParam("uuid") String uuid, @QueryParam("subprojectId") String subProjectId) throws Exception {
+	public Template suggestComponents(@PathParam("uuid") String uuid, @QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
-		Template view = viewDashboard(subProjectId);
+		Template view = viewDashboard(subProjectId, visibility);
 		view.arg("components", fetchComponents(session));
 		view.arg("selectedModel", uuid);
-                view.arg("subprojectId", subProjectId);                
+                view.arg("subprojectId", subProjectId);
+                view.arg("visibility", visibility);
 		return view;
 	}
 	
 	@GET
 	@Path("suggest/{uuid}")
-	public Template suggestServices(@PathParam("uuid") String uuid, @QueryParam("subprojectId") String subProjectId) throws Exception {
+	public Template suggestServices(@PathParam("uuid") String uuid, @QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentModel model = session.getDocument(new IdRef(uuid));
-		Template view = viewDashboard(subProjectId);
+		Template view = viewDashboard(subProjectId, visibility);
 
 		// Args: suggestions
 		List<DocumentModel> suggestions = fetchSuggestions(session, model, null, false);
@@ -131,7 +133,8 @@ public class MatchingDashboard extends ModuleRoot {
 		
 		// Arg: selected document
 		view.arg("selectedModel", uuid);
-		view.arg("subprojectId", subProjectId);                
+		view.arg("subprojectId", subProjectId);
+                view.arg("visibility", visibility);
 		return view;
 	}
 
@@ -139,10 +142,11 @@ public class MatchingDashboard extends ModuleRoot {
 	@Path("suggest/{uuid}/{componentUuid}")
 	public Template suggestServicesFromComponent(@PathParam("uuid") String uuid,
 			@PathParam("componentUuid") String componentUuid, 
-                        @QueryParam("subprojectId") String subProjectId) throws Exception {
+                        @QueryParam("subprojectId") String subProjectId,
+                        @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentModel model = session.getDocument(new IdRef(uuid));
-		Template view = viewDashboard(subProjectId);
+		Template view = viewDashboard(subProjectId, visibility);
 
 		// Args: components
 		List<DocumentModel> components = fetchComponents(session);
@@ -181,13 +185,15 @@ public class MatchingDashboard extends ModuleRoot {
 		// Arg: selected document
 		view.arg("selectedModel", uuid);
 		view.arg("subprojectId", subProjectId);
+                view.arg("visibility", visibility);
 		return view;
 	}
 	
 	@POST
 	public Object submit(@FormParam("unmatchedModelId") String unmatchedModelId,
 			@FormParam("targetId") String targetId, 
-                        @QueryParam("subprojectId") String subProjectId) {
+                        @QueryParam("subprojectId") String subProjectId,
+                        @QueryParam("visibility") String visibility) {
 	    try {
 	    	if (unmatchedModelId != null && !unmatchedModelId.isEmpty()) {
 	    		// Fetch impl
@@ -225,9 +231,9 @@ public class MatchingDashboard extends ModuleRoot {
 					matchingService.linkServiceImplementation(session,
 							docService.createSoaNodeId(model),
 							((newTargetId != null) ? docService.createSoaNodeId(session.getDocument(new IdRef(newTargetId))) : null),
-							true);
+							true, "strict");
 				}
-				return viewDashboard(subProjectId);
+				return viewDashboard(subProjectId, visibility).arg("visibility", visibility);
 	    	}
 	    	else {
 	    		throw new Exception("Service Implementation not selected");
@@ -239,9 +245,9 @@ public class MatchingDashboard extends ModuleRoot {
 
 	@POST
 	@Path("samples")
-	public Object submit(@QueryParam("subprojectId") String subProjectId) throws Exception {
+	public Object submit(@QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) throws Exception {
 		new DashboardMatchingSamples("http://localhost:8080").run();
-		return viewDashboard(subProjectId);
+		return viewDashboard(subProjectId, visibility).arg("visibility", visibility);
 	}
 	
 	private List<DocumentModel> fetchComponents(CoreSession session) throws Exception {
@@ -256,12 +262,12 @@ public class MatchingDashboard extends ModuleRoot {
 			if (Endpoint.DOCTYPE.equals(model.getType())) {
 				EndpointMatchingService matchingService = Framework.getService(EndpointMatchingService.class);
 				return matchingService.findServiceImplementations(session,
-				        model, componentUuid, skipPlatformMatching, false);
+				        model, componentUuid, skipPlatformMatching, false, "strict");
 			}
 			else { // ServiceImplementation
 				ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);
 				return matchingService.findInformationServices(session,
-				        model, componentUuid, skipPlatformMatching, false);
+				        model, componentUuid, skipPlatformMatching, false, "strict");
 			}
 		}
 		else {

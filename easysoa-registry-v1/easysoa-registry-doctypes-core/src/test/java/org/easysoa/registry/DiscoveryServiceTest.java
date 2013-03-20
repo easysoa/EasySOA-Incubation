@@ -55,7 +55,7 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         properties.put(Endpoint.XPATH_TITLE, "My Endpoint");
         
         // Run discovery
-        discoveryService.runDiscovery(documentManager, discoveredEndpointId, properties, null);
+        discoveryService.runDiscovery(documentManager, discoveredEndpointId, properties, null, "strict");
         documentManager.save();
         
         // Check results
@@ -95,7 +95,7 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         parentDocuments.add(softwareCompId);
         
         // Run discovery
-        discoveryService.runDiscovery(documentManager, discoveredEndpointId, null, parentDocuments);
+        discoveryService.runDiscovery(documentManager, discoveredEndpointId, null, parentDocuments, "strict");
         documentManager.save();
         
         // Check results
@@ -120,7 +120,7 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         // Rediscover the same endpoint with new info
         properties = new HashMap<String, Object>();
         properties.put("dc:description", "Blahblah");
-        discoveryService.runDiscovery(documentManager, discoveredEndpointId, properties, null);
+        discoveryService.runDiscovery(documentManager, discoveredEndpointId, properties, null, "strict");
         documentManager.save();
         
         // Check that the endpoint has properties from both discoveries

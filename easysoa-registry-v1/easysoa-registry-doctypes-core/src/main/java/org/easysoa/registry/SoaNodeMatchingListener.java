@@ -50,7 +50,7 @@ public class SoaNodeMatchingListener implements EventListener {
         // TODO check matching properties changes, in order to match only if they changed ??
         // TODO compute spnode props if subproject changed ??? NO would require to save (which would trigger event loop)
         
-        match(documentManager, sourceDocument, ContextVisibility.DEPTH.getValue());
+        match(documentManager, sourceDocument, ContextVisibility.DEEP.getValue());
     }
     
     

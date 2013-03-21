@@ -9,7 +9,7 @@ public enum ContextVisibility {
     
     // Context enum values
     STRICT("strict"),
-    DEPTH("depth");
+    DEEP("deep"); // Default value !
     
     // Enum value
     private String value;

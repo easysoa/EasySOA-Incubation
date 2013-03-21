@@ -24,7 +24,7 @@
     </div>
 
     <div id="container">
-        Projects and subprojects :
+        Projects phases and their versions :
         <ul>
         <#list projectIdToSubproject?keys as project>
             <li>${project}
@@ -32,7 +32,7 @@
                 <#list projectIdToSubproject[project] as subProject>
                     <!--<li><a href="${Root.path}/../?subprojectId=${subProject['spnode:subproject']}">${subProject['dc:title']} - ${subProject.versionLabel}</a></li>-->
                     <li> 
-                        ${subProject['dc:title']} - ${subProject.versionLabel} (<a href="${Root.path}/../?subprojectId=${subProject['spnode:subproject']}&visibility=strict">Strict</a>, <a href="${Root.path}/../?subprojectId=${subProject['spnode:subproject']}&visibility=depth">Depth</a>)
+                        ${subProject['dc:title']} - ${subProject.versionLabel} (<a href="${Root.path}/../?subprojectId=${subProject['spnode:subproject']}&visibility=deep">Deep</a>, <a href="${Root.path}/../?subprojectId=${subProject['spnode:subproject']}&visibility=strict">Strict</a>)
                     </li>
                 </#list>
                 </ul>

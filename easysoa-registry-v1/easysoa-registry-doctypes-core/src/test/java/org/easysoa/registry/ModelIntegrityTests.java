@@ -85,7 +85,7 @@ public class ModelIntegrityTests extends AbstractRegistryTest {
         properties.put(Endpoint.XPATH_URL, "Other URL");
         
         try {
-        	discoveryService.runDiscovery(documentManager, endpointId, properties, null, ContextVisibility.DEPTH.getValue());
+        	discoveryService.runDiscovery(documentManager, endpointId, properties, null, ContextVisibility.DEEP.getValue());
 			Assert.fail("Update of an Endpoint URL must fail");
 		} catch (ModelIntegrityException e) {
 			logger.info("Discovery exception success");
@@ -96,7 +96,7 @@ public class ModelIntegrityTests extends AbstractRegistryTest {
         properties.put(Endpoint.XPATH_SOANAME, "Other name");
         
         try {
-        	discoveryService.runDiscovery(documentManager, endpointId, properties, null, ContextVisibility.DEPTH.getValue());
+        	discoveryService.runDiscovery(documentManager, endpointId, properties, null, ContextVisibility.DEEP.getValue());
 			Assert.fail("Update of an SOA name must fail");
 		} catch (ModelIntegrityException e) {
 			logger.info("Discovery exception message " + e.getMessage());

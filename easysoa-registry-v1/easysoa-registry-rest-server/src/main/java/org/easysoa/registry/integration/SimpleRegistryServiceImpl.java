@@ -70,7 +70,7 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
             DocumentModel subProjectModel = SubprojectServiceImpl.getSubprojectById(documentManager, subProjectId);
             if(subProjectModel != null){
                // Get subproject according to context visibility
-               if(ContextVisibility.DEPTH.getValue().equals(visibility)){
+               if(ContextVisibility.DEEP.getValue().equals(visibility)){
                    subProjectCriterias = SubprojectServiceImpl.buildCriteriaSeenFromSubproject(subProjectModel);
                }
                else {
@@ -165,7 +165,7 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
             String subProjectCriterias = "";
             DocumentModel subProjectModel = SubprojectServiceImpl.getSubprojectById(documentManager, subProjectId);
             if(subProjectModel != null){
-               if(ContextVisibility.DEPTH.getValue().equals(visibility)){
+               if(ContextVisibility.DEEP.getValue().equals(visibility)){
                     subProjectCriterias = SubprojectServiceImpl.buildCriteriaSeenFromSubproject(subProjectModel);    
                } else {
                    subProjectCriterias = SubprojectServiceImpl.buildCriteriaInSubproject(subProjectId);

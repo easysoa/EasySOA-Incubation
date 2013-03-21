@@ -58,7 +58,7 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
         MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
 
         // Filter by subproject
-        if(ContextVisibility.DEPTH.getValue().equals(visibility)){
+        if(ContextVisibility.DEEP.getValue().equals(visibility)){
             query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(impl)); // ex. "AXXXSpecifications"; // or in 2 pass & get it from subProject ??    
         } else {
             query.addCriteria(SubprojectServiceImpl.buildCriteriaInSubproject(impl.getId())); // ex. "AXXXSpecifications"; // or in 2 pass & get it from subProject ??    

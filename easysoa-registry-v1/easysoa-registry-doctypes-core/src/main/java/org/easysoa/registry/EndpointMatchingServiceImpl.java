@@ -68,7 +68,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		MatchingQuery query = new MatchingQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE);
 
         // Filter by subproject
-        if(ContextVisibility.DEPTH.getValue().equals(visibility)){
+        if(ContextVisibility.DEEP.getValue().equals(visibility)){
             query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint));
         } else {
             query.addCriteria(SubprojectServiceImpl.buildCriteriaInSubproject(endpoint.getId()));
@@ -201,7 +201,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
 
         // Filter by subproject
-        if(ContextVisibility.DEPTH.getValue().equals(visibility)){
+        if(ContextVisibility.DEEP.getValue().equals(visibility)){
             query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint));
         } else {
             query.addCriteria(SubprojectServiceImpl.buildCriteriaInSubproject(endpoint.getId()));

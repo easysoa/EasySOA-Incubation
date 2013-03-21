@@ -90,7 +90,7 @@ public class ServiceDocumentationController extends ModuleRoot {
             subprojectPathCriteria = "";
         } else {
             //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
-            if(ContextVisibility.DEPTH.getValue().equals(visibility)){
+            if(ContextVisibility.DEEP.getValue().equals(visibility)){
                 subprojectPathCriteria = DocumentService.NXQL_AND
                     + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
             } else {
@@ -225,7 +225,7 @@ public class ServiceDocumentationController extends ModuleRoot {
             subprojectPathCriteria = "";
         } else {
             //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
-            if(ContextVisibility.DEPTH.getValue().equals(visibility)){
+            if(ContextVisibility.DEEP.getValue().equals(visibility)){
                 subprojectPathCriteria = DocumentService.NXQL_AND
                     + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
             } else {
@@ -265,7 +265,7 @@ public class ServiceDocumentationController extends ModuleRoot {
             subprojectPathCriteria = "";
         } else {
             //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
-            if(ContextVisibility.DEPTH.getValue().equals(visibility)){
+            if(ContextVisibility.DEEP.getValue().equals(visibility)){
                 subprojectPathCriteria = DocumentService.NXQL_AND
                     + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
             } else {

@@ -43,19 +43,21 @@ public class MatchingDashboard extends ModuleRoot {
         private static Logger logger = Logger.getLogger(MatchingDashboard.class);    
     
 	@GET
-	public Template viewDashboard(@QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) {
+	public Template viewDashboard(@QueryParam("subprojectId") String subprojectId,
+	        @QueryParam("visibility") String visibility) {
         CoreSession session = SessionFactory.getSession(request);
 		try {
 			DocumentService docService = Framework.getService(DocumentService.class);
 			Template view = getView("index");
 			
-                        /*String subprojectPathCriteria;
-                        if (subProjectId == null || "".equals(subProjectId)) {
-                            subprojectPathCriteria = "";
-                        } else {
-                            subprojectPathCriteria = DocumentService.NXQL_AND
-                                + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subProjectId);
-                        }*/
+            String subprojectPathCriteria;
+            if (subprojectId == null || "".equals(subprojectId)) {
+                subprojectPathCriteria = "";
+            } else {
+                subprojectPathCriteria = DocumentService.NXQL_AND
+                        + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(
+                                SubprojectServiceImpl.getSubprojectById(session, subprojectId));
+            }
                         
 			// All information services
 			DocumentModelList allInfoServices = docService.query(session, "SELECT * FROM "
@@ -93,7 +95,7 @@ public class MatchingDashboard extends ModuleRoot {
 					 " WHERE " + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + " IS NULL " /*+ subprojectPathCriteria*/,
 					 true, false);
 			view.arg("servWithoutSpecs", servWithoutSpecs);
-			view.arg("subprojectId", subProjectId);
+			view.arg("subprojectId", subprojectId);
                         view.arg("visibility", visibility);
 			return view;
 		} catch (Exception e) {
@@ -231,7 +233,7 @@ public class MatchingDashboard extends ModuleRoot {
 					matchingService.linkServiceImplementation(session,
 							docService.createSoaNodeId(model),
 							((newTargetId != null) ? docService.createSoaNodeId(session.getDocument(new IdRef(newTargetId))) : null),
-							true, "strict");
+							true/*, "strict"*/);
 				}
 				return viewDashboard(subProjectId, visibility).arg("visibility", visibility);
 	    	}
@@ -262,12 +264,12 @@ public class MatchingDashboard extends ModuleRoot {
 			if (Endpoint.DOCTYPE.equals(model.getType())) {
 				EndpointMatchingService matchingService = Framework.getService(EndpointMatchingService.class);
 				return matchingService.findServiceImplementations(session,
-				        model, componentUuid, skipPlatformMatching, false, "strict");
+				        model, componentUuid, skipPlatformMatching, false/*, "strict"*/);
 			}
 			else { // ServiceImplementation
 				ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);
 				return matchingService.findInformationServices(session,
-				        model, componentUuid, skipPlatformMatching, false, "strict");
+				        model, componentUuid, skipPlatformMatching, false/*, "strict"*/);
 			}
 		}
 		else {

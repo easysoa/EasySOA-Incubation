@@ -21,7 +21,6 @@ import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 
 import com.google.inject.Inject;
-import org.easysoa.registry.utils.ContextVisibility;
 
 /**
  * 
@@ -56,7 +55,7 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         properties.put(Endpoint.XPATH_TITLE, "My Endpoint");
         
         // Run discovery
-        discoveryService.runDiscovery(documentManager, discoveredEndpointId, properties, null, ContextVisibility.DEEP.getValue());
+        discoveryService.runDiscovery(documentManager, discoveredEndpointId, properties, null);
         documentManager.save();
         
         // Check results
@@ -96,7 +95,7 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         parentDocuments.add(softwareCompId);
         
         // Run discovery
-        discoveryService.runDiscovery(documentManager, discoveredEndpointId, null, parentDocuments, ContextVisibility.DEEP.getValue());
+        discoveryService.runDiscovery(documentManager, discoveredEndpointId, null, parentDocuments);
         documentManager.save();
         
         // Check results
@@ -121,7 +120,7 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         // Rediscover the same endpoint with new info
         properties = new HashMap<String, Object>();
         properties.put("dc:description", "Blahblah");
-        discoveryService.runDiscovery(documentManager, discoveredEndpointId, properties, null, ContextVisibility.DEEP.getValue());
+        discoveryService.runDiscovery(documentManager, discoveredEndpointId, properties, null);
         documentManager.save();
         
         // Check that the endpoint has properties from both discoveries

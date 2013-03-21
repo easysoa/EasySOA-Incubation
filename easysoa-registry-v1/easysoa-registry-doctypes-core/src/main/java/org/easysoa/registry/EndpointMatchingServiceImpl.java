@@ -15,7 +15,6 @@ import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
-import org.easysoa.registry.utils.ContextVisibility;
 import org.easysoa.registry.utils.EmptyDocumentModelList;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -24,6 +23,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
+
 
 /**
  * TODO matching should be attempted / done if at least one exact (portType, endpointUrl)
@@ -51,7 +51,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     
 	public DocumentModelList findServiceImplementations(CoreSession documentManager,
 			DocumentModel endpoint, String filterComponentId,
-			boolean skipPlatformMatching, boolean requireAtLeastOneExactCriteria, String visibility) throws ClientException { // TODO impl vs runtime platform matching ?
+			boolean skipPlatformMatching, boolean requireAtLeastOneExactCriteria) throws ClientException { // TODO impl vs runtime platform matching ?
 
         // how should work matching in discovery & dashboard for :
         
@@ -68,12 +68,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		MatchingQuery query = new MatchingQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE);
 
         // Filter by subproject
-        if(ContextVisibility.DEEP.getValue().equals(visibility)){
-            query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint));
-        } else {
-            query.addCriteria(SubprojectServiceImpl.buildCriteriaInSubproject(endpoint.getId()));
-        }
-        
+        query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint));
 
     	// Match platform properties :
     	
@@ -193,7 +188,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     @Override
 	public DocumentModelList findInformationServices(CoreSession documentManager,
 	        DocumentModel endpoint, String filterComponentId,
-	        boolean requireAtLeastOneExactCriteria, String visibility) throws ClientException { // TODO impl vs runtime platform matching ?
+	        boolean requireAtLeastOneExactCriteria) throws ClientException { // TODO impl vs runtime platform matching ?
 		// Init
 		DocumentService documentService = getDocumentService();
         boolean anyExactCriteria = false;
@@ -201,12 +196,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     	MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
 
         // Filter by subproject
-        if(ContextVisibility.DEEP.getValue().equals(visibility)){
-            query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint));
-        } else {
-            query.addCriteria(SubprojectServiceImpl.buildCriteriaInSubproject(endpoint.getId()));
-        }
-        
+        query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint));
 
         // 1. IF A LINKED PLATFORM HAS BEEN PROVIDED FOR THE ENDPOINT BY THE PROBE EX. WEB DISCO
         if (endpoint.hasFacet(Endpoint.SCHEMA_ENDPOINT)
@@ -302,12 +292,12 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     
 	@Override
 	public void linkServiceImplementation(CoreSession documentManager,
-			SoaNodeId endpointId, SoaNodeId implId, boolean save, String visibility)
+			SoaNodeId endpointId, SoaNodeId implId, boolean save)
 			throws Exception {
 		if (implId != null) {
 			// Create link
 			DiscoveryService discoveryService = Framework.getService(DiscoveryService.class);
-			discoveryService.runDiscovery(documentManager, endpointId, null, Arrays.asList(implId), visibility); // null props, else saved which triggers loop
+			discoveryService.runDiscovery(documentManager, endpointId, null, Arrays.asList(implId)); // null props, else saved which triggers loop
 			// TODO or explicitly ??
 			// i.e. impl.SOA_NAME (= implId.getName()) == ep.getParentOfType(ServiceImplementation.DOCTYPE).getName()
 
@@ -332,7 +322,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 	@Override
 	public void linkInformationServiceThroughPlaceholder(
 			CoreSession documentManager, DocumentModel endpoint,
-			DocumentModel informationService, boolean save, String visibility) throws Exception {
+			DocumentModel informationService, boolean save) throws Exception {
 		DocumentService docService = getDocumentService();
 		
 		// Create placeholder impl (in endpoint subproject) :
@@ -363,7 +353,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		linkServiceImplementation(documentManager,
 				docService.createSoaNodeId(endpoint), 
 				docService.createSoaNodeId(implModel),
-				false, visibility);
+				false);
 
 		if (save) {
 			documentManager.save();

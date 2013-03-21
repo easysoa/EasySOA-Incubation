@@ -15,6 +15,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 public interface DiscoveryService {
 
     DocumentModel runDiscovery(CoreSession documentManager, SoaNodeId identifier,
-            Map<String, Object> properties, List<SoaNodeId> parentDocuments, String visibility) throws Exception;
+            Map<String, Object> properties, List<SoaNodeId> parentDocuments) throws Exception;
 
 }

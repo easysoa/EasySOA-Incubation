@@ -41,7 +41,7 @@ public class RegistryApiTest extends AbstractRestApiTest {
         logTestName(logger);
         defaultSubprojectId = null;
         discoveryService.runDiscovery(documentManager, new SoaNodeId(Component.DOCTYPE,
-                "ComponentForDefaultSubprojectIdInit"), null, null, "strict");
+                "ComponentForDefaultSubprojectIdInit"), null, null);
 
         // Fetch disco'd Component
         Client client = createAuthenticatedHTTPClient();
@@ -60,7 +60,7 @@ public class RegistryApiTest extends AbstractRestApiTest {
         // Fill repository for all tests
         for (int i = 0; i < SERVICE_COUNT; i++) {
             discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE,
-                    "MyService" + i), null, null, "strict");
+                    "MyService" + i), null, null);
         }
         documentManager.save();
 
@@ -139,7 +139,7 @@ public class RegistryApiTest extends AbstractRestApiTest {
 
         // Run discovery to make a proxy to delete
         SoaNodeId endpointId = new EndpointId("Production", "MyEndpoint");
-        discoveryService.runDiscovery(documentManager, endpointId, null, Arrays.asList(deliverableId), "strict");
+        discoveryService.runDiscovery(documentManager, endpointId, null, Arrays.asList(deliverableId));
 
         // Delete only proxy (TODO test as array)
         Client client = createAuthenticatedHTTPClient();

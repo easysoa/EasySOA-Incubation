@@ -22,11 +22,11 @@ public interface EndpointMatchingService {
 	 */
 	DocumentModelList findServiceImplementations(CoreSession documentManager,
 			DocumentModel endpoint, String filterComponentId,
-			boolean skipPlatformMatching, boolean requireAtLeastOneExactCriteria, String visibility) throws ClientException;
+			boolean skipPlatformMatching, boolean requireAtLeastOneExactCriteria) throws ClientException;
 
 	DocumentModelList findInformationServices(CoreSession documentManager,
 			DocumentModel endpoint, String filterComponentId,
-			boolean requireAtLeastOneExactCriteria, String visibility) throws ClientException;
+			boolean requireAtLeastOneExactCriteria) throws ClientException;
 
     /**
      * @param documentManager
@@ -39,11 +39,11 @@ public interface EndpointMatchingService {
 
 	void linkServiceImplementation(CoreSession documentManager,
 			SoaNodeId endpointId, SoaNodeId implId,
-			boolean save, String visibility) throws Exception;
+			boolean save) throws Exception;
 
 	void linkInformationServiceThroughPlaceholder(CoreSession documentManager,
 			DocumentModel endpoint, DocumentModel informationService,
-			boolean save, String visibility) throws ClientException, Exception;
+			boolean save) throws ClientException, Exception;
 
 	boolean isEndpointAlreadyMatched(DocumentModel endpointDocument,
             CoreSession documentManager) throws ClientException;

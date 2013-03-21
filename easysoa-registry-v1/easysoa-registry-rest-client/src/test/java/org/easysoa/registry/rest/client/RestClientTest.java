@@ -66,7 +66,7 @@ public class RestClientTest extends AbstractWebEngineTest {
     @Before
     public void initDefaultSubprojectId() throws Exception {
         discoveryService.runDiscovery(documentManager, new SoaNodeId(Component.DOCTYPE,
-                "ComponentForDefaultSubprojectIdInit"), null, null, "strict");
+                "ComponentForDefaultSubprojectIdInit"), null, null);
 
         // Fetch disco'd Component
         Client client = createAuthenticatedHTTPClient();

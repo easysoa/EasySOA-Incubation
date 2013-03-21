@@ -58,7 +58,7 @@ public class RegistryApiImpl implements RegistryApi {
 
             // Run discovery
             discoveryService.runDiscovery(documentManager, soaNodeInfo.getSoaNodeId(),
-                    toObjectProperties(soaNodeInfo.getProperties()), soaNodeInfo.getParentDocuments(), "strict");
+                    toObjectProperties(soaNodeInfo.getProperties()), soaNodeInfo.getParentDocuments());
             documentManager.save();
             return new OperationResult(true);
         } catch (Exception e) {
@@ -79,7 +79,6 @@ public class RegistryApiImpl implements RegistryApi {
             if (subprojectId == null || subprojectId.length() == 0) {
                 subprojectPathCriteria = "";
             } else {
-                //subprojectPathCriteria = DocumentService.NXQL_AND + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
                 subprojectPathCriteria = DocumentService.NXQL_AND + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);
             }
         	
@@ -125,7 +124,6 @@ public class RegistryApiImpl implements RegistryApi {
         if (subprojectId == null || subprojectId.length() == 0) {
             subprojectPathCriteria = "";
         } else {
-            //subprojectPathCriteria = DocumentService.NXQL_AND + SubprojectServiceImpl.buildCriteriaInSubprojectUsingPathFromId(subprojectId);
             subprojectPathCriteria = DocumentService.NXQL_AND + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);
         }
 

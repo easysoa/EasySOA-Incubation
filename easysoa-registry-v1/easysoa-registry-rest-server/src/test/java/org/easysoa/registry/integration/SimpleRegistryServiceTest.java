@@ -100,12 +100,12 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
             HashMap<String, Object> isProperties = new HashMap<String, Object>();
 
             // Add information service without wsdl
-            DocumentModel infoServiceWithoutWsdl = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_TEST_WITHOUT_POPRTTYPE_ID, isProperties, null, "strict");
+            DocumentModel infoServiceWithoutWsdl = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_TEST_WITHOUT_POPRTTYPE_ID, isProperties, null);
 
             // Add information service with wsdl
             isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
             isProperties.put(WsdlInfoFacet.XPATH_WSDL_PORTTYPE_NAME, TEST_PORT_TYPE);
-            DocumentModel infoService = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_TEST_ID, isProperties, null, "strict");
+            DocumentModel infoService = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_TEST_ID, isProperties, null);
 
             // Add information service with wsdl & file, platform & common metas
             isProperties.put(WsdlInfoFacet.XPATH_WSDL_PORTTYPE_NAME, TEST_PORT_TYPE_WITH_PLATFORM_METAS);
@@ -116,7 +116,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
             isProperties.put("platform:deliverableRepositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
             //OPT FraSCAtiStudio platform
             // Add information service with wsdl & file, platform & common metas
-            DocumentModel infoServiceWithMetas = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_TEST_WITH_PLATFORM_METAS_ID, isProperties, null, "strict");
+            DocumentModel infoServiceWithMetas = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_TEST_WITH_PLATFORM_METAS_ID, isProperties, null);
             infoServiceWithMetas.setPropertyValue("dc:title", anotherTitle);
             infoServiceWithMetas.setPropertyValue("dc:description", anotherDescription);
             // Add a associated wsdl file
@@ -136,13 +136,13 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
             epProperties.put(Endpoint.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS); // TODO better ?!?
             // Associate endpoint with information service
             //isProperties.put("impl:providedInformationService", infoServiceWithMetas.getId()); // TODO matching should be done
-            discoveryService.runDiscovery(documentManager, ENDPOINT_TEST_WITHOUT_POPRTTYPE_ID, epProperties, null, "strict"); // TODO or by providing parent IS ??
+            discoveryService.runDiscovery(documentManager, ENDPOINT_TEST_WITHOUT_POPRTTYPE_ID, epProperties, null); // TODO or by providing parent IS ??
             epProperties.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, TEST_PORT_TYPE);
-            discoveryService.runDiscovery(documentManager, ENDPOINT_TEST, epProperties, null, "strict");
-            discoveryService.runDiscovery(documentManager, ENDPOINT_INTEGRATION, epProperties, null, "strict");
-            discoveryService.runDiscovery(documentManager, ENDPOINT_PRODUCTION, epProperties, null, "strict");
+            discoveryService.runDiscovery(documentManager, ENDPOINT_TEST, epProperties, null);
+            discoveryService.runDiscovery(documentManager, ENDPOINT_INTEGRATION, epProperties, null);
+            discoveryService.runDiscovery(documentManager, ENDPOINT_PRODUCTION, epProperties, null);
             epProperties.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, TEST_PORT_TYPE_WITH_PLATFORM_METAS);
-            discoveryService.runDiscovery(documentManager, ENDPOINT_TEST_WITH_PLATFORM_METAS_ID, epProperties, null, "strict");
+            discoveryService.runDiscovery(documentManager, ENDPOINT_TEST_WITH_PLATFORM_METAS_ID, epProperties, null);
             
             documentManager.save();
             initDone = true;

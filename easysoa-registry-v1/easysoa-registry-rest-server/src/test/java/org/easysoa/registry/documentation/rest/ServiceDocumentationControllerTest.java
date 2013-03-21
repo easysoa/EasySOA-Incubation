@@ -49,9 +49,9 @@ public class ServiceDocumentationControllerTest extends AbstractRestApiTest {
         
         // endpoints
         SoaNodeId endpointId = new SoaNodeId(Endpoint.DOCTYPE, "test:http://localhost:MyEndpoint");
-        discoveryService.runDiscovery(documentManager, endpointId, null, null, "strict");
-        discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "test:http://localhost:MyEndpoint1"), null, null, "strict");
-        discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "test:http://localhost:MyEndpoint2"), null, null, "strict");
+        discoveryService.runDiscovery(documentManager, endpointId, null, null);
+        discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "test:http://localhost:MyEndpoint1"), null, null);
+        discoveryService.runDiscovery(documentManager, new SoaNodeId(Endpoint.DOCTYPE, "test:http://localhost:MyEndpoint2"), null, null);
         
 		// service impls
         SoaNodeId serviceImplId = new SoaNodeId(ServiceImplementation.DOCTYPE, "MyServiceImpl");
@@ -76,16 +76,16 @@ public class ServiceDocumentationControllerTest extends AbstractRestApiTest {
         properties.put(ServiceImplementation.XPATH_TESTS,
         		Arrays.asList("org.easysoa.MyServiceImplTest"));
         properties.put(ServiceImplementation.XPATH_ISMOCK, "true");
-        discoveryService.runDiscovery(documentManager, serviceImplId, properties, null, "strict");
+        discoveryService.runDiscovery(documentManager, serviceImplId, properties, null);
         
         properties.clear();
         properties.put(ServiceImplementation.XPATH_TESTS,
         		Arrays.asList("org.easysoa.MyServiceImplTest"));
         discoveryService.runDiscovery(documentManager, 
-        		new SoaNodeId(ServiceImplementation.DOCTYPE, "MyServiceImplNotMock"), properties, null, "strict");
+        		new SoaNodeId(ServiceImplementation.DOCTYPE, "MyServiceImplNotMock"), properties, null);
         
         discoveryService.runDiscovery(documentManager, 
-        		new SoaNodeId(ServiceImplementation.DOCTYPE, "MyNotMockedImpl"), null, null, "strict");
+        		new SoaNodeId(ServiceImplementation.DOCTYPE, "MyNotMockedImpl"), null, null);
         documentManager.save();
         
         // development project (as folder, or could be in model TODO, especially since can be discovered from root pom (though it is not only that))
@@ -95,24 +95,24 @@ public class ServiceDocumentationControllerTest extends AbstractRestApiTest {
         
         // business component (as folder, or could be in model TODO)
         SoaNodeId businessProcessSystem1Id = new SoaNodeId(TaggingFolder.DOCTYPE, "BusinessProcessSystem1");
-        discoveryService.runDiscovery(documentManager, businessProcessSystem1Id, null, null, "strict");
+        discoveryService.runDiscovery(documentManager, businessProcessSystem1Id, null, null);
         SoaNodeId businessProcess1SoftwareComponent1Id = new SoaNodeId(SoftwareComponent.DOCTYPE, "BusinessProcess1SoftwareComponent1");
-        discoveryService.runDiscovery(documentManager, businessProcess1SoftwareComponent1Id, null, Arrays.asList(businessProcessSystem1Id), "strict"); // consists in
+        discoveryService.runDiscovery(documentManager, businessProcess1SoftwareComponent1Id, null, Arrays.asList(businessProcessSystem1Id)); // consists in
         //discoveryService.runDiscovery(documentManager, service0Id, null, Arrays.asList(businessProcess1SoftwareComponent1Id)); // consumes NO rather deliverables
         SoaNodeId deliverable0id = new SoaNodeId(Deliverable.DOCTYPE, "Deliverable0");
-        discoveryService.runDiscovery(documentManager, deliverable0id, null, Arrays.asList(businessProcess1SoftwareComponent1Id), "strict");
+        discoveryService.runDiscovery(documentManager, deliverable0id, null, Arrays.asList(businessProcess1SoftwareComponent1Id));
         SoaNodeId serviceImplementation0id = new SoaNodeId(ServiceImplementation.DOCTYPE, "ServiceImplementation0");
-        discoveryService.runDiscovery(documentManager, serviceImplementation0id, null, Arrays.asList(deliverable0id), "strict");
+        discoveryService.runDiscovery(documentManager, serviceImplementation0id, null, Arrays.asList(deliverable0id));
         SoaNodeId deliverable1id = new SoaNodeId(Deliverable.DOCTYPE, "Deliverable1");
-        discoveryService.runDiscovery(documentManager, deliverable1id, null, null, "strict"); // deliverable in no business process
+        discoveryService.runDiscovery(documentManager, deliverable1id, null, null); // deliverable in no business process
         discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "ServiceImplementation1"),
-                null, null, "strict");
+                null, null);
         discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "ServiceImplementation1"),
-                null, Arrays.asList(deliverable1id), "strict");
+                null, Arrays.asList(deliverable1id));
         
         SoaNodeId noBusinessProcessSoftwareComponentId = new SoaNodeId(SoftwareComponent.DOCTYPE, "NoBusinessProcessSoftwareComponent");
-        discoveryService.runDiscovery(documentManager, noBusinessProcessSoftwareComponentId, null, null, "strict");
-        discoveryService.runDiscovery(documentManager, new SoaNodeId(Deliverable.DOCTYPE, "noBusinessProcessDeliverable"), null, Arrays.asList(noBusinessProcessSoftwareComponentId), "strict");
+        discoveryService.runDiscovery(documentManager, noBusinessProcessSoftwareComponentId, null, null);
+        discoveryService.runDiscovery(documentManager, new SoaNodeId(Deliverable.DOCTYPE, "noBusinessProcessDeliverable"), null, Arrays.asList(noBusinessProcessSoftwareComponentId));
 
         // test software component
 
@@ -137,7 +137,7 @@ public class ServiceDocumentationControllerTest extends AbstractRestApiTest {
         
         // tag without service : 
         SoaNodeId tagWithoutService = new SoaNodeId(TaggingFolder.DOCTYPE, "tagWithoutService");
-        discoveryService.runDiscovery(documentManager, tagWithoutService, null, null, "strict");
+        discoveryService.runDiscovery(documentManager, tagWithoutService, null, null);
         
         documentManager.save();
         logRepository();

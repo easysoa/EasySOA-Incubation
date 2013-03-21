@@ -8,7 +8,6 @@ import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.ServiceImplementation;
-import org.easysoa.registry.utils.ContextVisibility;
 import org.easysoa.registry.utils.EmptyDocumentModelList;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -42,7 +41,7 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
 	 */
 	public DocumentModelList findInformationServices(CoreSession documentManager,
 	        DocumentModel impl, String filterComponentId,
-	        boolean skipPlatformMatching, boolean requireAtLeastOneExactCriteria, String visibility) throws ClientException {
+	        boolean skipPlatformMatching, boolean requireAtLeastOneExactCriteria) throws ClientException {
 
         // how should work matching in discovery & dashboard for :
         
@@ -58,11 +57,7 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
         MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
 
         // Filter by subproject
-        if(ContextVisibility.DEEP.getValue().equals(visibility)){
-            query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(impl)); // ex. "AXXXSpecifications"; // or in 2 pass & get it from subProject ??    
-        } else {
-            query.addCriteria(SubprojectServiceImpl.buildCriteriaInSubproject(impl.getId())); // ex. "AXXXSpecifications"; // or in 2 pass & get it from subProject ??    
-        }
+        query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(impl)); // ex. "AXXXSpecifications"; // or in 2 pass & get it from subProject ??
         
         if (impl.hasFacet(ServiceImplementationDataFacet.FACET_SERVICEIMPLEMENTATIONDATA)) {
     	String implIde = (String) impl.getPropertyValue(ServiceImplementation.XPATH_IMPL_IDE); // OPT only set by ex. FraSCatiStudio, TalendStudio, ScarboModeler

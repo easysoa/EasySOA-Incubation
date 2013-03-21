@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.utils.ContextVisibility;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -49,7 +50,7 @@ public class SoaNodeMatchingListener implements EventListener {
         // TODO check matching properties changes, in order to match only if they changed ??
         // TODO compute spnode props if subproject changed ??? NO would require to save (which would trigger event loop)
         
-        match(documentManager, sourceDocument, "strict");
+        match(documentManager, sourceDocument, ContextVisibility.DEPTH.getValue());
     }
     
     

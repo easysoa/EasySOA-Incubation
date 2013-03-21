@@ -19,7 +19,9 @@ import org.easysoa.registry.types.Subproject;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
+import org.easysoa.registry.utils.ContextVisibility;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -215,7 +217,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         ///isProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV, specificationsSubprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV)); // SUBPROJECT
         isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
         isProperties.put(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
-        DocumentModel foundInfoServ = discoveryService.runDiscovery(documentManager, CSP_INFORMATIONSERVICE_ID, isProperties, null, "strict");
+        DocumentModel foundInfoServ = discoveryService.runDiscovery(documentManager, CSP_INFORMATIONSERVICE_ID, isProperties, null, ContextVisibility.DEPTH.getValue());
         
         // Discover component
         HashMap<String, Object> compProperties = new HashMap<String, Object>();
@@ -224,7 +226,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // requires JAXWS (else would override IS's which would not be matched anymore ; TODO Q otherwise ??) :
         compProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
         compProperties.put(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE, foundInfoServ.getId());
-        DocumentModel foundComponent = discoveryService.runDiscovery(documentManager, CSP_COMPONENT_ID, compProperties, null, "strict");
+        DocumentModel foundComponent = discoveryService.runDiscovery(documentManager, CSP_COMPONENT_ID, compProperties, null, ContextVisibility.DEPTH.getValue());
 
         // Create versioned snapshot out of Specifications
         /*Snapshotable snapshotable = specificationsSubprojectModel.getAdapter(Snapshotable.class);
@@ -297,7 +299,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         ///implProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV, realisationSubprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV)); // SUBPROJECT
         implProperties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
         implProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
-        DocumentModel foundImpl = discoveryService.runDiscovery(documentManager, CSP_FIRST_SERVICEIMPL_ID, implProperties, null, "strict");
+        DocumentModel foundImpl = discoveryService.runDiscovery(documentManager, CSP_FIRST_SERVICEIMPL_ID, implProperties, null, ContextVisibility.DEPTH.getValue());
         
         Assert.assertEquals("Created impl must be linked to existing versioned matching information service", foundInfoServV01.getId(),
                 foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
@@ -351,7 +353,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         ///implProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV, realisationSubprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV)); // SUBPROJECT
     	implProperties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
     	implProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
-        discoveryService.runDiscovery(documentManager, CSP_FIRST_SERVICEIMPL_ID, implProperties, null, "strict");
+        discoveryService.runDiscovery(documentManager, CSP_FIRST_SERVICEIMPL_ID, implProperties, null, ContextVisibility.DEPTH.getValue());
         
     	// Discover information service
     	HashMap<String, Object> isProperties = new HashMap<String, Object>();
@@ -359,7 +361,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         ///isProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV, specificationsSubprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV)); // SUBPROJECT
     	isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
     	isProperties.put(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
-    	DocumentModel foundInfoServ = discoveryService.runDiscovery(documentManager, CSP_INFORMATIONSERVICE_ID, isProperties, null, "strict");
+    	DocumentModel foundInfoServ = discoveryService.runDiscovery(documentManager, CSP_INFORMATIONSERVICE_ID, isProperties, null, ContextVisibility.DEPTH.getValue());
     	
     	// Discover component
     	HashMap<String, Object> compProperties = new HashMap<String, Object>();
@@ -368,7 +370,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	// requires JAXWS (else would override IS's which would not be matched anymore ; TODO Q otherwise ??) :
     	compProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
     	compProperties.put(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE, foundInfoServ.getId());
-    	DocumentModel foundComponent = discoveryService.runDiscovery(documentManager, CSP_COMPONENT_ID, compProperties, null, "strict");
+    	DocumentModel foundComponent = discoveryService.runDiscovery(documentManager, CSP_COMPONENT_ID, compProperties, null, ContextVisibility.DEPTH.getValue());
     	
     	// check
         foundInfoServ = documentService.find(documentManager, CSP_INFORMATIONSERVICE_ID);
@@ -378,7 +380,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	
     	// Discover another impl
         implProperties.put(ServiceImplementation.XPATH_ISMOCK, "1");
-        discoveryService.runDiscovery(documentManager, CSP_SECOND_SERVICEIMPL_ID, implProperties, null, "strict");
+        discoveryService.runDiscovery(documentManager, CSP_SECOND_SERVICEIMPL_ID, implProperties, null, ContextVisibility.DEPTH.getValue());
 
         // check
         foundImpl = documentService.find(documentManager, CSP_SECOND_SERVICEIMPL_ID);
@@ -390,7 +392,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         HashMap<String, Object> anotherImplProperties = new HashMap<String, Object>(implProperties);
         //anotherImplProperties.put(SubprojectNode.XPATH_SUBPROJECT, anotherRealisationSubprojectId);
         ///anotherImplProperties.put(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV, anotherRealisationSubprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV));
-        discoveryService.runDiscovery(documentManager, CSP_SECOND_SERVICEIMPL_SEPARATE_SUBPROJECT_ID, anotherImplProperties, null, "strict");
+        discoveryService.runDiscovery(documentManager, CSP_SECOND_SERVICEIMPL_SEPARATE_SUBPROJECT_ID, anotherImplProperties, null, ContextVisibility.DEPTH.getValue());
 
         // check
         foundImpl = documentService.find(documentManager, CSP_SECOND_SERVICEIMPL_SEPARATE_SUBPROJECT_ID);
@@ -402,7 +404,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	HashMap<String, Object> impl3Properties = new HashMap<String, Object>();
     	impl3Properties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
     	impl3Properties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace2}name2");
-        discoveryService.runDiscovery(documentManager, THIRD_SERVICEIMPL_ID, impl3Properties, null, "strict");
+        discoveryService.runDiscovery(documentManager, THIRD_SERVICEIMPL_ID, impl3Properties, null, ContextVisibility.DEPTH.getValue());
         
         // check
         foundImpl = documentService.find(documentManager, THIRD_SERVICEIMPL_ID);
@@ -410,8 +412,8 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
 
     	// Rediscover known is then impl
-        foundInfoServ  = discoveryService.runDiscovery(documentManager, CSP_INFORMATIONSERVICE_ID, isProperties, null, "strict");
-        foundImpl = discoveryService.runDiscovery(documentManager, CSP_SECOND_SERVICEIMPL_ID, implProperties, null, "strict");
+        foundInfoServ  = discoveryService.runDiscovery(documentManager, CSP_INFORMATIONSERVICE_ID, isProperties, null, ContextVisibility.DEPTH.getValue());
+        foundImpl = discoveryService.runDiscovery(documentManager, CSP_SECOND_SERVICEIMPL_ID, implProperties, null, ContextVisibility.DEPTH.getValue());
         Assert.assertEquals("Created impl must still be linked to existing matching information service", foundInfoServ.getId(),
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     }
@@ -428,7 +430,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	implN1Properties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
     	implN1Properties.put("deltype:nature", "Maven");
     	implN1Properties.put("deltype:repositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
-        discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx" + "N1KO"), implN1Properties, null, "strict");
+        discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx" + "N1KO"), implN1Properties, null, ContextVisibility.DEPTH.getValue());
         
     	// Discover service impl
     	HashMap<String, Object> implProperties = new HashMap<String, Object>();
@@ -438,7 +440,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	implProperties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
     	implProperties.put("deltype:nature", "Maven");
     	implProperties.put("deltype:repositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
-        discoveryService.runDiscovery(documentManager, FIRST_SERVICEIMPL_ID, implProperties, null, "strict");
+        discoveryService.runDiscovery(documentManager, FIRST_SERVICEIMPL_ID, implProperties, null, ContextVisibility.DEPTH.getValue());
         
     	// Discover service impl that won't match platform criteria
     	HashMap<String, Object> implN2Properties = new HashMap<String, Object>();
@@ -450,7 +452,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	implN2Properties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
     	implN2Properties.put("deltype:nature", "Maven");
     	implN2Properties.put("deltype:repositoryUrl", "http://maven.ow2.org/nexus/content/groups/public"); // differs
-        discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx" + "N2KO"), implN2Properties, null, "strict");
+        discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx" + "N2KO"), implN2Properties, null, ContextVisibility.DEPTH.getValue());
 
     	// Discover information service that won't match platform criteria
     	HashMap<String, Object> isN1Properties = new HashMap<String, Object>();
@@ -461,7 +463,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	isN1Properties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXRS); // differs
     	isN1Properties.put("platform:deliverableNature", "Maven");
     	isN1Properties.put("platform:deliverableRepositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
-    	discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE, "nsxxx:namexxx" + "N1KO"), isN1Properties, null, "strict");
+    	discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE, "nsxxx:namexxx" + "N1KO"), isN1Properties, null, ContextVisibility.DEPTH.getValue());
 
     	// Discover information service
     	HashMap<String, Object> isProperties = new HashMap<String, Object>();
@@ -472,7 +474,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
     	isProperties.put("platform:deliverableNature", "Maven");
     	isProperties.put("platform:deliverableRepositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
-    	DocumentModel foundInfoServ = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_ID, isProperties, null, "strict");
+    	DocumentModel foundInfoServ = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_ID, isProperties, null, ContextVisibility.DEPTH.getValue());
     	
     	// check
         foundInfoServ = documentService.find(documentManager, INFORMATIONSERVICE_ID);
@@ -481,7 +483,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     	
     	// Discover another impl
-        discoveryService.runDiscovery(documentManager, SECOND_SERVICEIMPL_ID, implProperties, null, "strict");
+        discoveryService.runDiscovery(documentManager, SECOND_SERVICEIMPL_ID, implProperties, null, ContextVisibility.DEPTH.getValue());
 
         // check
         foundImpl = documentService.find(documentManager, SECOND_SERVICEIMPL_ID);
@@ -494,7 +496,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	impl3Properties.put("deltype:nature", "Maven");
     	impl3Properties.put("deltype:repositoryUrl", "http://maven.nuxeo.org/nexus/content/groups/public");
     	impl3Properties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace2}name2");
-        discoveryService.runDiscovery(documentManager, THIRD_SERVICEIMPL_ID, impl3Properties, null, "strict");
+        discoveryService.runDiscovery(documentManager, THIRD_SERVICEIMPL_ID, impl3Properties, null, ContextVisibility.DEPTH.getValue());
         
         // check
         foundImpl = documentService.find(documentManager, THIRD_SERVICEIMPL_ID);
@@ -502,20 +504,20 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
 
     	// Discover another is, then impl that has 2 matches
-        foundInfoServ = discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE, "nsxxx:namexxx" + "P1KO"), isProperties, null, "strict");
-        foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx" + "P1KO"), implProperties, null, "strict");
+        foundInfoServ = discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE, "nsxxx:namexxx" + "P1KO"), isProperties, null, ContextVisibility.DEPTH.getValue());
+        foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nsxxx:namexxx=servicenamexxx" + "P1KO"), implProperties, null, ContextVisibility.DEPTH.getValue());
         Assert.assertEquals("Created impl must not be linked because there are too much matching information services", null,
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     	
         // Discover endpoint that matches no is or impl (use matching dashboard TODO mka)
         HashMap<String, Object> epProperties = new HashMap<String, Object>();
-        DocumentModel foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("Production", "staging:http://localhost:8080/cxf/WS1"), epProperties, null, "strict");
+        DocumentModel foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("Production", "staging:http://localhost:8080/cxf/WS1"), epProperties, null, ContextVisibility.DEPTH.getValue());
         Assert.assertEquals("Created endpoint must not be linked to existing matching information service", null,
         		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
 
         
         // TODO LATER Discover endpoint that matches is (on url-extracted service name), but no impl LATER
-        foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("staging", "http://localhost:8080/cxf/name"), epProperties, null, "strict");
+        foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("staging", "http://localhost:8080/cxf/name"), epProperties, null, ContextVisibility.DEPTH.getValue());
         //Assert.assertEquals("Created endpoint must be linked to existing matching information service", foundInfoServ.getId(),
         //		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_LINKED_INFORMATION_SERVICE));
 
@@ -524,16 +526,16 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // requires JAXWS (else would override IS's which would not be matched anymore ; TODO Q otherwise ??) :
         compProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
         compProperties.put(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE, foundInfoServ.getId());
-        DocumentModel foundComponent = discoveryService.runDiscovery(documentManager, COMPONENT_ID, compProperties, null, "strict");
+        DocumentModel foundComponent = discoveryService.runDiscovery(documentManager, COMPONENT_ID, compProperties, null, ContextVisibility.DEPTH.getValue());
         epProperties.put(Endpoint.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS); // TODO better ?!?
         epProperties.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
         epProperties.put(Endpoint.XPATH_COMPONENT_ID, foundComponent.getId());
-        foundEndpoint = discoveryService.runDiscovery(documentManager,  new EndpointId("staging", "http://localhost:8080/cxf/WS2"), epProperties, null, "strict");
+        foundEndpoint = discoveryService.runDiscovery(documentManager,  new EndpointId("staging", "http://localhost:8080/cxf/WS2"), epProperties, null, ContextVisibility.DEPTH.getValue());
         Assert.assertNotNull("Created endpoint must be linked to existing matching information service",
         		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
         
         // Discover endpoint that matches impl (TODO how, by parent ?? matching ?? component / platform ?)
-        foundEndpoint = discoveryService.runDiscovery(documentManager,  new EndpointId("staging", "http://localhost:8080/cxf/WS3"), epProperties, null, "strict");
+        foundEndpoint = discoveryService.runDiscovery(documentManager,  new EndpointId("staging", "http://localhost:8080/cxf/WS3"), epProperties, null, ContextVisibility.DEPTH.getValue());
         Assert.assertNotNull("Created endpoint must be linked to existing matching information service",
         		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
 
@@ -543,13 +545,13 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // or on impl then how to check it (in discoService) and how to handle inconsistencies with metas (validation ?)
         // or on impl as metas with platformUrl as platform id
     	implProperties.put(ServiceImplementation.XPATH_COMPONENT_ID, "id-that-doesnt-exist");
-    	foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nszzz:namezzz=servicenamezzz" + "C1KO"), implProperties, null, "strict");
+    	foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nszzz:namezzz=servicenamezzz" + "C1KO"), implProperties, null, ContextVisibility.DEPTH.getValue());
         Assert.assertEquals("Created impl must not be linked to existing matching information service because of provided component id", null,
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
 
     	// Discover a matching impl because of provided component id and check
         implProperties.put(ServiceImplementation.XPATH_COMPONENT_ID, foundComponent.getId());
-    	foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nszzz:namezzz=servicenamezzz" + "C1OK"), implProperties, null, "strict");
+    	foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "nszzz:namezzz=servicenamezzz" + "C1OK"), implProperties, null, ContextVisibility.DEPTH.getValue());
         Assert.assertNotNull("Created impl must be linked to existing matching information service because of provided component id",
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
         
@@ -558,12 +560,12 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         isProperties.clear();
         isProperties.put(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
         isProperties.put(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{www}www");
-    	foundInfoServ = discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE, "nswww:namewww"), isProperties, null, "strict");
+    	foundInfoServ = discoveryService.runDiscovery(documentManager, new SoaNodeId(InformationService.DOCTYPE, "nswww:namewww"), isProperties, null, ContextVisibility.DEPTH.getValue());
        
         epProperties.clear();
         epProperties.put(Endpoint.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS); // TODO better ?!?
         epProperties.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, "{www}www");
-    	foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("Prod", "www.com"), epProperties, null, "strict");
+    	foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("Prod", "www.com"), epProperties, null, ContextVisibility.DEPTH.getValue());
         Assert.assertEquals("Created endpoint must be linked to matching information service", foundInfoServ.getId(),
         		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
         SoaNodeId implId = foundEndpoint.getAdapter(SoaNode.class).getParentOfType(ServiceImplementation.DOCTYPE);
@@ -581,10 +583,10 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         epProperties.clear();
         epProperties.put(Endpoint.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
         epProperties.put(Endpoint.XPATH_WSDL_PORTTYPE_NAME, "{www}noISEndpoint");
-        foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("Prod", "www.a.com/noISEndpoint"), epProperties, null, "strict");
+        foundEndpoint = discoveryService.runDiscovery(documentManager, new EndpointId("Prod", "www.a.com/noISEndpoint"), epProperties, null, ContextVisibility.DEPTH.getValue());
 
         implProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{www}noISEndpoint");
-        foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "www:noISEndpoint=noISEndpointImplService" + "C1KO"), implProperties, null, "strict");
+        foundImpl = discoveryService.runDiscovery(documentManager, new SoaNodeId(ServiceImplementation.DOCTYPE, "www:noISEndpoint=noISEndpointImplService" + "C1KO"), implProperties, null, ContextVisibility.DEPTH.getValue());
         
         //Assert.assertEquals("Created endpoint must be linked to matching impl", foundImpl.getId(),
         //        foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
@@ -602,7 +604,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // 2. choose (impl) platform (id, criteria ?) (because you know it's this techno / runs & is dev'd on it), use it to match to impl, then / else match is using this new info (platform matches)
         // 3. both
         // TODO component path actor:cpt, isMock as "test" platform
-        discoveryService.runDiscovery(documentManager, new EndpointId("staging", "http://localhost:8080/cxf"), epProperties, null, "strict");
+        discoveryService.runDiscovery(documentManager, new EndpointId("staging", "http://localhost:8080/cxf"), epProperties, null, ContextVisibility.DEPTH.getValue());
         // OK match impl with is on is' component constraints (including platform:deliverableRepositoryUrl that can act as platform id), guided by impl's own metas
         // still TODO set link to Component & isProxy
         // TODO match guided by provided component id : if provided, use it as additional criteria

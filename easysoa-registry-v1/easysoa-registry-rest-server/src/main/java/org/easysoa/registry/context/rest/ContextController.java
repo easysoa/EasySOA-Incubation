@@ -63,15 +63,32 @@ public class ContextController extends ModuleRoot {
         // Get the projects
         DocumentModelList projectsList = session.query("SELECT * FROM " + Project.DOCTYPE);
 
-        HashMap<String, HashSet<DocumentModel>> projectIdToSubproject = new HashMap<String, HashSet<DocumentModel>>();
+        HashMap<String, HashMap<String, HashSet<DocumentModel>>> projectIdToSubproject = new HashMap<String, HashMap<String, HashSet<DocumentModel>>>();
         // For each project, get the subprojects
         for(DocumentModel project : projectsList){
-            HashSet<DocumentModel> subProjects = new HashSet<DocumentModel>();
-            DocumentModelList subProjectsList = session.query(DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE + DocumentService.NXQL_PATH_STARTSWITH + project.getPathAsString() + DocumentService.NXQL_QUOTE);
-            for(DocumentModel subProject : subProjectsList){
-                subProjects.add(subProject);
+            HashMap<String, HashSet<DocumentModel>> liveAndVersions = new HashMap<String, HashSet<DocumentModel>>();
+            // Get the live for the project
+            HashSet<DocumentModel> lives = new HashSet<DocumentModel>();
+            String request = DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE + DocumentService.NXQL_IS_PROXY + DocumentService.NXQL_AND + "spnode:subproject STARTSWITH '" + project.getPathAsString() + "'" + DocumentService.NXQL_AND + DocumentService.NXQL_IS_NOT_VERSIONED; // TODO actually NON_PROXIES...
+            DocumentModelList liveList = session.query(request);
+            // TODO : get the live versions and then in a sub map, get the versions
+            for(DocumentModel live : liveList){
+                lives.add(live);
             }
-            projectIdToSubproject.put((String)project.getPropertyValue(Project.XPATH_TITLE), subProjects);
+            liveAndVersions.put("live", lives);
+            
+            // Get the live for the project
+            request = DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE + DocumentService.NXQL_IS_PROXY + DocumentService.NXQL_AND + "spnode:subproject STARTSWITH '" + project.getPathAsString() + "'" + DocumentService.NXQL_AND + DocumentService.NXQL_IS_VERSIONED;
+            DocumentModelList versionList = session.query(request);
+            HashSet<DocumentModel> versions = new HashSet<DocumentModel>();
+            // TODO : get the live versions and then in a sub map, get the versions
+            for(DocumentModel version : versionList){
+                versions.add(version);
+            }
+            liveAndVersions.put("versions", versions);
+            
+            // Pass it to the view for display
+            projectIdToSubproject.put((String)project.getPropertyValue(Project.XPATH_TITLE), liveAndVersions);
         }
         
         // Pass projects map in the view

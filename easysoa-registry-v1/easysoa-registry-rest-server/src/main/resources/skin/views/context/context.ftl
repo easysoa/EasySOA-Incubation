@@ -29,13 +29,23 @@
         <#list projectIdToSubproject?keys as project>
             <li>${project}
                 <ul>
-                <#list projectIdToSubproject[project] as subProject>
-                    <!--<li><a href="${Root.path}/../?subprojectId=${subProject['spnode:subproject']}">${subProject['dc:title']} - ${subProject.versionLabel}</a></li>-->
+                Current version
+                <#assign liveAndVersions = projectIdToSubproject[project]>
+                <#list liveAndVersions["live"] as live>
                     <li> 
-                        ${subProject['dc:title']} - ${subProject.versionLabel} (<a href="${Root.path}/../?subprojectId=${subProject['spnode:subproject']}&visibility=deep">Deep</a>, <a href="${Root.path}/../?subprojectId=${subProject['spnode:subproject']}&visibility=strict">Strict</a>)
+                        ${live['dc:title']} - ${live.versionLabel} (<a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=deep">Deep</a>, <a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=strict">Strict</a>)
                     </li>
                 </#list>
                 </ul>
+                
+                <ul>
+                Other version
+                <#list liveAndVersions["versions"] as version>
+                    <li> 
+                        ${version['dc:title']} - ${version.versionLabel} (<a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=deep">Deep</a>, <a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=strict">Strict</a>)
+                    </li>
+                </#list>
+                </ul>                
            </li>
         </#list>
         </ul>

@@ -20,8 +20,10 @@
 
 package org.easysoa.registry.context.rest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -63,35 +65,34 @@ public class ContextController extends ModuleRoot {
         // Get the projects
         DocumentModelList projectsList = session.query("SELECT * FROM " + Project.DOCTYPE);
 
-        HashMap<String, HashMap<String, HashSet<DocumentModel>>> projectIdToSubproject = new HashMap<String, HashMap<String, HashSet<DocumentModel>>>();
+        HashMap<String, HashMap<String, List<DocumentModel>>> projectIdToSubproject = new HashMap<String, HashMap<String, List<DocumentModel>>>();
         // For each project, get the subprojects
         for(DocumentModel project : projectsList){
-            HashMap<String, HashSet<DocumentModel>> liveAndVersions = new HashMap<String, HashSet<DocumentModel>>();
+            HashMap<String, List<DocumentModel>> liveAndVersions = new HashMap<String, List<DocumentModel>>();
             // Get the live for the project
-            HashSet<DocumentModel> lives = new HashSet<DocumentModel>();
-            String request = DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE 
+            List<DocumentModel> lives = new ArrayList<DocumentModel>();
+            String nxqlRequest = DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE 
                     + DocumentService.NXQL_IS_PROXY + DocumentService.NXQL_AND + "spnode:subproject STARTSWITH '" 
                     + project.getPathAsString() + "'" + DocumentService.NXQL_AND + DocumentService.NXQL_IS_NOT_VERSIONED 
                     + " ORDER BY dc:title ASC"; // TODO actually NON_PROXIES...
-            DocumentModelList liveList = session.query(request);
+            DocumentModelList liveList = session.query(nxqlRequest);
             for(DocumentModel live : liveList){
                 lives.add(live);
             }
             liveAndVersions.put("live", lives);
             
             // Get the versions for the project
-            request = DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE 
+            nxqlRequest = DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE 
                     + DocumentService.NXQL_IS_PROXY + DocumentService.NXQL_AND + "spnode:subproject STARTSWITH '" 
                     + project.getPathAsString() + "'" + DocumentService.NXQL_AND + DocumentService.NXQL_IS_VERSIONED
-                    + " ORDER BY dc:title ASC";
-            DocumentModelList versionList = session.query(request);
-            HashSet<DocumentModel> versions = new HashSet<DocumentModel>();
+                    + " ORDER BY dc:title ASC, major_version DESC, minor_version DESC";
+            DocumentModelList versionList = session.query(nxqlRequest);
+            List<DocumentModel> versions = new ArrayList<DocumentModel>();
             for(DocumentModel version : versionList){
                 versions.add(version);
             }
             
             //TODO : Sort the live and the versions (title asc, versionlabel desc)
-            
             liveAndVersions.put("versions", versions);
             
             // Pass it to the view for display

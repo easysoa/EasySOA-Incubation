@@ -66,7 +66,7 @@
 
     <#macro displayLiveShort projectVersionsList project>
         <ul>
-        Current version
+        Currently in edition
         <#assign liveAndVersions = projectVersionsList[project]/>
         <#list liveAndVersions["live"] as live>
             <li> 
@@ -78,8 +78,8 @@
 
     <#macro displayVersionsShort projectVersionsList project>
         <ul>
-        Older versions
-        <#assign liveAndVersions = projectVersionsList[project]/>        
+        Older approved versions
+        <#assign liveAndVersions = projectVersionsList[project]/>
         <#list liveAndVersions["versions"] as version>
             <li> 
                 ${version['dc:title']} - ${version.versionLabel} (<a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=deep">Deep</a>, <a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=strict">Strict</a>)

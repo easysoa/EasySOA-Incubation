@@ -25,8 +25,13 @@
 	</div>
     </div>
 
+    <div id="container">    
+        <h1>Projects phases and their versions :</h1>
+        <br/>
+        Choose the versions of phase you want to use as a point of view and the visibility scope (strict or deep, i.e. with or without parent phases).
+    </div>
+
     <div id="container">
-        Projects phases and their versions :
         <@displayProjectsPhasesAndVersionsShort projectIdToSubproject/>
     </div>
 

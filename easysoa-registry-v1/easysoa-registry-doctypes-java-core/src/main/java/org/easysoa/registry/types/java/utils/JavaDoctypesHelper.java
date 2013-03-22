@@ -18,7 +18,7 @@ public class JavaDoctypesHelper {
     public static DocumentModelList getMatchingServiceImpls(CoreSession documentManager, String serviceImplInterface) throws ClientException {
         String query = NXQLQueryBuilder.getQuery("SELECT * FROM " + JavaServiceImplementation.DOCTYPE + " "
         		+ "WHERE " + JavaServiceImplementation.XPATH_IMPLEMENTEDINTERFACE + " = ?"
-                + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER,
+                + DocumentService.NO_DELETED_DOCUMENTS_CRITERIA,
                 new Object[] { serviceImplInterface },
                 true, true);
         return documentManager.query(query);

@@ -45,8 +45,8 @@ public class JavaServiceConsumptionAdapter extends SoaNodeAdapter implements Jav
         CoreSession documentManager = documentModel.getCoreSession();
         String query = NXQLQueryBuilder.getQuery("SELECT * FROM " + JavaServiceImplementation.DOCTYPE + " "
                 + "WHERE " + JavaServiceImplementation.XPATH_IMPLEMENTEDINTERFACE + " = ?"
-                + DocumentService.NON_PROXIES_QUERY_FILTER
-                + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER,
+                + DocumentService.NON_PROXIES_CRITERIA
+                + DocumentService.NO_DELETED_DOCUMENTS_CRITERIA,
                 new Object[] { getConsumedInterface() },
                 true, true);
         DocumentModelList consumableServiceImplModels = documentManager.query(query);

@@ -28,17 +28,17 @@ public interface DocumentService {
     static final String NXQL_IS_NOT_DELETED = NXQL.ECM_LIFECYCLESTATE + " != 'deleted'";
     static final String NXQL_IS_NOT_VERSIONED = NXQL.ECM_ISVERSION + " = 0";
     static final String NXQL_IS_VERSIONED = NXQL.ECM_ISVERSION + " = 1";
-    static final String NXQL_IS_PROXY = NXQL.ECM_ISPROXY + " = 0";
-    static final String NXQL_IS_NO_PROXY = NXQL.ECM_ISPROXY + " = 1";
+    static final String NXQL_IS_NO_PROXY = NXQL.ECM_ISPROXY + " = 0";
+    static final String NXQL_IS_PROXY = NXQL.ECM_ISPROXY + " = 1";
     static final String NXQL_PATH_STARTSWITH = NXQL.ECM_PATH + " STARTSWITH '";
     
-    static final String DELETED_DOCUMENTS_QUERY_FILTER = " AND " + NXQL_IS_NOT_DELETED;
+    static final String NO_DELETED_DOCUMENTS_CRITERIA = " AND " + NXQL_IS_NOT_DELETED;
 
-    static final String VERSIONS_QUERY_FILTER = " AND " + NXQL_IS_NOT_VERSIONED;
+    static final String NOT_VERSIONED_CRITERIA = " AND " + NXQL_IS_NOT_VERSIONED;
     
-    static final String PROXIES_QUERY_FILTER = " AND " + NXQL_IS_PROXY;
+    static final String PROXIES_CRITERIA = " AND " + NXQL_IS_NO_PROXY;
     
-    static final String NON_PROXIES_QUERY_FILTER = " AND " + NXQL_IS_NO_PROXY;
+    static final String NON_PROXIES_CRITERIA = " AND " + NXQL_IS_PROXY;
 
     static final String NXQL_WHERE_NO_PROXY = NXQL_WHERE + NXQL_IS_NOT_DELETED
             + NXQL_AND + NXQL_IS_NOT_VERSIONED + NXQL_AND + NXQL_IS_NO_PROXY;

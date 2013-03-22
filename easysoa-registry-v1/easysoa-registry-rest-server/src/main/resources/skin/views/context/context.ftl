@@ -14,6 +14,8 @@
 	</style>
 </head>
 
+<#include "/views/EasySOA/macros.ftl">	
+
 <body>
     <div id="header">
         <div id="headerContents">
@@ -25,30 +27,7 @@
 
     <div id="container">
         Projects phases and their versions :
-        <ul>
-        <#list projectIdToSubproject?keys as project>
-            <li>${project}
-                <ul>
-                Current version
-                <#assign liveAndVersions = projectIdToSubproject[project]>
-                <#list liveAndVersions["live"] as live>
-                    <li> 
-                        ${live['dc:title']} - ${live.versionLabel} (<a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=deep">Deep</a>, <a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=strict">Strict</a>)
-                    </li>
-                </#list>
-                </ul>
-                
-                <ul>
-                Other version
-                <#list liveAndVersions["versions"] as version>
-                    <li> 
-                        ${version['dc:title']} - ${version.versionLabel} (<a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=deep">Deep</a>, <a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=strict">Strict</a>)
-                    </li>
-                </#list>
-                </ul>                
-           </li>
-        </#list>
-        </ul>
+        <@displayProjectsPhasesAndVersionsShort projectIdToSubproject/>
     </div>
 
     <div id="container">

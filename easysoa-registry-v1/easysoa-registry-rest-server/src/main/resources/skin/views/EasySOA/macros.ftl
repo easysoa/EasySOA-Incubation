@@ -1,58 +1,92 @@
-		<#macro displayServiceShort service subprojectId visibility>
-       <a href="${Root.path}/path/${service['soan:name']?xml}?subproject=${service['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayDocShort service/></a>
-		</#macro>
+    <#macro displayServiceShort service subprojectId visibility>
+        <a href="${Root.path}/path/${service['soan:name']?xml}?subproject=${service['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayDocShort service/></a>
+    </#macro>
 
-		<#macro displayServicesShort services subprojectId visibility>
-			<ul>
-			<#list services as service>
-				<li><@displayServiceShort service subprojectId visibility/></li>
-			</#list>
-			</ul>
-		</#macro>
+    <#macro displayServicesShort services subprojectId visibility>
+    <ul>
+        <#list services as service>
+            <li><@displayServiceShort service subprojectId visibility/></li>
+	</#list>
+    </ul>
+    </#macro>
 
-		<#macro displayTagShort tag subprojectId visibility>
+    <#macro displayTagShort tag subprojectId visibility>
          <a href="${Root.path}/tag/${tag['soan:name']?xml}?subproject=${tag['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - ${tag['path']}</a>
-		</#macro>
+    </#macro>
 
-		<#macro displayDocShort doc>
+    <#macro displayDocShort doc>
          ${doc['title']} - ${doc['path']}
-		</#macro>
+    </#macro>
 		
-		<#macro displayDocsShort docs>
+    <#macro displayDocsShort docs>
          <#list docs as doc><@displayDocShort doc/> ; </#list>
-		</#macro>
+    </#macro>
 		
-		<#macro displayEndpointShort endpoint subprojectId visibility>
+    <#macro displayEndpointShort endpoint subprojectId visibility>
          <li><a href="${Root.path}/envIndicators/${endpoint.nuxeoID}?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint.name}</a></li>
-		</#macro>
+    </#macro>
 		
-		<#macro displayEndpointsShort endpoints subprojectId visibility>
+    <#macro displayEndpointsShort endpoints subprojectId visibility>
          <ul>
          <#list endpoints as endpoint><@displayEndpointShort endpoint subprojectId visibility/></#list>
          </ul>
-		</#macro>		
+    </#macro>		
 		
-		<#macro displayIndicatorShort indicator>
-         <tr>
-         	<td>${indicator.slaOrOlaName}</td>
-         	<td>${indicator.timestamp?datetime?string.long}</td>
-         	<td>${indicator.serviceLevelHealth}</td>
-         	<td>${indicator.serviceLevelViolation}</td>
-          </tr>
-		</#macro>
+    <#macro displayIndicatorShort indicator>
+        <tr>
+            <td>${indicator.slaOrOlaName}</td>
+            <td>${indicator.timestamp?datetime?string.long}</td>
+            <td>${indicator.serviceLevelHealth}</td>
+            <td>${indicator.serviceLevelViolation}</td>
+        </tr>
+    </#macro>
 		
-		<#macro displayIndicatorsShort indicators>
-         <table>
-         	<tr>
-         		<td>Indicator name</td>
-         		<td>Timestamp</td>
-         		<td>Service level health</td>
-         		<td>Service level violation</td>
-         	</tr>
-         <#list indicators as indicator><@displayIndicatorShort indicator/></#list>
+    <#macro displayIndicatorsShort indicators>
+        <table>
+            <tr>
+                <td>Indicator name</td>
+         	<td>Timestamp</td>
+         	<td>Service level health</td>
+         	<td>Service level violation</td>
+            </tr>
+            <#list indicators as indicator><@displayIndicatorShort indicator/></#list>
          </table>
-		</#macro>		
-		
+    </#macro>		
+
+    <#macro displayProjectsPhasesAndVersionsShort projectVersionsList>
+        <ul>
+        <#list projectVersionsList?keys as project>
+            <li>${project}
+                <@displayLiveShort projectVersionsList project/>
+                <@displayVersionsShort projectVersionsList project/>
+           </li>
+        </#list>
+        </ul>        
+    </#macro>
+
+    <#macro displayLiveShort projectVersionsList project>
+        <ul>
+        Current version
+        <#assign liveAndVersions = projectVersionsList[project]/>
+        <#list liveAndVersions["live"] as live>
+            <li> 
+                ${live['dc:title']} - ${live.versionLabel} (<a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=deep">Deep</a>, <a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=strict">Strict</a>)
+            </li>
+        </#list>
+        </ul>
+    </#macro>
+
+    <#macro displayVersionsShort projectVersionsList project>
+        <ul>
+        Older versions
+        <#assign liveAndVersions = projectVersionsList[project]/>        
+        <#list liveAndVersions["versions"] as version>
+            <li> 
+                ${version['dc:title']} - ${version.versionLabel} (<a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=deep">Deep</a>, <a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=strict">Strict</a>)
+            </li>
+        </#list>
+        </ul>
+    </#macro>
 
 <#assign documentPropNames=["lifeCyclePolicy", "versionLabel", "facets", "children", "type", "sourceId", "id", "author", "title", "repository", "created", "name", "path", "schemas", "parent", "lifeCycleState", "allowedStateTransitions", "isLocked", "modified", "content", "ref", "versions", "isFolder", "sessionId", "session", "proxies"]/>
 <#assign shortDocumentPropNames=["title", "type", "path", "author", "versionLabel"]/>

@@ -72,7 +72,7 @@ public class ContextController extends ModuleRoot {
             // Get the live for the project
             List<DocumentModel> lives = new ArrayList<DocumentModel>();
             String nxqlRequest = DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE 
-                    + DocumentService.NXQL_IS_PROXY + DocumentService.NXQL_AND + "spnode:subproject STARTSWITH '" 
+                    + DocumentService.NXQL_IS_PROXY + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER + DocumentService.NXQL_AND + "spnode:subproject STARTSWITH '" 
                     + project.getPathAsString() + "'" + DocumentService.NXQL_AND + DocumentService.NXQL_IS_NOT_VERSIONED 
                     + " ORDER BY dc:title ASC"; // TODO actually NON_PROXIES...
             DocumentModelList liveList = session.query(nxqlRequest);
@@ -83,7 +83,7 @@ public class ContextController extends ModuleRoot {
             
             // Get the versions for the project
             nxqlRequest = DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE 
-                    + DocumentService.NXQL_IS_PROXY + DocumentService.NXQL_AND + "spnode:subproject STARTSWITH '" 
+                    + DocumentService.NXQL_IS_PROXY + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER + DocumentService.NXQL_AND + "spnode:subproject STARTSWITH '" 
                     + project.getPathAsString() + "'" + DocumentService.NXQL_AND + DocumentService.NXQL_IS_VERSIONED
                     + " ORDER BY dc:title ASC, major_version DESC, minor_version DESC";
             DocumentModelList versionList = session.query(nxqlRequest);
@@ -92,7 +92,6 @@ public class ContextController extends ModuleRoot {
                 versions.add(version);
             }
             
-            //TODO : Sort the live and the versions (title asc, versionlabel desc)
             liveAndVersions.put("versions", versions);
             
             // Pass it to the view for display

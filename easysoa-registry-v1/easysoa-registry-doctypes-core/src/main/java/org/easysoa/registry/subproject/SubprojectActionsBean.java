@@ -36,6 +36,8 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.faces.FacesMessages;
+import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -44,6 +46,7 @@ import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.snapshot.Snapshot;
 import org.nuxeo.snapshot.Snapshotable;
@@ -74,17 +77,15 @@ public class SubprojectActionsBean implements Serializable {
     @In
     FacesContext facesContext;
 
-    private Blob file = null;
+    @In(create = true, required = false)
+    protected FacesMessages facesMessages;
 
-    private String importType = "sca";
-
-    private String targetWorkspace;
-
-    private String targetAppliImpl;
+    @In(create = true)
+    // won't inject this because of seam problem after activation
+    // ::protected Map<String, String> messages;
+    protected ResourcesAccessor resourcesAccessor;
 
     private String outputMessage = null;
-    
-    private DocumentModel targetWorkspaceModel;
     
     @Create
     //@Observer(value = { AppliImplListener.APPLI_IMPL_CHANGED })
@@ -107,21 +108,33 @@ public class SubprojectActionsBean implements Serializable {
         
         DocumentModel versionedSubprojectModel = SubprojectServiceImpl
                 .createSubprojectVersion(subproject, VersioningOption.MINOR); // TODO also MAJOR
+        // newly created version can then be accessed through
+        // Historique > Versions archivées > Consulter la version archivée
+        // which appears in the breadcrumb beneath MySubproject/Suivi de version/MySubproject
         
         CoreSession coreSession = subproject.getCoreSession();
         String publishedSectionName = coreSession.getDocument(versionedSubprojectModel.getParentRef()).getName()
                 + "_" + versionedSubprojectModel.getName() + "_v" + versionedSubprojectModel.getVersionLabel();
+           // TODO or latest version only, like regular publishing ?? (anyway older versions still accessible)
         DocumentModel publishedSection = coreSession.createDocumentModel("Section");
         publishedSection.setPathInfo("/default-domain/sections", publishedSectionName);
         publishedSection.setPropertyValue("dc:title", publishedSectionName);
         publishedSection = coreSession.createDocument(publishedSection);
         coreSession.save();
         
-        coreSession.createProxy(versionedSubprojectModel.getRef(), publishedSection.getRef());
+        DocumentModel versionedSubprojectProxy = coreSession.createProxy(versionedSubprojectModel.getRef(), publishedSection.getRef());
 
-        outputMessage = "Successfully created new version " + versionedSubprojectModel.getVersionLabel();
+        outputMessage = "Successfully created new version " + versionedSubprojectModel.getVersionLabel(); // TODO ??
+        Object[] params = { versionedSubprojectModel.getVersionLabel() };
+        //facesMessages.add(StatusMessage.Severity.INFO, "#0 " // TODO !!!!!!!!!!!
+        //        + resourcesAccessor.getMessages().get("message.easysoa.newVersionCreated"),
+         //       params); // or FacesMessages.instance().add(...)
+        facesMessages.add(StatusMessage.Severity.INFO,
+                resourcesAccessor.getMessages().get("message.easysoa.newVersionCreated"),
+                params);
 
-        DocumentModel publishedVersion = null;// TODO
+        //DocumentModel publishedVersion = versionedSubprojectModel;// goes at MySubproject/Suivi de version/MySubproject
+        DocumentModel publishedVersion = versionedSubprojectProxy;// goes at Publications/MySubproject_vx.y
         if (publishedVersion != null) {
             return navigationContext.navigateToDocument(publishedVersion, "after-edit");
         }
@@ -131,7 +144,7 @@ public class SubprojectActionsBean implements Serializable {
     }
 
     public String getOutputMessage() {
-        return outputMessage;
+        return outputMessage; // TODO ??
     }
     
 }

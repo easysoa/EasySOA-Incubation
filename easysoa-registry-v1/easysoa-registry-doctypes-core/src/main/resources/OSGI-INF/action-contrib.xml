@@ -78,7 +78,7 @@
     </action>
   
     <action id="createSubprojectVersion" link="#{subprojectActions.createSubprojectVersion()}"
-      label="command.createSubprojectVersion" icon="/icons/action_add.gif">
+      label="command.easysoa.createSubprojectVersion" icon="/icons/action_add.gif">
       <category>SUBVIEW_UPPER_LIST</category>
       <filter id="createSubprojectVersion">
         <rule grant="true">

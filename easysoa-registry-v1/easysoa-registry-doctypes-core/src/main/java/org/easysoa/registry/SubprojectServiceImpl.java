@@ -174,15 +174,16 @@ public class SubprojectServiceImpl {
                 + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER + DocumentService.PROXIES_QUERY_FILTER); // TODO ?*/
 
         // 2.(rather) looking in db for Subproject with spnode:subprojet (simpler and more generic than using path)
-        DocumentModelList res = documentManager.query("SELECT * FROM " + Subproject.DOCTYPE
-                + " WHERE " + SubprojectNode.XPATH_SUBPROJECT + "='" + subprojectId + "'");
+        String request = "SELECT * FROM " + Subproject.DOCTYPE
+                + " WHERE " + SubprojectNode.XPATH_SUBPROJECT + "='" + subprojectId + "'"
+                + DocumentService.PROXIES_CRITERIA + DocumentService.NO_DELETED_DOCUMENTS_CRITERIA; //TODO NON_PROXIES
+        DocumentModelList res = documentManager.query(request);
         if (res.size() == 1) {
             return res.get(0);
         } else if (res.isEmpty()) {
             return null;
         } else {
-            logger.fatal("More than one subproject found for id " + subprojectId + " : " + res);
-            return null;
+            throw new ClientException("More than one subproject found for id " + subprojectId + " : " + res);
         }
         
         // 3. using getParent() => rather use getSubprojectOfNode()
@@ -192,7 +193,7 @@ public class SubprojectServiceImpl {
             DocumentModel project, String subprojectName) throws ClientException {
         String path = project.getPathAsString() + '/' + subprojectName;
         DocumentModelList res = documentManager.query("select * from Subproject where ecm:path='" + path
-                + "'" + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER + DocumentService.PROXIES_QUERY_FILTER);
+                + "'" + DocumentService.NO_DELETED_DOCUMENTS_CRITERIA + DocumentService.PROXIES_CRITERIA);
         if (res.size() == 1) {
             return res.get(0);
         } else if (res.isEmpty()) {

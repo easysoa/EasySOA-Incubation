@@ -34,10 +34,11 @@ public class ServiceConsumptionIndicatorProvider implements IndicatorProvider {
         if (subprojectId == null) {
             subprojectPathCriteria = "";
         } else {
-            if(ContextVisibility.DEEP.getValue().equals(visibility)){
-                subprojectPathCriteria = DocumentService.NXQL_AND + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));
-            } else {
+            if(ContextVisibility.STRICT.getValue().equals(visibility)){
                 subprojectPathCriteria = DocumentService.NXQL_AND + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);
+            } else {
+                subprojectPathCriteria = DocumentService.NXQL_AND + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(
+                        SubprojectServiceImpl.getSubprojectById(session, subprojectId));                
             }
         }
         

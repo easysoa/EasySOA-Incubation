@@ -40,13 +40,13 @@ public abstract class QueryCountIndicator extends Indicator {
             subprojectPathCriteria = "";
         } else {
             //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
-            if(ContextVisibility.DEEP.getValue().equals(visibility)){
+            if(ContextVisibility.STRICT.getValue().equals(visibility)){
                 subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
+                    + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);
             } else {
                 subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);                
-            }            
+                    + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));
+            }
         }
         
         IterableQueryResult queryResult = session.queryAndFetch(valueQuery + subprojectPathCriteria, NXQL.NXQL);

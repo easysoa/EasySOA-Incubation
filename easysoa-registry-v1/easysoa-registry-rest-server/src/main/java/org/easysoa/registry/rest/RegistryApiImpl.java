@@ -83,7 +83,7 @@ public class RegistryApiImpl implements RegistryApi {
             }
         	
             DocumentModelList modelList = docService.query(documentManager, query
-                    + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER + subprojectPathCriteria, true, false);
+                    + DocumentService.NO_DELETED_DOCUMENTS_CRITERIA + subprojectPathCriteria, true, false);
             SoaNodeInformation soaNodes[] = new SoaNodeInformation[modelList.size()];
             int i = 0;
             for (DocumentModel model : modelList) {

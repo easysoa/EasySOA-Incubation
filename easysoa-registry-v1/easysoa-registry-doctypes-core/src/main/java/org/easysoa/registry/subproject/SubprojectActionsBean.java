@@ -126,15 +126,13 @@ public class SubprojectActionsBean implements Serializable {
 
         outputMessage = "Successfully created new version " + versionedSubprojectModel.getVersionLabel(); // TODO ??
         Object[] params = { versionedSubprojectModel.getVersionLabel() };
-        //facesMessages.add(StatusMessage.Severity.INFO, "#0 " // TODO !!!!!!!!!!!
-        //        + resourcesAccessor.getMessages().get("message.easysoa.newVersionCreated"),
-         //       params); // or FacesMessages.instance().add(...)
         facesMessages.add(StatusMessage.Severity.INFO,
                 resourcesAccessor.getMessages().get("message.easysoa.newVersionCreated"),
-                params);
+                params); // or FacesMessages.instance().add(...)
 
         //DocumentModel publishedVersion = versionedSubprojectModel;// goes at MySubproject/Suivi de version/MySubproject
-        DocumentModel publishedVersion = versionedSubprojectProxy;// goes at Publications/MySubproject_vx.y
+        //DocumentModel publishedVersion = versionedSubprojectProxy;// goes at Publications/MySubproject_vx.y (but if create version again, error "can't set prop")
+        DocumentModel publishedVersion = subproject;// goes to live (but that's not what we'd want)
         if (publishedVersion != null) {
             return navigationContext.navigateToDocument(publishedVersion, "after-edit");
         }

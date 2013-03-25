@@ -104,7 +104,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
                 documentManager, "RealisationPhase2", projectModel, null);
         
         documentManager.save();
-
+        
         String anotherRealisationSubprojectId = anotherRealisationSubprojectModel.getId();
         System.err.println("anotherRealisationSubprojectModel: " + anotherRealisationSubprojectModel
                 + "\n   uuid=" + anotherRealisationSubprojectModel.getId()
@@ -113,7 +113,9 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
                 + "\n   isLatestVersion=" + anotherRealisationSubprojectModel.isLatestVersion()
                 + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectModel.isVersionSeriesCheckedOut()
                 + "\n   versionLabel=" + anotherRealisationSubprojectModel.getVersionLabel()
-                + "\n   versionSeriesId=" + anotherRealisationSubprojectModel.getVersionSeriesId());
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectModel.getVersionSeriesId()
+                + "\n   majorVersion=" + anotherRealisationSubprojectModel.getProperty("major_version").getValue(String.class)
+                + "\n   minorVersion=" + anotherRealisationSubprojectModel.getProperty("minor_version").getValue(String.class));
         
         DocumentRef anotherRealisationSubprojectv01Ref = anotherRealisationSubprojectModel.checkIn(VersioningOption.MINOR, "test 0.1");
         DocumentModel anotherRealisationSubprojectv01Model = documentManager.getDocument(anotherRealisationSubprojectv01Ref);
@@ -124,7 +126,9 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
                 + "\n   isLatestVersion=" + anotherRealisationSubprojectv01Model.isLatestVersion()
                 + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectv01Model.isVersionSeriesCheckedOut()
                 + "\n   versionLabel=" + anotherRealisationSubprojectv01Model.getVersionLabel()
-                + "\n   versionSeriesId=" + anotherRealisationSubprojectv01Model.getVersionSeriesId());
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectv01Model.getVersionSeriesId()
+                + "\n   majorVersion=" + anotherRealisationSubprojectv01Model.getProperty("major_version").getValue(String.class)
+                + "\n   minorVersion=" + anotherRealisationSubprojectv01Model.getProperty("minor_version").getValue(String.class));
         System.err.println("post 01 anotherRealisationSubprojectModel: " + anotherRealisationSubprojectModel
                 + "\n   uuid=" + anotherRealisationSubprojectModel.getId()
                 + "\n   isCheckedOut=" + anotherRealisationSubprojectModel.isCheckedOut()
@@ -132,7 +136,34 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
                 + "\n   isLatestVersion=" + anotherRealisationSubprojectModel.isLatestVersion()
                 + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectModel.isVersionSeriesCheckedOut()
                 + "\n   versionLabel=" + anotherRealisationSubprojectModel.getVersionLabel()
-                + "\n   versionSeriesId=" + anotherRealisationSubprojectModel.getVersionSeriesId());
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectModel.getVersionSeriesId()
+                + "\n   majorVersion=" + anotherRealisationSubprojectModel.getProperty("major_version").getValue(String.class)
+                + "\n   minorVersion=" + anotherRealisationSubprojectModel.getProperty("minor_version").getValue(String.class));
+        
+        anotherRealisationSubprojectModel.checkOut();
+        DocumentRef anotherRealisationSubprojectv02Ref = anotherRealisationSubprojectModel.checkIn(VersioningOption.MINOR, "test 0.2");
+        DocumentModel anotherRealisationSubprojectv02Model = documentManager.getDocument(anotherRealisationSubprojectv02Ref);
+        System.err.println("anotherRealisationSubprojectv02Ref: " + anotherRealisationSubprojectv02Ref + " - " + anotherRealisationSubprojectv02Model
+                + "\n   uuid=" + anotherRealisationSubprojectv02Model.getId()
+                + "\n   isCheckedOut=" + anotherRealisationSubprojectv02Model.isCheckedOut()
+                + "\n   isVersion=" + anotherRealisationSubprojectv02Model.isVersion()
+                + "\n   isLatestVersion=" + anotherRealisationSubprojectv02Model.isLatestVersion()
+                + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectv02Model.isVersionSeriesCheckedOut()
+                + "\n   versionLabel=" + anotherRealisationSubprojectv02Model.getVersionLabel()
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectv02Model.getVersionSeriesId()
+                + "\n   majorVersion=" + anotherRealisationSubprojectv02Model.getProperty("major_version").getValue(String.class)
+                + "\n   minorVersion=" + anotherRealisationSubprojectv02Model.getProperty("minor_version").getValue(String.class));
+        System.err.println("post 02 anotherRealisationSubprojectModel: " + anotherRealisationSubprojectModel
+                + "\n   uuid=" + anotherRealisationSubprojectModel.getId()
+                + "\n   isCheckedOut=" + anotherRealisationSubprojectModel.isCheckedOut()
+                + "\n   isVersion=" + anotherRealisationSubprojectModel.isVersion()
+                + "\n   isLatestVersion=" + anotherRealisationSubprojectModel.isLatestVersion()
+                + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectModel.isVersionSeriesCheckedOut()
+                + "\n   versionLabel=" + anotherRealisationSubprojectModel.getVersionLabel()
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectModel.getVersionSeriesId()
+                + "\n   majorVersion=" + anotherRealisationSubprojectModel.getProperty("major_version").getValue(String.class)
+                + "\n   minorVersion=" + anotherRealisationSubprojectModel.getProperty("minor_version").getValue(String.class));        
+        
         anotherRealisationSubprojectModel.checkOut();
         System.err.println("post 01 checkout anotherRealisationSubprojectModel: " + anotherRealisationSubprojectModel
                 + "\n   uuid=" + anotherRealisationSubprojectModel.getId()
@@ -141,7 +172,9 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
                 + "\n   isLatestVersion=" + anotherRealisationSubprojectModel.isLatestVersion()
                 + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectModel.isVersionSeriesCheckedOut()
                 + "\n   versionLabel=" + anotherRealisationSubprojectModel.getVersionLabel()
-                + "\n   versionSeriesId=" + anotherRealisationSubprojectModel.getVersionSeriesId());
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectModel.getVersionSeriesId()
+                + "\n   majorVersion=" + anotherRealisationSubprojectModel.getProperty("major_version").getValue(String.class)
+                + "\n   minorVersion=" + anotherRealisationSubprojectModel.getProperty("minor_version").getValue(String.class));                
         System.err.println("post 01 checkout anotherRealisationSubprojectv01Ref: " + anotherRealisationSubprojectv01Ref + " - " + anotherRealisationSubprojectv01Model
                 + "\n   uuid=" + anotherRealisationSubprojectv01Model.getId()
                 + "\n   isCheckedOut=" + anotherRealisationSubprojectv01Model.isCheckedOut()
@@ -149,7 +182,9 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
                 + "\n   isLatestVersion=" + anotherRealisationSubprojectv01Model.isLatestVersion()
                 + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectv01Model.isVersionSeriesCheckedOut()
                 + "\n   versionLabel=" + anotherRealisationSubprojectv01Model.getVersionLabel()
-                + "\n   versionSeriesId=" + anotherRealisationSubprojectv01Model.getVersionSeriesId());
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectv01Model.getVersionSeriesId()
+                + "\n   majorVersion=" + anotherRealisationSubprojectv01Model.getProperty("major_version").getValue(String.class)
+                + "\n   minorVersion=" + anotherRealisationSubprojectv01Model.getProperty("minor_version").getValue(String.class));                
         
         anotherRealisationSubprojectModel = documentManager.getDocument(new IdRef(anotherRealisationSubprojectId));
         DocumentRef anotherRealisationSubprojectv10Ref = anotherRealisationSubprojectModel.checkIn(VersioningOption.MAJOR, "test 1.0");
@@ -161,7 +196,9 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
                 + "\n   isLatestVersion=" + anotherRealisationSubprojectv10Model.isLatestVersion()
                 + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectv10Model.isVersionSeriesCheckedOut()
                 + "\n   versionLabel=" + anotherRealisationSubprojectv10Model.getVersionLabel()
-                + "\n   versionSeriesId=" + anotherRealisationSubprojectv10Model.getVersionSeriesId());
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectv10Model.getVersionSeriesId()
+                + "\n   majorVersion=" + anotherRealisationSubprojectv10Model.getProperty("major_version").getValue(String.class)
+                + "\n   minorVersion=" + anotherRealisationSubprojectv10Model.getProperty("minor_version").getValue(String.class));                
         System.err.println("post 10 anotherRealisationSubprojectModel: " + anotherRealisationSubprojectModel
                 + "\n   uuid=" + anotherRealisationSubprojectModel.getId()
                 + "\n   isCheckedOut=" + anotherRealisationSubprojectModel.isCheckedOut()
@@ -169,7 +206,9 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
                 + "\n   isLatestVersion=" + anotherRealisationSubprojectModel.isLatestVersion()
                 + "\n   isVersionSeriesCheckedOut=" + anotherRealisationSubprojectModel.isVersionSeriesCheckedOut()
                 + "\n   versionLabel=" + anotherRealisationSubprojectModel.getVersionLabel()
-                + "\n   versionSeriesId=" + anotherRealisationSubprojectModel.getVersionSeriesId());
+                + "\n   versionSeriesId=" + anotherRealisationSubprojectModel.getVersionSeriesId()
+                + "\n   majorVersion=" + anotherRealisationSubprojectModel.getProperty("major_version").getValue(String.class)
+                + "\n   minorVersion=" + anotherRealisationSubprojectModel.getProperty("minor_version").getValue(String.class));                
     }
     
     

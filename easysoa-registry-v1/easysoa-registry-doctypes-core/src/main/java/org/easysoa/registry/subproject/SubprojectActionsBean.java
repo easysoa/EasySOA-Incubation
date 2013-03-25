@@ -36,16 +36,20 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.jboss.seam.core.Events;
 import org.jboss.seam.faces.FacesMessages;
 import org.jboss.seam.international.StatusMessage;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.platform.publisher.api.PublisherService;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
+import org.nuxeo.ecm.webapp.helpers.EventManager;
+import org.nuxeo.ecm.webapp.helpers.EventNames;
 import org.nuxeo.ecm.webapp.helpers.ResourcesAccessor;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.snapshot.Snapshot;
@@ -130,6 +134,24 @@ public class SubprojectActionsBean implements Serializable {
                 resourcesAccessor.getMessages().get("message.easysoa.newVersionCreated"),
                 params); // or FacesMessages.instance().add(...)
 
+        // Doesn't work, current document is not refreshed ....
+        /*try{
+            DocumentModelList parentList = docService.findAllParents(documentManager, subproject);
+            if(parentList != null && parentList.size() > 0){
+                EventManager.raiseEventsOnDocumentChildrenChange(parentList.get(0));
+                Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, parentList.get(0));
+            }
+        } catch(Exception ex){
+            log.warn("Unable to get the parent document models", ex);
+        }*/
+        
+        //EventManager.raiseEventsOnDocumentChildrenChange(subproject);
+        //EventManager.raiseEventsOnDocumentSelected(subproject);
+        //Events.instance().raiseEvent(EventNames.DOCUMENT_CHILDREN_CHANGED, subproject); // no effect
+        //Events.instance().raiseEvent(EventNames.DOCUMENT_CHANGED, subproject); // no effect
+        
+        navigationContext.invalidateCurrentDocument(); // Else the current document is not refreshed and another clic on the 'create new version' button create a version on the previous 'live' document.
+            
         //DocumentModel publishedVersion = versionedSubprojectModel;// goes at MySubproject/Suivi de version/MySubproject
         //DocumentModel publishedVersion = versionedSubprojectProxy;// goes at Publications/MySubproject_vx.y (but if create version again, error "can't set prop")
         DocumentModel publishedVersion = subproject;// goes to live (but that's not what we'd want)

@@ -54,7 +54,8 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
  */
 //XXX Slightly outdated after removal of Service doctype
 @WebObject(type = "EasySOA")
-@Path("easysoa")
+@Path("easysoa") // TODO move the indicators page in easysoa/indicators
+// TODO Add a new controller for index page
 public class IndicatorsController extends ModuleRoot {
 
     private static Logger logger = Logger.getLogger(IndicatorsController.class);

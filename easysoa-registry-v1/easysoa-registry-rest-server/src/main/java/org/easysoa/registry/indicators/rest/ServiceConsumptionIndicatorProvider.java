@@ -83,7 +83,7 @@ public class ServiceConsumptionIndicatorProvider implements IndicatorProvider {
         
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
         indicators.put("Never consumed services",
-                new IndicatorValue(unconsumedServiceIds.size(), (servicesIds.size() > 0) ? 100 * unconsumedServiceIds.size() / servicesIds.size() : -1));
+                new IndicatorValue("", "", unconsumedServiceIds.size(), (servicesIds.size() > 0) ? 100 * unconsumedServiceIds.size() / servicesIds.size() : -1));
         
         return indicators;
     }

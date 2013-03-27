@@ -54,48 +54,51 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
  */
 //XXX Slightly outdated after removal of Service doctype
 @WebObject(type = "EasySOA")
-@Path("easysoa") // TODO move the indicators page in easysoa/indicators
+@Path("easysoa/indicators") // TODO move the indicators page in easysoa/indicators
+//@Path("easysoa") // TODO move the indicators page in easysoa/indicators
 // TODO Add a new controller for index page
 public class IndicatorsController extends ModuleRoot {
 
     private static Logger logger = Logger.getLogger(IndicatorsController.class);
     
     // XXX Categories are currently unused by view
-    public static final String CATEGORY_DOCTYPE_COUNTS = "Doctype counts";
-    public static final String CATEGORY_DOCTYPE_SPECIFIC = "Doctype-specific indicators";
-    public static final String CATEGORY_MISC = "Miscellaneous";
+    //public static final String CATEGORY_DOCTYPE_COUNTS = "Doctype counts";
+    //public static final String CATEGORY_DOCTYPE_SPECIFIC = "Doctype-specific indicators";
+    //public static final String CATEGORY_MISC = "Miscellaneous";
 
-    private Map<String, List<IndicatorProvider>> indicatorProviders = new HashMap<String, List<IndicatorProvider>>();
+    //private Map<String, List<IndicatorProvider>> indicatorProviders = new HashMap<String, List<IndicatorProvider>>();
+    private List<IndicatorProvider> indicatorProviders = new ArrayList<IndicatorProvider>();
     
     public IndicatorsController() {
         // Document count by type
-        addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(SoaNode.ABSTRACT_DOCTYPE));
-        addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(InformationService.DOCTYPE));
-        addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(SoftwareComponent.DOCTYPE));
-        addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(ServiceImplementation.DOCTYPE));
-        addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(Deliverable.DOCTYPE));
-        addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(DeployedDeliverable.DOCTYPE));
-        addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(Endpoint.DOCTYPE));
-        addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(EndpointConsumption.DOCTYPE));
-        addIndicator(CATEGORY_DOCTYPE_COUNTS, new DoctypeCountIndicator(TaggingFolder.DOCTYPE));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(SoaNode.ABSTRACT_DOCTYPE));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(InformationService.DOCTYPE));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(SoftwareComponent.DOCTYPE));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(ServiceImplementation.DOCTYPE));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(Deliverable.DOCTYPE));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(DeployedDeliverable.DOCTYPE));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(Endpoint.DOCTYPE));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(EndpointConsumption.DOCTYPE));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(TaggingFolder.DOCTYPE));
         
         // Doctype-specific indicators
         //addIndicator(CATEGORY_DOCTYPE_SPECIFIC, new ServiceStateProvider());
-        addIndicator(CATEGORY_DOCTYPE_SPECIFIC, new ServiceImplStateProvider());
-        addIndicator(CATEGORY_DOCTYPE_SPECIFIC, new SoftwareComponentIndicatorProvider());
-        addIndicator(CATEGORY_DOCTYPE_SPECIFIC, new TagsIndicatorProvider());
-        addIndicator(CATEGORY_DOCTYPE_SPECIFIC, new ServiceConsumptionIndicatorProvider());
+        addIndicator(/*CATEGORY_DOCTYPE_SPECIFIC,*/ new ServiceImplStateProvider());
+        //addIndicator(CATEGORY_DOCTYPE_SPECIFIC, new SoftwareComponentIndicatorProvider()); // Disabled, need to be updated
+        addIndicator(/*CATEGORY_DOCTYPE_SPECIFIC,*/ new TagsIndicatorProvider());
+        addIndicator(/*CATEGORY_DOCTYPE_SPECIFIC,*/ new ServiceConsumptionIndicatorProvider());
 
         // Miscellaneous indicators
-        addIndicator(CATEGORY_MISC, new PlaceholdersIndicatorProvider());
+        addIndicator(/*CATEGORY_MISC,*/ new PlaceholdersIndicatorProvider());
         
     }
     
-    public void addIndicator(String category, IndicatorProvider indicator) {
-        if (!indicatorProviders.containsKey(category)) {
+    public void addIndicator(/*String category,*/ IndicatorProvider indicator) {
+        /*if (!indicatorProviders.containsKey(category)) {
             indicatorProviders.put(category, new ArrayList<IndicatorProvider>());
         }
-        indicatorProviders.get(category).add(indicator);
+        indicatorProviders.get(category).add(indicator);*/
+        indicatorProviders.add(indicator);
     }
 
     @GET
@@ -117,13 +120,15 @@ public class IndicatorsController extends ModuleRoot {
             subprojectId = null;
         }
         
-        Map<String, Map<String, IndicatorValue>> indicatorsByCategory = computeIndicators(subprojectId, visibility);
+        //Map<String, Map<String, IndicatorValue>> indicatorsByCategory = computeIndicators(subprojectId, visibility);
+        Map<String, IndicatorValue> indicators = computeIndicators(subprojectId, visibility);
         
         // Create and return view
         HashMap<String, Integer> nbMap = new HashMap<String, Integer>();
         HashMap<String, Integer> percentMap = new HashMap<String, Integer>();
-        for (Map<String, IndicatorValue> indicatorCategory : indicatorsByCategory.values()) {
-            for (Entry<String, IndicatorValue> indicator : indicatorCategory.entrySet()) {
+        //for (Map<String, IndicatorValue> indicatorCategory : indicatorsByCategory.values()) {
+            //for (Entry<String, IndicatorValue> indicator : indicatorCategory.entrySet()) {
+            for (Entry<String, IndicatorValue> indicator : indicators.entrySet()) {
                 if (indicator.getValue().getCount() != -1) {
                     nbMap.put(indicator.getKey(), indicator.getValue().getCount());
                 }
@@ -131,10 +136,11 @@ public class IndicatorsController extends ModuleRoot {
                     percentMap.put(indicator.getKey(), indicator.getValue().getPercentage());
                 }
             }
-        }
+        //}
         
         // Set args for the template
         return getView("indicators")
+        //return getView("index")
                 .arg("nbMap", nbMap)
                 .arg("percentMap", percentMap)
                 .arg("subprojectId", subprojectId)
@@ -152,28 +158,30 @@ public class IndicatorsController extends ModuleRoot {
         return computeIndicators(subprojectId, visibility);
     }
     
-    private Map<String, Map<String, IndicatorValue>> computeIndicators(String subprojectId, String visibility) throws Exception {
+    //private Map<String, Map<String, IndicatorValue>> computeIndicators(String subprojectId, String visibility) throws Exception {
+    private Map<String, IndicatorValue> computeIndicators(String subprojectId, String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         
         List<IndicatorProvider> computedProviders = new ArrayList<IndicatorProvider>();
         List<IndicatorProvider> pendingProviders = new ArrayList<IndicatorProvider>();
         Map<String, IndicatorValue> computedIndicators = new HashMap<String, IndicatorValue>();
-        Map<String, Map<String, IndicatorValue>> indicatorsByCategory = new HashMap<String, Map<String, IndicatorValue>>();
+        //Map<String, Map<String, IndicatorValue>> indicatorsByCategory = new HashMap<String, Map<String, IndicatorValue>>();
         int previousComputedProvidersCount = -1;
 
         // Compute indicators in several passes, with respect to dependencies
         while (computedProviders.size() != previousComputedProvidersCount) {
             previousComputedProvidersCount = computedProviders.size();
             
-            for (Entry<String, List<IndicatorProvider>> indicatorProviderCategory : indicatorProviders.entrySet()) {
+            /*for (Entry<String, List<IndicatorProvider>> indicatorProviderCategory : indicatorProviders.entrySet()) {*/
                 // Start or continue indicator category
-                Map<String, IndicatorValue> categoryIndicators = indicatorsByCategory.get(indicatorProviderCategory.getKey());
+                /*Map<String, IndicatorValue> categoryIndicators = indicatorsByCategory.get(indicatorProviderCategory.getKey());
                 if (categoryIndicators == null) {
                     categoryIndicators = new HashMap<String, IndicatorValue>();
-                }
+                }*/
                 
                 // Browse all providers
-                for (IndicatorProvider indicatorProvider : indicatorProviderCategory.getValue()) {
+                //for (IndicatorProvider indicatorProvider : indicatorProviderCategory.getValue()) {
+            for (IndicatorProvider indicatorProvider : indicatorProviders) {
                     if (!computedProviders.contains(indicatorProvider)) {
                         // Compute indicator only if the dependencies are already computed
                         List<String> requiredIndicators = indicatorProvider.getRequiredIndicators();
@@ -198,7 +206,7 @@ public class IndicatorsController extends ModuleRoot {
                                 logger.warn("Failed to compute indicator '" + indicatorProvider.toString() + "': " + e.getMessage());
                             }
                             if (indicators != null) {
-                                categoryIndicators.putAll(indicators);
+                                //categoryIndicators.putAll(indicators);
                                 computedIndicators.putAll(indicators);
                             }
                             
@@ -210,9 +218,9 @@ public class IndicatorsController extends ModuleRoot {
                         }
                     }
                 }
-                indicatorsByCategory.put(indicatorProviderCategory.getKey(), categoryIndicators);
+                //indicatorsByCategory.put(indicatorProviderCategory.getKey(), categoryIndicators);
             }
-        }
+        /*}*/
         
         // Warn if some indicators have been left pending 
         for (IndicatorProvider pendingProvider : pendingProviders) {
@@ -221,7 +229,8 @@ public class IndicatorsController extends ModuleRoot {
                     + pendingProvider.getRequiredIndicators() + ")");
         }
         
-        return indicatorsByCategory;
+        //return indicatorsByCategory;
+        return computedIndicators;
     }
         
 

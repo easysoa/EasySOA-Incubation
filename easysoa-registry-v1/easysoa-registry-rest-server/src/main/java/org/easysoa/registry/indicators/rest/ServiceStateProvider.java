@@ -40,7 +40,7 @@ import org.nuxeo.runtime.api.Framework;
 // XXX Outdated (Relied on the Service doctype)
 public class ServiceStateProvider implements IndicatorProvider {
 
-    private static final String SERVICE_DOCTYPE_INDICATOR = DoctypeCountIndicator.getName(InformationService.DOCTYPE);
+    private static final String SERVICE_DOCTYPE_INDICATOR = DoctypeCountProvider.getName(InformationService.DOCTYPE);
 
     @Override
     public List<String> getRequiredIndicators() {
@@ -102,16 +102,16 @@ public class ServiceStateProvider implements IndicatorProvider {
         
         // TODO "main" vs "test" implementation
         indicators.put("serviceWhithoutImplementation",
-                new IndicatorValue(serviceWhithoutImplementationNb,
+                new IndicatorValue("", "", serviceWhithoutImplementationNb,
                         (servicesCount > 0) ? (100 * serviceWhithoutImplementationNb / servicesCount) : -1)); 
         
         // TODO "test", "integration", "staging" ("design", "dev")
         indicators.put("serviceWithImplementationWhithoutEndpoint",
-                new IndicatorValue(serviceWithImplementationWhithoutEndpointNb,
+                new IndicatorValue("", "", serviceWithImplementationWhithoutEndpointNb,
                         (servicesCount - serviceWhithoutImplementationNb > 0) ? (100 * serviceWithImplementationWhithoutEndpointNb / (servicesCount - serviceWhithoutImplementationNb)) : -1));
         
         indicators.put("serviceWhithoutEndpoint",
-                new IndicatorValue(serviceWhithoutImplementationNb + serviceWithImplementationWhithoutEndpointNb, 
+                new IndicatorValue("", "", serviceWhithoutImplementationNb + serviceWithImplementationWhithoutEndpointNb, 
                         (servicesCount > 0) ? (100 * (serviceWhithoutImplementationNb + serviceWithImplementationWhithoutEndpointNb) / servicesCount) : -1));
 
         return indicators;

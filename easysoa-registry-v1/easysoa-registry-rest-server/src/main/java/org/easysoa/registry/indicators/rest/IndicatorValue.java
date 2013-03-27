@@ -20,12 +20,19 @@
 
 package org.easysoa.registry.indicators.rest;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * 
- * @author jguillemotte
+ * @author mkalam-alami
  */
 public class IndicatorValue {
     
+    private String name;
+    //private String category;
+    private Set<String> categories = new HashSet<String>();
     private int count;
     private int percentage;
 
@@ -34,9 +41,37 @@ public class IndicatorValue {
      * @param count The indicator value, or -1 if not relevant
      * @param percentage The indicator value in percents, or -1 if not relevant
      */
-    public IndicatorValue(int count, int percentage) {
+    public IndicatorValue(String name, String category, int count, int percentage) {
+        this.name= name;
+        addCategory(category);
         this.count = count;
         this.percentage = percentage;
+    }
+    
+    /**
+     * 
+     * @return The indicator name
+     */
+    public String getName(){
+        return name;
+    }
+    
+    /**
+     * Add a category
+     * @param category 
+     */
+    public void addCategory(String category){
+        if(!categories.contains(category)){
+            categories.add(category);
+        }
+    }
+    
+    /**
+     * 
+     * @return The indicator category
+     */
+    public Set getCategories(){
+        return categories;
     }
     
     /**

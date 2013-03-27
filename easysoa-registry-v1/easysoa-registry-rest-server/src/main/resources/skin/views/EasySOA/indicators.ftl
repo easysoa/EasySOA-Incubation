@@ -146,7 +146,7 @@ td:first-child {
 		<h2>Nbs</h2>
 		<ul>
 			<#list nbMap?keys as nbMapKey>
-			<li>Nombre de ${nbMapKey}s : <b>${nbMap[nbMapKey]}</b>
+			<li>Nombre de ${nbMapKey} : <b>${nbMap[nbMapKey]}</b>
 				<#if percentMap[nbMapKey]> | 
 					<#if percentMap[nbMapKey] != -1>
 						Pourcentage : <b>${percentMap[nbMapKey]}%</b>

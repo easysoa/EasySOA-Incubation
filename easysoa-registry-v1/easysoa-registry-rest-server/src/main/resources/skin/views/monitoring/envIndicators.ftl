@@ -40,7 +40,7 @@
 		
 		<br/>
 		
-		<a href="${Root.path}?subprojectId=${subprojectId}&visibility=${visibility}">Back to endpoint list<a>
+		<a href="${Root.path}?subprojectId=${subprojectId}&visibility=${visibility}">Back to endpoint list</a>
 		
 	</div>
 </body>

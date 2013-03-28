@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.types.InformationService;
@@ -36,8 +35,22 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * 
+ * @author
+ */
 public class ServiceConsumptionIndicatorProvider implements IndicatorProvider {
 
+    private String category;
+    
+    public ServiceConsumptionIndicatorProvider(String category){
+        if(category == null){
+            this.category = "";
+        } else {
+            this.category = category;
+        }
+    }
+    
     @Override
     public List<String> getRequiredIndicators() {
         return null;
@@ -83,7 +96,7 @@ public class ServiceConsumptionIndicatorProvider implements IndicatorProvider {
         
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
         indicators.put("Never consumed services",
-                new IndicatorValue("", "", unconsumedServiceIds.size(), (servicesIds.size() > 0) ? 100 * unconsumedServiceIds.size() / servicesIds.size() : -1));
+                new IndicatorValue("Never consumed services", this.category, unconsumedServiceIds.size(), (servicesIds.size() > 0) ? 100 * unconsumedServiceIds.size() / servicesIds.size() : -1));
         
         return indicators;
     }

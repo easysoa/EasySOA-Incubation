@@ -22,7 +22,6 @@ package org.easysoa.registry.indicators.rest;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**
@@ -41,6 +40,8 @@ public abstract class Indicator implements IndicatorProvider {
     }
     
     public abstract String getName();
+    
+    public abstract String getCategory();
     
     public abstract IndicatorValue compute(CoreSession session, String subprojectId,
             Map<String, IndicatorValue> computedIndicators, String visibility) throws Exception;

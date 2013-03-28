@@ -21,13 +21,23 @@
 package org.easysoa.registry.indicators.rest;
 
 import java.util.List;
-
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.SoaNode;
 
+/**
+ * 
+ * @author jguillemotte
+ */
 public class PlaceholdersIndicatorProvider extends QueryCountIndicator {
 
-    public PlaceholdersIndicatorProvider() {
+    // indicator category
+    private String category;
+    
+    /**
+     * Constructor
+     * @param category Indicator category
+     */
+    public PlaceholdersIndicatorProvider(String category) {
         super(DocumentService.NXQL_SELECT_FROM + SoaNode.ABSTRACT_DOCTYPE
                 + DocumentService.NXQL_WHERE_NO_PROXY
                 + DocumentService.NXQL_AND + DocumentService.NXQL_IS_NOT_DELETED
@@ -35,6 +45,7 @@ public class PlaceholdersIndicatorProvider extends QueryCountIndicator {
               DocumentService.NXQL_SELECT_FROM + SoaNode.ABSTRACT_DOCTYPE
                 + DocumentService.NXQL_WHERE_NO_PROXY
                 + DocumentService.NXQL_AND + DocumentService.NXQL_IS_NOT_DELETED);
+        this.category = category;
     }
 
     @Override
@@ -45,6 +56,11 @@ public class PlaceholdersIndicatorProvider extends QueryCountIndicator {
     @Override
     public String getName() {
         return "Placeholders count";
+    }
+    
+    @Override
+    public String getCategory(){
+        return category;
     }
 
 }

@@ -50,7 +50,7 @@
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Cartographie des services</h3>
                         <p>Découverte de services, IHM de consultation du modèle SOA, qualité ...</p>
-                        <a class="btn btn-primary" href="#">Plus...</a>
+                        <a class="btn btn-primary" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>                        
                     </div>
                 </li>
                 <li class="span6">
@@ -79,7 +79,7 @@
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Pilotage</h3>
                         <p>Suivi des Phases de production SOA, indicateurs de complétion et gouvernance, (?) édition collaborative du modèle SOA...</p><!-- ou Aide à la prise de décisions ? Registry des services, implementations ?? -->
-                        <a class="btn btn-primary" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
+                        <a class="btn btn-primary" href="#">Plus...</a>
                     </div>
                 </li>
             </ul>

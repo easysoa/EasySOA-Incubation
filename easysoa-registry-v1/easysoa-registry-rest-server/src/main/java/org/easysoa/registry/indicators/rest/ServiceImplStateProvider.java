@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.types.InformationService;
@@ -37,9 +36,27 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.runtime.api.Framework;
 
+/**
+ * 
+ * @author
+ */
 public class ServiceImplStateProvider implements IndicatorProvider {
 
     private static final String SERVICEIMPL_DOCTYPE_INDICATOR = DoctypeCountProvider.getName(ServiceImplementation.DOCTYPE);
+    
+    private String category;
+    
+    /**
+     * 
+     * @param category 
+     */
+    public ServiceImplStateProvider(String category){
+        if(category == null){
+            this.category = "";
+          } else {
+            this.category = category;
+        }
+    }
     
     @Override
     public List<String> getRequiredIndicators() {
@@ -139,17 +156,17 @@ public class ServiceImplStateProvider implements IndicatorProvider {
         //% de doc seulement sur les services qui en ont / Qualité de doc moyenne en%
         //indicateurs documentation : % d'éléments doc'és (pour service, impl ; non test ; LATER pour consumer)
         indicators.put("Undocumented service implementations", 
-                new IndicatorValue("", "", undocumentedServiceImpls, -1));
+                new IndicatorValue("Undocumented service implementations", this.category, undocumentedServiceImpls, -1));
         indicators.put("Lines of documentation per documented service impl. (average)",
-                new IndicatorValue("", "", (serviceImplCount - undocumentedServiceImpls > 0) ? (documentationLines / (serviceImplCount - undocumentedServiceImpls)) : -1, -1));
+                new IndicatorValue("Lines of documentation per documented service impl. (average)", this.category, (serviceImplCount - undocumentedServiceImpls > 0) ? (documentationLines / (serviceImplCount - undocumentedServiceImpls)) : -1, -1));
         indicators.put("Service impls without mocks", 
-                new IndicatorValue("", "", nonMockImplsCount - mockedImplsCount,
+                new IndicatorValue("Service impls without mocks", this.category, nonMockImplsCount - mockedImplsCount,
                         (nonMockImplsCount > 0) ? (100 * (nonMockImplsCount - mockedImplsCount) / nonMockImplsCount) : -1));
         indicators.put("Service impls without tests", 
-                new IndicatorValue("", "", nonMockImplsCount - testedImplsCount,
+                new IndicatorValue("Service impls without tests", this.category, nonMockImplsCount - testedImplsCount,
                         (nonMockImplsCount > 0) ? (100 * (nonMockImplsCount - testedImplsCount) / nonMockImplsCount) : -1));
         indicators.put("Documented service implementations documentation quality", 
-                new IndicatorValue("", "", -1, (serviceImplCount - undocumentedServiceImpls > 0) ?
+                new IndicatorValue("Documented service implementations documentation quality", this.category, -1, (serviceImplCount - undocumentedServiceImpls > 0) ?
                         (100 * serviceImplsDocQuality / ((IDEAL_DOCUMENTATION_LINES - DOCUMENTATION_LINES_TOLERANCE) * (serviceImplCount - undocumentedServiceImpls))) : -1));
 
         // TODO model consistency ex. impl without service

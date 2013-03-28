@@ -21,7 +21,6 @@
 package org.easysoa.registry.indicators.rest;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -30,7 +29,7 @@ import java.util.Set;
  */
 public class IndicatorValue {
     
-    private String name;
+    private String name; // TODO : good idea to put the name in the indicator value ???
     //private String category;
     private Set<String> categories = new HashSet<String>();
     private int count;

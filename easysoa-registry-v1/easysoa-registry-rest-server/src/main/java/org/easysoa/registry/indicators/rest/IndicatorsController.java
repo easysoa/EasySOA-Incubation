@@ -66,30 +66,36 @@ public class IndicatorsController extends ModuleRoot {
     //public static final String CATEGORY_DOCTYPE_SPECIFIC = "Doctype-specific indicators";
     //public static final String CATEGORY_MISC = "Miscellaneous";
 
+    // New category for indicators
+    public static final String CATEGORY_STEERING = "steering";
+    public static final String CATEGORY_CARTOGRAPHY = "cartography";
+    public static final String CATEGORY_USAGE = "usage";
+    public static final String CATEGORY_MATCHING = "matching";
+            
     //private Map<String, List<IndicatorProvider>> indicatorProviders = new HashMap<String, List<IndicatorProvider>>();
     private List<IndicatorProvider> indicatorProviders = new ArrayList<IndicatorProvider>();
     
     public IndicatorsController() {
         // Document count by type
-        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(SoaNode.ABSTRACT_DOCTYPE));
-        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(InformationService.DOCTYPE));
-        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(SoftwareComponent.DOCTYPE));
-        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(ServiceImplementation.DOCTYPE));
-        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(Deliverable.DOCTYPE));
-        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(DeployedDeliverable.DOCTYPE));
-        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(Endpoint.DOCTYPE));
-        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(EndpointConsumption.DOCTYPE));
-        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(TaggingFolder.DOCTYPE));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(SoaNode.ABSTRACT_DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(InformationService.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(SoftwareComponent.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(ServiceImplementation.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(Deliverable.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(DeployedDeliverable.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(Endpoint.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(EndpointConsumption.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(/*CATEGORY_DOCTYPE_COUNTS,*/ new DoctypeCountProvider(TaggingFolder.DOCTYPE, CATEGORY_CARTOGRAPHY));
         
         // Doctype-specific indicators
-        //addIndicator(CATEGORY_DOCTYPE_SPECIFIC, new ServiceStateProvider());
-        addIndicator(/*CATEGORY_DOCTYPE_SPECIFIC,*/ new ServiceImplStateProvider());
+        //addIndicator(CATEGORY_DOCTYPE_SPECIFIC, new ServiceStateProvider()); // Disabled because outdated (see Comment in ServiceStateProvider.class)
+        addIndicator(/*CATEGORY_DOCTYPE_SPECIFIC,*/ new ServiceImplStateProvider(CATEGORY_CARTOGRAPHY));
         //addIndicator(CATEGORY_DOCTYPE_SPECIFIC, new SoftwareComponentIndicatorProvider()); // Disabled, need to be updated
-        addIndicator(/*CATEGORY_DOCTYPE_SPECIFIC,*/ new TagsIndicatorProvider());
-        addIndicator(/*CATEGORY_DOCTYPE_SPECIFIC,*/ new ServiceConsumptionIndicatorProvider());
+        addIndicator(/*CATEGORY_DOCTYPE_SPECIFIC,*/ new TagsIndicatorProvider(CATEGORY_STEERING));
+        addIndicator(/*CATEGORY_DOCTYPE_SPECIFIC,*/ new ServiceConsumptionIndicatorProvider(CATEGORY_USAGE));
 
         // Miscellaneous indicators
-        addIndicator(/*CATEGORY_MISC,*/ new PlaceholdersIndicatorProvider());
+        addIndicator(/*CATEGORY_MISC,*/ new PlaceholdersIndicatorProvider(CATEGORY_MATCHING));
         
     }
     
@@ -100,12 +106,10 @@ public class IndicatorsController extends ModuleRoot {
         indicatorProviders.get(category).add(indicator);*/
         indicatorProviders.add(indicator);
     }
-
-    @GET
-    @Produces(MediaType.TEXT_HTML)
-    public Object doGetHTML(/*@DefaultValue(null) */@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
-        CoreSession session = SessionFactory.getSession(request);
-
+    
+    // TODO : add a mthod to compute indicators and to be callable from another controller
+    public void computeIndicators(HashMap<String, Integer> nbMap, HashMap<String, Integer> percentMap,  String subprojectId, String visibility) throws Exception{
+        
         // using all subprojects or getting default one is let to indicator impls TODO better
         //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
         // TODO default or not ??
@@ -124,8 +128,13 @@ public class IndicatorsController extends ModuleRoot {
         Map<String, IndicatorValue> indicators = computeIndicators(subprojectId, visibility);
         
         // Create and return view
-        HashMap<String, Integer> nbMap = new HashMap<String, Integer>();
-        HashMap<String, Integer> percentMap = new HashMap<String, Integer>();
+        if(nbMap == null){
+            nbMap = new HashMap<String, Integer>();
+        }
+        if(percentMap == null){
+            percentMap = new HashMap<String, Integer>();
+        }
+        
         //for (Map<String, IndicatorValue> indicatorCategory : indicatorsByCategory.values()) {
             //for (Entry<String, IndicatorValue> indicator : indicatorCategory.entrySet()) {
             for (Entry<String, IndicatorValue> indicator : indicators.entrySet()) {
@@ -136,7 +145,21 @@ public class IndicatorsController extends ModuleRoot {
                     percentMap.put(indicator.getKey(), indicator.getValue().getPercentage());
                 }
             }
-        //}
+        //}        
+        
+    }
+    
+    @GET
+    @Produces(MediaType.TEXT_HTML)
+    public Object doGetHTML(/*@DefaultValue(null) */@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
+        CoreSession session = SessionFactory.getSession(request);
+
+        // Init maps
+        HashMap<String, Integer> nbMap = new HashMap<String, Integer>();
+        HashMap<String, Integer> percentMap = new HashMap<String, Integer>();
+        
+        // Compute the indicators
+        this.computeIndicators(nbMap, percentMap, subprojectId, visibility);
         
         // Set args for the template
         return getView("indicators")
@@ -154,7 +177,6 @@ public class IndicatorsController extends ModuleRoot {
         
         subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
         // TODO default or not ??
-        
         return computeIndicators(subprojectId, visibility);
     }
     
@@ -232,6 +254,5 @@ public class IndicatorsController extends ModuleRoot {
         //return indicatorsByCategory;
         return computedIndicators;
     }
-        
 
 }

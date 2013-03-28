@@ -23,10 +23,13 @@ package org.easysoa.registry.indicators.rest;
 /**
  *
  * @author jguillemotte
+ * 
  */
 public enum IndicatorCategory {
 
-    DRIVING("driving"),
+    // Not used at the moment to avoid a too rigid system
+    
+    STEERING("steering"),
     CARTOGRAPHY("cartography"),
     USAGE("usage"),
     MATCHING("matching");

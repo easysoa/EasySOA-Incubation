@@ -21,22 +21,32 @@
 package org.easysoa.registry.indicators.rest;
 
 import java.util.List;
-
 import org.easysoa.registry.DocumentService;
 
-
+/**
+ * Provider for Doctype counter indicators
+ * 
+ * @author jguillemotte
+ */
 public class DoctypeCountProvider extends QueryCountIndicator {
 
     private final String doctype;
+    private final String category;
 
-    public DoctypeCountProvider(String doctype) {
+    public DoctypeCountProvider(String doctype, String category) {
         super(DocumentService.NXQL_SELECT_FROM + doctype + DocumentService.NXQL_WHERE_NO_PROXY);
         this.doctype = doctype;
+        this.category = category;
     }
 
     @Override
     public String getName() {
         return getName(doctype);
+    }
+    
+    @Override
+    public String getCategory(){
+        return category;
     }
 
     @Override

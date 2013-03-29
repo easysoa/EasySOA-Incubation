@@ -5,6 +5,7 @@ import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.DeployedDeliverable;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.EndpointConsumption;
+import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceConsumption;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
@@ -20,6 +21,9 @@ public class CoreDoctypesAdapterFactory implements DocumentAdapterFactory {
         try {
             if (SoaNode.class.equals(itf)) {
                 return new SoaNodeAdapter(doc);
+            }
+            if (InformationService.class.equals(itf)) {
+                return new InformationServiceAdapter(doc);
             }
             if (Deliverable.class.equals(itf)) {
                 return new DeliverableAdapter(doc);

@@ -90,10 +90,17 @@ public class DoctypesTest extends AbstractRegistryTest {
         DocumentModel serviceImplModel = documentService.create(documentManager, 
                 serviceImplId);
         
+        String opName = "Yo";
+        String params = "Param1:java.lang.int, Param2:my.Class";
+        String returnParams = "YoResponse:java.lang.String";
+        String opDoc = "This does something";
+        String inContentType = "text/xml";
+        String outContentType = "application/json"; // http://stackoverflow.com/questions/477816/what-is-the-correct-json-content-type
+        
         // Use adapter to manipulate operations
         ServiceImplementation serviceImpl = serviceImplModel.getAdapter(ServiceImplementation.class);
         List<OperationInformation> operations = serviceImpl.getOperations();
-        operations.add(new OperationInformation("Yo", "Param1, Param2", "This does something"));
+        operations.add(new OperationInformation(opName, params, returnParams, opDoc, inContentType, outContentType));
         serviceImpl.setOperations(operations);
         List<String> tests = new ArrayList<String>();
         tests.add("org.easysoa.TestClass1");
@@ -109,9 +116,13 @@ public class DoctypesTest extends AbstractRegistryTest {
         serviceImpl = serviceImplModel.getAdapter(ServiceImplementation.class);
         operations = serviceImpl.getOperations();
         Assert.assertEquals(1, operations.size());
-        Assert.assertEquals("Yo", operations.get(0).getName());
-        Assert.assertEquals("Param1, Param2", operations.get(0).getParameters());
-        Assert.assertEquals("This does something", operations.get(0).getDocumentation());
+        Assert.assertEquals(opName, operations.get(0).getName());
+        Assert.assertEquals(params, operations.get(0).getParameters());
+        Assert.assertEquals(returnParams, operations.get(0).getReturnParameters());
+        Assert.assertEquals(opDoc, operations.get(0).getDocumentation());
+        Assert.assertEquals(inContentType, operations.get(0).getInContentType());
+        Assert.assertEquals(outContentType, operations.get(0).getOutContentType());
+        Assert.assertEquals(opDoc, operations.get(0).getDocumentation());
         Assert.assertEquals(2, serviceImpl.getTests().size());
     }
     

@@ -27,7 +27,13 @@ public interface ServiceImplementationDataFacet {
     static final String OPERATION_NAME = "operationName";
     
     static final String OPERATION_PARAMETERS = "operationParameters";
+
+    static final String OPERATION_RETURN_PARAMETERS = "operationReturnParameters";
     
     static final String OPERATION_DOCUMENTATION = "operationDocumentation";
+    
+    static final String OPERATION_IN_CONTENT_TYPE = "operationInContentType";
+    
+    static final String OPERATION_OUT_CONTENT_TYPE = "operationOutContentType";
     
 }

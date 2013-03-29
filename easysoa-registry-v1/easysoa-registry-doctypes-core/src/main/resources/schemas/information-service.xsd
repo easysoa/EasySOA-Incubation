@@ -6,4 +6,23 @@
   <xs:element name="linkedBusinessService" type="xs:string" />
   <xs:element name="providerActor" type="xs:string" />
   
+  <!-- taken from serviceimpl.xsd ; TODO or in wsdlinfo ? or also duplicate wsdlinfo ?? -->
+  <xs:complexType name="operation">
+    <xs:sequence>
+      <xs:element name="operationName" type="xs:string" />
+      <xs:element name="operationParameters" type="xs:string" />
+      <xs:element name="operationReturnParameters" type="xs:string" />
+      <xs:element name="operationDocumentation" type="xs:string" />
+      <xs:element name="operationInContentType" type="xs:string" />
+      <xs:element name="operationOutContentType" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="operations">
+    <xs:sequence>
+      <xs:element name="operation" type="nxs:operation"
+        minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="operations" type="nxs:operations" />
+  
 </xs:schema>

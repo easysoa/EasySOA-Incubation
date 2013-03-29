@@ -21,7 +21,10 @@
     <xs:sequence>
       <xs:element name="operationName" type="xs:string" />
       <xs:element name="operationParameters" type="xs:string" />
+      <xs:element name="operationReturnParameters" type="xs:string" />
       <xs:element name="operationDocumentation" type="xs:string" />
+      <xs:element name="operationInContentType" type="xs:string" />
+      <xs:element name="operationOutContentType" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="operations">

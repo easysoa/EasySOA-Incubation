@@ -127,8 +127,11 @@
     <facet name="WsdlInfo">
       <schema name="wsdlinfo" />
     </facet>
-    <doctype extends="SoaNode" name="InformationService">
+    <facet name="InformationServiceData">
       <schema name="informationservice" />
+    </facet>
+    <doctype extends="SoaNode" name="InformationService">
+      <facet name="InformationServiceData" />
       <facet name="PlatformData" />
       <facet name="ComponentData" /><!-- TODO MDU not necessary if PlatformData ?! does not comprise Component id where impl has been successfully classified which is required-->
       <facet name="WsdlInfo" />

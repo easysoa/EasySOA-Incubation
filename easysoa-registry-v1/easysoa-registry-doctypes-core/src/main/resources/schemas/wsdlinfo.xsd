@@ -6,6 +6,9 @@
   <!-- xs:element name="wsdl_definitions_name" type="xs:string"/ --><!-- NOT MEANINGFUL -->
   
   <xs:element name="transport" type="xs:string" />
+  <!-- NB. content type is always application/soap+xml -->
+  
+  <xs:element name="wsdlVersion" type="xs:string" />
   
   <xs:element name="wsdlPortTypeName" type="xs:string"/><!-- jaxws : {http://www.axxx.com/dps/apv}PrecomptePartenaireService -->
   <!-- alternative for one soa model element (ex. endpoint) per service : -->
@@ -15,7 +18,12 @@
   <!-- xs:element name="wsdl_service_port_address_location" type="xs:string"/ --><!-- http://localhost:8076/services/PrecomptePartenaireService -->
   <!-- xs:element name="wsdl_service_port_name" type="xs:string"/ --><!-- jaxws : {http://www.axxx.com/dps/apv}PrecomptePartenairePort -->
   <!-- xs:element name="wsdl_service_port_binding_name" type="xs:string"/ --><!-- jaxws : {http://www.axxx.com/dps/apv}PrecomptePartenaireServiceImplSoapBinding -->
-    
-  <xs:element name="wsdlVersion" type="xs:string" />
+  
+  <!-- xs:element name="wsdlSignature" type="xs:string" / --><!-- TODO or operations ?? (for now only on service(impl)) -->
+  
+  <!-- Used to keep track of file changes : -->
+  <!-- (TODO or generically for any external resource) -->
+  <xs:element name="wsdlFileName" type="xs:string" /><!-- to easily find wsdl file among attachments. TODO better wsdl file in its own blob field -->
+  <xs:element name="wsdlDigest" type="xs:string" /><!-- NB. documentUpdated.previousDocumentModel doesn't give access to the previous blob's VCS Digest, so storing it here instead -->
   
 </xs:schema>

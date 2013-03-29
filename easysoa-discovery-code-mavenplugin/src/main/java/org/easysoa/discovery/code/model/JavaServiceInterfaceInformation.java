@@ -22,7 +22,7 @@ public class JavaServiceInterfaceInformation {
             String mavenGroupId, String mavenArtifactId, String interfaceName,
     		String wsNamespace, String wsName, Map<String, OperationInformation> operations) throws Exception {
         this.operations = operations;
-		this.mavenDeliverableId = new MavenDeliverableInformation(subprojectId, mavenGroupId, mavenArtifactId).getSoaNodeId();
+        this.mavenDeliverableId = new MavenDeliverableInformation(subprojectId, mavenGroupId, mavenArtifactId).getSoaNodeId();
         this.interfaceName = interfaceName;
 		this.wsNamespace = wsNamespace;
 		this.wsName = wsName;

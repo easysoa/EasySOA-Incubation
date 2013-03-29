@@ -18,6 +18,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.easysoa.discovery.code.CodeDiscoveryMojo;
 import org.easysoa.discovery.code.CodeDiscoveryRegistryClient;
+import org.easysoa.discovery.code.ParsingUtils;
 import org.easysoa.discovery.code.handler.consumption.AnnotatedServicesConsumptionFinder;
 import org.easysoa.discovery.code.handler.consumption.ImportedServicesConsumptionFinder;
 import org.easysoa.discovery.code.handler.consumption.ServiceConsumptionFinder;
@@ -26,7 +27,9 @@ import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 
 import com.thoughtworks.qdox.model.JavaClass;
+import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaSource;
+import com.thoughtworks.qdox.model.Type;
 
 
 /**
@@ -50,8 +53,16 @@ import com.thoughtworks.qdox.model.JavaSource;
  *
  */
 public abstract class AbstractJavaSourceHandler implements SourcesHandler {
+
+    /* jaxb annotations */
+    protected static final String ANN_XMLROOTELEMENT = " javax.xml.bind.annotation.XmlRootElement";
     
-    private static final String ANN_INJECT = "javax.inject.Inject";
+    /* injection annotations */
+    protected static final String ANN_INJECT = "javax.inject.Inject";
+
+    /* test annotations */
+    protected static final String ANN_JUNIT_TEST = "org.junit.Test";
+    protected static final String ANN_TESTNG_TEST = "org.testng.annotations.Test"; // http://testng.org/javadoc/org/testng/annotations/package-summary.html
 
     private List<ServiceConsumptionFinder> serviceConsumptionFinders = new ArrayList<ServiceConsumptionFinder>();
 
@@ -135,7 +146,8 @@ public abstract class AbstractJavaSourceHandler implements SourcesHandler {
                                     wsInterfaces.put(newWSInterface.getInterfaceName(), newWSInterface);
                                 }
                             } catch (Throwable e) {
-                                log.warn("Failed to load class " + className + " to inspect potiential web services: " + e.getMessage());
+                                log.warn("Failed to load class " + className + " to inspect potiential web services: "
+                                        + e.getClass().getName() + " - " + e.getMessage());
                             }
                         }
                     }
@@ -163,6 +175,46 @@ public abstract class AbstractJavaSourceHandler implements SourcesHandler {
         return discoveredNodes;
     }
 
+    
+    protected String formatParameter(String parameterName, String parameterType) {
+        return parameterName + "=" + parameterType;
+    }
+
+    protected boolean isUnitTestingClass(boolean isUnitTestingClass, JavaMethod method) {
+        return isUnitTestingClass
+                || ParsingUtils.hasAnnotation(method, ANN_JUNIT_TEST)
+                || ParsingUtils.hasAnnotation(method, ANN_TESTNG_TEST); // A TestNG class is a Java class that contains at least one TestNG annotation http://testng.org/doc/documentation-main.html
+    }
+
+    protected String getParameterType(Type parameterType) {
+        String webParameterType = ParsingUtils.getAnnotationPropertyString(parameterType.getJavaClass(), ANN_XMLROOTELEMENT, "name");//TODO ??
+        if (webParameterType == null) {
+            webParameterType = parameterType.getFullyQualifiedName();
+        }
+        return webParameterType;
+    }
+
+    protected String getReturnParameterType(JavaMethod method) {
+        String returnParameterType;
+        Type returnType = method.getReturnType(); // until qdox 1.12 procedure return type was null so nullpointerexception http://jira.codehaus.org/browse/QDOX-214
+        if (returnType == null) {
+            // complementary patch to qdox 1.12.1
+            returnType = Type.VOID; // would still nullpointerexception in getParameterType because no javaClassName
+            returnParameterType = returnType.toString(); // NB. a void return returns an empty element
+        } else {
+            returnParameterType = getParameterType(returnType);
+        }
+        return returnParameterType;
+    }
+
+    protected String getParameterType(Class<?> parameterType) {
+        String webParameterType = ParsingUtils.getAnnotationPropertyString(parameterType, ANN_XMLROOTELEMENT, "name");
+        if (webParameterType == null) {
+            webParameterType = parameterType.getName();
+        }
+        return webParameterType;
+    }
+    
     
     public abstract Map<String, JavaServiceInterfaceInformation> findWSInterfaces(JavaSource source,
             MavenDeliverableInformation mavenDeliverable,

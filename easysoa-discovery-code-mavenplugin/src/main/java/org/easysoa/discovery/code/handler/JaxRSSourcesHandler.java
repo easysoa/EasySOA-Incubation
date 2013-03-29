@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.core.MediaType;
+
 import org.apache.maven.plugin.logging.Log;
 import org.easysoa.discovery.code.CodeDiscoveryMojo;
 import org.easysoa.discovery.code.CodeDiscoveryRegistryClient;
@@ -22,6 +24,7 @@ import org.easysoa.registry.types.java.JavaServiceImplementation;
 
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
+import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.JavaSource;
 
 /**
@@ -30,6 +33,16 @@ import com.thoughtworks.qdox.model.JavaSource;
  * both by having class or method(s) annotated by @Path
  * * thanks to InterfaceHandlerBase, member (field or bean setter)-injected service :
  * typed by interfaces having class or method(s) annotated by @Path
+ * 
+ * About implementation : see references at
+ * spec http://jax-rs-spec.java.net/
+ * doc http://jax-ws.java.net/jax-ws-ea3/docs/annotations.html
+ * resteasy impl http://docs.jboss.org/resteasy/docs/1.2.GA/userguide/html_single/
+ * wink impl https://cwiki.apache.org/WINK/jax-rs-request-and-response-entities.html
+ * fairly complete tutorial http://www.vogella.com/articles/REST/article.html
+ * 
+ * TODO in bytecode
+ * 
  */
 public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements SourcesHandler {
 
@@ -40,6 +53,11 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
         "javax.ws.rs.GET", "javax.ws.rs.POST", "javax.ws.rs.PUT",
         "javax.ws.rs.HEAD", "javax.ws.rs.OPTIONS"
       };
+    private static final String ANN_PATH_PARAM = "javax.ws.rs.PathParam";
+    private static final String ANN_QUERY_PARAM = "javax.ws.rs.QueryParam";
+    private static final String ANN_FORM_PARAM = "javax.ws.rs.FormParam";
+    private static final String ANN_HEADER_PARAM = "javax.ws.rs.HeaderParam";
+    private static final String ANN_COOKIE_PARAM = "javax.ws.rs.CookieParam";
     
     public JaxRSSourcesHandler(CodeDiscoveryMojo codeDiscovery) {
         super(codeDiscovery);
@@ -137,10 +155,20 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTATIONCLASS, c.getFullyQualifiedName());
                         serviceImpl.addParentDocument(mavenDeliverable.getSoaNodeId());
 
-                        // extract base jaxrs conf TODO also methods & inheritance see http://fusesource.com/docs/esb/4.2/rest/RESTAnnotateInherit.html
+                        // extract base jaxrs conf :
+                        //TODO also methods & inheritance see http://fusesource.com/docs/esb/4.2/rest/RESTAnnotateInherit.html
                         String baseRestPath = ParsingUtils.getAnnotationPropertyString(c, ANN_PATH, "value");
-                        String baseRestContentType = ParsingUtils.getAnnotationPropertyString(c, ANN_PRODUCES, "value");
+                        if (baseRestPath == null) {
+                            baseRestPath = ""; // else won't be known as REST in EasySOA Registry
+                        }
                         String baseRestAccepts = ParsingUtils.getAnnotationPropertyString(c, ANN_CONSUMES, "value");
+                        if (baseRestAccepts == null) {
+                            baseRestAccepts = MediaType.WILDCARD; // */* see https://cwiki.apache.org/WINK/jax-rs-request-and-response-entities.html
+                        }
+                        String baseRestContentType = ParsingUtils.getAnnotationPropertyString(c, ANN_PRODUCES, "value");
+                        if (baseRestContentType == null) {
+                            baseRestContentType = MediaType.APPLICATION_OCTET_STREAM; // see https://cwiki.apache.org/WINK/jax-rs-request-and-response-entities.html
+                        }
                         
                         if (itf != null) {
                             // Extract WS info
@@ -155,6 +183,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                             }
                             InformationServiceInformation serviceDef = new InformationServiceInformation(
                                     this.codeDiscovery.getSubproject(), itfSoaName);
+                            //serviceDef.setOperations(operations);//TODO
                             serviceImpl.addParentDocument(serviceDef.getSoaNodeId());
 
                             if (this.codeDiscovery.isDiscoverInterfaces()) {
@@ -163,7 +192,6 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                         }
                         
                         // set jaxrs conf
-                        baseRestPath = (baseRestPath == null) ? "" : baseRestPath; // else won't be known as REST in EasySOA Registry
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_REST_PATH, baseRestPath);
                         if (baseRestAccepts != null) { // or defaults to "*" ?
                             serviceImpl.setProperty(JavaServiceImplementation.XPATH_REST_ACCEPTS, baseRestAccepts);
@@ -174,26 +202,72 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                         
                         // Extract operations info
                         List<OperationInformation> operations = serviceImpl.getOperations();
+                        String baseRestPathPrefix = baseRestPath + ((baseRestPath.endsWith("/")) ? "" : '/');
                         if (pathMethods != null) {
                             for (JavaMethod method : c.getMethods()) {
-                                if (ParsingUtils.hasAnnotation(method, ANN_PATH)) {
+                                // Get HTTP method if any
+                                String httpMethod = null;
+                                for (String annHttpMethod : ANN_METHODS) {
+                                    if (ParsingUtils.hasAnnotation(method, annHttpMethod)) {
+                                        httpMethod = annHttpMethod.replace("javax.ws.rs.", "");
+                                        break;
+                                    }
+                                }
+                                
+                                if (httpMethod != null) {
                                     // Extract service path
-                                    Object path = ParsingUtils.getAnnotationPropertyString(method, ANN_PATH, "value");
-                                    
-                                    // Extract HTTP method
-                                    String httpMethod = "???";
-                                    for (String annHttpMethod : ANN_METHODS) {
-                                        if (ParsingUtils.hasAnnotation(method, annHttpMethod)) {
-                                            httpMethod = annHttpMethod.replace("javax.ws.rs.", "");
-                                            break;
-                                        }
+                                    String path = ParsingUtils.getAnnotationPropertyString(method, ANN_PATH, "value");
+                                    if (path == null) {
+                                        path = method.getName();
+                                    }
+                                    // TODO LATER also base REST path but at first only show local path :
+                                    //if (baseRestPath != null && !path.startsWith("/")) {
+                                    //    path = baseRestPathPrefix + path;
+                                    //}
+                                    String operationName = httpMethod + " " + path;
+
+                                    String operationConsumes = ParsingUtils.getAnnotationPropertyString(method, ANN_PRODUCES, "value");
+                                    if (operationConsumes == null) {
+                                        operationConsumes = baseRestAccepts;
+                                    }
+                                    String operationProduces = ParsingUtils.getAnnotationPropertyString(method, ANN_CONSUMES, "value");
+                                    if (operationProduces == null) {
+                                        operationProduces = baseRestContentType;
                                     }
                                     
-                                    operations.add(new OperationInformation(
-                                            method.getName(),
-                                            null,
-                                            "Method: " + httpMethod + ", Path: " + path + ", Description: " + method.getComment()));
+                                    // Extract parameters info
+                                    StringBuilder parametersInfo = new StringBuilder();
+                                    for (JavaParameter parameter : method.getParameters()) {
+                                        String paramName = extractRestParamName(parameter);
+                                        
+                                        if (paramName != null) {
+                                            String parameterType = getParameterType(parameter.getType());
+                                            parametersInfo.append(formatParameter(paramName, parameterType) + ", ");
+                                        } // else can't be provided through REST
+                                    }
+                                    // removing trailing ", "
+                                    if (parametersInfo.length() > 2) {
+                                        parametersInfo.delete(parametersInfo.length()-2, parametersInfo.length());
+                                    }
+
+                                    // extract return parameter info
+                                    String returnParameterType = getReturnParameterType(method);
+                                    String returnParametersInfo = formatParameter("response", returnParameterType);
+                                    
+                                    // "in message" way of presenting parameters :
+                                    //parametersInfo.insert(0, operationConsumes + ": ");
+                                    // "out message" way of presenting return :
+                                    //returnParametersInfo = operationProduces + ": " + returnParametersInfo;
+
+                                    //TODO LATER also bare signature (or method.getName() ?) :
+                                    //String signature = method.getCallSignature();
+                                    //TODO lATER better as for JAXWS : operationMap.put(method.getName(), new OperationInformation(operationName...
+                                    operations.add(new OperationInformation(operationName,
+                                            parametersInfo.toString(), returnParametersInfo,
+                                            method.getComment(),
+                                            operationConsumes, operationProduces));
                                 }
+                                
                             }
                             serviceImpl.setOperations(operations);
                             
@@ -207,6 +281,32 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
             }
         }
         return discoveredNodes;
+    }
+    
+
+    private String extractRestParamName(JavaParameter parameter) {
+        String paramName = getParamName(parameter, ANN_PATH_PARAM, "path");
+        if (paramName == null) {
+            paramName = getParamName(parameter, ANN_QUERY_PARAM, "query");
+        }
+        if (paramName == null) {
+            paramName = getParamName(parameter, ANN_FORM_PARAM, "form");
+        }
+        if (paramName == null) {
+            paramName = getParamName(parameter, ANN_HEADER_PARAM, "header");
+        }
+        if (paramName == null) {
+            paramName = getParamName(parameter, ANN_COOKIE_PARAM, "cookie");
+        }
+        return paramName;
+    }
+
+    private String getParamName(JavaParameter parameter, String paramAnnotation, String paramKind) {
+        String paramName = ParsingUtils.getAnnotationPropertyString(parameter, paramAnnotation, "value");
+        if (paramName != null) {
+            return paramKind + ':' + paramName;
+        }
+        return null;
     }
     
 }

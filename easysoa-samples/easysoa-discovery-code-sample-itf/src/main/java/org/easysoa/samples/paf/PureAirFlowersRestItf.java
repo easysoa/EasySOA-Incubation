@@ -17,26 +17,19 @@ import javax.ws.rs.core.MediaType;
  * to reach a moderately satisfying result for the services documentation
  * indicator.
  * 
- * @author jguillemotte
+ * @author mdutoo
  */
 @Consumes({ "application/json", "application/json" })
+@Produces("application/json")
 @Path("/rest")
-public class PureAirFlowersRest {
-
-    private PureAirFlowersServiceImpl pureAirFlowersServiceImpl;
-    
-    public PureAirFlowersRest() {
-        pureAirFlowersServiceImpl = new PureAirFlowersServiceImpl();
-    }
+public interface PureAirFlowersRestItf {
 
     /**
      * Returns the orders number for the specified client name.
      */
     @GET
     @Path("/orders/{clientName}")
-    public int getOrdersNumber(@PathParam("clientName") String clientName) {
-        return pureAirFlowersServiceImpl.getOrdersNumber(clientName);
-    }
+    public int getOrdersNumber(@PathParam("clientName") String clientName);
 
     /**
      * Adds an order to the specified client
@@ -45,8 +38,6 @@ public class PureAirFlowersRest {
     @Consumes({ "application/json", "application/xml" })
     @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
     @Path("/orders")
-    public void addOrder(@FormParam("clientName") String clientName, @FormParam("orderNb") Integer orderNb) {
-        pureAirFlowersServiceImpl.addOrder(orderNb, clientName);
-    }
+    public void addOrder(@FormParam("clientName") String clientName, @FormParam("orderNb") Integer orderNb);
 
 }

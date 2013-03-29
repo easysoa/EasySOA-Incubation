@@ -128,9 +128,10 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
     }
 
 	@Override
-	public void applyFacetInheritance(CoreSession documentManager,
+	public boolean applyFacetInheritance(CoreSession documentManager,
 			DocumentModel model, boolean isFacetSource) throws Exception {
 		SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+		boolean documentModified = false;
 		for (String facet : getInheritedFacets(model.getFacets())) {
 			InheritedFacetDescriptor inheritance = inheritedFacets.get(facet);
 			for (TransferLogic transferLogic : inheritance.transferLogicList) {
@@ -157,7 +158,9 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 								//documentManager.saveDocument(modelToWriteOn);
 							}
 							if (changed) { // TODO or isDirty ?!
-							    if (!modelToWriteOn.isDirty()) logger.error("SoaMetamodelServiceImpl : SAVING CHANGED BUT NOT DIRTY " + modelToWriteOn);
+							    if (!modelToWriteOn.isDirty()) {
+							        logger.error("SoaMetamodelServiceImpl : SAVING CHANGED BUT NOT DIRTY " + modelToWriteOn);
+							    }
 							    documentManager.saveDocument(modelToWriteOn);
 							}
 						}
@@ -173,15 +176,21 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 						for (String schemaToCopy : facetToCopy.getSchemaNames()) {
 							model.setProperties(schemaToCopy,
 									modelToReadFrom.getProperties(schemaToCopy));
+							documentModified = true;
 						}
 					}
 				}
 			}
 		}
+		return documentModified;
 	}
 
-	public void resetInheritedFacets(DocumentModel model) throws Exception {
+	/**
+	 * Reset metadata if document is target of metadata inheritance (transfer.to)
+	 */
+	public boolean resetInheritedFacets(DocumentModel model) throws Exception {
 		SchemaManager schemaManager = Framework.getService(SchemaManager.class);
+        boolean documentModified = false;
 		for (String inheritedFacet : getInheritedFacets(model.getFacets())) {
 			CompositeType facetToReset = schemaManager.getFacet(inheritedFacet);
 			InheritedFacetDescriptor inheritedFacetDesc = inheritedFacets.get(inheritedFacet);
@@ -198,10 +207,12 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 				for (Schema schemaToReset : facetToReset.getSchemas()) {
 					for (Field fieldToReset : schemaToReset.getFields()) {
 						model.setPropertyValue(fieldToReset.getName().toString(), null);
+                        documentModified = true;
 					}
 				}
 			}
 		}
+        return documentModified;
 	}
 	
 	public String validateIntegrity(DocumentModel model, boolean returnExpectedNameIfNull) throws ModelIntegrityException, ClientException {

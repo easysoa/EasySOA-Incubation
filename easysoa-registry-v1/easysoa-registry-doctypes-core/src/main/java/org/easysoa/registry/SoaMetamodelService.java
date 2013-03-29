@@ -36,10 +36,24 @@ public interface SoaMetamodelService {
     
 	Set<String> getInheritedFacets(Set<String> filter);
 
-	void applyFacetInheritance(CoreSession documentManager, DocumentModel model,
+	/**
+	 * 
+	 * @param documentManager
+	 * @param model
+	 * @param isFacetSource
+     * @return whether changes are brought to the given model (implying it should be saved)
+	 * @throws Exception
+	 */
+	boolean applyFacetInheritance(CoreSession documentManager, DocumentModel model,
 			boolean isFacetSource) throws Exception;
 
-	void resetInheritedFacets(DocumentModel model) throws Exception;
+	/**
+     * Reset metadata if document is target of metadata inheritance (transfer.to)
+	 * @param model
+	 * @return whether changes are brought to the given model (implying it should be saved)
+	 * @throws Exception
+	 */
+	boolean resetInheritedFacets(DocumentModel model) throws Exception;
 	
 	/**
 	 * Ensures that an SoaNode id valid, i.e. that:

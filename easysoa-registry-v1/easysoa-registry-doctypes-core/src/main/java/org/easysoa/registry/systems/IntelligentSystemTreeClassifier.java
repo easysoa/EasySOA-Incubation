@@ -22,6 +22,8 @@ public interface IntelligentSystemTreeClassifier {
      * "" : The document should be stored at the root of the tree
      * null : The document should not be stored in the system tree
      * 
+     * NB. shouldn't change the given document model 
+     * 
      * @param model the model to test, never null
      * @return the expected path, or null
      * @throws ClientException 

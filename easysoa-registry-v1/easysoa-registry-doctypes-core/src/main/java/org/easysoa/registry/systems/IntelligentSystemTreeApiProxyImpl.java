@@ -44,7 +44,8 @@ public class IntelligentSystemTreeApiProxyImpl implements IntelligentSystemTreeA
 	}
 
 	@Override
-	public void classifySoaNode(String treeName, SoaNodeId identifier, String classification) throws ClientException {
+	public boolean classifySoaNode(String treeName, SoaNodeId identifier, String classification) throws ClientException {
+	    boolean treeChanged = false;
 		DocumentModel istModel = findISTModel(identifier.getSubprojectId(), treeName);
 		if (istModel == null) {
 			throw new ClientException("Tree '" + treeName + "' doesn't exist, can't classify SoaNode " + identifier);
@@ -62,6 +63,7 @@ public class IntelligentSystemTreeApiProxyImpl implements IntelligentSystemTreeA
                     currentFolder = documentService.createDocument(documentManager,
                             IntelligentSystem.DOCTYPE, parentSystem,
                             currentFolder.getPathAsString(), parentSystem);
+                    treeChanged = true;
                 } else {
                     currentFolder = documentManager.getDocument(childPathRef);
                 }
@@ -73,18 +75,22 @@ public class IntelligentSystemTreeApiProxyImpl implements IntelligentSystemTreeA
         if (existingModel == null) {
     		DocumentModel sourceModel = documentService.find(documentManager, identifier);
             documentManager.createProxy(sourceModel.getRef(), expectedParentPath);
+            treeChanged = true;
         }
 
         // If in the IST but not at the right place, move the document
         else if (!existingModel.getPathAsString().equals(expectedParentPath.toString() + '/' + existingModel.getName())){
             List<DocumentModel> parents = documentManager.getParentDocuments(existingModel.getRef());
             documentManager.move(existingModel.getRef(), expectedParentPath, existingModel.getName());
+            treeChanged = true;
             removeEmptyParentSystems(parents);
         }
+        return treeChanged;
 	}
 
 	@Override
-	public void deleteSoaNode(String treeName, SoaNodeId identifier) throws ClientException {
+	public boolean deleteSoaNode(String treeName, SoaNodeId identifier) throws ClientException {
+        boolean treeChanged = false;
 		 // If the model was in the IST, delete it
 		DocumentModel istModel = findISTModel(identifier.getSubprojectId(), treeName);
 		if (istModel == null) {
@@ -95,8 +101,10 @@ public class IntelligentSystemTreeApiProxyImpl implements IntelligentSystemTreeA
         if (soaNodeModel != null) {
             List<DocumentModel> parents = documentManager.getParentDocuments(soaNodeModel.getRef());
             documentManager.removeDocument(soaNodeModel.getRef());
+            treeChanged = true;
             removeEmptyParentSystems(parents);
         }
+        return treeChanged;
 	}
 
 	private void removeEmptyParentSystems(List<DocumentModel> hierarchy) throws ClientException {

@@ -1,5 +1,7 @@
 package org.easysoa.registry;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -68,6 +70,7 @@ public class RepositoryManagementListener implements EventListener {
 			logger.error("A required service is missing, aborting SoaNode repository management: " + e.getMessage());
 			return;
 		}
+        boolean documentModified = false;
         
         boolean isCreationOnCheckinMode = "ProjetWebServiceImpl".equals(sourceDocument.getPropertyValue("dc:title")); // isJwt(OrCmis)
         boolean isCreationOnCheckin = isCreationOnCheckinMode && DocumentEventTypes.DOCUMENT_CHECKEDIN.equals(event.getName());
@@ -85,12 +88,14 @@ public class RepositoryManagementListener implements EventListener {
         
         if (isCreationOnCheckinMode && DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())) {
         	sourceDocument.setPropertyValue("dc:description", "jwtJustCreated");
+        	documentModified = true;
         } else
         
         if (!DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName()) // not a remove
         		&& (!isCreationOnCheckinMode || isCreationOnCheckin && "jwtJustCreated".equals(sourceDocument.getPropertyValue("dc:description")))) { // not a cmis creation (event handling reported at cmis checkin that will come next)
         	if (isCreationOnCheckinMode && "jwtJustCreated".equals(sourceDocument.getPropertyValue("dc:description"))) {
         		sourceDocument.setPropertyValue("dc:description", "done"); // cleaning
+                documentModified = true;
         	}
         	
 	        try {
@@ -99,18 +104,20 @@ public class RepositoryManagementListener implements EventListener {
 	        			DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName()));
 	        	if (newSoaName != null) {
 	        		sourceDocument.setPropertyValue(SoaNode.XPATH_SOANAME, newSoaName); // TODO [soaname change]
-	        		documentManager.saveDocument(sourceDocument);
+	                documentModified = false;//true
+	                sourceDocument = documentManager.saveDocument(sourceDocument);//TODO required ?? when ?
 	        	}
 	        	
 	            // Working copy/proxies management
 	            sourceDocument = manageRepositoryStructure(documentManager, documentService, sourceDocument);
+	            documentManager.save(); // required, else loops on classifySoaNode() within
+	            // intelligentSystemTreeServiceCache.handleDocumentModel() below
 
 	    		// Intelligent system trees update
 	    		IntelligentSystemTreeService intelligentSystemTreeServiceCache =
 	    		        Framework.getService(IntelligentSystemTreeService.class);
 	    		intelligentSystemTreeServiceCache.handleDocumentModel(documentManager, sourceDocument,
-	    		        !isCreation);
-	    		documentManager.save();
+	    		        !isCreation); // creates System tree or proxy or moves sourceDocument, but doesn't in itself change the sourceDocument (?)
 	        } catch (ModelIntegrityException e) {
 				String message = "Rollback needed because of integrity issue on " + sourceDocument.getTitle();
 				logger.error(message + ": " + e.getMessage());
@@ -125,12 +132,13 @@ public class RepositoryManagementListener implements EventListener {
         	if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName()) && sourceDocument.isProxy()) {
 				// Proxy deleted, update the true document
 				sourceDocument = documentManager.getWorkingCopy(sourceDocument.getRef());
+				documentModified = false;//TODO ?
         	}
         	
     		// Update parents info
         	if (!DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
 		    	try {
-		        	updateParentIdsMetadata(documentManager, documentService, sourceDocument);
+		    	    documentModified = updateParentIdsMetadata(documentManager, documentService, sourceDocument) || documentModified;
 				} catch (Exception e) {
 		        	logger.error("Failed to maintain parents information", e);
 				}
@@ -141,22 +149,29 @@ public class RepositoryManagementListener implements EventListener {
 	    		try {
 			        // Copy metadata from inherited facets to children
 		    		if (DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
-		    			metamodelService.applyFacetInheritance(documentManager, sourceDocument, true);
+		    		    metamodelService.applyFacetInheritance(documentManager, sourceDocument, true);
+		    			// NB. isFacetSource = true so doesn't change the sourceDocument itself
 		    		}
 		    		else {
 		    	        // Reset metadata after move/deletion
 		    			if (DocumentEventTypes.DOCUMENT_MOVED.equals(event.getName())
 		    					|| DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
-		    				metamodelService.resetInheritedFacets(sourceDocument);
-		    				documentManager.saveDocument(sourceDocument);
+		    			    // reset metadata if document is target of metadata inheritance (transfer.to)
+		    			    documentModified = metamodelService.resetInheritedFacets(sourceDocument) || documentModified;
+                            if (documentModified) {
+                                documentManager.saveDocument(sourceDocument);
+                                documentModified = false;
+                            }
 				        }
 		    	        // Copy metadata from inherited facets from parents
 		    			if (!DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())) {
 		    				metamodelService.applyFacetInheritance(documentManager, sourceDocument, false);
 					    	if (DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())
 					    			|| DocumentEventTypes.DOCUMENT_MOVED.equals(event.getName())) {
-					    	    // NB. only actually saves if a property has been set (only if it has changed) // TODO (isDirty) ??
-			    				documentManager.saveDocument(sourceDocument);
+					    	    if (documentModified) {
+					    	        documentManager.saveDocument(sourceDocument);
+	                                documentModified = false;
+					    	    }
 					    	}
 		    			}
 		    		}
@@ -167,12 +182,41 @@ public class RepositoryManagementListener implements EventListener {
 	    	}
 
     	}
-        
+
+        try {
+            boolean isDirty = sourceDocument.isDirty();
+            boolean isProxy = sourceDocument.isProxy();
+            if (documentModified || isDirty && isProxy) {
+                // NB. !isDirty happens when handleEvent loops (an RML save itself triggers a save)
+                // and isDirty && !documentModified happens on a just created document (or proxy), must be saved else inherited facet metadata won't be updated when child (proxy) moved
+                if (!sourceDocument.isDirty()) {
+                    logger.warn("RepositoryManagerListener : sourceDocument modified but not dirty ?!?");
+                    return;
+                }
+                documentManager.saveDocument(sourceDocument);
+            }
+            //logger.debug("RepositoryManagerListener : Doing final save (for updateParentIdsMetadata ?)");
+        } catch (Exception e) {
+            logger.error("RepositoryManagerListener : Failed to do final save (for updateParentIdsMetadata ?)", e);
+        }
     }
 
+    /**
+     * Saves sourceDocument only if deleted after merge with corresponding existing document,
+     * otherwise may move it but in itself doesn't change it (?).
+     * Saves session if repository structure changed.
+     * @param documentManager
+     * @param documentService
+     * @param sourceDocument
+     * @return
+     * @throws ClientException
+     * @throws PropertyException
+     * @throws Exception
+     */
 	private DocumentModel manageRepositoryStructure(CoreSession documentManager,
 			DocumentService documentService, DocumentModel sourceDocument)
 			throws ClientException, PropertyException, Exception {
+	    boolean structureChanged = false;
 		
 		// If a document has been created through the Nuxeo UI, move it to the repository and leave only a proxy
 		String sourceFolderPath = documentService.getSourceFolderPath(documentManager, sourceDocument);
@@ -196,7 +240,8 @@ public class RepositoryManagementListener implements EventListener {
 			        repositoryDocument.copyContent(sourceDocument); // Merge
 			        documentManager.removeDocument(sourceDocument.getRef());
 			        documentManager.saveDocument(repositoryDocument);
-			        documentManager.save();
+			        documentManager.save();//TODO required here ?
+			        structureChanged = false;
 			        sourceDocument = repositoryDocument;
 		    	}
 		    }
@@ -204,6 +249,7 @@ public class RepositoryManagementListener implements EventListener {
 		        // Move to repository otherwise
 		    	sourceDocument = documentManager.move(sourceDocument.getRef(),
 		            new PathRef(sourceFolderPath), sourceDocument.getName());
+	            structureChanged = true;
 		    }
 		    
 		    // Create a proxy at the expected location
@@ -211,23 +257,34 @@ public class RepositoryManagementListener implements EventListener {
 		        parentModel = documentService.find(documentManager, documentService.createSoaNodeId(parentModel));
 		    }
 		    documentManager.createProxy(sourceDocument.getRef(), parentModel.getRef());
+		    structureChanged = true;
 		}
-		documentManager.save();//TODO ??
+		if (structureChanged) {
+		    documentManager.save();
+		}
 		
 		return sourceDocument;
 	}
 
-	private void updateParentIdsMetadata(CoreSession documentManager,
+	private boolean updateParentIdsMetadata(CoreSession documentManager,
 			DocumentService documentService, DocumentModel sourceDocument) throws Exception {
 		DocumentModelList parentModels = documentService.findAllParents(documentManager, sourceDocument);
 		SoaNode sourceSoaNode = sourceDocument.getAdapter(SoaNode.class);
+		boolean changed = false;
 		DocumentModelList soaNodeParentModels = new DocumentModelListImpl();
+		Iterator<SoaNodeId> oldParentIdIt = sourceSoaNode.getParentIds().iterator();
 		for (DocumentModel parentModel : parentModels) {
 			if (documentService.isSoaNode(documentManager, parentModel.getType())) {
 				soaNodeParentModels.add(parentModel);
+				if (!oldParentIdIt.hasNext() || !parentModel.equals(oldParentIdIt.next())) {
+				    changed = true;
+				}
 			}
 		}
-		sourceSoaNode.setParentIds(documentService.createSoaNodeIds(soaNodeParentModels.toArray(new DocumentModel[]{})));
+		if (changed) {
+		    sourceSoaNode.setParentIds(documentService.createSoaNodeIds(soaNodeParentModels.toArray(new DocumentModel[]{})));
+		}
+		return changed;
 	}
 
 }

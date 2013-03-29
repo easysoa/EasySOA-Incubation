@@ -91,6 +91,7 @@ public class IntelligentSystemTreeComponent extends DefaultComponent implements 
     }
     
     public void handleDocumentModel(CoreSession documentManager, DocumentModel model, boolean force) throws Exception {
+        boolean treeChanged = false;
         // Filter documents from other intelligent trees
         String parentType = documentManager.getDocument(model.getParentRef()).getType();
         if (!force && IntelligentSystem.DOCTYPE.equals(parentType) || IntelligentSystemTreeRoot.DOCTYPE.equals(parentType)) {
@@ -124,20 +125,24 @@ public class IntelligentSystemTreeComponent extends DefaultComponent implements 
                     // Fetch or create the IST model
 	            	if (!intelligentSystemTreeApi.intelligentSystemTreeExists(soaNodeId.getSubprojectId(), treeName)) {
 	            		intelligentSystemTreeApi.createIntelligentSystemTree(soaNodeId.getSubprojectId(), treeName, istDescriptor.getTitle());
+	            		treeChanged = true;
 	            	}
 	            	// TODO TODOOOOOOOOOOOOOOOOOOO case of non-default ITS !!!!!
                     
                     // Check if the model is at its right place
-                    intelligentSystemTreeApi.classifySoaNode(treeName, soaNodeId, classification);
+	            	treeChanged = intelligentSystemTreeApi.classifySoaNode(treeName, soaNodeId, classification) || treeChanged;
                 }
                 
                 // Handling when model is rejected
                 else if (intelligentSystemTreeApi.intelligentSystemTreeExists(soaNodeId.getSubprojectId(), treeName)) {
-	            	intelligentSystemTreeApi.deleteSoaNode(treeName, soaNodeId);
+                    treeChanged = intelligentSystemTreeApi.deleteSoaNode(treeName, soaNodeId) || treeChanged;
                 }
             }
         }
         
+        if (treeChanged) {
+            documentManager.save();
+        }
     }
     
     private String uniformizeClassificationPath(String classification) {

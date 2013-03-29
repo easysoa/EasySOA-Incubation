@@ -30,7 +30,6 @@ import java.util.Set;
 public class IndicatorValue {
     
     private String name; // TODO : good idea to put the name in the indicator value ???
-    //private String category;
     private Set<String> categories = new HashSet<String>();
     private int count;
     private int percentage;
@@ -67,9 +66,9 @@ public class IndicatorValue {
     
     /**
      * 
-     * @return The indicator category
+     * @return The indicator categories
      */
-    public Set getCategories(){
+    public Set<String> getCategories(){
         return categories;
     }
     

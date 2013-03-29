@@ -20,12 +20,17 @@
 
 package org.easysoa.registry.index.rest;
 
+import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
+import org.easysoa.registry.indicators.rest.IndicatorValue;
+import org.easysoa.registry.indicators.rest.IndicatorsController;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
@@ -43,8 +48,14 @@ public class IndexController extends ModuleRoot {
     @Produces(MediaType.TEXT_HTML)
     public Object doGetHTML(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
     
+        CoreSession session = SessionFactory.getSession(request);
+        
+        IndicatorsController indicatorController = new IndicatorsController();
+        Map<String, IndicatorValue> indicators = indicatorController.computeIndicators(session, null, null, subprojectId, visibility);
+        
         // Return the index view
         return getView("index")
+           .arg("indicators", indicators)
            .arg("subprojectId", subprojectId)
            .arg("visibility", visibility);
     }

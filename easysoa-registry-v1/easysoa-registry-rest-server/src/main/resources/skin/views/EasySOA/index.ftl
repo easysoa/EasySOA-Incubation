@@ -51,6 +51,24 @@
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Cartographie des services</h3>
                         <p>Découverte de services, IHM de consultation du modèle SOA, qualité ...</p>
+                        
+                        <p>
+                            <table width="175px">
+                                <tr>
+                                    <td width="150px">Nombre de services :</td>
+                                    <td width="25px">${indicators["InformationService count"].count}</td>
+                                </tr>
+                                <tr>
+                                    <td width="150px">Nombre d'implémentations de services :</td>
+                                    <td width="25px">${indicators["ServiceImplementation count"].count}</td>
+                                </tr>
+                                <tr>
+                                    <td width="150px">Nombre d'endpoints :</td>
+                                    <td width="25px">${indicators["Endpoint count"].count}</td>
+                                </tr>
+                            </table>
+                        </p>
+                        
                         <a class="btn btn-primary" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>                        
                     </div>
                 </li>

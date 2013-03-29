@@ -33,6 +33,11 @@ public class DoctypeCountProvider extends QueryCountIndicator {
     private final String doctype;
     private final String category;
 
+    /**
+     * 
+     * @param doctype
+     * @param category 
+     */
     public DoctypeCountProvider(String doctype, String category) {
         super(DocumentService.NXQL_SELECT_FROM + doctype + DocumentService.NXQL_WHERE_NO_PROXY);
         this.doctype = doctype;

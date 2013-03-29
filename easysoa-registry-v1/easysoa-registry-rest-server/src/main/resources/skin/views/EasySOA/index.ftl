@@ -24,7 +24,8 @@
         <div id="header">
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
-                <div id="headerUserBar">EasySOA Index</div>
+                <div id="headerUserBar"></div>
+                EasySOA Index page
             </div>
         </div>
 

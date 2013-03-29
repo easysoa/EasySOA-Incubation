@@ -56,7 +56,7 @@ public class PrecomptePartenaireWebServiceTest {
     /**
 	 * Logger
 	 */
-	private static Logger logger = Logger.getLogger(PrecomptePartenaireWebServiceTestStarter.class.getClass());
+	private static Logger logger = Logger.getLogger(PrecomptePartenaireWebServiceTest.class.getClass());
     
     @Autowired
     @Qualifier("com.axxx.dps.apv.ws.PrecomptePartenaireWebServiceTestClient")

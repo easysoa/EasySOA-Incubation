@@ -2,14 +2,16 @@ package com.axxx.dps.apv.ws;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
+import javax.jws.WebResult;
 import javax.jws.WebService;
 
 
 
 /**
- * TODO doc
+ * Gère les Précomptes des partenaires sociaux :
+ * * permet de les créer.
+ * 
  * @author mdutoo
- *
  */
 @WebService(name="PrecomptePartenaireService", // portType (service interface), else defaults to java itf
 	targetNamespace="http://www.axxx.com/dps/apv") // defaults to package ex. http://ws.apv.dps.axxx.com/
@@ -23,10 +25,25 @@ import javax.jws.WebService;
 public interface PrecomptePartenaireWebService {
 
 	/**
-	 * TODO doc
-	 * @param precomptePartenaire
+	 * Créer le Précompte de partenaire avec les informations fournies
+	 * @param precomptePartenaire le precompte à créer
 	 */
 	@WebMethod
 	public void creerPrecompte(@WebParam(name="precomptePartenaire") PrecomptePartenaire precomptePartenaire);
 
+	/**
+     * Créer le Précompte de partenaire avec les informations fournies, ou le met à jour s'il existe déjà
+	 * @param precomptePartenaire le precompte à créer
+	 * @param mettreAJour si faux, ne le met pas à jour s'il existe déjà
+	 */
+	// with return, without @WebResult
+    @WebMethod
+	public PrecomptePartenaire creerEtRetournePrecompte(@WebParam(name="precomptePartenaire") PrecomptePartenaire precomptePartenaire, boolean mettreAJour);
+    
+    /**
+     * Renvoie les Precomptes actuels
+     * @return les Precomptes actuels
+     */
+    // without @WebMethod nor args
+    public @WebResult(name="PrecomptePartenaires") PrecomptePartenaire[] getPrecomptePartenaires();
 }

@@ -1,5 +1,6 @@
 package com.axxx.dps.apv.ws;
 
+import javax.jws.WebResult;
 import javax.jws.WebService;
 
 import org.apache.commons.logging.Log;
@@ -14,23 +15,27 @@ import com.axxx.dps.apv.util.AxxxConfUtil;
 
 
 /**
- * TODO doc
- * @author mdutoo
+ * Implémente le service web de gestion des Précomptes de partenaires sociaux
+ * au dessus du service applicatif interne TdrService de l'application APV.
  * 
-  targetNamespace="http://www.axxx.com/dps/apv"
-  
-  <wsdl:portType name="PrecomptePartenaireService">
-    ...
-  <wsdl:binding name="PrecomptePartenaireServiceImplSoapBinding" type="tns:PrecomptePartenaireService">
-    ...
-
-  <wsdl:service name="PrecomptePartenaireServiceImpl">
-    <wsdl:port binding="tns:PrecomptePartenaireServiceImplSoapBinding" name="PrecomptePartenairePort">
-      <soap:address location="http://localhost:8076/services/PrecomptePartenaireService"/>
-    </wsdl:port>
-  </wsdl:service>
- *
+ * @author mdutoo
  */
+
+// Produces the following WSDL : 
+
+//targetNamespace="http://www.axxx.com/dps/apv"
+//
+//<wsdl:portType name="PrecomptePartenaireService">
+//...
+//<wsdl:binding name="PrecomptePartenaireServiceImplSoapBinding" type="tns:PrecomptePartenaireService">
+//...
+//
+//<wsdl:service name="PrecomptePartenaireServiceImpl">
+//<wsdl:port binding="tns:PrecomptePartenaireServiceImplSoapBinding" name="PrecomptePartenairePort">
+//  <soap:address location="http://localhost:8076/services/PrecomptePartenaireService"/>
+//</wsdl:port>
+//</wsdl:service>
+
 @WebService(name="PrecomptePartenaire", // used for port, and if no java itf for portType (service interface) ; else defaults to java itf if any, else to java impl
 	targetNamespace="http://www.axxx.com/dps/apv", // else defaults to java package ex. http://ws.apv.dps.axxx.com/
 	serviceName="PrecomptePartenaireServiceImpl") // service (implementation) (reused for binding ), else default to java impl + "Service"
@@ -59,6 +64,8 @@ public class PrecomptePartenaireWebServiceImpl implements PrecomptePartenaireWeb
 
 	@Override
 	public void creerPrecompte(PrecomptePartenaire precomptePartenaire) {
+	    log.warn("creerPrecompte appelé: " + precomptePartenaire.getNomStructure());
+	    
 	    AxxxConfUtil.getInstance().sleep();
 	    
 		Tdr newTdr = new Tdr();
@@ -77,5 +84,18 @@ public class PrecomptePartenaireWebServiceImpl implements PrecomptePartenaireWeb
         tdrService.create(newTdr);
 	}
 
+	// without annotations again
+    @Override
+    public PrecomptePartenaire creerEtRetournePrecompte(PrecomptePartenaire precomptePartenaire, boolean mettreAJour) {
+        log.warn("creerEtRetournePrecompte appelé: " + precomptePartenaire.getNomStructure() + ", " + mettreAJour);
+        return precomptePartenaire;
+    }
+
+    // with same annotations again
+    @Override
+    public @WebResult(name = "PrecomptePartenaires") PrecomptePartenaire[] getPrecomptePartenaires() {
+        log.warn("getPrecomptePartenaires appelé");
+        return new PrecomptePartenaire[0];
+    };
 	
 }

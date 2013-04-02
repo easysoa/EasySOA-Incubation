@@ -12,6 +12,10 @@
 	  .id { display: none }
 	  .selected { background-color: #CFC; }
 	</style>
+        
+        <!-- Bootstrap style and scripts -->
+        <link href="/nuxeo/site/easysoa/skin/css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <script src="/nuxeo/site/easysoa/skin/js/bootstrap.min.js"></script>        
 </head>
 	
 <body>

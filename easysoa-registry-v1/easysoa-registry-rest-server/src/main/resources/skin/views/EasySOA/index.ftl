@@ -53,17 +53,17 @@
                         <p>Découverte de services, IHM de consultation du modèle SOA, qualité ...</p>
                         
                         <p>
-                            <table width="175px">
+                            <table class="table table-bordered" width="150px">
                                 <tr>
-                                    <td width="150px">Nombre de services :</td>
+                                    <td width="125px">Nombre de services :</td>
                                     <td width="25px">${indicators["InformationService count"].count}</td>
                                 </tr>
                                 <tr>
-                                    <td width="150px">Nombre d'implémentations de services :</td>
+                                    <td width="125px">Nombre d'implémentations de services :</td>
                                     <td width="25px">${indicators["ServiceImplementation count"].count}</td>
                                 </tr>
                                 <tr>
-                                    <td width="150px">Nombre d'endpoints :</td>
+                                    <td width="125px">Nombre d'endpoints :</td>
                                     <td width="25px">${indicators["Endpoint count"].count}</td>
                                 </tr>
                             </table>
@@ -77,6 +77,16 @@
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Réconciliation technique / métier</h3><!-- ou (mise en) correspondance, métier / technique ? -->
                         <p>Matching Dashboard, (?) gestion des versions</p><!-- "gestion des versions" ?? -->
+
+                        <p>
+                            <table class="table table-bordered" width="150px">
+                                <tr>
+                                    <td width="125px">Nombre de Placeholders (implémentations inconnues d'endpoints) :</td>
+                                    <td width="25px">${indicators["Placeholders count"].count}</td>
+                                </tr>
+                            </table>
+                        </p>                        
+                        
                         <a class="btn btn-primary" href="${Root.path}/dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
                     </div>
                 </li>
@@ -90,6 +100,16 @@
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Usage des services</h3>
                         <p>Statistiques et indicateurs à l'exécution, (?) d'appropiation du modèle SOA par les utilisateurs de EasySOA...</p>
+                        
+                        <p>
+                            <table class="table table-bordered" width="150px">
+                                <tr>
+                                    <td width="125px">Nombre de service jamais consomés :</td>
+                                    <td width="25px">${indicators["Never consumed services"].count}</td>
+                                </tr>
+                            </table>
+                        </p>
+                        
                         <a class="btn btn-primary" href="${Root.path}/monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
                     </div>
                 </li>
@@ -98,6 +118,16 @@
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Pilotage</h3>
                         <p>Suivi des Phases de production SOA, indicateurs de complétion et gouvernance, (?) édition collaborative du modèle SOA...</p><!-- ou Aide à la prise de décisions ? Registry des services, implementations ?? -->
+                        
+                        <p>
+                            <table class="table table-bordered" width="150px">
+                                <tr>
+                                    <td width="125px">Nombre de services n'ayant aucun tag utilisateur :</td>
+                                    <td width="25px">${indicators["Services without at least one user tag"].count}</td>
+                                </tr>
+                            </table>
+                        </p>                        
+                        
                         <a class="btn btn-primary" href="#">Plus...</a>
                     </div>
                 </li>

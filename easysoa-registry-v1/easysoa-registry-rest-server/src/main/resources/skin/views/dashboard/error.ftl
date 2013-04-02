@@ -7,6 +7,10 @@
 	<link rel="stylesheet" type="text/css" href="skin/css/base.css" media="all" />
 	<link rel="shortcut icon" type="image/png" href="skin/favicon.ico" /> 
 	<script type="text/javascript" src="skin/js/jquery.js"></script>
+        
+        <!-- Bootstrap style and scripts -->
+        <link href="/nuxeo/site/easysoa/skin/css/bootstrap.min.css" rel="stylesheet" media="screen">
+        <script src="/nuxeo/site/easysoa/skin/js/bootstrap.min.js"></script>        
 </head>
 	
 <body>

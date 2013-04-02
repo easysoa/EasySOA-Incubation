@@ -40,11 +40,9 @@ public class PlaceholdersIndicatorProvider extends QueryCountIndicator {
     public PlaceholdersIndicatorProvider(String category) {
         super(DocumentService.NXQL_SELECT_FROM + SoaNode.ABSTRACT_DOCTYPE
                 + DocumentService.NXQL_WHERE_NO_PROXY
-                + DocumentService.NXQL_AND + DocumentService.NXQL_IS_NOT_DELETED
                 + DocumentService.NXQL_AND + SoaNode.XPATH_ISPLACEHOLDER + " = 1",
               DocumentService.NXQL_SELECT_FROM + SoaNode.ABSTRACT_DOCTYPE
-                + DocumentService.NXQL_WHERE_NO_PROXY
-                + DocumentService.NXQL_AND + DocumentService.NXQL_IS_NOT_DELETED);
+                + DocumentService.NXQL_WHERE_NO_PROXY);
         this.category = category;
     }
 

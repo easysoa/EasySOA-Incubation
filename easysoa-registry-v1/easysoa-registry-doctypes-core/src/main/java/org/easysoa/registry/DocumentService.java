@@ -30,20 +30,22 @@ public interface DocumentService {
     static final String NXQL_IS_VERSIONED = NXQL.ECM_ISVERSION + " = 1";
     static final String NXQL_IS_NO_PROXY = NXQL.ECM_ISPROXY + " = 0";
     static final String NXQL_IS_PROXY = NXQL.ECM_ISPROXY + " = 1";
+    
+    /** WARNING harder to use for cross-Phase/subproject, because their Path is relative,
+     * so the project can only be known by the subprojectId (which contains the live subproject Path) */
     static final String NXQL_PATH_STARTSWITH = NXQL.ECM_PATH + " STARTSWITH '";
     
-    static final String NO_DELETED_DOCUMENTS_CRITERIA = " AND " + NXQL_IS_NOT_DELETED;
+    static final String NXQL_NO_DELETED_DOCUMENTS_CRITERIA = " AND " + NXQL_IS_NOT_DELETED;
 
-    static final String NOT_VERSIONED_CRITERIA = " AND " + NXQL_IS_NOT_VERSIONED;
+    static final String NQXL_NOT_VERSIONED_CRITERIA = " AND " + NXQL_IS_NOT_VERSIONED;
     
-    static final String NON_PROXIES_CRITERIA = " AND " + NXQL_IS_NO_PROXY;
+    static final String NQXL_NON_PROXIES_CRITERIA = " AND " + NXQL_IS_NO_PROXY;
     
-    static final String PROXIES_CRITERIA = " AND " + NXQL_IS_PROXY;
+    static final String NQXL_PROXIES_CRITERIA = " AND " + NXQL_IS_PROXY;
 
-    static final String NXQL_WHERE_NO_PROXY = NXQL_WHERE + NXQL_IS_NOT_DELETED
-            + NXQL_AND + NXQL_IS_NOT_VERSIONED + NXQL_AND + NXQL_IS_NO_PROXY;
-    static final String NXQL_WHERE_PROXY = NXQL_WHERE + NXQL_IS_NOT_DELETED
-            + NXQL_AND + NXQL_IS_NOT_VERSIONED + NXQL_AND + NXQL_IS_PROXY;
+    static final String NXQL_WHERE_NO_PROXY = NXQL_WHERE + NXQL_IS_NOT_DELETED + NQXL_NON_PROXIES_CRITERIA; // NB. doesn't use NXQL_IS_NOT_VERSIONED because of Phase/subproject
+    /** WARNING can't be used in cross-Phase/subproject queries, TODO hard to use with ecm:Path STARTSWITH */
+    static final String NXQL_WHERE_PROXY = NXQL_WHERE + NXQL_IS_NOT_DELETED + NQXL_PROXIES_CRITERIA; // NB. doesn't use NXQL_IS_NOT_VERSIONED because of Phase/subproject
 
     /**
      * Helper for non-SOA nodes documents (ex. SystemTreeRoot, IntelligentSystemTreeRoot...)
@@ -188,8 +190,17 @@ public interface DocumentService {
     DocumentModelList findAllParents(CoreSession documentManager, DocumentModel documentModel)
             throws Exception;
 
+    /**
+     * NB. doesn't filter out versions because of Phase/subproject
+     * @param documentManager
+     * @param query
+     * @param nonProxiesCriteria
+     * @param proxiesCriteria
+     * @return
+     * @throws ClientException
+     */
 	DocumentModelList query(CoreSession documentManager, String query,
-			boolean filterProxies, boolean filterNonProxies)
+	        boolean nonProxiesCriteria, boolean proxiesCriteria)
 			throws ClientException;
 	
     boolean hasChild(CoreSession documentManager, DocumentModel document, SoaNodeId childId)

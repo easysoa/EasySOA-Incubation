@@ -69,8 +69,6 @@ public class ServiceImplStateProvider implements IndicatorProvider {
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
         DocumentService documentService = Framework.getService(DocumentService.class);
 
-        //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
-        // TODO default or not ??
         String subprojectPathCriteria;
         if (subprojectId == null) {
             subprojectPathCriteria = "";

@@ -22,12 +22,13 @@ package org.easysoa.registry.context.rest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.Project;
@@ -71,10 +72,9 @@ public class ContextController extends ModuleRoot {
             HashMap<String, List<DocumentModel>> liveAndVersions = new HashMap<String, List<DocumentModel>>();
             // Get the live for the project
             List<DocumentModel> lives = new ArrayList<DocumentModel>();
-            String nxqlRequest = DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE 
-                    + DocumentService.NXQL_IS_NO_PROXY + DocumentService.NO_DELETED_DOCUMENTS_CRITERIA + DocumentService.NXQL_AND + "spnode:subproject STARTSWITH '" 
-                    + project.getPathAsString() + "'" + DocumentService.NXQL_AND + DocumentService.NXQL_IS_NOT_VERSIONED 
-                    + " ORDER BY dc:title ASC"; // TODO actually NON_PROXIES...
+            String nxqlRequest = DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY
+                    + DocumentService.NXQL_AND + "spnode:subproject STARTSWITH '" + project.getPathAsString() + "'"
+                    + DocumentService.NXQL_AND + DocumentService.NXQL_IS_NOT_VERSIONED + "' ORDER BY dc:title ASC";
             DocumentModelList liveList = session.query(nxqlRequest);
             for(DocumentModel live : liveList){
                 lives.add(live);
@@ -82,9 +82,9 @@ public class ContextController extends ModuleRoot {
             liveAndVersions.put("live", lives);
             
             // Get the versions for the project
-            nxqlRequest = DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE 
-                    + DocumentService.NXQL_IS_NO_PROXY + DocumentService.NO_DELETED_DOCUMENTS_CRITERIA + DocumentService.NXQL_AND + "spnode:subproject STARTSWITH '" 
-                    + project.getPathAsString() + "'" + DocumentService.NXQL_AND + DocumentService.NXQL_IS_VERSIONED
+            nxqlRequest = DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY
+                    + DocumentService.NXQL_AND + "spnode:subproject STARTSWITH '" + project.getPathAsString() + "'"
+                    + DocumentService.NXQL_AND + DocumentService.NXQL_IS_VERSIONED
                     + " ORDER BY dc:title ASC, major_version DESC, minor_version DESC";
             DocumentModelList versionList = session.query(nxqlRequest);
             List<DocumentModel> versions = new ArrayList<DocumentModel>();

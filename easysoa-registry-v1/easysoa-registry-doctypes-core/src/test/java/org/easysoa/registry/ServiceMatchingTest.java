@@ -92,8 +92,8 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // TODO the same for the others
         ///DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.createSubproject(
         ///        documentManager, "Specifications", projectModel, null);
-        DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.getSubprojectByName(
-                documentManager, projectModel, "Specifications");
+        DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.getSubprojectByNameAndVersion(
+                documentManager, projectModel, "Specifications", null);
         String specificationsSubprojectId = SubprojectServiceImpl.buildSubprojectId(specificationsSubprojectModel);
 
         DocumentModel realisationSubprojectModel = SubprojectServiceImpl.createSubproject(
@@ -228,8 +228,8 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // TODO the same for the others
         ///DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.createSubproject(
         ///        documentManager, "Specifications", projectModel, null);
-        DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.getSubprojectByName(
-                documentManager, projectModel, "Specifications");
+        DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.getSubprojectByNameAndVersion(
+                documentManager, projectModel, "Specifications", null);
         String specificationsSubprojectId = SubprojectServiceImpl.buildSubprojectId(specificationsSubprojectModel);
 
         DocumentModel realisationSubprojectModel = SubprojectServiceImpl.createSubproject(
@@ -357,8 +357,8 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // TODO the same for the others
         ///DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.createSubproject(
         ///        documentManager, "Specifications", projectModel, null);
-        DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.getSubprojectByName(
-                documentManager, projectModel, "Specifications");
+        DocumentModel specificationsSubprojectModel = SubprojectServiceImpl.getSubprojectByNameAndVersion(
+                documentManager, projectModel, "Specifications", null);
         String specificationsSubprojectId = SubprojectServiceImpl.buildSubprojectId(specificationsSubprojectModel);
 
         DocumentModel realisationSubprojectModel = SubprojectServiceImpl.createSubproject(documentManager,

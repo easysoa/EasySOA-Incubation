@@ -24,6 +24,7 @@ import static org.easysoa.registry.utils.NuxeoListUtils.getIds;
 import static org.easysoa.registry.utils.NuxeoListUtils.getProxiedIdLiteralList;
 import static org.easysoa.registry.utils.NuxeoListUtils.toLiteral;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -52,7 +53,6 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.api.impl.SimpleDocumentModel;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -69,7 +69,8 @@ import org.nuxeo.runtime.api.Framework;
 @Path("easysoa/services")
 public class ServiceDocumentationController extends ModuleRoot {
 
-    private static final String SERVICE_LIST_PROPS = "*"; // "ecm:title"
+    /** properties to be displayed in lists of services */
+    private static final String SERVICE_LIST_PROPS = "*"; // "ecm:title" // TODO is this an optimization worth the hassle ??
     
     @SuppressWarnings("unused")
     private static Logger logger = Logger.getLogger(ServiceDocumentationController.class);
@@ -83,13 +84,10 @@ public class ServiceDocumentationController extends ModuleRoot {
     public Object doGetHTML(/*@DefaultValue(null) */@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
 
-        //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
-        // TODO default or not ??
         String subprojectPathCriteria;
         if (subprojectId == null || subprojectId.length() == 0) {
             subprojectPathCriteria = "";
         } else {
-            //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
             if(ContextVisibility.DEEP.getValue().equals(visibility)){
                 subprojectPathCriteria = DocumentService.NXQL_AND
                     + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
@@ -99,13 +97,24 @@ public class ServiceDocumentationController extends ModuleRoot {
             }
         }
         
+        // getting (phase-scoped) services
         DocumentModelList services = session.query("SELECT " + SERVICE_LIST_PROPS + " FROM " + InformationService.DOCTYPE
                 + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
-        DocumentModelList tags = session.query("SELECT " + "*" + " FROM " + TaggingFolder.DOCTYPE
+        // getting (phase-scoped) tagging folders
+        DocumentModelList tags = session.query(DocumentService.NXQL_SELECT_FROM + TaggingFolder.DOCTYPE
                 + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
-        DocumentModelList serviceProxies = session.query("SELECT " + "*" + " FROM " + InformationService.DOCTYPE
-                + DocumentService.NXQL_WHERE_PROXY + DocumentService.NXQL_AND + DocumentService.NXQL_PATH_STARTSWITH
-                + RepositoryHelper.getRepositoryPath(session, subprojectId) + TaggingFolder.DOCTYPE + "'");
+        // getting (phase-scoped) tagged services
+        // WARNING : looking for proxies only work when proxy-containing TaggingFolder are in the same Phase as services
+        // (else wrong phase id metadata), and using Path only works for live documents !
+        ///DocumentModelList serviceProxies = session.query(DocumentService.NXQL_SELECT_FROM + InformationService.DOCTYPE
+        ///        + DocumentService.NXQL_WHERE_PROXY + DocumentService.NXQL_AND + DocumentService.NXQL_PATH_STARTSWITH
+        ///        + RepositoryHelper.getRepositoryPath(session, subprojectId) + TaggingFolder.DOCTYPE + "'");
+        List<DocumentModel> serviceProxies = new ArrayList<DocumentModel>();
+        // so rather getting them using getChildren :
+        for (DocumentModel tag : tags) {
+            DocumentModelList tagChildrenProxies = session.getChildren(tag.getRef());
+            serviceProxies.addAll(tagChildrenProxies);
+        }
         //DocumentModelList serviceProxyIds = session.query("SELECT " + "ecm:uuid, ecm:parentid" + " FROM " + Service.DOCTYPE + DocumentService.NXQL_WHERE_PROXY
         //        + DocumentService.NXQL_AND + DocumentService.NXQL_PATH_STARTSWITH + RepositoryHelper.getRepositoryPath(session, subprojectId) + TaggingFolder.DOCTYPE + "'");
         
@@ -131,7 +140,7 @@ public class ServiceDocumentationController extends ModuleRoot {
                 tagId2Services.put(serviceProxyParentId, taggedServices);
             }
             // unwrapping proxy
-            taggedServices.add(session.getWorkingCopy(serviceProxyDoc.getRef())); // TODO or by looking in a services map ?
+            taggedServices.add(session.getSourceDocument(serviceProxyDoc.getRef())); // TODO or by looking in a services map ?
         }
         
         /*HashMap<String, Integer> tagId2ServiceNbs = new HashMap<String, Integer>();
@@ -218,8 +227,6 @@ public class ServiceDocumentationController extends ModuleRoot {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
 
-        //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
-        // TODO default or not ??
         String subprojectPathCriteria;
         if (subprojectId == null || subprojectId.length() == 0) {
             subprojectPathCriteria = "";
@@ -258,8 +265,6 @@ public class ServiceDocumentationController extends ModuleRoot {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
 
-        //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
-        // TODO default or not ??
         String subprojectPathCriteria;
         if (subprojectId == null || subprojectId.length() == 0) {
             subprojectPathCriteria = "";
@@ -275,7 +280,7 @@ public class ServiceDocumentationController extends ModuleRoot {
         }
         //TODO ?? SubprojectID mandatory to find service ....
         DocumentModel service = docService.find(session, new SoaNodeId(subprojectId, InformationService.DOCTYPE, serviceName));
-        DocumentModelList tags = session.query("SELECT " + "*" + " FROM " + TaggingFolder.DOCTYPE
+        DocumentModelList tags = session.query(DocumentService.NXQL_SELECT_FROM + TaggingFolder.DOCTYPE
                 + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
         
         Template view = getView("servicetags");
@@ -320,7 +325,7 @@ public class ServiceDocumentationController extends ModuleRoot {
         DocumentModel serviceProxy = session.getDocument(new IdRef(documentId));
         
         if (serviceProxy != null) {
-            DocumentModel proxiedService = session.getWorkingCopy(serviceProxy.getRef());
+            DocumentModel proxiedService = session.getSourceDocument(serviceProxy.getRef());
             session.removeDocument(serviceProxy.getRef());
             session.save();
             return doGetTagsHTML((String) proxiedService.getPropertyValue(InformationService.XPATH_SOANAME),

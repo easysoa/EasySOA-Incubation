@@ -1,7 +1,6 @@
 package org.easysoa.registry;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -47,16 +46,35 @@ public class RepositoryManagementListener implements EventListener {
             return; // nothing to do on non SOA nodes
         }
 
-        if (/*!sourceDocument.isCheckedOut() || */sourceDocument.isVersion()) {
-            logger.warn("RepositoryManagementListener : skipping because isVersion, maybe isCheckedOut " + sourceDocument.isCheckedOut() + " " + sourceDocument);
+        if (sourceDocument.isVersion()) {
+            logger.warn("RepositoryManagementListener : skipping because isVersion (but not checked out nor isBeingVersionedSubprojectNodeEvent())"
+                    //+ ", maybe isBeingVersionedSubprojectNodeEvent() " + SubprojectServiceImpl.isBeingVersionedSubprojectNodeEvent(event, sourceDocument)
+                    + ", event " + event.getName());
             return; // nothing can be done on it since it is a version, internal proxies
             // are handled by tree snapshot itself (TODO nuxeo ID properties), and
             // outside references to it can only change through explicit action (updateToVersion)
         }
         
         if (SubprojectServiceImpl.isBeingVersionedSubprojectNodeEvent(event, sourceDocument)) {
-            logger.warn("RepositoryManagementListener : skipping because isBeingVersionedSubprojectNodeEvent" + sourceDocument);
+            logger.warn("RepositoryManagementListener : skipping because isBeingVersionedSubprojectNodeEvent " + sourceDocument
+                    + ", event " + event.getName());
             return; // this document is currently being tree snapshotted, do nothing here
+        }
+
+        if (sourceDocument.isProxy()) {
+            // getting target document of proxy :
+            DocumentModel proxyTargetDocument = documentContext.getCoreSession().getSourceDocument(sourceDocument.getRef());
+            // NB. same as : proxyTargetDocument = coreSession.getDocument(new org.nuxeo.ecm.core.api.IdRef(sourceDocument.getSourceId()));
+            // NB. DON'T USE coreSession.getWorkingCopy(sourceDocument.getRef()) because it never returns a version !
+            if (proxyTargetDocument.isVersion()) {
+                logger.warn("RepositoryManagementListener : skipping because is live proxy of version (but not isCheckedOut() nor isBeingVersionedSubprojectNodeEvent()) " + sourceDocument
+                        //+ ", maybe isCheckedOut " + sourceDocument.isCheckedOut() + " "
+                        //+ " or isBeingVersionedSubprojectNodeEvent() " + SubprojectServiceImpl.isBeingVersionedSubprojectNodeEvent(event, sourceDocument)
+                        + ", event " + event.getName());
+                return; // nothing can be done on it since it is a version, internal proxies
+                // are handled by tree snapshot itself (TODO nuxeo ID properties), and
+                // outside references to it can only change through explicit action (updateToVersion)
+            }
         }
         
         // Initialize
@@ -130,9 +148,14 @@ public class RepositoryManagementListener implements EventListener {
         
         if (!DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName()) || sourceDocument.isProxy()) {
         	if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName()) && sourceDocument.isProxy()) {
-				// Proxy deleted, update the true document
-				sourceDocument = documentManager.getWorkingCopy(sourceDocument.getRef());
-				documentModified = false;//TODO ?
+				// (TODO necessarily live) Proxy deleted, update the true document, TODO if it is live
+				sourceDocument = documentManager.getSourceDocument(sourceDocument.getRef());
+				if (sourceDocument.isVersion()) {
+				    return;
+				    // since source document is version, can't modify it ; but no need either,
+				    // because in any way proxy had been created after the version was
+				}
+				documentModified = false; // TODO reset documentModified for now, may change again below
         	}
         	
     		// Update parents info

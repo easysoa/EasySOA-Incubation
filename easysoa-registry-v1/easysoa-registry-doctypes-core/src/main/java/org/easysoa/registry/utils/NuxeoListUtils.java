@@ -58,7 +58,7 @@ public class NuxeoListUtils {
     public static ArrayList<String> getProxiedIds(CoreSession session, List<DocumentModel> proxies) throws ClientException {
         ArrayList<String> proxiedIds = new ArrayList<String>();
         for (DocumentModel proxy : proxies) {
-            proxiedIds.add(session.getWorkingCopy(proxy.getRef()).getId());
+            proxiedIds.add(session.getSourceDocument(proxy.getRef()).getId());
         }
         return proxiedIds;
     }

@@ -43,10 +43,9 @@ public class JavaServiceConsumptionAdapter extends SoaNodeAdapter implements Jav
     public List<SoaNodeId> getConsumableServiceImpls() throws Exception {
         DocumentService documentService = Framework.getService(DocumentService.class);
         CoreSession documentManager = documentModel.getCoreSession();
-        String query = NXQLQueryBuilder.getQuery("SELECT * FROM " + JavaServiceImplementation.DOCTYPE + " "
-                + "WHERE " + JavaServiceImplementation.XPATH_IMPLEMENTEDINTERFACE + " = ?"
-                + DocumentService.PROXIES_CRITERIA
-                + DocumentService.NO_DELETED_DOCUMENTS_CRITERIA,
+        String query = NXQLQueryBuilder.getQuery(DocumentService.NXQL_SELECT_FROM
+                + JavaServiceImplementation.DOCTYPE + DocumentService.NXQL_WHERE_PROXY // TODO doesn't work outside Phase/subproject BUT required for getAllParents in XXX
+                + DocumentService.NXQL_AND + JavaServiceImplementation.XPATH_IMPLEMENTEDINTERFACE + " = ?",
                 new Object[] { getConsumedInterface() },
                 true, true);
         DocumentModelList consumableServiceImplModels = documentManager.query(query);

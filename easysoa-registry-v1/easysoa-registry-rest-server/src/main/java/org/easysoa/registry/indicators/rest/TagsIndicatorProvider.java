@@ -65,8 +65,6 @@ public class TagsIndicatorProvider implements IndicatorProvider {
         DocumentService documentService = Framework.getService(DocumentService.class);
         UserManager userManager = Framework.getService(UserManager.class);
 
-        //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
-        // TODO default or not ??
         String subprojectPathCriteria;
         if (subprojectId == null) {
             subprojectPathCriteria = "";

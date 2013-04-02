@@ -31,7 +31,7 @@ public class SubprojectServiceImpl {
     public static final String  SUBPROJECT_ID_VERSION_SEPARATOR = "_v";
     
     public static final PathRef defaultProjectPathRef = new PathRef(Project.DEFAULT_PROJECT_PATH);
-    public static final PathRef defaultSubprojectPathRef = new PathRef(Subproject.DEFAULT_SUBPROJECT_PATH);
+    ///public static final PathRef defaultSubprojectPathRef = new PathRef(Subproject.DEFAULT_SUBPROJECT_PATH);
     public static final String defaultSubprojectId = Subproject.DEFAULT_SUBPROJECT_PATH + SUBPROJECT_ID_VERSION_SEPARATOR;
 
 
@@ -106,12 +106,33 @@ public class SubprojectServiceImpl {
     }
 
     public static String buildSubprojectId(DocumentModel subprojectModel) {
-        StringBuffer sbuf = new StringBuffer(subprojectModel.getPathAsString());
-        sbuf.append(SUBPROJECT_ID_VERSION_SEPARATOR);
+        String subprojectVersionSuffix;
         if (subprojectModel.isVersion()) {
-            // TODO NB. never happens on aboutToCreate, by on aboutToCreateLeafVersionEvent
-            sbuf.append(subprojectModel.getVersionLabel());
+            // TODO NB. never happens on aboutToCreate, but on aboutToCreateLeafVersionEvent
+            subprojectVersionSuffix = subprojectModel.getVersionLabel();
+        } else {
+            subprojectVersionSuffix = null;
         }
+        return buildSubprojectId(subprojectModel.getPathAsString(), null, subprojectVersionSuffix);
+    }
+
+    /**
+     * TODO not used for now
+     * @param projectPath projectPath (or subprojectPath)
+     * @param subprojectName can be null if provided in projectPath
+     * @param version version of versioned Phase / subproject, or null for live
+     * @return
+     */
+    public static String buildSubprojectId(String projectPath, String subprojectName, String version) {
+        StringBuffer sbuf = new StringBuffer(projectPath);
+        if (subprojectName != null && !subprojectName.isEmpty()) {
+            sbuf.append('/');
+            sbuf.append(subprojectName);
+        }
+        sbuf.append(SUBPROJECT_ID_VERSION_SEPARATOR);
+        if (version != null) {
+            sbuf.append(version);
+        } // else live : Phase / subproject id ends with _v
         return sbuf.toString();
     }
     
@@ -152,9 +173,13 @@ public class SubprojectServiceImpl {
     public static DocumentModel getSubprojectById(CoreSession documentManager, String subprojectId) throws ClientException {
         subprojectId = getSubprojectIdOrCreateDefault(documentManager, subprojectId);
         
+        return getSubprojectByIdInternal(documentManager, subprojectId);
+    }
+    
+    protected static DocumentModel getSubprojectByIdInternal(CoreSession documentManager, String subprojectId) throws ClientException {
         // NB. three differents ways :
         
-        // 1. looking in db using path
+        // 1. looking in db using path : NO doesn't work for versioned Phase / subproject because their Path is relative
         /*int lastVersionSeparatorId = subprojectId.lastIndexOf(SUBPROJECT_ID_VERSION_SEPARATOR);
         if (lastVersionSeparatorId < 0) {
             logger.warn("getSubprojectById() called on badly formatted subprojectId " + subprojectId);
@@ -169,14 +194,14 @@ public class SubprojectServiceImpl {
             String versionLabel = subprojectId.substring(lastVersionSeparatorId + SUBPROJECT_ID_VERSION_SEPARATOR.length());
             versionLabelCriteria = " AND ecm:versionLabel='" + versionLabel + "'";
         }
-        DocumentModelList res = documentManager.query("select * from Subproject where ecm:path='"
-                + path + "'" + versionLabelCriteria
-                + DocumentService.DELETED_DOCUMENTS_QUERY_FILTER + DocumentService.PROXIES_QUERY_FILTER); // TODO ?*/
+        DocumentModelList res = documentManager.query(DocumentService.NXQL_SELECT_FROM
+                + DocumentService.NXQL_WHERE_NO_PROXY + + DocumentService.NXQL_AND
+                + "Subproject where ecm:path='" + path + "'" + versionLabelCriteria); // NO path can't be used cross Phase/subproject */
 
         // 2.(rather) looking in db for Subproject with spnode:subprojet (simpler and more generic than using path)
-        String request = "SELECT * FROM " + Subproject.DOCTYPE
-                + " WHERE " + SubprojectNode.XPATH_SUBPROJECT + "='" + subprojectId + "'"
-                + DocumentService.NON_PROXIES_CRITERIA + DocumentService.NO_DELETED_DOCUMENTS_CRITERIA; //TODO NON_PROXIES
+        String request = DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE
+                + DocumentService.NXQL_WHERE_NO_PROXY + DocumentService.NXQL_AND
+                + SubprojectNode.XPATH_SUBPROJECT + "='" + subprojectId + "'";
         DocumentModelList res = documentManager.query(request);
         if (res.size() == 1) {
             return res.get(0);
@@ -189,19 +214,11 @@ public class SubprojectServiceImpl {
         // 3. using getParent() => rather use getSubprojectOfNode()
     }
 
-    public static DocumentModel getSubprojectByName(CoreSession documentManager,
-            DocumentModel project, String subprojectName) throws ClientException {
-        String path = project.getPathAsString() + '/' + subprojectName;
-        DocumentModelList res = documentManager.query("select * from Subproject where ecm:path='" + path
-                + "'" + DocumentService.NO_DELETED_DOCUMENTS_CRITERIA + DocumentService.NON_PROXIES_CRITERIA);
-        if (res.size() == 1) {
-            return res.get(0);
-        } else if (res.isEmpty()) {
-            return null;
-        } else {
-            logger.fatal("More than one subproject found at path " + path + " : " + res);
-            return null;
-        }
+    // 1.1 using only Path from name : NO doesn't work for versioned Phase / subproject because their Path is relative
+    public static DocumentModel getSubprojectByNameAndVersion(CoreSession documentManager,
+            DocumentModel project, String subprojectName, String version) throws ClientException {
+        String subprojectId = buildSubprojectId(project.getPathAsString(), subprojectName, version);
+        return getSubprojectByIdInternal(documentManager, subprojectId);
     }
 
     /**
@@ -357,8 +374,10 @@ public class SubprojectServiceImpl {
      * If possible, rather use setDefaultSubprojectIfNone()
      * @param documentManager
      * @param subprojectId
-     * @return
+     * @return default (live) Phase / subproject if given subprojectId is null ; 
+     * since is live, can be queried using Path
      * @throws ClientException
+     * @obsolete
      */
     public static String getSubprojectIdOrCreateDefault(CoreSession documentManager,
             String subprojectId) throws ClientException {
@@ -371,6 +390,13 @@ public class SubprojectServiceImpl {
         }
     }
 
+    /**
+     * @param documentManager
+     * @param subprojectId if null or no corresponding Phase / subproject, returns
+     * the default (live) Phase / subproject (since is live, can be queried using Path)
+     * @return
+     * @throws ClientException
+     */
     public static DocumentModel getSubprojectOrCreateDefault(CoreSession documentManager,
             String subprojectId) throws ClientException {
         DocumentModel foundSubproject = getSubprojectById(documentManager, subprojectId);
@@ -382,28 +408,42 @@ public class SubprojectServiceImpl {
         return foundSubproject;
     }
 
+    /**
+     * Queries for it, else calls getOrCreateDefaultProject() then createSubproject().
+     * Returns the default (live) Phase / subproject (since is live, can be queried using Path)
+     * @param documentManager
+     * @return
+     * @throws ClientException
+     */
     private static DocumentModel getOrCreateDefaultSubproject(CoreSession documentManager) throws ClientException {
         // default subproject mode (TODO rather create it at startup ? or explode ?? by query or path ?)
-        //DocumentModelList subprojectResults = documentManager.query(
-        //        "SELECT * FROM Subproject WHERE dc:title='Default'"); // TODO better
-        DocumentModel subprojectDocModel;
-        DocumentModelList subprojectResults = documentManager.query(
-                "SELECT * FROM Subproject WHERE ecm:path='" + SubprojectServiceImpl.defaultSubprojectPathRef + "'");
-        if (subprojectResults == null || subprojectResults.isEmpty()) {
+        // querying :
+        // NB. since is live, could be queried using Path :
+        ///DocumentModelList subprojectResults = documentManager.query(DocumentService.NXQL_SELECT_FROM
+        ///        + "Subproject WHERE ecm:path='" + SubprojectServiceImpl.defaultSubprojectPathRef + "'");
+        // however rather querying it by id (more regular) :
+        DocumentModel subprojectDocModel = getSubprojectByIdInternal(documentManager, defaultSubprojectId);
+        if (subprojectDocModel == null) {
             DocumentModel project = getOrCreateDefaultProject(documentManager);
             subprojectDocModel = SubprojectServiceImpl.createSubproject(documentManager,
                     Subproject.DEFAULT_SUBPROJECT_NAME , project, null);
             documentManager.save();
-        } else {
-            subprojectDocModel = subprojectResults.get(0);
         }
         return subprojectDocModel;
     }
 
+    /**
+     * Returns the default (live) Project (since is live, can be queried using Path)
+     * @param documentManager
+     * @return
+     * @throws ClientException
+     */
     private static DocumentModel getOrCreateDefaultProject(CoreSession documentManager) throws ClientException {
         DocumentModel project;
-        DocumentModelList projectResults = documentManager.query(
-                "SELECT * FROM Project WHERE ecm:path='" + SubprojectServiceImpl.defaultProjectPathRef + "'");
+        // querying :
+        // NB. since is live, can be queried using Path
+        DocumentModelList projectResults = documentManager.query(DocumentService.NXQL_SELECT_FROM
+                + "Project WHERE ecm:path='" + SubprojectServiceImpl.defaultProjectPathRef + "'");
         if (projectResults == null || projectResults.isEmpty()) {
             project = SubprojectServiceImpl.createProject(documentManager,
                     Project.DEFAULT_PROJECT_NAME);
@@ -414,15 +454,15 @@ public class SubprojectServiceImpl {
         return project;
     }
     
-    /**
+    /*
      * TODO probably wrong for versions (and doesn't exclude versions if not) !!
      * @obsolete rather use buildCriteriaInSubproject() which is correct
      * @param subprojectId
      * @return 
      */
-    public static String getSubprojectById(String subprojectId) {
+    /*public static String getSubprojectById(String subprojectId) {
         return DocumentService.NXQL_PATH_STARTSWITH + getPathFromId(subprojectId) + "'";
-    }
+    }*/
     
     /**
      * 
@@ -523,6 +563,13 @@ public class SubprojectServiceImpl {
         return snapshot.getDocument();
     }
 
+    /**
+     * TODO not used, recursive increment rather done in listener
+     * @param subproject
+     * @param newVersionLabel
+     * @throws PropertyException
+     * @throws ClientException
+     */
     private static void incrementVersionedSuprojectIdRecursive(DocumentModel subproject,
             String newVersionLabel) throws PropertyException, ClientException {
         String subprojectId = (String) subproject.getPropertyValue(Subproject.XPATH_SUBPROJECT);

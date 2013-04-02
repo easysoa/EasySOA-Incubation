@@ -61,8 +61,6 @@ public class ServiceConsumptionIndicatorProvider implements IndicatorProvider {
             Map<String, IndicatorValue> computedIndicators, String visibility) throws Exception {
         DocumentService documentService = Framework.getService(DocumentService.class);
         
-        //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
-        // TODO default or not ??
         String subprojectPathCriteria;
         if (subprojectId == null) {
             subprojectPathCriteria = "";

@@ -291,12 +291,11 @@ public class DocumentServiceImpl implements DocumentService {
     }
     
     public DocumentModelList query(CoreSession documentManager, String query,
-    		boolean filterProxies, boolean filterNonProxies) throws ClientException {
+    		boolean nonProxiesCriteria, boolean proxiesCriteria) throws ClientException {
     	String filteredQuery = query +
-        		((filterProxies) ? NON_PROXIES_CRITERIA : "") + 
-                ((filterNonProxies) ? PROXIES_CRITERIA : "") + 
-        		NO_DELETED_DOCUMENTS_CRITERIA/* +
-        		VERSIONS_QUERY_FILTER*/;// TODO why filter versions ??
+        		((nonProxiesCriteria) ? NQXL_NON_PROXIES_CRITERIA : "") + 
+                ((proxiesCriteria) ? NQXL_PROXIES_CRITERIA : "") + 
+        		NXQL_NO_DELETED_DOCUMENTS_CRITERIA;
     	if (!filteredQuery.contains("WHERE")) {
     		filteredQuery = filteredQuery.replaceFirst("AND", "WHERE");
     	}
@@ -311,7 +310,7 @@ public class DocumentServiceImpl implements DocumentService {
         // Find working copy of document
         DocumentModel workingModel;
         if (documentModel.isProxy()) {
-            workingModel = documentManager.getWorkingCopy(documentModel.getRef());
+            workingModel = documentManager.getSourceDocument(documentModel.getRef());
         }
         else {
             workingModel = documentModel;
@@ -366,7 +365,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
     
     public DocumentModelList getChildren(CoreSession session, DocumentRef parentRef, String type) throws ClientException {
-        parentRef = session.getWorkingCopy(parentRef).getRef(); // making sure it's not a proxy
+        parentRef = session.getSourceDocument(parentRef).getRef(); // making sure it's not a proxy
         return session.getChildren(parentRef, type);
     }
 

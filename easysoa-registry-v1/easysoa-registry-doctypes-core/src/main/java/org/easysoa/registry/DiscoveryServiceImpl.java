@@ -79,6 +79,10 @@ public class DiscoveryServiceImpl implements DiscoveryService {
                 || identifier.getName().startsWith("matchFirst:");
         if (matchFirst) { // TODO extract to API // TODO or == null ??!?? (NOO)
             // try to find an existing one that matches on at least one exact prop
+
+            // first, removing "implicit:" prefix (else newDocumentModel, which may be created if none found, will have it)
+            identifier = new SoaNodeId(identifier.getSubprojectId(), identifier.getType(),
+                    identifier.getName().substring(11));
             
             // create temporary model as a support to matching :
             newDocumentModel = documentService.newSoaNodeDocument(documentManager, identifier, nuxeoProperties);
@@ -88,27 +92,29 @@ public class DiscoveryServiceImpl implements DiscoveryService {
             DocumentModelList matchingFirstResults = null;
             String filterComponentId = null; //TODO ??
             if (documentService.isTypeOrSubtype(documentManager, identifier.getType(), InformationService.DOCTYPE)) {
-            matchingFirstResults = serviceMatchingService.findInformationServices(documentManager,
-                    newDocumentModel, filterComponentId, false, true);
+                matchingFirstResults = serviceMatchingService.findInformationServices(documentManager,
+                        newDocumentModel, filterComponentId, false, true);
             } else if (documentService.isTypeOrSubtype(documentManager, identifier.getType(), ServiceImplementation.DOCTYPE)) {
-            matchingFirstResults = endpointMatchingService.findServiceImplementations(documentManager,
-                    newDocumentModel, filterComponentId, false, true);
+                matchingFirstResults = endpointMatchingService.findServiceImplementations(documentManager,
+                        newDocumentModel, filterComponentId, false, true);
             }
             
             if (matchingFirstResults.size() == 1) {
                 DocumentModel matchingSoaNode = matchingFirstResults.get(0);
                 identifier = documentService.createSoaNodeId(matchingSoaNode);
                 foundDocumentModel = matchingSoaNode;
-            } else {
-                // removing "implicit:" prefix
-                identifier = new SoaNodeId(identifier.getSubprojectId(), identifier.getType(),
-                        identifier.getName().substring(11));
             } // TOOD if > 1 don't create it else many new ones ??
         }
         
-        if (foundDocumentModel == null) {
+        if (foundDocumentModel == null) { // not matchFirst or no (or too many) match found
             // finding existing using SOA node ID :
             foundDocumentModel = documentService.find(documentManager, identifier);
+        }
+        
+        if (foundDocumentModel != null && foundDocumentModel.isVersion()) {
+            // exists but is readonly version : do nothing (else triggers SQLDocumentVersion$VersionNotModifiableException)
+            // TODO LATER maybe find a way to still provide info, such as adding a "code-level service layer" between iserv & serviceimpl ??
+            return foundDocumentModel;
         }
         
         DocumentModel documentModel = null;
@@ -123,6 +129,18 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         return documentModel;
     }
 
+    /**
+     * 
+     * @param documentManager
+     * @param documentService
+     * @param foundDocumentModel
+     * @param newDocumentModel
+     * @param identifier
+     * @param nuxeoProperties
+     * @param dontOverrideProperties
+     * @return
+     * @throws Exception
+     */
     public static DocumentModel createOrUpdate(CoreSession documentManager, DocumentService documentService,
             DocumentModel foundDocumentModel, DocumentModel newDocumentModel, SoaNodeId identifier,
             Map<String, Serializable> nuxeoProperties, boolean dontOverrideProperties) throws Exception {
@@ -143,7 +161,9 @@ public class DiscoveryServiceImpl implements DiscoveryService {
             boolean changed = setNuxeoPropertiesIfChanged(foundDocumentModel, nuxeoProperties, dontOverrideProperties);
             
             if (changed) { // TODO or isDirty ?!
-                if (!foundDocumentModel.isDirty()) logger.error("DiscoveryServiceImpl : SAVING CHANGED BUT NOT DIRTY " + foundDocumentModel);
+                if (!foundDocumentModel.isDirty()) {
+                    logger.error("DiscoveryServiceImpl : SAVING CHANGED BUT NOT DIRTY " + foundDocumentModel);
+                }
                 // only now that props are OK, create or save document
                 // (required below for handling parents by creating proxies to it)
                 
@@ -283,6 +303,10 @@ public class DiscoveryServiceImpl implements DiscoveryService {
                     else {
                         parentPathAsString = createOrReuseIntermediateDocuments(documentManager,
                                 documentService, parentDocumentId, pathBelowParent, parentDocuments);
+                        if (parentPathAsString == null) {
+                            // parent document is version, so skip (because can't create anything in it)
+                            // TODO LATER redo parents through a reverse link allowing this case
+                        }
                     }
                 
                 }
@@ -298,6 +322,17 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         }
     }
 
+    
+    /**
+     * 
+     * @param documentManager
+     * @param documentService
+     * @param parentDocumentId
+     * @param pathBelowParent
+     * @param parentDocuments
+     * @return null if parent document (with parentDocumentId) is a version (because then can't create anything below)
+     * @throws ClientException
+     */
     private String createOrReuseIntermediateDocuments(CoreSession documentManager, DocumentService documentService,
 	        SoaNodeId parentDocumentId, List<String> pathBelowParent,
 	        List<SoaNodeId> parentDocuments) throws ClientException {
@@ -309,6 +344,11 @@ public class DiscoveryServiceImpl implements DiscoveryService {
             // NB. don't do a documentService.create() here, else triggers documentCreated event, even though
             // properties have not been set yet
             //parentDocument = documentService.newSoaNodeDocument(documentManager, parentDocumentId);
+        }
+        
+        if (parentDocument.isVersion()) {
+            // parent is readonly version : can't create path folders or tagging proxy, abort
+            return null;
         }
         
         // Link the intermediate documents 

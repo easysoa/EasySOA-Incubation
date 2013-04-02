@@ -176,7 +176,7 @@ public class SubprojectServiceImpl {
         // 2.(rather) looking in db for Subproject with spnode:subprojet (simpler and more generic than using path)
         String request = "SELECT * FROM " + Subproject.DOCTYPE
                 + " WHERE " + SubprojectNode.XPATH_SUBPROJECT + "='" + subprojectId + "'"
-                + DocumentService.PROXIES_CRITERIA + DocumentService.NO_DELETED_DOCUMENTS_CRITERIA; //TODO NON_PROXIES
+                + DocumentService.NON_PROXIES_CRITERIA + DocumentService.NO_DELETED_DOCUMENTS_CRITERIA; //TODO NON_PROXIES
         DocumentModelList res = documentManager.query(request);
         if (res.size() == 1) {
             return res.get(0);
@@ -193,7 +193,7 @@ public class SubprojectServiceImpl {
             DocumentModel project, String subprojectName) throws ClientException {
         String path = project.getPathAsString() + '/' + subprojectName;
         DocumentModelList res = documentManager.query("select * from Subproject where ecm:path='" + path
-                + "'" + DocumentService.NO_DELETED_DOCUMENTS_CRITERIA + DocumentService.PROXIES_CRITERIA);
+                + "'" + DocumentService.NO_DELETED_DOCUMENTS_CRITERIA + DocumentService.NON_PROXIES_CRITERIA);
         if (res.size() == 1) {
             return res.get(0);
         } else if (res.isEmpty()) {

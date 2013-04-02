@@ -36,9 +36,9 @@ public interface DocumentService {
 
     static final String NOT_VERSIONED_CRITERIA = " AND " + NXQL_IS_NOT_VERSIONED;
     
-    static final String PROXIES_CRITERIA = " AND " + NXQL_IS_NO_PROXY;
+    static final String NON_PROXIES_CRITERIA = " AND " + NXQL_IS_NO_PROXY;
     
-    static final String NON_PROXIES_CRITERIA = " AND " + NXQL_IS_PROXY;
+    static final String PROXIES_CRITERIA = " AND " + NXQL_IS_PROXY;
 
     static final String NXQL_WHERE_NO_PROXY = NXQL_WHERE + NXQL_IS_NOT_DELETED
             + NXQL_AND + NXQL_IS_NOT_VERSIONED + NXQL_AND + NXQL_IS_NO_PROXY;

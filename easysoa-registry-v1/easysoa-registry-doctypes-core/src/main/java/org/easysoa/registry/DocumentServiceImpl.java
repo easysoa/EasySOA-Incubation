@@ -293,8 +293,8 @@ public class DocumentServiceImpl implements DocumentService {
     public DocumentModelList query(CoreSession documentManager, String query,
     		boolean filterProxies, boolean filterNonProxies) throws ClientException {
     	String filteredQuery = query +
-        		((filterProxies) ? PROXIES_CRITERIA : "") + 
-                ((filterNonProxies) ? NON_PROXIES_CRITERIA : "") + 
+        		((filterProxies) ? NON_PROXIES_CRITERIA : "") + 
+                ((filterNonProxies) ? PROXIES_CRITERIA : "") + 
         		NO_DELETED_DOCUMENTS_CRITERIA/* +
         		VERSIONS_QUERY_FILTER*/;// TODO why filter versions ??
     	if (!filteredQuery.contains("WHERE")) {

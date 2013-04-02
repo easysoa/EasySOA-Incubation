@@ -36,7 +36,17 @@
         <tr>
             <td>${indicator.slaOrOlaName}</td>
             <td>${indicator.timestamp?datetime?string.long}</td>
-            <td>${indicator.serviceLevelHealth}</td>
+            <td>
+                <#if indicator.serviceLevelHealth=="gold">
+                    <span class="label label-success">${indicator.serviceLevelHealth}</span>
+                <#else>
+                    <#if indicator.serviceLevelHealth=="silver">
+                    <span class="label label-warning">${indicator.serviceLevelHealth}</span>
+                    <#else> 
+                    <span class="label label-important">{indicator.serviceLevelHealth}</span>
+                    </#if>
+                </#if>
+            </td>
             <td>${indicator.serviceLevelViolation}</td>
         </tr>
     </#macro>

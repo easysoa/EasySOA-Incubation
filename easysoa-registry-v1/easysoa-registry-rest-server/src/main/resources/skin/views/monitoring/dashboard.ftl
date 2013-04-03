@@ -30,17 +30,15 @@
 
 	<div id="container">
 
-            <#include "/views/EasySOA/macros.ftl">	
+            <#include "/views/EasySOA/macros.ftl">
 
             <h1>Endpoints</h1>
-
-            <#if subprojectId>
-                Endpoints for version : ${subprojectId}, visibility ${visibility}
-            <#else>
-                Global endpoints
-            </#if>
- 
-           <@displayEndpointsShort endpoints subprojectId visibility/>
+            <#assign visibility=visibility!"">
+            <#assign subprojectId=subprojectId!"">
+            <p>Version de Phase : <@displayCurrentVersion subprojectId visibility/></p>
+            <p>
+            <@displayEndpointsShort endpoints subprojectId visibility/>
+            </p>
 		
 	</div>
 

@@ -30,11 +30,9 @@
 
 		<#include "/views/EasySOA/macros.ftl">
 
-                <#if subprojectId>
-                Services documentation for version : ${subprojectId}, visibility ${visibility}
-                <#else>
-                Global services documentation
-                </#if>
+                <#assign visibility=visibility!"">
+                <#assign subprojectId=subprojectId!"">
+                <p>Version de Phase : <@displayCurrentVersion subprojectId visibility/></p>
 
 		<h1>Documentation du service ${service.path} ${service.title} (${service['soan:name']})</h1>
 

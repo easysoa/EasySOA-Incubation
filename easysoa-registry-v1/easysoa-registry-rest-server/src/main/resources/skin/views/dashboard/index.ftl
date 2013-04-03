@@ -45,11 +45,11 @@
   <#assign unmatched = servWithoutSpecs>
   <#include "/views/dashboard/matching.ftl">
 
-    <#if subprojectId>
-    Matching dashboard for version : ${subprojectId}, visibility ${visibility}
-    <#else>
-    Global matching dashboard
-    </#if>
+  <#include "/views/EasySOA/macros.ftl">
+  
+  <#assign visibility=visibility!"">
+  <#assign subprojectId=subprojectId!"">
+  <p>Version de Phase : <@displayCurrentVersion subprojectId visibility/></p>
 		
   <h1>My services</h1>
 

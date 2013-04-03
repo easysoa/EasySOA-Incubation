@@ -17,10 +17,15 @@
         <!-- Bootstrap style and scripts -->
         <link href="/nuxeo/site/easysoa/skin/css/bootstrap.min.css" rel="stylesheet" media="screen">
         <script src="/nuxeo/site/easysoa/skin/js/bootstrap.min.js"></script>
+        
+        <link rel="stylesheet/less" href="/nuxeo/site/easysoa/skin/css/bootstrap.less">
+        <script src="/nuxeo/site/easysoa/skin/js/less.js"></script>
     </head>
-
+    
     <body>
 
+        <#include "/views/EasySOA/macros.ftl">
+        
         <div id="header">
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
@@ -36,7 +41,10 @@
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Point de vue</h3>
-                        <p>Version de Phase : <#if subprojectId>${subprojectId} <span class="label">visibilité ${visibility}</span><#else>Point de vue global</#if></p>
+                        <#assign visibility=visibility!"">
+                        <#assign subprojectId=subprojectId!"">
+                        <p>Version de Phase : <@displayCurrentVersion subprojectId visibility/></p>
+                        
                         <!-- TODO also : "all latest versions", "(all latest versions OR live) by global environment type XXX", "all live elements" (check that no deleted elements) -->
                         <a class="btn btn-primary" href="${Root.path}/context/">Changer le point de vue</a>
                     </div>
@@ -53,18 +61,18 @@
                         <p>Découverte de services, IHM de consultation du modèle SOA, qualité ...</p>
                         
                         <p>
-                            <table class="table table-bordered" width="150px">
+                            <table class="table table-bordered" width="100%">
                                 <tr>
-                                    <td width="125px">Nombre de services :</td>
-                                    <td width="25px">${indicators["InformationService count"].count}</td>
+                                    <td width="80%">Nombre de services :</td>
+                                    <td width="20%">${indicators["InformationService count"].count}</td>
                                 </tr>
                                 <tr>
-                                    <td width="125px">Nombre d'implémentations de services :</td>
-                                    <td width="25px">${indicators["ServiceImplementation count"].count}</td>
+                                    <td width="80%">Nombre d'implémentations de services :</td>
+                                    <td width="20%">${indicators["ServiceImplementation count"].count}</td>
                                 </tr>
                                 <tr>
-                                    <td width="125px">Nombre d'endpoints :</td>
-                                    <td width="25px">${indicators["Endpoint count"].count}</td>
+                                    <td width="80%">Nombre d'endpoints :</td>
+                                    <td width="20%">${indicators["Endpoint count"].count}</td>
                                 </tr>
                             </table>
                         </p>
@@ -79,10 +87,10 @@
                         <p>Matching Dashboard, (?) gestion des versions</p><!-- "gestion des versions" ?? -->
 
                         <p>
-                            <table class="table table-bordered" width="150px">
+                            <table class="table table-bordered" width="100%">
                                 <tr>
-                                    <td width="125px">Nombre de Placeholders (implémentations inconnues d'endpoints) :</td>
-                                    <td width="25px">${indicators["Placeholders count"].count}</td>
+                                    <td width="80%">Nombre de Placeholders (implémentations inconnues d'endpoints) :</td>
+                                    <td width="20%">${indicators["Placeholders count"].count}</td>
                                 </tr>
                             </table>
                         </p>                        
@@ -102,10 +110,10 @@
                         <p>Statistiques et indicateurs à l'exécution, (?) d'appropiation du modèle SOA par les utilisateurs de EasySOA...</p>
                         
                         <p>
-                            <table class="table table-bordered" width="150px">
+                            <table class="table table-bordered" width="100%">
                                 <tr>
-                                    <td width="125px">Nombre de service jamais consomés :</td>
-                                    <td width="25px">${indicators["Never consumed services"].count}</td>
+                                    <td width="80%">Nombre de service jamais consomés :</td>
+                                    <td width="20%">${indicators["Never consumed services"].count}</td>
                                 </tr>
                             </table>
                         </p>
@@ -120,10 +128,10 @@
                         <p>Suivi des Phases de production SOA, indicateurs de complétion et gouvernance, (?) édition collaborative du modèle SOA...</p><!-- ou Aide à la prise de décisions ? Registry des services, implementations ?? -->
                         
                         <p>
-                            <table class="table table-bordered" width="150px">
+                            <table class="table table-bordered" width="100%">
                                 <tr>
-                                    <td width="125px">Nombre de services n'ayant aucun tag utilisateur :</td>
-                                    <td width="25px">${indicators["Services without at least one user tag"].count}</td>
+                                    <td width="80%">Nombre de services n'ayant aucun tag utilisateur :</td>
+                                    <td width="20%">${indicators["Services without at least one user tag"].count}</td>
                                 </tr>
                             </table>
                         </p>                        

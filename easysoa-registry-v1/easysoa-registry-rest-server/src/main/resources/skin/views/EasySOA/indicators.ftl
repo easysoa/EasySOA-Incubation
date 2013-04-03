@@ -135,6 +135,8 @@ td:first-child {
 </html>
 <body>
 
+        <#include "/views/EasySOA/macros.ftl">    
+    
 	<div id="header">
 		<img id="headerLogo" src="/nuxeo/site/easysoa/skin/img/logo50px.png" />
 	</div>
@@ -142,11 +144,9 @@ td:first-child {
 
 		<h1>Indicateurs sur votre SOA</h1>
 
-                <#if subprojectId>
-                Dashboard for version : ${subprojectId}, visibility ${visibility}
-                <#else>
-                Global dashboard
-                </#if>
+                <#assign visibility=visibility!"">
+                <#assign subprojectId=subprojectId!"">
+                <p>Version de Phase : <@displayCurrentVersion subprojectId visibility/></p>
 
 		<h2>Nbs</h2>
 		<ul>

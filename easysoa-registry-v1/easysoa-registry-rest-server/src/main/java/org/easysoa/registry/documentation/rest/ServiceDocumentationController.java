@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -41,6 +42,8 @@ import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SubprojectServiceImpl;
+import org.easysoa.registry.indicators.rest.IndicatorValue;
+import org.easysoa.registry.indicators.rest.IndicatorsController;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SubprojectNode;
@@ -160,6 +163,10 @@ public class ServiceDocumentationController extends ModuleRoot {
         DocumentModelList untaggedServices = session.query("SELECT " + SERVICE_LIST_PROPS + " FROM " + InformationService.DOCTYPE
                 + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria + proxiedServicesCriteria);
         
+        // Indicators
+        IndicatorsController indicatorsController = new IndicatorsController();
+        Map<String, IndicatorValue> indicators = indicatorsController.computeIndicators(session, null, null, subprojectId, visibility);
+        
         return getView("services")
                 .arg("services", services)
                 .arg("tags", tags)
@@ -167,7 +174,8 @@ public class ServiceDocumentationController extends ModuleRoot {
                 //.arg("tagId2ServiceNbs", tagId2ServiceNbs)
                 .arg("untaggedServices", untaggedServices)
                 .arg("subprojectId", subprojectId)
-                .arg("visibility", visibility);
+                .arg("visibility", visibility)
+                .arg("indicators", indicators);
         // services.get(0).getProperty(schemaName, name)
         // services.get(0).getProperty(xpath)
     }

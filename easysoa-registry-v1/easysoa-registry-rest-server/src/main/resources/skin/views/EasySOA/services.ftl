@@ -43,7 +43,7 @@
 
 		<#list tags as tag>
 		<#if tagId2Services?keys?seq_contains(tag.id)>
-		<h3>Services (${tagId2Services[tag.id]?size}) of tag <@displayTagShort tag subprojectId/></h3>
+		<h3>Services (${tagId2Services[tag.id]?size}) of tag <@displayTagShort tag subprojectId visibility/></h3>
 		<@displayServicesShort tagId2Services[tag.id] subprojectId visibility/>
 		</#if>
 		</#list>

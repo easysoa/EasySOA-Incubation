@@ -134,9 +134,9 @@
                                     <td width="20%">${indicators["Services without at least one user tag"].count}</td>
                                 </tr>
                             </table>
-                        </p>                        
-                        
-                        <a class="btn btn-primary" href="#">Plus...</a>
+                        </p>
+                        <!-- TODO redirect only on the nuxeo index page, redirect on the choosen version phase -->
+                        <a class="btn btn-primary" href="/nuxeo/">Plus...</a>
                     </div>
                 </li>
             </ul>

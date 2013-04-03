@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html>
+<html xmlns:c="http://java.sun.com/jsp/jstl/core">
     
     <head>
         <title>EasySOA index</title>
@@ -35,7 +35,6 @@
         </div>
 
         <div class="container" id="container">
-
             <ul class="thumbnails">
                 <li class="span12">
                     <div class="thumbnail">
@@ -44,22 +43,23 @@
                         <#assign visibility=visibility!"">
                         <#assign subprojectId=subprojectId!"">
                         <p>Version de Phase : <@displayCurrentVersion subprojectId visibility/></p>
-                        
                         <!-- TODO also : "all latest versions", "(all latest versions OR live) by global environment type XXX", "all live elements" (check that no deleted elements) -->
                         <a class="btn btn-primary" href="${Root.path}/context/">Changer le point de vue</a>
                     </div>
                 </li>
             </ul>
             
-            <br/>
-            
             <ul class="thumbnails">
                 <li class="span6">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Cartographie des services</h3>
-                        <p>Découverte de services, IHM de consultation du modèle SOA, qualité ...</p>
-                        
+                        <p>
+                            <!-- TODO : Replace this hard coded link by a build in link ? -->
+                            <a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte de services</a>, 
+                            <a href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>, 
+                            Qualité
+                        </p>
                         <p>
                             <table class="table table-bordered" width="100%">
                                 <tr>
@@ -77,15 +77,22 @@
                             </table>
                         </p>
                         
-                        <a class="btn btn-primary" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>                        
+                        <a class="btn btn-primary" href="${Root.path}/services/cartography/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>                        
                     </div>
                 </li>
                 <li class="span6">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Réconciliation technique / métier</h3><!-- ou (mise en) correspondance, métier / technique ? -->
-                        <p>Matching Dashboard, (?) gestion des versions</p><!-- "gestion des versions" ?? -->
-
+                        <p>
+                            <!--<ul>
+                                <li>--><a href="#" target="_blank">Matching Dashboard</a>
+                                    <!--<small> : EasySOA Registry's Matching Dashboard lists all discovered SOA elements (implementations and endpoints) that its automatic matching algorithm couldn't link with the existing SOA model because of lack of information that could help it decide one way or the other, and further helps the SOA administrator link them by providing suggestions along the specified architecture (Components).</small>-->
+                                <!--</li>-->
+                                <!--<li>-->, Gestion des versions
+                                <!--</li>
+                            </ul>-->
+                        </p>
                         <p>
                             <table class="table table-bordered" width="100%">
                                 <tr>
@@ -99,16 +106,15 @@
                     </div>
                 </li>
             </ul>
-            
-            <br/>
 
             <ul class="thumbnails">
                 <li class="span6">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Usage des services</h3>
-                        <p>Statistiques et indicateurs à l'exécution, (?) d'appropiation du modèle SOA par les utilisateurs de EasySOA...</p>
-                        
+                        <p>
+                            Statistiques et indicateurs à l'exécution, Appropiation du modèle SOA par les utilisateurs de EasySOA
+                        </p>
                         <p>
                             <table class="table table-bordered" width="100%">
                                 <tr>
@@ -125,8 +131,9 @@
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Pilotage</h3>
-                        <p>Suivi des Phases de production SOA, indicateurs de complétion et gouvernance, (?) édition collaborative du modèle SOA...</p><!-- ou Aide à la prise de décisions ? Registry des services, implementations ?? -->
-                        
+                        <p>
+                            Suivi des Phases de production SOA, Indicateurs de complétion et gouvernance, (?) Edition collaborative du modèle SOA<!-- ou Aide à la prise de décisions ? Registry des services, implementations ?? -->
+                        </p>
                         <p>
                             <table class="table table-bordered" width="100%">
                                 <tr>
@@ -136,7 +143,45 @@
                             </table>
                         </p>
                         <!-- TODO redirect only on the nuxeo index page, redirect on the choosen version phase -->
-                        <a class="btn btn-primary" href="/nuxeo/">Plus...</a>
+                        <a class="btn btn-primary" href="/nuxeo/" target="_blank">Plus...</a>
+                    </div>
+                </li>
+            </ul>
+        
+            <!-- 2 categories with a separator -->
+            <hr style="color:black; background-color:black; height:3px;" /> 
+            
+            <ul class="thumbnails">
+                <li class="span6">
+                    <div class="thumbnail">
+                        <img data-src="holder.js/300x200" alt="">
+                        <h3>A classer</h3>
+                        <p>Statistiques et indicateurs à l'exécution, (?) d'appropiation du modèle SOA par les utilisateurs de EasySOA...</p>
+                        
+                        <p>
+                            <ul>
+                                <!-- TODO : add links -->
+                                <li>Scaffolder proxy
+                                    <small> : Take advantage of the services you find, by using them in this secured service scaffolder</<small>
+                                </li>
+                                <li>Proxy run manager</li>
+                                <li>FraSCAti Studio</li>
+                            </ul>
+                        </p>
+                    </div>
+                </li>
+                <li class="span6">
+                    <div class="thumbnail">
+                        <img data-src="holder.js/300x200" alt="">
+                        <h3>Exemples</h3>
+                        <p>
+                            <ul>
+                                <!-- TODO : add links -->
+                                <li><a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/demo-intranet/index.html" target="_blank">Pure Air Flowers</a></li>
+                                <li><a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/demo-intranet/index.html" target="_blank">Intranet</a></li>
+                                <li>APV Pivotal</li>
+                            </ul>
+                        </p>
                     </div>
                 </li>
             </ul>

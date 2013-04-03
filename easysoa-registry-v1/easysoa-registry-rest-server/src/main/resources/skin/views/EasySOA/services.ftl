@@ -34,22 +34,6 @@
                 <#assign visibility=visibility!"">
                 <#assign subprojectId=subprojectId!"">
                 <p>Version de Phase : <@displayCurrentVersion subprojectId visibility/></p>
-
-		<h1>Statistiques</h1>
-		<ul>
-                    <!-- TODO : Display only the indicators corresponding to the CATEGORY_CARTOGRAPHY category -->
-                    <#list indicators?keys as indicatorsKey>
-                        <#if indicators[indicatorsKey].count != -1 && indicators[indicatorsKey].containsCategory("cartography") == "true">
-                        <li>Nombre de ${indicatorsKey} : <b>${indicators[indicatorsKey].count}</b>
-                            <#if indicators[indicatorsKey].percentage != -1>
-                                    , Pourcentage : <b>${indicators[indicatorsKey].percentage}%</b>
-                            <#else>
-                                    , Pourcentage : <b>N.A.</b>
-                            </#if>
-                        </li>
-                        </#if>
-                    </#list>
-		</ul>                
                 
 		<h1>Services</h1>
 

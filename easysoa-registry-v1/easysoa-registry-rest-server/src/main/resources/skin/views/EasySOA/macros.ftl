@@ -106,6 +106,26 @@
         </#if>
     </#macro>
     
+    <#macro displayIndicatorsInTable indicators category>
+        <table class="table table-bordered">
+        <#list indicators?keys as indicatorsKey>
+            <#if indicators[indicatorsKey].count != -1 && indicators[indicatorsKey].containsCategory("cartography") == "true">
+            <tr>
+                <td>Nombre de ${indicatorsKey}</td>
+                <td><b>${indicators[indicatorsKey].count}</b></td>
+                <!-- TODO : Display the percentage ??? -->
+                <td>    <#if indicators[indicatorsKey].percentage != -1>
+                            Pourcentage : <b>${indicators[indicatorsKey].percentage}%</b>
+                    <#else>
+                            Pourcentage : <b>N.A.</b>
+                    </#if>
+                </td>
+            </tr>
+            </#if>
+        </#list>    
+        </table>
+    </#macro>
+    
 <#assign documentPropNames=["lifeCyclePolicy", "versionLabel", "facets", "children", "type", "sourceId", "id", "author", "title", "repository", "created", "name", "path", "schemas", "parent", "lifeCycleState", "allowedStateTransitions", "isLocked", "modified", "content", "ref", "versions", "isFolder", "sessionId", "session", "proxies"]/>
 <#assign shortDocumentPropNames=["title", "type", "path", "author", "versionLabel"]/>
 <#assign mostDocumentPropNames=["title", "type", "name", "path", "author", "created", "versionLabel", "isLocked", "modified",  "id"]/>

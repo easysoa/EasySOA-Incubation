@@ -348,4 +348,22 @@ public class ServiceDocumentationController extends ModuleRoot {
         return null; // TODO
     }
     
+    @GET
+    @Path("cartography") // TODO encoding
+    @Produces(MediaType.TEXT_HTML)
+    public Object doGetCartographyIndicatorsHTML(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
+        
+        CoreSession session = SessionFactory.getSession(request);        
+        
+        // Indicators
+        IndicatorsController indicatorsController = new IndicatorsController();
+        Map<String, IndicatorValue> indicators = indicatorsController.computeIndicators(session, null, null, subprojectId, visibility);
+        
+        return getView("cartography")
+                .arg("subprojectId", subprojectId)
+                .arg("visibility", visibility)
+                .arg("indicators", indicators);        
+        
+    }
+    
 }

@@ -32,15 +32,18 @@ public class DoctypeCountProvider extends QueryCountIndicator {
 
     private final String doctype;
     private final String category;
+    private final String description;
 
     /**
      * 
      * @param doctype
      * @param category 
      */
-    public DoctypeCountProvider(String doctype, String category) {
+    public DoctypeCountProvider(String doctype, /*String description,*/ String category) {
         super(DocumentService.NXQL_SELECT_FROM + doctype + DocumentService.NXQL_WHERE_NO_PROXY);
         this.doctype = doctype;
+        //this.description = description;
+        this.description = "";
         this.category = category;
     }
 
@@ -48,10 +51,15 @@ public class DoctypeCountProvider extends QueryCountIndicator {
     public String getName() {
         return getName(doctype);
     }
+
+    /*@Override
+    public String getDescription() {
+        return this.description;
+    }*/
     
     @Override
     public String getCategory(){
-        return category;
+        return this.category;
     }
 
     @Override

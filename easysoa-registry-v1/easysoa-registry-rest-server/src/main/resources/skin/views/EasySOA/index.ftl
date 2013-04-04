@@ -85,13 +85,7 @@
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Réconciliation technique / métier</h3><!-- ou (mise en) correspondance, métier / technique ? -->
                         <p>
-                            <!--<ul>
-                                <li>--><a href="${Root.path}/dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Matching Dashboard</a>
-                                    <!--<small> : EasySOA Registry's Matching Dashboard lists all discovered SOA elements (implementations and endpoints) that its automatic matching algorithm couldn't link with the existing SOA model because of lack of information that could help it decide one way or the other, and further helps the SOA administrator link them by providing suggestions along the specified architecture (Components).</small>-->
-                                <!--</li>-->
-                                <!--<li>-->, Gestion des versions
-                                <!--</li>
-                            </ul>-->
+                            <a href="${Root.path}/dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Matching Dashboard</a>, Gestion des versions
                         </p>
                         <p>
                             <table class="table table-bordered" width="100%">
@@ -113,7 +107,7 @@
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Usage des services</h3>
                         <p>
-                            Statistiques et indicateurs à l'exécution, Appropiation du modèle SOA par les utilisateurs de EasySOA
+                            <a href="${Root.path}/monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">Statistiques et indicateurs à l'exécution</a>, Appropriation du modèle SOA par les utilisateurs de EasySOA
                         </p>
                         <p>
                             <table class="table table-bordered" width="100%">
@@ -124,7 +118,7 @@
                             </table>
                         </p>
                         
-                        <a class="btn btn-primary" href="${Root.path}/monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
+                        <a class="btn btn-primary" href="${Root.path}/services/usage/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
                     </div>
                 </li>
                 <li class="span6">
@@ -176,7 +170,6 @@
                         <h3>Exemples</h3>
                         <p>
                             <ul>
-                                <!-- TODO : add links -->
                                 <li><a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/demo-intranet/index.html" target="_blank">Pure Air Flowers</a></li>
                                 <li><a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/demo-intranet/index.html" target="_blank">Intranet</a></li>
                                 <li><a href="http://owsi-vm-easysoa-axxx-pivotal.accelance.net:7080/pivotal/index.html">APV Pivotal</a></li>

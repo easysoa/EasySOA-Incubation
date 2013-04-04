@@ -56,7 +56,7 @@
                             <ul>
                                 <li>
                                     <a href="${Root.path}/../dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Matching Dashboard</a>
-                                    <small> : EasySOA Registry's Matching Dashboard lists all discovered SOA elements (implementations and endpoints) that its automatic matching algorithm couldn't link with the existing SOA model because of lack of information that could help it decide one way or the other, and further helps the SOA administrator link them by providing suggestions along the specified architecture (Components).</small></small>
+                                    <small> : EasySOA Registry's Matching Dashboard lists all discovered SOA elements (implementations and endpoints) that its automatic matching algorithm couldn't link with the existing SOA model because of lack of information that could help it decide one way or the other, and further helps the SOA administrator link them by providing suggestions along the specified architecture (Components).</small>
                                 </li>
                                 <li>Gestion des versions
                                     <small></small>
@@ -67,7 +67,6 @@
                         <h3>Indicateurs</h3>
                         <p>
                             <!-- TODO : Add table headers ? -->
-                            <!-- TODO : Display only the indicators corresponding to the CATEGORY_CARTOGRAPHY category -->
                             <@displayIndicatorsInTable indicators "matching"/>
                         <p>
                     </div>

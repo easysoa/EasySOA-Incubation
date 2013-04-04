@@ -142,12 +142,12 @@ td:first-child {
 	</div>
 	<div id="container">
 
-		<h1>Indicateurs sur votre SOA</h1>
-
                 <#assign visibility=visibility!"">
                 <#assign subprojectId=subprojectId!"">
-                <p>Version de Phase : <@displayCurrentVersion subprojectId visibility/></p>
+                <strong>Point de vue :</strong>&nbsp<@displayCurrentVersion subprojectId visibility/>
 
+		<h1>Indicateurs sur votre SOA</h1>                
+                
 		<h2>Nbs</h2>
 		<ul>
 			<#list nbMap?keys as nbMapKey>

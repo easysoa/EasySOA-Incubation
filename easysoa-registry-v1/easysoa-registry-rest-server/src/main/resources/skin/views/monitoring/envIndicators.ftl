@@ -32,10 +32,11 @@
 
 		<#include "/views/EasySOA/macros.ftl">	
 
-		<h2>Indicators for endpoint</h2>
                 <#assign visibility=visibility!"">
                 <#assign subprojectId=subprojectId!"">
-                <p>Version de Phase : <@displayCurrentVersion subprojectId visibility/></p>
+                <strong>Point de vue :</strong>&nbsp<@displayCurrentVersion subprojectId visibility/>                
+                
+		<h2>Indicators for endpoint</h2>
                 <p>
 		<@displayIndicatorsShort indicators/>
                 </p>

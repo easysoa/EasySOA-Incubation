@@ -39,12 +39,10 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>Point de vue</h3>
                         <#assign visibility=visibility!"">
                         <#assign subprojectId=subprojectId!"">
-                        <p>Version de Phase : <@displayCurrentVersion subprojectId visibility/></p>
+                        <strong>Point de vue :</strong>&nbsp<@displayCurrentVersion subprojectId visibility/>&nbsp;&nbsp;<a class="btn btn-primary" href="${Root.path}/context/">Changer le point de vue</a>
                         <!-- TODO also : "all latest versions", "(all latest versions OR live) by global environment type XXX", "all live elements" (check that no deleted elements) -->
-                        <a class="btn btn-primary" href="${Root.path}/context/">Changer le point de vue</a>
                     </div>
                 </li>
             </ul>

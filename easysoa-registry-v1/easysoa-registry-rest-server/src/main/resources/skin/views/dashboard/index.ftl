@@ -19,7 +19,7 @@
 </head>
 	
 <body>
-
+<#include "/views/EasySOA/macros.ftl">
 <div id="header">
 	<div id="headerContents">
 	    <div id="logoLink">&nbsp;</div>
@@ -29,6 +29,10 @@
 </div>
 
 <div id="container">
+  <#assign visibility=visibility!"">
+  <#assign subprojectId=subprojectId!"">
+  <strong>Point de vue :</strong>&nbsp<@displayCurrentVersion subprojectId visibility/>    
+    
   <div id="selectedServiceImpl" style="display: none">${selectedServiceImpl}</div>
 
   <form action="/nuxeo/site/easysoa/dashboard/samples?subprojectId=${subprojectId}&visibility=${visibility}" method="post" style="position: absolute; right: 20px; top: 20px">
@@ -44,12 +48,6 @@
   <#assign targetDoctypeTitle = "service">
   <#assign unmatched = servWithoutSpecs>
   <#include "/views/dashboard/matching.ftl">
-
-  <#include "/views/EasySOA/macros.ftl">
-  
-  <#assign visibility=visibility!"">
-  <#assign subprojectId=subprojectId!"">
-  <p>Version de Phase : <@displayCurrentVersion subprojectId visibility/></p>
 		
   <h1>My services</h1>
 

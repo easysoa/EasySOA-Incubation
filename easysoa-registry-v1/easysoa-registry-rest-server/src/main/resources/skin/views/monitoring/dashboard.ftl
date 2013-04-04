@@ -31,11 +31,12 @@
 	<div id="container">
 
             <#include "/views/EasySOA/macros.ftl">
-
-            <h1>Endpoints</h1>
+            
             <#assign visibility=visibility!"">
             <#assign subprojectId=subprojectId!"">
-            <p>Version de Phase : <@displayCurrentVersion subprojectId visibility/></p>
+            <strong>Point de vue :</strong>&nbsp<@displayCurrentVersion subprojectId visibility/>
+            
+            <h1>Endpoints</h1>
             <p>
             <@displayEndpointsShort endpoints subprojectId visibility/>
             </p>

@@ -33,7 +33,7 @@
 
                 <#assign visibility=visibility!"">
                 <#assign subprojectId=subprojectId!"">
-                <p>Version de Phase : <@displayCurrentVersion subprojectId visibility/></p>
+                <strong>Point de vue :</strong>&nbsp<@displayCurrentVersion subprojectId visibility/>
                 
 		<h1>Services</h1>
 

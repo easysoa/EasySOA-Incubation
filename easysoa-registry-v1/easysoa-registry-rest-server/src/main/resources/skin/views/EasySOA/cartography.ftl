@@ -39,10 +39,9 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>Point de vue</h3>
                         <#assign visibility=visibility!"">
                         <#assign subprojectId=subprojectId!"">
-                        <p>Version de Phase : <@displayCurrentVersion subprojectId visibility/></p>
+                        <strong>Point de vue :</strong>&nbsp<@displayCurrentVersion subprojectId visibility/>
                     </div>
                 </li>
             </ul>

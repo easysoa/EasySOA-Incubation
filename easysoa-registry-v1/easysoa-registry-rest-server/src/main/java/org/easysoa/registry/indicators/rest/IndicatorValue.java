@@ -40,19 +40,26 @@ public class IndicatorValue {
      * @param count The indicator value, or -1 if not relevant
      * @param percentage The indicator value in percents, or -1 if not relevant
      */
-    public IndicatorValue(String name, String category, int count, int percentage) {
+    public IndicatorValue(String name, /*String description,*/ String category, int count, int percentage) {
         this.name= name;
+        //this.description = description;
         addCategory(category);
         this.count = count;
         this.percentage = percentage;
     }
     
     /**
-     * 
      * @return The indicator name
      */
     public String getName(){
         return name;
+    }
+    
+    /**
+     * @return The indicator description
+     */
+    public String getDescription(){
+        return this.description;
     }
     
     /**

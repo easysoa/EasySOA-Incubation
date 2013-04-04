@@ -41,6 +41,8 @@ public abstract class Indicator implements IndicatorProvider {
     
     public abstract String getName();
     
+    //public abstract String getDescription();
+    
     public abstract String getCategory();
     
     public abstract IndicatorValue compute(CoreSession session, String subprojectId,

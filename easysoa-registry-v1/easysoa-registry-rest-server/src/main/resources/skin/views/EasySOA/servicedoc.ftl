@@ -47,15 +47,111 @@
 		<h2>(description)</h2>
 		${service['dc:description']}
 
-		<h2>Documentation(manuelle, extraite)</h2>
-		<#-- doc of first impl, since none on service itself : -->
+		<h2>Documentation</h2>
+		
+		<h3>Documentation - extraite :</h3>
+		du WSDL :
+		<p/>
+		<@displayProp service 'iserv:operations'/>
+		<p/>
+		de l'impl (TODO mashupper) :
+		<p/>
+		<#-- doc of first (?) TODO non-test impl : -->
 		<#if actualImpls?size != 0>
 		${actualImpls[0]['impl:documentation']}
-		<@displayProps actualImpls[0]['impl:operations'] ''/>
+		<@displayProp actualImpls[0] 'impl:operations'/>
+		<#if actualImpls?size != 1>
+		<br/>(other implementations...)
 		</#if>
+		</#if>
+		<p/>
+		
+		<#assign iserv_operations=service['iserv:operations']>
+		<#assign impl_operations=actualImpls[0]['impl:operations']>
+		<table style="width: 600px;">
+            <#if iserv_operations?size != 0>
+                <#-- title (for RPC style operation display) NOT REQUIRED -->
+		        <#-- tr>
+		            <th style="font-weight: bold;">Name</th>
+		            <th style="font-weight: bold;">Parameters</th>
+		            <th style="font-weight: bold;">Returns</th>
+		            <th style="font-weight: bold;">Documentation</th>
+		        </tr -->
+                <#list iserv_operations as iserv_operation>
+                <tr><td>
+                <table style="border-spacing: 0px 10px;">
+                    <#-- RPC style operation display : -->
+                    <#-- tr>
+                        <td><h:outputText value="${entry.get('operationName').getValue()}" /></td>
+                        <td><h:outputText value="${entry.get('operationParameters').getValue()}" /></td>
+                        <td><h:outputText value="${entry.get('operationReturnParameters').getValue()}" /></td>
+                        <td><h:outputText value="${entry.get('operationDocumentation').getValue()}" /></td>
+                    </tr -->
+                    <#-- in/out (message) style operation display : -->
+                    <#-- finding corresponding operation in (first) non mock impl : -->
+                    <#assign impl_operation = {}>
+                    <#list impl_operations as impl_operation_cur>
+                        <#if impl_operation_cur['operationName'] = iserv_operation['operationName']>
+                            <#assign impl_operation = impl_operation_cur>
+                        </#if>
+                    </#list>
+                    <#-- displaying mashupped iserv & impl operation, with pretty display of enum values : -->
+                    <tr>
+                        <td colspan="2" style="font-weight: bold; text-decoration: underline;">${iserv_operation['operationName']}</td>
+                        <td style="font-style: italic;">${iserv_operation['operationDocumentation']} (${impl_operation['operationDocumentation']})</td>
+                    </tr>
+                    <tr>
+                        <td title="${iserv_operation['operationInContentType']}">  <b>In</b> <span style="color:grey">${mimeTypePrettyNames[iserv_operation['operationInContentType']]}</span></td>
+                        <td colspan="2">${iserv_operation['operationParameters']} (${impl_operation['operationParameters']})</td>
+                    </tr>
+                    <tr>
+                        <td title="${iserv_operation['operationOutContentType']}">  <b>Out</b> <span style="color:grey">${mimeTypePrettyNames[iserv_operation['operationOutContentType']]}</span></td>
+                        <td colspan="2">${iserv_operation['operationReturnParameters']} (${impl_operation['operationReturnParameters']})</td>
+                    </tr>
+                </table>
+                </td></tr>
+                </#list>
+            <#else>
+                <tr>
+                    <td colspan="3" style="text-align: center">No operations.</td>
+                </tr>
+            </#if>
+        </table>
+		<p/>
+		
+		TODO LATER OPT du WSDL de l'endpoint :<p/>
+		
+		<h3>Documentation - manuelle :</h3>
+		TODO lister les non-SoaNodes fils du InformationService NON les fichiers joints, ou sinon du BusinessService<p/>
+		<@displayProp service 'files:files'/>
+		<p/>
+		
+		<#assign service_files_files=service['files:files']>
+		<#assign service_children=service['children']><#-- TODO LATER -->
+		<table style="width: 600px;">
+            <#if service_files_files?size != 0>
+                <tr><td>
+                <table style="border-spacing: 0px 10px;">
+                    <#list service_files_files as service_files_file>
+                    <tr>
+                        <td colspan="3"><a href="/nuxeo/nxfile/default/${service.id}/files:files/${service_files_file_index}/file/${service_files_file['filename']}">${service_files_file['filename']}</a></td>
+                        <td title="${service_files_file['file']['mimeType']}">${mimeTypePrettyNames[service_files_file['file']['mimeType']]}</td>
+                        <td>${service_files_file['file']['length']}</td>
+                    </tr>
+                    </#list>
+                </table>
+                </td></tr>
+            <#else>
+                <tr>
+                    <td colspan="3" style="text-align: center">Pas de fichiers joints</td>
+                </tr>
+            </#if>
+            <#-- TODO LATER also children documents -->
+        </table>
+		<p/>
 
 		<h2>Usages</h2>
-		oé (applications : le déployant ; architecture : le consommant)
+		oé (applications : le déployant ; architecture : le consommant)<p/>
 
 		<#-- IntelligentSystems tagging it, since only Applications from now : -->
 		<b>Applications :</b><br/>
@@ -95,11 +191,11 @@
 
 		<br/><b>Implementations :</b><br/>
       <#-- @displayDocsShort actualImpls/ -->
-      <@displayDocs actualImpls shortDocumentPropNames + serviceImplementationPropNames/>
+      <@displayDocs actualImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
 		<br/>
 		<br/><b>Mocks :</b><br/>
 		<#-- @displayDocsShort mockImpls/ -->
-      <@displayDocs mockImpls shortDocumentPropNames + serviceImplementationPropNames/>
+      <@displayDocs mockImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
 		<#-- TODO TEST ismock : ${mockImpls[0]['impl:ismock']} -->
 
 		<h2>Endpoint</h2>
@@ -116,6 +212,18 @@
 
 		<h2>log : all props</h2>
 		<@displayDoc service/>
+		<p/>
+		Information Service:
+		<p/>
+		<@displayPropsAll service informationServicePropNames/>
+		<p/>
+		Architecture Component :
+		<p/>
+		<@displayPropsAll service architectureComponentPropNames/>
+		<p/>
+		Platform :
+		<p/>
+		<@displayPropsAll service platformPropNames/>
 	</div>
 
         <div id="container">

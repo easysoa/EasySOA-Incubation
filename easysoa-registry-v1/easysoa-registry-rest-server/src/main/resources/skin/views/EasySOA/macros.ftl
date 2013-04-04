@@ -1,5 +1,5 @@
     <#macro displayServiceShort service subprojectId visibility>
-        <a href="${Root.path}/path/${service['soan:name']?xml}?subproject=${service['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayDocShort service/></a>
+        <a href="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}?subproject=${service['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayDocShort service/></a>
     </#macro>
 
     <#macro displayServicesShort services subprojectId visibility>
@@ -129,15 +129,57 @@
 <#assign documentPropNames=["lifeCyclePolicy", "versionLabel", "facets", "children", "type", "sourceId", "id", "author", "title", "repository", "created", "name", "path", "schemas", "parent", "lifeCycleState", "allowedStateTransitions", "isLocked", "modified", "content", "ref", "versions", "isFolder", "sessionId", "session", "proxies"]/>
 <#assign shortDocumentPropNames=["title", "type", "path", "author", "versionLabel"]/>
 <#assign mostDocumentPropNames=["title", "type", "name", "path", "author", "created", "versionLabel", "isLocked", "modified",  "id"]/>
-<#assign deliverablePropNames=["soav:version", "del:nature", "del:application", "del:location", "del:dependencies"]/>
-<#assign serviceImplementationPropNames=["impl:technology", "impl:operations", "impl:documentation", "impl:ismock", "impl:tests"]/>
-<#assign serviceImplementationPropHashNames=["operationName", "operationParameters", "operationDocumentation"]/>
+
+
+<#assign informationServicePropNames=["iserv:linkedBusinessService", "iserv:providerActor"]/>
+<#assign architectureComponentPropNames=["architecturecomponent:componentId", "architecturecomponent:componentCategory",
+    "architecturecomponent:linkedInformationService", "architecturecomponent:providerActor"]/>
+<#assign platformPropNames=["platform:ide", "platform:language", "platform:build", "platform:serviceLanguage",
+    "platform:deliverableNature", "platform:deliverableRepositoryUrl",
+    "platform:serviceProtocol", "platform:transportProtocol", "platform:serviceRuntime", "platform:appServerRuntime",
+    "platform:serviceSecurity", "platform:serviceSecurityManagerUrl",
+    "platform:serviceMonitoring", "platform:serviceMonitoringManagerUrl"]/>
+
+<#assign wsdlInfoPropNames=["wsdlinfo:transport", "wsdlinfo:wsdlVersion", "wsdlinfo:wsdlPortTypeName",
+    "wsdlinfo:wsdl_service_port_binding_type_name", "wsdlinfo:wsdlServiceName",
+    "wsdlinfo:wsdlFileName", "wsdlinfo:wsdlDigest"]/>
+<#assign restInfoPropNames=["restinfo:path", "restinfo:accepts", "restinfo:contentType"]/>
+
+<#assign deliverableTypePropNames=["deltype:nature", "deltype:repositoryUrl"]/>
+<#assign deliverablePropNames=["soav:version", "del:application", "del:location", "del:dependencies"]/>
+<#assign serviceImplementationPropNames=["impl:ide", "impl:language", "impl:build", "impl:technology",
+    "impl:documentation", "impl:ismock", "impl:operations", "impl:tests",
+    "impl:providedInformationService", "impl:component", "impl:platform"]/>
 <#assign deployedDeliverablePropNames=["soan:name"]/>
 <#assign endpointPropNames=["env:environment", "endp:url"]/>
-<#assign intelligentSystemTreeRootPropNames=["istr:classifier", "istr:parameters"]/>
-<#assign soaNodePropNames=["soan:name"]/>
-<#assign allPropHashNames=serviceImplementationPropHashNames/>
+<#-- assign endpointConsumptionPropNames=[]/ -->
 
+<#assign intelligentSystemTreeRootPropNames=["istr:classifier", "istr:parameters"]/>
+<#assign subprojectNodePropNames=["spnode:subproject"]/>
+<#assign subprojectPropNames=["subproject:parentSubprojects"] + subprojectNodePropNames/>
+<#assign soaNodePropNames=["soan:name", "soan:parentIds", "soan:isplaceholder"]/>
+<#assign allPropHashNames={
+    "iserv:operations": ["operationName", "operationParameters", "operationReturnParameters",
+    "operationDocumentation", "operationInContentType", "operationOutContentType"],
+    "impl:operations": ["operationName", "operationParameters", "operationReturnParameters",
+    "operationDocumentation", "operationInContentType", "operationOutContentType"],
+    "files:files": ["filename", "file"],
+    "files:files/file": [ "filename", "data", "length", "mimeType", "encoding", "digest" ]
+    }/><#-- "length", "mimeType", "encoding", "digest" -->
+    
+<#--  Mime types (see MediaTypes.java) : -->
+<#assign mimeTypePrettyNames = { "text/xml" : "XML", "application/xml" : "XML", "text/plain" : "plain text", "text/html" : "HTML",
+    "application/soap+xml" : "SOAP", "application/json" : "JSON", "application/atom+xml" : "ATOM",
+    "application/xhtml+xml" : "XHTML", "application/x-www-form-urlencoded" : "Form", "multipart/form-data" : "Multipart" }>
+
+    <#macro displayPropsAll props propNames>
+        <ul>
+            <#list propNames as propName>
+                <li>${propName} : <#if props[propName]?has_content><@displayProp props propName/><#else>$$</#if></li>
+            </#list>
+        </ul>
+    </#macro>
+    
     <#macro displayProps1 props propName>
         <#if propName = 'parent'>${props['title']} - ${props['path']}
             <#elseif propName = 'children'><#list props as child>${child['title']} - ${child['path']}</#list>
@@ -147,32 +189,54 @@
     </#macro>
 
     <#macro displayProps props propName>
+        <#-- DEBUG displayProps ${propName}<br/ -->
         <#if !props?has_content>
             <#elseif props?is_string || props?is_number || props?is_boolean>${props}
             <#elseif props?is_date>${props?string("yyyy-MM-dd HH:mm:ss zzzz")}
-            <#elseif props?is_hash><@displayPropsHash props/>
-            <#elseif props?is_sequence>%%<#list props as item><@displayProps1 item propName/> ; </#list>
+            <#elseif props?is_hash><#if allPropHashNames?keys?seq_contains(propName)>%HH%<@displayPropsHash props propName allPropHashNames[propName]/><#else>PB ${propName} hash property not known <#-- list props?values as propValue><@displayProps propValue propName/> _ </#list --></#if>
+            <#elseif props?is_sequence>%SS%<#list props as item><@displayProps1 item propName/> ; </#list>
             <#else>Error : type not supported
         </#if>
     </#macro>
 	
-    <#macro displayPropsHash props propHashNames=allPropHashNames>
-        <#list propHashNames as itemName><#if props[itemName]?has_content && !props[itemName]?is_method>${itemName} : <@displayProps1 props[itemName] itemName/></#if> ; </#list>
+    <#macro displayPropsHash props propName propHashNames>
+        DEBUG displayPropsHash ${props?size} ${propName} ${propHashNames?size}<br/>
+        <#list propHashNames as itemName><#if props[itemName]?has_content && !props[itemName]?is_method>${itemName} : <#assign subPropName = propName + '/' + itemName/><@displayProps1 props[itemName] subPropName/></#if> ; </#list>
+        <#-- NEITHER list propHashNames as itemName><#if props?keys?seq_contains(itemName) && !props[itemName]?is_method>${itemName} : <@displayProps1 props[itemName] itemName/></#if> ; </#list -->
     </#macro>
 
+    <#macro displayProp doc propName>
+        <@displayProps1 doc[propName] propName/>
+    </#macro>
+
+
+    <#macro escapeUrl path>${path?replace('/', '____')?url?replace('____', '/')}</#macro>
+    
+    <#--
+        see http://doc.nuxeo.com/display/NXDOC/Navigation+URLs , http://answers.nuxeo.com/questions/3203/how-to-buildrequest-a-previewdownload-url-for-a-document
+    -->
+    <#macro urlToLocalNuxeoDocumentsUi doc>/nuxeo/nxpath/default<@escapeUrl doc['path']/>@view_documents</#macro>
+    <#macro urlToLocalNuxeoPreview doc>/nuxeo/nxdoc/default/${doc.id}/preview_popup</#macro>
+    <#macro urlToLocalNuxeoPrint doc>/nuxeo/site/admin/repository<@escapeUrl doc['path']/>/@views/print</#macro>
+    
+    
     <#macro displayDoc doc propNames=documentPropNames>
+        <@displayDocShort doc/>
+        <p/>
+        View in <a href="<@urlToLocalNuxeoDocumentsUi doc/>">edition UI</a>, <a href="<@urlToLocalNuxeoPreview doc/>">preview</a>, <a href="<@urlToLocalNuxeoPrint service/>">print</a>
+        <p/>
         <ul>
             <#list propNames as propName>
-                <li>${propName} : <#if doc[propName]?has_content><@displayProps1 doc[propName] propName/><#else>$$</#if></li>
+                <li>${propName} : <#if doc[propName]?has_content><@displayProp doc propName/><#else>$$</#if></li>
             </#list>
-	</ul>
+        </ul>
         <#-- list doc['facets'] as facet>
         <b>${facet}:</b>
         <ul>
             <#list facet?keys as propName>WARNING CAN'T WORK
                 <li>${propName} : <#if doc[propName]?has_content><@displayProps1 doc[propName] propName/><#else>$$</#if></li>
             </#list>
-	</ul>
+        </ul>
 	</#list -->
     </#macro>
     

@@ -181,22 +181,39 @@ public class ServiceDocumentationController extends ModuleRoot {
     }
     
     @GET
-    @Path("path/{serviceName:.+}") // TODO encoding
+    @Path("path/{serviceName:.+}") // TODO also {serviceSubprojectId:.+}: & encoding @PathParam("serviceSubprojectId") String serviceSubprojectId
+
     @Produces(MediaType.TEXT_HTML)
     public Object doGetByPathHTML(@PathParam("serviceName") String serviceName,
             @QueryParam("subproject") String subprojectId, @QueryParam("subprojectId") String contextSubprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
+        
+        String serviceSubprojectId = subprojectId;
+        subprojectId = contextSubprojectId;
+        
+        serviceSubprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, serviceSubprojectId);
 
-        subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
-        //TODO make it work without subproject (for everything)
+        String subprojectPathCriteria;
+        if (subprojectId == null || subprojectId.length() == 0) {
+            subprojectPathCriteria = "";
+        } else {
+            if(ContextVisibility.DEEP.getValue().equals(visibility)){
+                subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
+            } else {
+                subprojectPathCriteria = DocumentService.NXQL_AND
+                    + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);                
+            }
+        }
         
-        DocumentModel service = docService.find(session, new SoaNodeId(subprojectId, InformationService.DOCTYPE, serviceName));
-        
+        DocumentModel service = docService.find(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
+
         Template view = getView("servicedoc");
         if (service != null) {
             // WARNING IS NULL DOESN'T WORK IN RELEASE BUT IN JUNIT OK
-            List<DocumentModel> actualImpls = new java.util.ArrayList<DocumentModel>();/* = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
+            //List<DocumentModel> actualImpls = new java.util.ArrayList<DocumentModel>();
+            /* = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
                     + DocumentService.NXQL_WHERE_NO_PROXY
                     + DocumentService.NXQL_AND + "ecm:uuid IN "
                     + getProxiedIdLiteralList(session,
@@ -204,11 +221,23 @@ public class ServiceDocumentationController extends ModuleRoot {
                     + DocumentService.NXQL_WHERE_PROXY + DocumentService.NXQL_AND
                     + DocumentService.NXQL_PATH_STARTSWITH + RepositoryHelper.getRepositoryPath(session, subprojectId) + InformationService.DOCTYPE + "'"
                     + DocumentService.NXQL_AND + "ecm:parentId='" + service.getId() + "'"
-                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + " IS NULL"))); // WARNING use IS NULL instead of !='true'*/
+                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + " IS NULL")));*/ // old impl using proxy
+            List<DocumentModel> actualImpls = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
+                    + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria + DocumentService.NXQL_AND
+                    + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'"
+                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + "<>'true'"); // WARNING 'true' doesn't work in junit
+            if (actualImpls.isEmpty()) {
+            	// TODO HACK if empty, try using junit-only alternative query, in case we're in tests :
+	            actualImpls = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
+	                    + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria + DocumentService.NXQL_AND
+	                    + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'"
+	                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + " IS NULL"); // WARNING IS NULL works in junit only 
+            }
             List<DocumentModel> mockImpls = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
-                    + DocumentService.NXQL_WHERE + "ecm:currentLifeCycleState != 'deleted' AND ecm:isCheckedInVersion = 0 AND ecm:isProxy = 0" + DocumentService.NXQL_AND // TODO isProxy
-                    + /*ServiceImplementationDataFacet.XPATH_PROVIDED_INFORMATION_SERVICE*/ "impl:providedInformationService='" + service.getId() + "'"
+                    + DocumentService.NXQL_WHERE_NO_PROXY + DocumentService.NXQL_AND
+                    + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'"
                     + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + "='true'");
+            // + *ServiceImplementationDataFacet.XPATH_PROVIDED_INFORMATION_SERVICE* // old impl using proxy
             if (!mockImpls.isEmpty()) {
                 actualImpls = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
                         + DocumentService.NXQL_WHERE_NO_PROXY
@@ -220,11 +249,11 @@ public class ServiceDocumentationController extends ModuleRoot {
                     .arg("actualImpls", actualImpls)
                     .arg("mockImpls", mockImpls)
                     .arg("servicee", service.getAdapter(SoaNodeAdapter.class))
-                    .arg("subproject", subprojectId)
-                    .arg("subprojectId", contextSubprojectId)
+                    .arg("subproject", serviceSubprojectId)
+                    .arg("subprojectId", subprojectId)
                     .arg("visibility", visibility);
         }
-        return view; 
+        return view;
     }
 
     @GET

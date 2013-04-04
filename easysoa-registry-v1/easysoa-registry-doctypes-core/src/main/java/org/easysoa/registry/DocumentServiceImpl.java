@@ -308,23 +308,24 @@ public class DocumentServiceImpl implements DocumentService {
     
     public DocumentModelList findAllParents(CoreSession documentManager, DocumentModel documentModel) throws Exception {
         // Find working copy of document
-        DocumentModel workingModel;
+        DocumentModel sourceDocument;
         if (documentModel.isProxy()) {
-            workingModel = documentManager.getSourceDocument(documentModel.getRef());
+        	sourceDocument = documentManager.getSourceDocument(documentModel.getRef());
         }
         else {
-            workingModel = documentModel;
+        	sourceDocument = documentModel;
         }
     
         // Build proxies list
         DocumentModelList modelInstances = documentManager.getProxies(documentModel.getRef(), null);
-        modelInstances.add(workingModel);
+        modelInstances.add(sourceDocument);
         
         // Fetch parents
         DocumentModelList parents = new DocumentModelListImpl();
         for (DocumentModel modelInstance : modelInstances) {
             DocumentModel parentDocument = documentManager.getParentDocument(modelInstance.getRef());
-            if (!parents.contains(parentDocument)) {
+            if (parentDocument != null // happens if modelInstance is a version
+            		&& !parents.contains(parentDocument)) {
                 parents.add(parentDocument);
             }
         }

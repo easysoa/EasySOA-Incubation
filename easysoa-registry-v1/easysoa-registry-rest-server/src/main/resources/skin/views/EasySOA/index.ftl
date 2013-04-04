@@ -64,15 +64,15 @@
                             <table class="table table-bordered" width="100%">
                                 <tr>
                                     <td width="80%">Nombre de services :</td>
-                                    <td width="20%">${indicators["InformationService count"].count}</td>
+                                    <td width="20%">${indicators["InformationService"].count}</td>
                                 </tr>
                                 <tr>
                                     <td width="80%">Nombre d'implémentations de services :</td>
-                                    <td width="20%">${indicators["ServiceImplementation count"].count}</td>
+                                    <td width="20%">${indicators["ServiceImplementation"].count}</td>
                                 </tr>
                                 <tr>
                                     <td width="80%">Nombre d'endpoints :</td>
-                                    <td width="20%">${indicators["Endpoint count"].count}</td>
+                                    <td width="20%">${indicators["Endpoint"].count}</td>
                                 </tr>
                             </table>
                         </p>
@@ -86,7 +86,7 @@
                         <h3>Réconciliation technique / métier</h3><!-- ou (mise en) correspondance, métier / technique ? -->
                         <p>
                             <!--<ul>
-                                <li>--><a href="#" target="_blank">Matching Dashboard</a>
+                                <li>--><a href="${Root.path}/dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Matching Dashboard</a>
                                     <!--<small> : EasySOA Registry's Matching Dashboard lists all discovered SOA elements (implementations and endpoints) that its automatic matching algorithm couldn't link with the existing SOA model because of lack of information that could help it decide one way or the other, and further helps the SOA administrator link them by providing suggestions along the specified architecture (Components).</small>-->
                                 <!--</li>-->
                                 <!--<li>-->, Gestion des versions
@@ -97,12 +97,12 @@
                             <table class="table table-bordered" width="100%">
                                 <tr>
                                     <td width="80%">Nombre de Placeholders (implémentations inconnues d'endpoints) :</td>
-                                    <td width="20%">${indicators["Placeholders count"].count}</td>
+                                    <td width="20%">${indicators["Placeholders"].count}</td>
                                 </tr>
                             </table>
                         </p>                        
                         
-                        <a class="btn btn-primary" href="${Root.path}/dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
+                        <a class="btn btn-primary" href="${Root.path}/services/matchingFull/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
                     </div>
                 </li>
             </ul>
@@ -165,7 +165,7 @@
                                     <small> : Take advantage of the services you find, by using them in this secured service scaffolder</<small>
                                 </li>
                                 <li>Proxy run manager</li>
-                                <li>FraSCAti Studio</li>
+                                <li><a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:7080/easySoa/index.html">FraSCAti Studio</a></li>
                             </ul>
                         </p>
                     </div>
@@ -179,7 +179,8 @@
                                 <!-- TODO : add links -->
                                 <li><a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/demo-intranet/index.html" target="_blank">Pure Air Flowers</a></li>
                                 <li><a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/demo-intranet/index.html" target="_blank">Intranet</a></li>
-                                <li>APV Pivotal</li>
+                                <li><a href="http://owsi-vm-easysoa-axxx-pivotal.accelance.net:7080/pivotal/index.html">APV Pivotal</a></li>
+                                <li><a href="http://owsi-vm-easysoa-axxx-apv.accelance.net:7080/apv/index.jsp">AXXX dps apv</a></li>
                             </ul>
                         </p>
                     </div>

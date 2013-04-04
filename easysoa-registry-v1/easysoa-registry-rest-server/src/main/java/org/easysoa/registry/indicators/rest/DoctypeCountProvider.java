@@ -60,7 +60,7 @@ public class DoctypeCountProvider extends QueryCountIndicator {
     }
     
     public static String getName(String doctype) {
-        return doctype + " count";
+        return doctype;// + " count";
     }
     
 }

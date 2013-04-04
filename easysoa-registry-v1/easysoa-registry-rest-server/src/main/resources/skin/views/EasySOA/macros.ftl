@@ -109,7 +109,7 @@
     <#macro displayIndicatorsInTable indicators category>
         <table class="table table-bordered">
         <#list indicators?keys as indicatorsKey>
-            <#if indicators[indicatorsKey].count != -1 && indicators[indicatorsKey].containsCategory("cartography") == "true">
+            <#if indicators[indicatorsKey].count != -1 && indicators[indicatorsKey].containsCategory(category) == "true">
             <tr>
                 <td>Nombre de ${indicatorsKey}</td>
                 <td><b>${indicators[indicatorsKey].count}</b></td>

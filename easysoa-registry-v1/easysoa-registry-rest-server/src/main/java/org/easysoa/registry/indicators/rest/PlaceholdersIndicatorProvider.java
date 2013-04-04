@@ -53,7 +53,8 @@ public class PlaceholdersIndicatorProvider extends QueryCountIndicator {
 
     @Override
     public String getName() {
-        return "Placeholders count";
+        //return "Placeholders count";
+        return "Placeholders";
     }
     
     @Override

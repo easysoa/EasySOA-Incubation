@@ -3,7 +3,7 @@
 <html xmlns:c="http://java.sun.com/jsp/jstl/core">
     
     <head>
-        <title>EasySOA Cartography</title>
+        <title>EasySOA Matching</title>
         <meta charset="utf-8" />
         <link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />
         <link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" /> 
@@ -30,7 +30,7 @@
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
                 <div id="headerUserBar"></div>
-                EasySOA Cartographie
+                EasySOA Réconciliation technique / métier
             </div>
         </div>
 
@@ -51,18 +51,14 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">            
-                        <h3>Cartographie des services</h3>
+                        <h3>Réconciliation technique / métier</h3>
                         <p>
                             <ul>
-                                <!-- TODO : Replace this hard coded link by a build in link ? -->
                                 <li>
-                                    <a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte de services</a>
-                                    <small> : Find any useful service from your intranet, or even the web: as you browse pages, informations on services are collected and sent the registry</small>
+                                    <a href="${Root.path}/../dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Matching Dashboard</a>
+                                    <small> : EasySOA Registry's Matching Dashboard lists all discovered SOA elements (implementations and endpoints) that its automatic matching algorithm couldn't link with the existing SOA model because of lack of information that could help it decide one way or the other, and further helps the SOA administrator link them by providing suggestions along the specified architecture (Components).</small></small>
                                 </li>
-                                <li><a href="${Root.path}/../services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>
-                                    <small> : EasySOA provides an example of a simple "service portal" web user interface. It lists all services, allows to browse them by tags (a.k.a. TaggingFolder) and also to tag them. For each service, an example of a dedicated "service usage" documentation page can be displayed.</small>
-                                </li>
-                                <li>Qualité
+                                <li>Gestion des versions
                                     <small></small>
                                 </li>
                             </ul>
@@ -72,7 +68,7 @@
                         <p>
                             <!-- TODO : Add table headers ? -->
                             <!-- TODO : Display only the indicators corresponding to the CATEGORY_CARTOGRAPHY category -->
-                            <@displayIndicatorsInTable indicators "cartography"/>
+                            <@displayIndicatorsInTable indicators "matching"/>
                         <p>
                     </div>
                 </li>

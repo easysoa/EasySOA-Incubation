@@ -29,9 +29,10 @@
 </div>
 
 <div id="container">
-  <#assign visibility=visibility!"">
-  <#assign subprojectId=subprojectId!"">
-  <strong>Point de vue :</strong>&nbsp<@displayCurrentVersion subprojectId visibility/>    
+    <!-- Context bar -->
+    <#assign visibility=visibility!"">
+    <#assign subprojectId=subprojectId!"">
+    <@displayContextBar subprojectId visibility "false"/>
     
   <div id="selectedServiceImpl" style="display: none">${selectedServiceImpl}</div>
 

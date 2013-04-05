@@ -142,9 +142,10 @@ td:first-child {
 	</div>
 	<div id="container">
 
-                <#assign visibility=visibility!"">
-                <#assign subprojectId=subprojectId!"">
-                <strong>Point de vue :</strong>&nbsp<@displayCurrentVersion subprojectId visibility/>
+            <!-- Context bar -->
+            <#assign visibility=visibility!"">
+            <#assign subprojectId=subprojectId!"">
+            <@displayContextBar subprojectId visibility "false"/>
 
 		<h1>Indicateurs sur votre SOA</h1>                
                 

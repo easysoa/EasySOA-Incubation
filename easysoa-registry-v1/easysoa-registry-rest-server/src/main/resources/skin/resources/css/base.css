@@ -1,3 +1,4 @@
+/*
 * {
 	margin: 0;
 	padding: 0;
@@ -43,7 +44,7 @@ h2 {
 li {
 	margin-left: 20px;
 	margin-bottom: 10px;
-}
+}*/
 
 #logoLink {
     width: 220px;
@@ -86,6 +87,23 @@ li {
     width: 250px;
 }
 
+.table-hidden {
+  border: 0px;
+  width: 100%;
+  background-color: #EEF5FA;
+}
+
+.td-hidden {
+  border: 0px;
+  background-color: #EEF5FA;
+}
+
+td {
+  padding: 5px;
+  background-color: white;
+}
+
+/*
 #username {
     text-decoration: underline;
     font-weight: bold;
@@ -100,6 +118,8 @@ p {
   font-size: 11pt;
   margin-bottom: 10px;
 }
+
+
 
 table {
   border-spacing: 0;
@@ -172,7 +192,7 @@ legend {
   font-weight: bold;
   color: #444;
 }
-
+*/
 .more {
   width: 100px;
   text-align: right;

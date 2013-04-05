@@ -52,7 +52,7 @@
     </#macro>
 		
     <#macro displayIndicatorsShort indicators>
-        <table>
+        <table class="table table-bordered">
             <tr>
                 <td>Indicator name</td>
          	<td>Timestamp</td>
@@ -104,6 +104,25 @@
         <#else>
             Point de vue global
         </#if>
+    </#macro>
+
+    <#-- Display the context bar as a Bootstrap full width thumbnail -->
+    <#macro displayContextBar subprojectId visibility button>
+        <li class="span12">
+            <div class="thumbnail">
+                <img data-src="holder.js/300x200" alt="">
+                <table class="table-hidden">
+                    <tr>
+                        <td class="td-hidden"><strong>Perspective :</strong>&nbsp<@displayCurrentVersion subprojectId visibility/>&nbsp;&nbsp;</td>
+                        <td class="td-hidden" style="text-align:right">
+                            <#if button == "true">
+                            <a class="btn btn-primary" href="/nuxeo/site/easysoa/context/">Changer la perspective</a>
+                            </#if>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </li>
     </#macro>
     
     <#macro displayIndicatorsInTable indicators category>

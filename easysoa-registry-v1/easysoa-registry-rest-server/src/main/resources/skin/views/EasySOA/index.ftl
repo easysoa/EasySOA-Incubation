@@ -5,21 +5,18 @@
     <head>
         <title>EasySOA index</title>
         <meta charset="utf-8" />
-        <link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />
-        <link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" /> 
-        <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
-        <style type="text/css">
-          .clickable:hover { cursor: pointer; background-color: #FFC; }
-          .id { display: none }
-          .selected { background-color: #CFC; }
-        </style>
 
-        <!-- Bootstrap style and scripts -->
+        <!-- Bootstrap default style and scripts -->
         <link href="/nuxeo/site/easysoa/skin/css/bootstrap.min.css" rel="stylesheet" media="screen">
         <script src="/nuxeo/site/easysoa/skin/js/bootstrap.min.js"></script>
-        
-        <link rel="stylesheet/less" href="/nuxeo/site/easysoa/skin/css/bootstrap.less">
-        <script src="/nuxeo/site/easysoa/skin/js/less.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" /><!-- Remove this css, replaced by bootstrap -->
+        <link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" /> 
+        <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
+
+        <!-- Custom bootstrap CSS with less -->
+        <!--<link rel="stylesheet/less" href="/nuxeo/site/easysoa/skin/css/bootstrap.less">-->
+        <!--<script src="/nuxeo/site/easysoa/skin/js/less.js"></script>-->
     </head>
     
     <body>
@@ -30,33 +27,29 @@
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
                 <div id="headerUserBar"></div>
-                EasySOA Index page
             </div>
         </div>
 
+        <br/>
+        
         <div class="container" id="container">
             <ul class="thumbnails">
-                <li class="span12">
-                    <div class="thumbnail">
-                        <img data-src="holder.js/300x200" alt="">
-                        <#assign visibility=visibility!"">
-                        <#assign subprojectId=subprojectId!"">
-                        <strong>Point de vue :</strong>&nbsp<@displayCurrentVersion subprojectId visibility/>&nbsp;&nbsp;<a class="btn btn-primary" href="${Root.path}/context/">Changer le point de vue</a>
-                        <!-- TODO also : "all latest versions", "(all latest versions OR live) by global environment type XXX", "all live elements" (check that no deleted elements) -->
-                    </div>
-                </li>
-            </ul>
-            
-            <ul class="thumbnails">
+                <!-- Display the context bar -->
+                <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
+                <#assign subprojectId=subprojectId!"">
+                <@displayContextBar subprojectId visibility "true"/>
+
                 <li class="span6">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Cartographie des services</h3>
                         <p>
                             <!-- TODO : Replace this hard coded link by a build in link ? -->
-                            <a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte de services</a>, 
-                            <a href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>, 
-                            Qualité
+                            <div class="btn-group">
+                                <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte de services</a>
+                                <a class="btn" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>
+                                <a class="btn" href="#">Qualité</a>
+                            </div>
                         </p>
                         <p>
                             <table class="table table-bordered" width="100%">
@@ -74,16 +67,18 @@
                                 </tr>
                             </table>
                         </p>
-                        
                         <a class="btn btn-primary" href="${Root.path}/services/cartography/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>                        
                     </div>
                 </li>
                 <li class="span6">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>Réconciliation technique / métier</h3><!-- ou (mise en) correspondance, métier / technique ? -->
+                        <h3>Conformité</h3>
                         <p>
-                            <a href="${Root.path}/dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Matching Dashboard</a>, Gestion des versions
+                            <div class="btn-group">
+                                <a class="btn" href="${Root.path}/dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Matching Dashboard</a>
+                                <a class="btn" href="#">Gestion des versions</a>
+                            </div>
                         </p>
                         <p>
                             <table class="table table-bordered" width="100%">
@@ -93,7 +88,6 @@
                                 </tr>
                             </table>
                         </p>                        
-                        
                         <a class="btn btn-primary" href="${Root.path}/services/matchingFull/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
                     </div>
                 </li>
@@ -105,7 +99,11 @@
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Usage des services</h3>
                         <p>
-                            <a href="${Root.path}/monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">Statistiques et indicateurs à l'exécution</a>, Appropriation du modèle SOA par les utilisateurs de EasySOA
+                            <div class="btn-group">
+                                <a class="btn" href="${Root.path}/monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">Qualité de service</a>
+                                <a class="btn" href="#">Statistiques</a>
+                                <!--<a class="btn" href="#">Appropriation du modèle SOA par les utilisateurs de EasySOA</a>-->
+                            </div>
                         </p>
                         <p>
                             <table class="table table-bordered" width="100%">
@@ -115,16 +113,19 @@
                                 </tr>
                             </table>
                         </p>
-                        
                         <a class="btn btn-primary" href="${Root.path}/services/usage/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
                     </div>
                 </li>
                 <li class="span6">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>Pilotage</h3>
+                        <h3>Gouvernance</h3>
                         <p>
-                            Suivi des Phases de production SOA, Indicateurs de complétion et gouvernance, (?) Edition collaborative du modèle SOA<!-- ou Aide à la prise de décisions ? Registry des services, implementations ?? -->
+                            <div class="btn-group">                            
+                                <a class="btn" href="#">Suivi des Phases de production SOA</a>
+                                <a class="btn" href="#">Indicateurs de complétion et gouvernance</a>
+                                <a class="btn" href="#">(?) Edition collaborative du modèle SOA</a><!-- ou Aide à la prise de décisions ? Registry des services, implementations ?? -->
+                            </div>
                         </p>
                         <p>
                             <table class="table table-bordered" width="100%">

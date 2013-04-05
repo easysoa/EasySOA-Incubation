@@ -30,9 +30,10 @@
 
 		<#include "/views/EasySOA/macros.ftl">
 
+                <!-- Context bar -->
                 <#assign visibility=visibility!"">
                 <#assign subprojectId=subprojectId!"">
-                <strong>Point de vue :</strong>&nbsp<@displayCurrentVersion subprojectId visibility/>
+                <@displayContextBar subprojectId visibility "false"/>
 
 		<h1>Documentation du service ${service.path} ${service.title} (${service['soan:name']})</h1>
 

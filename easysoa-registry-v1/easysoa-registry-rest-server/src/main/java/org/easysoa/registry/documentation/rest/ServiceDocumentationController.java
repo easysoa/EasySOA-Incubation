@@ -51,7 +51,6 @@ import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.types.adapters.SoaNodeAdapter;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ContextVisibility;
-import org.easysoa.registry.utils.RepositoryHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -182,7 +181,6 @@ public class ServiceDocumentationController extends ModuleRoot {
     
     @GET
     @Path("path/{serviceName:.+}") // TODO also {serviceSubprojectId:.+}: & encoding @PathParam("serviceSubprojectId") String serviceSubprojectId
-
     @Produces(MediaType.TEXT_HTML)
     public Object doGetByPathHTML(@PathParam("serviceName") String serviceName,
             @QueryParam("subproject") String subprojectId, @QueryParam("subprojectId") String contextSubprojectId, @QueryParam("visibility") String visibility) throws Exception {
@@ -211,6 +209,17 @@ public class ServiceDocumentationController extends ModuleRoot {
 
         Template view = getView("servicedoc");
         if (service != null) {
+        	String providerActorId = (String) service.getPropertyValue("iserv:providerActor");
+        	DocumentModel providerActor = null;
+        	if (providerActorId != null && !providerActorId.isEmpty()) {
+        		providerActor = session.getDocument(new org.nuxeo.ecm.core.api.IdRef(providerActorId));
+        	}
+        	String componentId = (String) service.getPropertyValue("acomp:componentId");
+        	DocumentModel component = null;
+        	if (componentId != null && !componentId.isEmpty()) {
+        		component = session.getDocument(new org.nuxeo.ecm.core.api.IdRef(componentId));
+        	}
+        	
             // WARNING IS NULL DOESN'T WORK IN RELEASE BUT IN JUNIT OK
             //List<DocumentModel> actualImpls = new java.util.ArrayList<DocumentModel>();
             /* = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
@@ -246,6 +255,8 @@ public class ServiceDocumentationController extends ModuleRoot {
             }
             view = view
                     .arg("service", service)
+                    .arg("providerActor", providerActor)
+                    .arg("component", component)
                     .arg("actualImpls", actualImpls)
                     .arg("mockImpls", mockImpls)
                     .arg("servicee", service.getAdapter(SoaNodeAdapter.class))

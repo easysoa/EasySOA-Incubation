@@ -30,3 +30,6 @@ local.properties
 
 # Locally stored "Eclipse launch configurations"
 *.launch
+
+# Config script Nuxeo
+nuxeo-config.rb

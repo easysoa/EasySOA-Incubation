@@ -151,8 +151,8 @@
 
 
 <#assign informationServicePropNames=["iserv:linkedBusinessService", "iserv:providerActor"]/>
-<#assign architectureComponentPropNames=["architecturecomponent:componentId", "architecturecomponent:componentCategory",
-    "architecturecomponent:linkedInformationService", "architecturecomponent:providerActor"]/>
+<#assign architectureComponentPropNames=["acomp:componentId", "acomp:componentCategory",
+    "acomp:linkedInformationService", "acomp:providerActor"]/>
 <#assign platformPropNames=["platform:ide", "platform:language", "platform:build", "platform:serviceLanguage",
     "platform:deliverableNature", "platform:deliverableRepositoryUrl",
     "platform:serviceProtocol", "platform:transportProtocol", "platform:serviceRuntime", "platform:appServerRuntime",

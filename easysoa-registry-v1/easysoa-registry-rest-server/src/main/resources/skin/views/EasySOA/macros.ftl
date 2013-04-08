@@ -130,15 +130,15 @@
             <!-- TODO : get another object from controller containing project, phase and version readable informations -->
             <!--${subprojectId} <span class="label">visibilité ${visibility}</span>-->
             <!-- TODO si live versionLabel = "" => afficher live a la place ?? -->
-            ${contextInfo.project}, ${contextInfo.phase}&nbsp;
-            <#--<#if contextInfo.isVersion == "true">-->
-            ${contextInfo.version}&nbsp;
-            <#--<#else>
-            live
-            </#if>-->
+            ${contextInfo.project} / ${contextInfo.phase}&nbsp;
+            <#if contextInfo.version != "">
+            (version ${contextInfo.version})
+            <#else>
+            (version courante)
+            </#if>
             <span class="label">visibilité ${visibility}</span>
         <#else>
-            Point de vue global
+            Perspective globale
         </#if>
     </#macro>
 

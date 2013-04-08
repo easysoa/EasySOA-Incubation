@@ -50,6 +50,7 @@ import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.types.adapters.SoaNodeAdapter;
 import org.easysoa.registry.types.ids.SoaNodeId;
+import org.easysoa.registry.utils.ContextData;
 import org.easysoa.registry.utils.ContextVisibility;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -174,7 +175,8 @@ public class ServiceDocumentationController extends ModuleRoot {
                 .arg("untaggedServices", untaggedServices)
                 .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
-                .arg("indicators", indicators);
+                .arg("indicators", indicators)
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
         // services.get(0).getProperty(schemaName, name)
         // services.get(0).getProperty(xpath)
     }
@@ -260,7 +262,8 @@ public class ServiceDocumentationController extends ModuleRoot {
                     .arg("servicee", service.getAdapter(SoaNodeAdapter.class))
                     .arg("subproject", serviceSubprojectId)
                     .arg("subprojectId", subprojectId)
-                    .arg("visibility", visibility);
+                    .arg("visibility", visibility)
+                    .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
         }
         return view;
     }
@@ -302,7 +305,8 @@ public class ServiceDocumentationController extends ModuleRoot {
                 .arg("tagServices", tagServices)
                 .arg("subproject", tagSubprojectId)
                 .arg("subprojectId", subprojectId)
-                .arg("visibility", visibility);
+                .arg("visibility", visibility)
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
     }
     
     @GET
@@ -344,7 +348,8 @@ public class ServiceDocumentationController extends ModuleRoot {
         return view
                 .arg("tags", tags)
                 .arg("subprojectId", subprojectId)
-                .arg("visibility", visibility); 
+                .arg("visibility", visibility)
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
     }
     
     @POST
@@ -415,7 +420,8 @@ public class ServiceDocumentationController extends ModuleRoot {
         return getView("cartography")
                 .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
-                .arg("indicators", indicators);        
+                .arg("indicators", indicators)
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));        
     }
 
     @GET
@@ -433,7 +439,8 @@ public class ServiceDocumentationController extends ModuleRoot {
         return getView("matchingFull")
                 .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
-                .arg("indicators", indicators);        
+                .arg("indicators", indicators)
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
     }
     
     @GET
@@ -451,7 +458,8 @@ public class ServiceDocumentationController extends ModuleRoot {
         return getView("usage")
                 .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
-                .arg("indicators", indicators);        
+                .arg("indicators", indicators)
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
     }     
     
 }

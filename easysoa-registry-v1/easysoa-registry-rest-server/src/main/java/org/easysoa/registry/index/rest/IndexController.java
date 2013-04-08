@@ -27,9 +27,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
+import org.easysoa.registry.DocumentServiceImpl;
+import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.indicators.rest.IndicatorValue;
 import org.easysoa.registry.indicators.rest.IndicatorsController;
+import org.easysoa.registry.types.Project;
+import org.easysoa.registry.utils.ContextData;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
@@ -47,9 +54,10 @@ public class IndexController extends ModuleRoot {
     @GET
     @Produces(MediaType.TEXT_HTML)
     public Object doGetHTML(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
-    
-        CoreSession session = SessionFactory.getSession(request);
         
+        CoreSession session = SessionFactory.getSession(request);
+
+        // Compute indicators
         IndicatorsController indicatorController = new IndicatorsController();
         Map<String, IndicatorValue> indicators = indicatorController.computeIndicators(session, null, null, subprojectId, visibility);
         
@@ -57,7 +65,10 @@ public class IndexController extends ModuleRoot {
         return getView("index")
            .arg("indicators", indicators)
            .arg("subprojectId", subprojectId)
-           .arg("visibility", visibility);
+           .arg("visibility", visibility)
+           .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
     }
-        
+
+
+    
 }

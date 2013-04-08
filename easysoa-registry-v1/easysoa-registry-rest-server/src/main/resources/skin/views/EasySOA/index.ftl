@@ -37,7 +37,7 @@
                 <!-- Display the context bar -->
                 <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
                 <#assign subprojectId=subprojectId!"">
-                <@displayContextBar subprojectId visibility "true"/>
+                <@displayContextBar subprojectId contextInfo visibility "true"/>
 
                 <li class="span6">
                     <div class="thumbnail">

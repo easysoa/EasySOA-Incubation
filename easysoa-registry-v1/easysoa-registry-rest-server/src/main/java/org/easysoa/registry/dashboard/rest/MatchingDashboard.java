@@ -20,6 +20,7 @@ import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.utils.ContextData;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -97,6 +98,7 @@ public class MatchingDashboard extends ModuleRoot {
 			view.arg("servWithoutSpecs", servWithoutSpecs);
 			view.arg("subprojectId", subprojectId);
                         view.arg("visibility", visibility);
+                        view.arg("contextInfo", ContextData.getVersionData(session, subprojectId));
 			return view;
 		} catch (Exception e) {
 			return getView("error").arg("error", e);
@@ -112,6 +114,7 @@ public class MatchingDashboard extends ModuleRoot {
 		view.arg("selectedModel", uuid);
                 view.arg("subprojectId", subProjectId);
                 view.arg("visibility", visibility);
+                view.arg("contextInfo", ContextData.getVersionData(session, subProjectId));
 		return view;
 	}
 	
@@ -137,6 +140,7 @@ public class MatchingDashboard extends ModuleRoot {
 		view.arg("selectedModel", uuid);
 		view.arg("subprojectId", subProjectId);
                 view.arg("visibility", visibility);
+                view.arg("contextInfo", ContextData.getVersionData(session, subProjectId));
 		return view;
 	}
 
@@ -188,6 +192,7 @@ public class MatchingDashboard extends ModuleRoot {
 		view.arg("selectedModel", uuid);
 		view.arg("subprojectId", subProjectId);
                 view.arg("visibility", visibility);
+                view.arg("contextInfo", ContextData.getVersionData(session, subProjectId));
 		return view;
 	}
 	
@@ -235,7 +240,7 @@ public class MatchingDashboard extends ModuleRoot {
 							((newTargetId != null) ? docService.createSoaNodeId(session.getDocument(new IdRef(newTargetId))) : null),
 							true/*, "strict"*/);
 				}
-				return viewDashboard(subProjectId, visibility).arg("visibility", visibility);
+				return viewDashboard(subProjectId, visibility);
 	    	}
 	    	else {
 	    		throw new Exception("Service Implementation not selected");
@@ -249,7 +254,7 @@ public class MatchingDashboard extends ModuleRoot {
 	@Path("samples")
 	public Object submit(@QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) throws Exception {
 		new DashboardMatchingSamples("http://localhost:8080").run();
-		return viewDashboard(subProjectId, visibility).arg("visibility", visibility);
+		return viewDashboard(subProjectId, visibility);
 	}
 	
 	private List<DocumentModel> fetchComponents(CoreSession session) throws Exception {

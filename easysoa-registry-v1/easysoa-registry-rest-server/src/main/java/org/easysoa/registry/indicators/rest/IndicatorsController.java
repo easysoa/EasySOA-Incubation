@@ -39,6 +39,7 @@ import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.SoftwareComponent;
 import org.easysoa.registry.types.TaggingFolder;
+import org.easysoa.registry.utils.ContextData;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -173,7 +174,8 @@ public class IndicatorsController extends ModuleRoot {
                 .arg("nbMap", nbMap) // TODO : only one map containing the indicatorValue
                 .arg("percentMap", percentMap) // TODO : only one map
                 .arg("subprojectId", subprojectId)
-                .arg("visibility", visibility);
+                .arg("visibility", visibility)
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
     }
 
     /**

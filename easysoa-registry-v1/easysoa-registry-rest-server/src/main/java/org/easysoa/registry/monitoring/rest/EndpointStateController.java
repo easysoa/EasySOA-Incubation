@@ -36,6 +36,7 @@ import org.easysoa.registry.rest.integration.EndpointInformation;
 import org.easysoa.registry.rest.integration.EndpointStateService;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
 import org.easysoa.registry.types.Endpoint;
+import org.easysoa.registry.utils.ContextData;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -97,7 +98,8 @@ public class EndpointStateController extends ModuleRoot {
                 .arg("envs", envs) // TODO later by (sub)project
                 .arg("endpoints", endpoints)
                 .arg("subprojectId", subProjectId)
-                .arg("visibility", visibility);
+                .arg("visibility", visibility)
+                .arg("contextInfo", ContextData.getVersionData(session, subProjectId));
     }
     
     @GET
@@ -124,7 +126,8 @@ public class EndpointStateController extends ModuleRoot {
             view = view.arg("indicators", indicators);
         }
         view.arg("subprojectId", subProjectId)
-                .arg("visibility", visibility);
+                .arg("visibility", visibility)
+                .arg("contextInfo", ContextData.getVersionData(session, subProjectId));
         
         return view; 
     }

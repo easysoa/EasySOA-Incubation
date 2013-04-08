@@ -29,7 +29,7 @@
                 <!-- Display the context bar -->
                 <#assign visibility=visibility!"">
                 <#assign subprojectId=subprojectId!"">
-                <@displayContextBar subprojectId visibility "false"/>
+                <@displayContextBar subprojectId contextInfo visibility "false"/>
             
                 <li class="span12">
                     <div class="thumbnail">

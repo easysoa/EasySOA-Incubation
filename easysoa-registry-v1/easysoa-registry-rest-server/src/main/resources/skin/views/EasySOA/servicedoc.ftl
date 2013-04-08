@@ -33,7 +33,7 @@
                 <!-- Context bar -->
                 <#assign visibility=visibility!"">
                 <#assign subprojectId=subprojectId!"">
-                <@displayContextBar subprojectId visibility "false"/>
+                <@displayContextBar subprojectId contextInfo visibility "false"/>
 
 		<h2>Service <@displayServiceTitle service subprojectId visibility/></h2>
 

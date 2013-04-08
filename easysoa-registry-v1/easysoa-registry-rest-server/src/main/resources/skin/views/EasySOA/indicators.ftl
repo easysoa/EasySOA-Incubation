@@ -145,7 +145,7 @@ td:first-child {
             <!-- Context bar -->
             <#assign visibility=visibility!"">
             <#assign subprojectId=subprojectId!"">
-            <@displayContextBar subprojectId visibility "false"/>
+            <@displayContextBar subprojectId contextInfo visibility "false"/>
 
 		<h1>Indicateurs sur votre SOA</h1>                
                 

@@ -96,19 +96,28 @@
     </#macro>		
 
     <#macro displayProjectsPhasesAndVersionsShort projectVersionsList>
-        <ul>
-        <#list projectVersionsList?keys as project>
-            <li>${project}
-                <@displayLiveShort projectVersionsList project/>
-                <@displayVersionsShort projectVersionsList project/>
-           </li>
-        </#list>
-        </ul>        
+        <div class="accordion" id="accordion2">
+            <#list projectVersionsList?keys as project>
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#${project?replace(' ', '_')}">${project}</a>
+                </div>
+                <div id="${project?replace(' ', '_')}" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        <ul>
+                            <li><@displayLiveShort projectVersionsList project/></li>
+                            <li><@displayVersionsShort projectVersionsList project/></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            </#list>
+        </div>
     </#macro>
-
+    
     <#macro displayLiveShort projectVersionsList project>
-        <ul>
         Currently in edition
+        <ul>
         <#assign liveAndVersions = projectVersionsList[project]/>
         <#list liveAndVersions["live"] as live>
             <li> 
@@ -119,8 +128,8 @@
     </#macro>
 
     <#macro displayVersionsShort projectVersionsList project>
-        <ul>
         Older approved versions
+        <ul>        
         <#assign liveAndVersions = projectVersionsList[project]/>
         <#list liveAndVersions["versions"] as version>
             <li> 
@@ -132,9 +141,6 @@
 
     <#macro displayCurrentVersion subprojectId contextInfo visibility>
         <#if subprojectId>
-            <!-- TODO : get another object from controller containing project, phase and version readable informations -->
-            <!--${subprojectId} <span class="label">visibilité ${visibility}</span>-->
-            <!-- TODO si live versionLabel = "" => afficher live a la place ?? -->
             ${contextInfo.project} / ${contextInfo.phase}&nbsp;
             <#if contextInfo.version != "">
             (version ${contextInfo.version})

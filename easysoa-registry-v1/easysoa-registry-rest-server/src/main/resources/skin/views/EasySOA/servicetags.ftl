@@ -41,9 +41,9 @@
 		<#assign currentTagIds=[]/>
 		<#if service['proxies']?has_content>
 		<ul>
-        <#list service['proxies'] as serviceProxy>
-            <#-- in Specifications, can also be : IntelligentSystem, BusinessService, BusinessService, Folder  -->
+        <#list service['proxies'] as serviceProxy>zou
                     <li>
+            <#-- in Specifications, can also be : IntelligentSystem, BusinessService, BusinessService, Folder  -->
             <#if serviceProxy['parent'].type = 'TaggingFolder'>
                     <@displayTagShort serviceProxy['parent'] subprojectId visibility/>
             <#else>

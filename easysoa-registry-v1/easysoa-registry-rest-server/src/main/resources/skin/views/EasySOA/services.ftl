@@ -45,7 +45,24 @@
 		<#list tags as tag>
 		<#if tagId2Services?keys?seq_contains(tag.id)>
 		<h3>Services (${tagId2Services[tag.id]?size}) of tag <@displayTagShort tag subprojectId visibility/></h3>
-		<@displayServicesShort tagId2Services[tag.id] subprojectId visibility/>
+        <#-- Inlining to handle non-service cases. TODO LATER more generic ?? -->
+		    <#-- @displayServicesShort tagId2Services[tag.id] subprojectId visibility/ -->
+			<#if services?size = 0>
+		        No services.
+		    <#else>
+		    <ul>
+		        <#list tagId2Services[tag.id] as service>
+		            <li>
+		            <#-- handling non-service tagged things. TODO or none, or wider ?? -->
+		            <#if service.type = 'InformationService'>
+				        <@displayServiceShort service subprojectId visibility/>
+				    <#else>
+				        <@displayDocShort service/>
+				    </#if>
+		            </li>
+			    </#list>
+		    </ul>
+		    </#if>
 		</#if>
 		</#list>
 

@@ -173,6 +173,9 @@ public class ServiceDocumentationController extends ModuleRoot {
                 .arg("tagId2Services", tagId2Services)
                 //.arg("tagId2ServiceNbs", tagId2ServiceNbs)
                 .arg("untaggedServices", untaggedServices)
+                .arg("new_f", new freemarker.template.utility.ObjectConstructor())
+                // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
+                // and not "new" else conflicts with Nuxeo's NewMethod helper
                 .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
                 .arg("indicators", indicators)
@@ -259,8 +262,11 @@ public class ServiceDocumentationController extends ModuleRoot {
                     .arg("component", component)
                     .arg("actualImpls", actualImpls)
                     .arg("mockImpls", mockImpls)
-                    .arg("servicee", service.getAdapter(SoaNodeAdapter.class))
                     .arg("subproject", serviceSubprojectId)
+                    .arg("new_f", new freemarker.template.utility.ObjectConstructor())
+                    // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
+                    // and not "new" else conflicts with Nuxeo's NewMethod helper
+                    .arg("servicee", service.getAdapter(SoaNodeAdapter.class))
                     .arg("subprojectId", subprojectId)
                     .arg("visibility", visibility)
                     .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
@@ -304,6 +310,9 @@ public class ServiceDocumentationController extends ModuleRoot {
                 .arg("tag", tag)
                 .arg("tagServices", tagServices)
                 .arg("subproject", tagSubprojectId)
+                .arg("new_f", new freemarker.template.utility.ObjectConstructor())
+                // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
+                // and not "new" else conflicts with Nuxeo's NewMethod helper
                 .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
                 .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
@@ -347,6 +356,9 @@ public class ServiceDocumentationController extends ModuleRoot {
 
         return view
                 .arg("tags", tags)
+                .arg("new_f", new freemarker.template.utility.ObjectConstructor())
+                // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
+                // and not "new" else conflicts with Nuxeo's NewMethod helper
                 .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
                 .arg("contextInfo", ContextData.getVersionData(session, subprojectId));

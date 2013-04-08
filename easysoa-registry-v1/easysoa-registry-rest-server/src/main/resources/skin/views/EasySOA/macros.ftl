@@ -6,19 +6,24 @@
     </#macro>
 
     <#macro displayServiceTitle service subprojectId visibility>
+        <#assign providerActor = service['iserv:providerActor']/>
+        <#assign component = service['acomp:componentId']/>
+        <#-- NB.  to create a new object, see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html -->
         <#assign providerActorTitle = ""/>
         <#if providerActor?has_content>
+            <#assign providerActor = service['session'].getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', providerActor))/>
             <#assign providerActorTitle = providerActor.title + ' / '/>
         </#if>
         <#assign componentTitle = ""/>
         <#if component?has_content>
+            <#assign component = service['session'].getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['acomp:componentId']))/>
             <#assign componentTitle = component.title + ' / '/>
         </#if>
-        <div title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">${providerActorTitle} ${componentTitle}</div> <div title="SOA ID: ${service['soan:name']}">${service.title}</div>
+        <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">${providerActorTitle} ${componentTitle}</span> <span title="SOA ID: ${service['soan:name']}">${service.title}</span> - <@displayPhase service['spnode:subproject']/> (((${service.versionLabel})))
     </#macro>
     
     <#macro displayServiceShort service subprojectId visibility>
-        <a href="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}?subproject=${service['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayDocShort service/></a>
+        <a href="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}?subproject=${service['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayServiceTitle service subprojectId visibility/></a>
     </#macro>
 
     <#macro displayServicesShort services subprojectId visibility>
@@ -34,14 +39,14 @@
     </#macro>
 
     <#macro displayTagShort tag subprojectId visibility>
-         <a href="${Root.path}/tag${tag['spnode:subproject']?xml}:${tag['soan:name']?xml}?subprojectId=${subprojectId}&visibility=${visibility}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - ${tag['path']}</a>
+         <a href="${Root.path}/tag${tag['spnode:subproject']?xml}:${tag['soan:name']?xml}?subprojectId=${subprojectId}&visibility=${visibility}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - <@displayPhase tag['spnode:subproject']/> (((${tag.versionLabel})))</a>
     </#macro>
 
     <#macro displayDocShort doc>
         <#if doc['spnode:subproject']?has_content>
-         ${doc['title']} - <@displayPhase doc['spnode:subproject']/>
+         ${doc['title']} - <@displayPhase doc['spnode:subproject']/> (((${doc.versionLabel})))
         <#else>
-         ${doc['title']} - ${doc['path']}
+         ${doc['title']} - ${doc['path']} (${doc.versionLabel})
         </#if>
     </#macro>
 		

@@ -98,22 +98,31 @@
         </ul>
     </#macro>
 
-    <#macro displayCurrentVersion subprojectId visibility>
+    <#macro displayCurrentVersion subprojectId contextInfo visibility>
         <#if subprojectId>
-            ${subprojectId} <span class="label">visibilité ${visibility}</span>
+            <!-- TODO : get another object from controller containing project, phase and version readable informations -->
+            <!--${subprojectId} <span class="label">visibilité ${visibility}</span>-->
+            <!-- TODO si live versionLabel = "" => afficher live a la place ?? -->
+            ${contextInfo.project}, ${contextInfo.phase}&nbsp;
+            <#--<#if contextInfo.isVersion == "true">-->
+            ${contextInfo.version}&nbsp;
+            <#--<#else>
+            live
+            </#if>-->
+            <span class="label">visibilité ${visibility}</span>
         <#else>
             Point de vue global
         </#if>
     </#macro>
 
     <#-- Display the context bar as a Bootstrap full width thumbnail -->
-    <#macro displayContextBar subprojectId visibility button>
+    <#macro displayContextBar subprojectId contextInfo visibility button>
         <li class="span12">
             <div class="thumbnail">
                 <img data-src="holder.js/300x200" alt="">
                 <table class="table-hidden">
                     <tr>
-                        <td class="td-hidden"><strong>Perspective :</strong>&nbsp<@displayCurrentVersion subprojectId visibility/>&nbsp;&nbsp;</td>
+                        <td class="td-hidden"><strong>Perspective :</strong>&nbsp<@displayCurrentVersion subprojectId contextInfo visibility/>&nbsp;&nbsp;</td>
                         <td class="td-hidden" style="text-align:right">
                             <#if button == "true">
                             <a class="btn btn-primary" href="/nuxeo/site/easysoa/context/">Changer la perspective</a>

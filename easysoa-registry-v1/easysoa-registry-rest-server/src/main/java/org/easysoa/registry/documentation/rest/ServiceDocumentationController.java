@@ -343,7 +343,6 @@ public class ServiceDocumentationController extends ModuleRoot {
 
         return view
                 .arg("tags", tags)
-                .arg("service", service)
                 .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility); 
     }
@@ -382,11 +381,12 @@ public class ServiceDocumentationController extends ModuleRoot {
         DocumentModel serviceProxy = session.getDocument(new IdRef(documentId));
         
         if (serviceProxy != null) {
+            DocumentModel proxyParentDocument = session.getParentDocument(serviceProxy.getRef()); // TODO does it work ???
             DocumentModel proxiedService = session.getSourceDocument(serviceProxy.getRef());
+            
             session.removeDocument(serviceProxy.getRef());
             session.save();
             
-            DocumentModel proxyParentDocument = session.getParentDocument(serviceProxy.getRef()); // TODO does it work ???
             String subprojectId = (String) proxyParentDocument.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
             String serviceSubprojectId = (String) proxiedService.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
             String serviceName = (String) proxiedService.getPropertyValue(InformationService.XPATH_SOANAME);

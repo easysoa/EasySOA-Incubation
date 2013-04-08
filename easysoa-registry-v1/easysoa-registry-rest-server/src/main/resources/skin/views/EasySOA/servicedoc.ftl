@@ -35,15 +35,7 @@
                 <#assign subprojectId=subprojectId!"">
                 <@displayContextBar subprojectId visibility "false"/>
 
-        <#assign providerActorTitle = ""/>
-        <#if providerActor?has_content>
-            <#assign providerActorTitle = providerActor.title + ' / '/>
-        </#if>
-        <#assign componentTitle = ""/>
-        <#if component?has_content>
-            <#assign componentTitle = component.title + ' / '/>
-        </#if>
-		<h2>Service <div title="${service.path}" style="color:grey; font-style: italic;">${providerActorTitle} ${componentTitle}</div> <div title="SOA ID: ${service['soan:name']}">${service.title}</div></h2>
+		<h2>Service <@displayServiceTitle service subprojectId visibility/></h2>
 
 		Vous voulez :
 		<ul>
@@ -55,6 +47,19 @@
 
 		<h3>(description)</h3>
 		${service['dc:description']}
+		
+		<h3>Métier</h3>
+        <#assign providerActorTitle = ""/>
+        <#if providerActor?has_content>
+            <#assign providerActorTitle = providerActor.title/>
+        </#if>
+        <#assign componentTitle = ""/>
+        <#if component?has_content>
+            <#assign componentTitle = component.title/>
+        </#if>
+        <span style="font-weight: bold;">Acteur fournisseur :</span> ${providerActorTitle}<br/>
+        <span style="font-weight: bold;">Composant :</span> ${componentTitle}<br/>
+        <p/>
 
 		<h3>Documentation</h3>
 		
@@ -76,7 +81,7 @@
 		<p/>
 		
 		<#assign iserv_operations=service['iserv:operations']>
-		<#assign impl_operations=actualImpls[0]['impl:operations']>
+		<#if actualImpls?size != 0><#assign impl_operations=actualImpls[0]['impl:operations']></#if>
 		<table style="width: 600px;">
             <#if iserv_operations?size != 0>
                 <#-- title (for RPC style operation display) NOT REQUIRED -->
@@ -107,15 +112,15 @@
                     <#-- displaying mashupped iserv & impl operation, with pretty display of enum values : -->
                     <tr>
                         <td colspan="2" style="font-weight: bold; text-decoration: underline;">${iserv_operation['operationName']}</td>
-                        <td style="font-style: italic;">${iserv_operation['operationDocumentation']} (${impl_operation['operationDocumentation']})</td>
+                        <td style="font-style: italic;">${iserv_operation['operationDocumentation']}<#if actualImpls?size != 0> (${impl_operation['operationDocumentation']})</#if></td>
                     </tr>
                     <tr>
                         <td title="${iserv_operation['operationInContentType']}">  <b>In</b> <span style="color:grey">${mimeTypePrettyNames[iserv_operation['operationInContentType']]}</span></td>
-                        <td colspan="2">${iserv_operation['operationParameters']} (${impl_operation['operationParameters']})</td>
+                        <td colspan="2">${iserv_operation['operationParameters']}<#if actualImpls?size != 0> (${impl_operation['operationParameters']})</#if></td>
                     </tr>
                     <tr>
                         <td title="${iserv_operation['operationOutContentType']}">  <b>Out</b> <span style="color:grey">${mimeTypePrettyNames[iserv_operation['operationOutContentType']]}</span></td>
-                        <td colspan="2">${iserv_operation['operationReturnParameters']} (${impl_operation['operationReturnParameters']})</td>
+                        <td colspan="2">${iserv_operation['operationReturnParameters']}<#if actualImpls?size != 0> (${impl_operation['operationReturnParameters']})</#if></td>
                     </tr>
                 </table>
                 </td></tr>
@@ -186,7 +191,7 @@
 		</ul>
 		</#if>
 
-		<br/><a href="${Root.path}/${service['soan:name']?xml}/tags?subprojectId=${subprojectId}&visibility=${visibility}">Also tag in...</a>
+		<br/><a href="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}/tags?subprojectId=${subprojectId}&visibility=${visibility}">Also tag in...</a>
 
 		<br/>exemples d'appel
 

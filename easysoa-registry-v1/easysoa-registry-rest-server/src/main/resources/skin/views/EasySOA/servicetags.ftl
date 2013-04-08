@@ -44,7 +44,7 @@
 		<#list service['proxies'] as serviceProxy>
 			<#if serviceProxy['parent'].type = 'TaggingFolder'>
 					<li><@displayTagShort serviceProxy['parent'] subprojectId visibility/> -
-					<form method="POST" action="${Root.path}/proxy${serviceProxy['soan:name']}?subprojectId=${serviceProxy['spnode:subproject']}&visibility=${visibility}">
+					<form method="POST" action="${Root.path}/proxy/${serviceProxy.id}?subprojectId=${subprojectId}&visibility=${visibility}">
 						<input name="delete" type="hidden" value=""/>
 						<a href="##" onClick="this.parentNode.submit();">Untag</a>
 					</form>
@@ -59,8 +59,8 @@
 
 		<#list tags as tag>
 			<#if !currentTagIds?seq_contains(tag.id)>
-			<form method="POST" action="${Root.path}/${service['soan:name']}/tags?subprojectId=${service['spnode:subproject']}&visibility=${visibility}">
-				<input name="tagName" type="hidden" value="${tag['soan:name']}"/>
+			<form method="POST" action="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}/tags?subprojectId=${subprojectId}&visibility=${visibility}">
+				<input name="tagId" type="hidden" value="${tag.id}"/>
 				<a href="##" onClick="this.parentNode.submit();">Tag</a> in <@displayTagShort tag subprojectId visibility/>
 			</form>
 			</#if>

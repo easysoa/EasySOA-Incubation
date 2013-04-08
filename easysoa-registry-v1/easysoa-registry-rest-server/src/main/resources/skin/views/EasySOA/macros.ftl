@@ -1,21 +1,48 @@
+    <#macro displayPhase subprojectId>
+        <#assign phaseShortId = subprojectId?replace('/default-domain/', '')/>
+        <#assign phaseShortIdVersionIndex = phaseShortId?last_index_of('_v')/>
+        ${phaseShortId?substring(0, phaseShortIdVersionIndex)?replace('/', ' / ')}
+        (version <#if phaseShortId?ends_with('_v')>en cours<#else>${phaseShortId?substring(phaseShortIdVersionIndex + 2, phaseShortId?length)}</#if>)
+    </#macro>
+
+    <#macro displayServiceTitle service subprojectId visibility>
+        <#assign providerActorTitle = ""/>
+        <#if providerActor?has_content>
+            <#assign providerActorTitle = providerActor.title + ' / '/>
+        </#if>
+        <#assign componentTitle = ""/>
+        <#if component?has_content>
+            <#assign componentTitle = component.title + ' / '/>
+        </#if>
+        <div title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">${providerActorTitle} ${componentTitle}</div> <div title="SOA ID: ${service['soan:name']}">${service.title}</div>
+    </#macro>
+    
     <#macro displayServiceShort service subprojectId visibility>
         <a href="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}?subproject=${service['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayDocShort service/></a>
     </#macro>
 
     <#macro displayServicesShort services subprojectId visibility>
+    <#if services?size = 0>
+    No services.
+    <#else>
     <ul>
         <#list services as service>
             <li><@displayServiceShort service subprojectId visibility/></li>
 	</#list>
     </ul>
+    </#if>
     </#macro>
 
     <#macro displayTagShort tag subprojectId visibility>
-         <a href="${Root.path}/tag/${tag['soan:name']?xml}?subproject=${tag['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - ${tag['path']}</a>
+         <a href="${Root.path}/tag${tag['spnode:subproject']?xml}:${tag['soan:name']?xml}?subprojectId=${subprojectId}&visibility=${visibility}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - ${tag['path']}</a>
     </#macro>
 
     <#macro displayDocShort doc>
+        <#if doc['spnode:subproject']?has_content>
+         ${doc['title']} - <@displayPhase doc['spnode:subproject']/>
+        <#else>
          ${doc['title']} - ${doc['path']}
+        </#if>
     </#macro>
 		
     <#macro displayDocsShort docs>
@@ -100,7 +127,7 @@
 
     <#macro displayCurrentVersion subprojectId visibility>
         <#if subprojectId>
-            ${subprojectId} <span class="label">visibilité ${visibility}</span>
+            <@displayPhase subprojectId/> <span class="label">visibilité ${visibility}</span>
         <#else>
             Point de vue global
         </#if>
@@ -242,7 +269,7 @@
     <#macro displayDoc doc propNames=documentPropNames>
         <@displayDocShort doc/>
         <p/>
-        View in <a href="<@urlToLocalNuxeoDocumentsUi doc/>">edition UI</a>, <a href="<@urlToLocalNuxeoPreview doc/>">preview</a>, <a href="<@urlToLocalNuxeoPrint service/>">print</a>
+        View in <a href="<@urlToLocalNuxeoDocumentsUi doc/>">edition UI</a>, <a href="<@urlToLocalNuxeoPreview doc/>">preview</a>, <a href="<@urlToLocalNuxeoPrint doc/>">print</a>
         <p/>
         <ul>
             <#list propNames as propName>

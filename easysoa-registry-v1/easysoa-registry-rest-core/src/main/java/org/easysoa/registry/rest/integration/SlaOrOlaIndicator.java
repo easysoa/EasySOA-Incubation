@@ -13,15 +13,20 @@ public class SlaOrOlaIndicator {
     
     //{endpointId, slaOrOlaName, timestamp, serviceLevelHealth=gold/silver/bronze, serviceLevelViolation=true/false})
 
-    private String endpointId;
+    private String endpointId = "";
     
-    private String slaOrOlaName;
+    // Indicator type : SLA or OLA
+    private String type = "";
+    
+    private String slaOrOlaName = "";
+    
+    private String description = "";
     
     private Date timestamp;
     
     private ServiceLevelHealth serviceLevelHealth;
     
-    private Boolean serviceLevelViolation;    
+    private Boolean serviceLevelViolation;
     
     /**
      * @return the endpointId
@@ -91,6 +96,34 @@ public class SlaOrOlaIndicator {
      */
     public void setServiceLevelViolation(boolean serviceLevelViolation) {
         this.serviceLevelViolation = serviceLevelViolation;
+    }
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * @return the type
+     */
+    public String getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(String type) {
+        this.type = type;
     }
     
 }

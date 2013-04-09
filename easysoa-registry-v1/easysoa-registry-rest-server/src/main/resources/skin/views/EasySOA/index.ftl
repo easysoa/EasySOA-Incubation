@@ -97,17 +97,18 @@
                         <p>
                             <div class="btn-group">
                                 <a class="btn" href="${Root.path}/monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">Qualité de service</a>
-                                <a class="btn" href="#">Statistiques</a>
+                                <a class="btn" href="http://owsi-vm-easysoa-axxx-pivotal.accelance.net:9100/jasmine/" target="_blank">Statistiques</a>
                                 <!--<a class="btn" href="#">Appropriation du modèle SOA par les utilisateurs de EasySOA</a>-->
                             </div>
                         </p>
                         <p>
-                            <table class="table table-bordered" width="100%">
+                            <!-- Replace by a new indicator showing the the nb or % of services in default -->
+                            <!--<table class="table table-bordered" width="100%">
                                 <tr>
                                     <td width="80%">Nombre de service jamais consomés :</td>
                                     <td width="20%">${indicators["Never consumed services"].count}</td>
                                 </tr>
-                            </table>
+                            </table>-->
                         </p>
                         <a class="btn btn-primary" href="${Root.path}/services/usage/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
                     </div>
@@ -125,6 +126,10 @@
                         </p>
                         <p>
                             <table class="table table-bordered" width="100%">
+                                <tr>
+                                    <td width="80%">Nombre de service jamais consomés :</td>
+                                    <td width="20%">${indicators["Never consumed services"].count}</td>
+                                </tr>                                
                                 <tr>
                                     <td width="80%">Nombre de services n'ayant aucun tag utilisateur :</td>
                                     <td width="20%">${indicators["Services without at least one user tag"].count}</td>

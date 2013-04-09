@@ -36,6 +36,7 @@ import org.easysoa.registry.rest.integration.EndpointInformation;
 import org.easysoa.registry.rest.integration.EndpointStateService;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
 import org.easysoa.registry.types.Endpoint;
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ContextData;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -114,14 +115,38 @@ public class EndpointStateController extends ModuleRoot {
             throw new IllegalArgumentException("At least one endpointID must be specified");
         }
         
-        Template view = getView("envIndicators"); // TODO see services.ftl, dashboard/*.ftl...
-        
         // Get the enpoints associated with the environment
         //DocumentModelList endpointsModel = session.query("SELECT * FROM " + Endpoint.DOCTYPE + " WHERE " + Endpoint.XPATH_ENDP_ENVIRONMENT + " = " + envName);
 
         EndpointStateService endpointStateService = new EndpointStateServiceImpl();
         List<SlaOrOlaIndicator> indicators =  endpointStateService.getSlaOrOlaIndicators(endpointId, "", null, null, 10, 0).getSlaOrOlaIndicatorList();
+
+        // TODO Complete the returned indicators 
+        // Complete each indicator with the description / services ...
+        for(SlaOrOlaIndicator indicator : indicators){
+            indicator.setDescription("Aucune description");
+            
+            DocumentModel slaOrOla;
+            String indicatorType;
+            //if(org.easysoa.registry.types.SlaOrOlaIndicator.SLA_DOCTYPE.equals(indicator.getType())){
+                indicatorType = org.easysoa.registry.types.SlaOrOlaIndicator.SLA_DOCTYPE;
+            /*} else {
+                indicatorType = org.easysoa.registry.types.SlaOrOlaIndicator.OLA_DOCTYPE;
+            }*/
+            
+            if(subProjectId != null && !"".equals(subProjectId)){
+                slaOrOla = docService.findDocument(session, subProjectId, indicatorType, indicator.getSlaOrOlaName());
+            }
+            else {
+                slaOrOla = docService.find(session, new SoaNodeId(indicatorType, indicator.getSlaOrOlaName()));
+            }
+            
+            if(slaOrOla != null){
+                indicator.setDescription(slaOrOla.getProperty(org.easysoa.registry.types.SlaOrOlaIndicator.XPATH_SLA_OR_OLA_DESCRIPTION).getValue(String.class));
+            }
+        }
         
+        Template view = getView("envIndicators"); // TODO see services.ftl, dashboard/*.ftl...
         if (indicators != null) {
             view = view.arg("indicators", indicators);
         }

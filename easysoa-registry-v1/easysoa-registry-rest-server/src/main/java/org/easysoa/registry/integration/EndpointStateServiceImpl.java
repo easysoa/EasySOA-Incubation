@@ -303,7 +303,10 @@ public class EndpointStateServiceImpl implements EndpointStateService {
             // If periodStart is null, set to current day start
             else {
                 calendarFrom.clear();
-                calendarFrom.set(currentDate.get(Calendar.YEAR) , currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH));    
+                // TODO : previous setting was to fix the from date to the current day
+                // But cause some problems to test the UI when the model is not reloaded daily
+                // Remove the "-1" when finished
+                calendarFrom.set(currentDate.get(Calendar.YEAR) - 1, currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH));
             }            
             SQLBetweenFilter dateRangeFilter = new SQLBetweenFilter(calendarFrom, calendarTo);
             parameters.put("timestamp", dateRangeFilter);
@@ -314,10 +317,11 @@ public class EndpointStateServiceImpl implements EndpointStateService {
             for(DocumentModel model : soaNodeModelList){
                 indicator = new SlaOrOlaIndicator();
                 indicator.setEndpointId((String)model.getPropertyValue(org.easysoa.registry.types.SlaOrOlaIndicator.XPATH_ENDPOINT_ID));
+                indicator.setType(model.getType());
                 indicator.setServiceLevelHealth(ServiceLevelHealth.valueOf((String)model.getPropertyValue(org.easysoa.registry.types.SlaOrOlaIndicator.XPATH_SERVICE_LEVEL_HEALTH)));
                 indicator.setServiceLevelViolation((Boolean)model.getPropertyValue(org.easysoa.registry.types.SlaOrOlaIndicator.XPATH_SERVICE_LEVEL_VIOLATION));
                 indicator.setSlaOrOlaName((String)model.getPropertyValue(org.easysoa.registry.types.SlaOrOlaIndicator.XPATH_SLA_OR_OLA_NAME));
-                GregorianCalendar calendar = (GregorianCalendar)model.getPropertyValue(org.easysoa.registry.types.SlaOrOlaIndicator.XPATH_TIMESTAMP);                
+                GregorianCalendar calendar = (GregorianCalendar)model.getPropertyValue(org.easysoa.registry.types.SlaOrOlaIndicator.XPATH_TIMESTAMP);
                 indicator.setTimestamp(calendar.getTime());
                 slaOrOlaIndicators.getSlaOrOlaIndicatorList().add(indicator);
             }

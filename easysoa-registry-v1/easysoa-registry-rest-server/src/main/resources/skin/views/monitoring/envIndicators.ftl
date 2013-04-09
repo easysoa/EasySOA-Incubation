@@ -8,6 +8,8 @@
         <!-- Bootstrap default style and scripts -->
         <link href="/nuxeo/site/easysoa/skin/css/bootstrap.css" rel="stylesheet" media="screen">
         <script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>
+        <!-- font-awesome style for icons -->
+        <link rel="stylesheet" href="/nuxeo/site/easysoa/skin/css/font-awesome.css">
         <!-- custom style and scripts -->
 	<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />
 	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" /> 
@@ -34,7 +36,7 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">            
-                        <h2>Indicateurs pour le service</h2>
+                        <h2>Indicateurs pour le service&nbsp;<a href="#"><i class="icon-file-alt"></i></a></h2>
                         <p>
                         <@displayIndicatorsShort indicators/>
                         </p>

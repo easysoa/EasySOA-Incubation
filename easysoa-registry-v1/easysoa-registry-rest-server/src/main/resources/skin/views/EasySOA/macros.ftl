@@ -55,18 +55,25 @@
     </#macro>
 		
     <#macro displayEndpointShort endpoint subprojectId visibility>
-         <li><a href="${Root.path}/envIndicators/${endpoint.nuxeoID}?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint.name}</a></li>
+         <li>Qualité de service : <a href="${Root.path}/envIndicators/${endpoint.nuxeoID}?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint.name}</a></li>
     </#macro>
 		
     <#macro displayEndpointsShort endpoints subprojectId visibility>
-         <ul>
-         <#list endpoints as endpoint><@displayEndpointShort endpoint subprojectId visibility/></#list>
-         </ul>
+        <#if endpoints?has_content>
+            <ul>
+            <#list endpoints as endpoint><@displayEndpointShort endpoint subprojectId visibility/></#list>
+            </ul>
+        <#else>
+            Aucun service déployé
+        </#if>
     </#macro>		
 		
     <#macro displayIndicatorShort indicator>
         <tr>
-            <td>${indicator.slaOrOlaName}</td>
+            <td>
+                <a href="#"><i class="icon-edit"></i></a>
+                <a href="#" data-toggle="tooltip" data-placement="top" title="${indicator.description}">${indicator.slaOrOlaName}</a>
+            </td>
             <td>${indicator.timestamp?datetime?string.long}</td>
             <td>
                 <#if indicator.serviceLevelHealth=="gold">
@@ -86,10 +93,16 @@
     <#macro displayIndicatorsShort indicators>
         <table class="table table-bordered">
             <tr>
+                <!--
                 <td>Indicator name</td>
          	<td>Timestamp</td>
          	<td>Service level health</td>
          	<td>Service level violation</td>
+                -->
+                <td>Indicateur</td>
+         	<td>Horodatage</td>
+         	<td>Niveau de santé du service</td>
+         	<td>Niveau de violation du service</td>
             </tr>
             <#list indicators as indicator><@displayIndicatorShort indicator/></#list>
          </table>
@@ -121,7 +134,7 @@
         <#assign liveAndVersions = projectVersionsList[project]/>
         <#list liveAndVersions["live"] as live>
             <li> 
-                ${live['dc:title']} - ${live.versionLabel} (<a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=deep">Deep</a>, <a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=strict">Strict</a>)
+                ${live['dc:title']} - ${live.versionLabel} (<a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=deep">Avec</a>, <a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=strict">Sans</a>)
             </li>
         </#list>
         </ul>
@@ -133,7 +146,7 @@
         <#assign liveAndVersions = projectVersionsList[project]/>
         <#list liveAndVersions["versions"] as version>
             <li> 
-                ${version['dc:title']} - ${version.versionLabel} (<a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=deep">Deep</a>, <a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=strict">Strict</a>)
+                ${version['dc:title']} - ${version.versionLabel} (<a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=deep">Avec</a>, <a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=strict">Sans</a>)
             </li>
         </#list>
         </ul>
@@ -147,7 +160,7 @@
             <#else>
             (version courante)
             </#if>
-            <span class="label">visibilité ${visibility}</span>
+            <span class="label">Visibilité : <#if visibility == "deep">Avec phases parentes<#else>Sans phases parentes</#if></span>
         <#else>
             Perspective globale
         </#if>
@@ -190,6 +203,10 @@
             </#if>
         </#list>    
         </table>
+    </#macro>
+    
+    <#macro displayUserInfo>
+        Bonjour utilisateur | <a href="">deconnexion</a>
     </#macro>
     
 <#assign documentPropNames=["lifeCyclePolicy", "versionLabel", "facets", "children", "type", "sourceId", "id", "author", "title", "repository", "created", "name", "path", "schemas", "parent", "lifeCycleState", "allowedStateTransitions", "isLocked", "modified", "content", "ref", "versions", "isFolder", "sessionId", "session", "proxies"]/>

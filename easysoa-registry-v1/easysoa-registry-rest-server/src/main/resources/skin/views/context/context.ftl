@@ -28,9 +28,10 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h1>Projects phases and their versions :</h1>
+                        <h1>Projets, phases et versions :</h1>
                         <br/>
-                        Choose the versions of phase you want to use as a point of view and the visibility scope (strict or deep, i.e. with or without parent phases).
+                        <!--Choose the versions of phase you want to use as a point of view and the visibility scope (strict or deep, i.e. with or without parent phases).-->
+                        Choisissez la version d'une phase que vous voulez utiliser dans la perspective (strict ou deep, avec ou sans les phases parents).
                         <br/>
                         <@displayProjectsPhasesAndVersionsShort projectIdToSubproject/>
                     </div>
@@ -38,8 +39,8 @@
                 
                 <li class="span12">
                     <div class="thumbnail">
-                        <img data-src="holder.js/300x200" alt="">            
-                        <a class="btn" href="${Root.path}/../">Return to global context</a>
+                        <img data-src="holder.js/300x200" alt="">
+                        <a class="btn" href="${Root.path}/../">Retour à la prespective globale</a>
                     </div>
                 </li>                
             </ul>

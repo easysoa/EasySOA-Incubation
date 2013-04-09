@@ -116,7 +116,7 @@
     </#macro>
     
     <#macro displayLiveShort projectVersionsList project>
-        Currently in edition
+        Versions courantes
         <ul>
         <#assign liveAndVersions = projectVersionsList[project]/>
         <#list liveAndVersions["live"] as live>
@@ -128,7 +128,7 @@
     </#macro>
 
     <#macro displayVersionsShort projectVersionsList project>
-        Older approved versions
+        Anciennes versions
         <ul>        
         <#assign liveAndVersions = projectVersionsList[project]/>
         <#list liveAndVersions["versions"] as version>

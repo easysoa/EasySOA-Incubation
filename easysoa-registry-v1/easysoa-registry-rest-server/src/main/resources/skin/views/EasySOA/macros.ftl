@@ -71,7 +71,7 @@
     <#macro displayIndicatorShort indicator>
         <tr>
             <td>
-                <a href="http://localhost:8080/nuxeo/nxpath/default${indicator.path}@view_documents?tabIds=%3ATAB_EDIT" target="_blank"><i class="icon-edit"></i></a>
+                <a href="<@urlToLocalNuxeoDocumentsUiShort indicator.path/>?tabIds=%3ATAB_EDIT" target="_blank"><i class="icon-edit"></i></a>
                 <a href="#" data-toggle="tooltip" data-placement="top" title="${indicator.description}">${indicator.slaOrOlaName}</a>
             </td>
             <td>${indicator.timestamp?datetime?string.long}</td>
@@ -298,7 +298,10 @@
     <#--
         see http://doc.nuxeo.com/display/NXDOC/Navigation+URLs , http://answers.nuxeo.com/questions/3203/how-to-buildrequest-a-previewdownload-url-for-a-document
     -->
-    <#macro urlToLocalNuxeoDocumentsUi doc>/nuxeo/nxpath/default<@escapeUrl doc['path']/>@view_documents</#macro>
+    <#macro urlToLocalNuxeoDocumentsUi doc>
+        <@urlToLocalNuxeoDocumentsUiShort doc['path']/>
+    </#macro>
+    <#macro urlToLocalNuxeoDocumentsUiShort doc>/nuxeo/nxpath/default<@escapeUrl doc/>@view_documents</#macro>
     <#macro urlToLocalNuxeoPreview doc>/nuxeo/nxdoc/default/${doc.id}/preview_popup</#macro>
     <#macro urlToLocalNuxeoPrint doc>/nuxeo/site/admin/repository<@escapeUrl doc['path']/>/@views/print</#macro>
     

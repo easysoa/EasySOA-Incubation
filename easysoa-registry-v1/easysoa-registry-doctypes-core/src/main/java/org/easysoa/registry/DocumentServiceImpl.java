@@ -13,6 +13,7 @@ import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.DocumentModelHelper;
+import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.easysoa.registry.utils.RepositoryHelper;
 import org.nuxeo.common.utils.Path;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -59,7 +60,7 @@ public class DocumentServiceImpl implements DocumentService {
         if (isSoaNode(documentManager, doctype)) {
             
             // Create or fetch source document
-            DocumentModel documentModel = find(documentManager, identifier);
+            DocumentModel documentModel = findSoanode(documentManager, identifier);
         	if (documentModel == null) {
                 documentModel = newSoaNodeDocument(documentManager, identifier);
                 documentModel = documentManager.createDocument(documentModel);
@@ -73,7 +74,7 @@ public class DocumentServiceImpl implements DocumentService {
                 DocumentModel parentModel = documentManager.getDocument(parentRef);
                 if (parentModel != null) {
                     if (parentModel.isProxy()) {
-                        parentModel = find(documentManager, createSoaNodeId(parentModel));
+                        parentModel = findSoanode(documentManager, createSoaNodeId(parentModel));
                     }
                 }
                 else {
@@ -119,7 +120,7 @@ public class DocumentServiceImpl implements DocumentService {
         DocumentModel documentModel = null;
         
         if (isSoaNode(documentManager, identifier.getType())) {
-        	documentModel = find(documentManager, identifier);
+        	documentModel = findSoanode(documentManager, identifier);
         	if (documentModel == null) {
                 documentModel = newSoaNodeDocument(documentManager, identifier);
                 documentModel = documentManager.createDocument(documentModel);
@@ -191,7 +192,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public boolean delete(CoreSession documentManager, SoaNodeId soaNodeId) throws ClientException {
-        DocumentModel sourceDocument = find(documentManager, soaNodeId);
+        DocumentModel sourceDocument = findSoanode(documentManager, soaNodeId);
         if (sourceDocument != null) {
             documentManager.removeDocument(sourceDocument.getRef());
             return true;
@@ -214,24 +215,67 @@ public class DocumentServiceImpl implements DocumentService {
         return false;
     }
 
+    @Override
     public DocumentModel findDocument(CoreSession documentManager,
             String subprojectId, String type, String name) throws ClientException {
-        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE " + NXQL.ECM_NAME
-                + " = '?' AND " + SubprojectNode.XPATH_SUBPROJECT + " = '?'",
-                new Object[] { type, safeName(name),
-                SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId) }, // TODO TODOOOOO spnode
+        return findDocument(documentManager, subprojectId, type, name, false);
+    }
+    
+    @Override
+    public DocumentModel findDocument(CoreSession documentManager,
+            String subprojectId, String type, String name, boolean deepSearch) throws ClientException {
+        
+        StringBuilder queryString = new StringBuilder();
+        queryString.append("SELECT * FROM ? WHERE ");
+        queryString.append(NXQL.ECM_NAME);
+        queryString.append(" = '?' ");
+        queryString.append(NXQLQueryHelper.buildSubprojectPathCriteria(documentManager, SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId), deepSearch));
+        
+        /*
+        queryString.append(" = '?' AND ");
+        queryString.append(SubprojectNode.XPATH_SUBPROJECT);
+        if(deepSearch){
+            queryString.append(" STARTSWITH '?'");
+        } else {
+            queryString.append(" = '?'");
+        }*/
+        
+        String query = NXQLQueryBuilder.getQuery(queryString.toString(),
+                new Object[] { type, safeName(name)/*,
+                SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId)*/ }, // TODO TODOOOOO spnode
                 false, true);
         DocumentModelList results = query(documentManager, query, true, false);
         return results.size() > 0 ? results.get(0) : null;
     }
     
-    public DocumentModel find(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
-        String query = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE "/* + "ecm:path STARTSWITH '?' AND "*/
-                + SoaNode.XPATH_SOANAME + " = '?' AND " + SubprojectNode.XPATH_SUBPROJECT + " = '?'",
+    @Override
+    public DocumentModel findSoanode(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
+        return findSoanode(documentManager, identifier, false);
+    }
+    
+    @Override
+    public DocumentModel findSoanode(CoreSession documentManager, SoaNodeId identifier, boolean deepSearch) throws ClientException {
+        
+        StringBuilder queryString = new StringBuilder();
+        queryString.append("SELECT * FROM ? WHERE ");/* + "ecm:path STARTSWITH '?' AND "*/
+        queryString.append(SoaNode.XPATH_SOANAME);
+        queryString.append(" = '?' ");
+        queryString.append(NXQLQueryHelper.buildSubprojectPathCriteria(documentManager, SubprojectServiceImpl.setDefaultSubprojectIfNone(documentManager, identifier), deepSearch));
+        
+        /*
+        queryString.append(" = '?' AND ");
+        queryString.append(SubprojectNode.XPATH_SUBPROJECT);
+        if(deepSearch){
+            queryString.append(" STARTSWITH '?'");
+        } else {
+            queryString.append(" = '?'");
+        }*/
+        
+        String query = NXQLQueryBuilder.getQuery(queryString.toString(),
                 // TODO rather using subproject Path ??
                 // TODO REPOSITORY_PATH = /default-domain/Repository but default path /default-domain/MyProject/Default/Repository
-                new Object[] { identifier.getType()/*, Repository.REPOSITORY_PATH*/, identifier.getName(),
-                        SubprojectServiceImpl.setDefaultSubprojectIfNone(documentManager, identifier) },
+                new Object[] { identifier.getType()/*, Repository.REPOSITORY_PATH*/, identifier.getName()/*,
+                        SubprojectServiceImpl.setDefaultSubprojectIfNone(documentManager, identifier)*/ },
                 false, true);
         DocumentModelList results = query(documentManager, query, true, false);
         return results.size() > 0 ? results.get(0) : null;
@@ -264,7 +308,7 @@ public class DocumentServiceImpl implements DocumentService {
         PathRef parentRef = new PathRef(parentPath);
         DocumentModel parentModel = documentManager.getDocument(parentRef);
         if (parentModel.isProxy()) {
-            parentModel = find(documentManager, createSoaNodeId(parentModel));
+            parentModel = findSoanode(documentManager, createSoaNodeId(parentModel));
         }
         
         // Find proxy among children

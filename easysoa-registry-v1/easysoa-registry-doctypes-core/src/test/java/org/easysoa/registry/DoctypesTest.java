@@ -112,7 +112,7 @@ public class DoctypesTest extends AbstractRegistryTest {
         documentManager.save();
         
         // Fetch document again, check operations update
-        serviceImplModel = documentService.find(documentManager, serviceImplId);
+        serviceImplModel = documentService.findSoanode(documentManager, serviceImplId);
         serviceImpl = serviceImplModel.getAdapter(ServiceImplementation.class);
         operations = serviceImpl.getOperations();
         Assert.assertEquals(1, operations.size());
@@ -142,7 +142,7 @@ public class DoctypesTest extends AbstractRegistryTest {
         endpointConsumption.setConsumedEndpoint(consumedEndpoint);
         Assert.assertEquals("EndpointConsumption must be set as expected", consumedEndpoint,
                 endpointConsumption.getConsumedEndpoint());
-        DocumentModel foundEndpointModel = documentService.find(documentManager, consumedEndpoint);
+        DocumentModel foundEndpointModel = documentService.findSoanode(documentManager, consumedEndpoint);
         Assert.assertNotNull("Consumed endpoint must be created", foundEndpointModel);
         endpointConsumption.setConsumedEndpoint(null);
         Assert.assertNull("EndpointConsumption must be removed",

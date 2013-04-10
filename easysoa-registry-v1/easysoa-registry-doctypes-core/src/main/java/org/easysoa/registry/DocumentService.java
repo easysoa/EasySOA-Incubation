@@ -144,6 +144,18 @@ public interface DocumentService {
     DocumentModel findDocument(CoreSession documentManager, String subprojectId, String type, String name) throws ClientException;
 
     /**
+     * 
+     * @param documentManager
+     * @param subprojectId
+     * @param type
+     * @param name
+     * @param deepSearch
+     * @return
+     * @throws ClientException 
+     */
+    DocumentModel findDocument(CoreSession documentManager, String subprojectId, String type, String name, boolean deepSearch) throws ClientException;
+
+    /**
      * Finds any document given its type and name
      * If a SoaNode, returns the source (non-proxy) from the repository 
      * @param documentManager
@@ -151,9 +163,20 @@ public interface DocumentService {
      * @return The document, or null if it doesn't exist
      * @throws ClientException
      */
-    DocumentModel find(CoreSession documentManager, SoaNodeId identifier)
+    DocumentModel findSoanode(CoreSession documentManager, SoaNodeId identifier)
             throws ClientException;
 
+    /**
+     * 
+     * @param documentManager
+     * @param identifier
+     * @param deepSearch
+     * @return
+     * @throws ClientException 
+     */
+    DocumentModel findSoanode(CoreSession documentManager, SoaNodeId identifier, boolean deepSearch)
+            throws ClientException;
+    
     /**
      * Find a proxy at a specific location
      */

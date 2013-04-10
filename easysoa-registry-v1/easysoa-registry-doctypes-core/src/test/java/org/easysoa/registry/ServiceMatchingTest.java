@@ -312,7 +312,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         // TODO updateToVersion
         
         ///realisationSubprojectModel.setPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS, new String[]{ specificationsSubprojectV01Model.getId() });
-        DocumentModel foundInfoServV01 = documentService.find(documentManager, new SoaNodeId(
+        DocumentModel foundInfoServV01 = documentService.findSoanode(documentManager, new SoaNodeId(
                 SubprojectServiceImpl.buildSubprojectId(specificationsSubprojectV01Model),
                 InformationService.DOCTYPE, "nsxxx:namexxx"));
         Assert.assertNotNull(foundInfoServV01);
@@ -410,8 +410,8 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	DocumentModel foundComponent = discoveryService.runDiscovery(documentManager, CSP_COMPONENT_ID, compProperties, null);
     	
     	// check
-        foundInfoServ = documentService.find(documentManager, CSP_INFORMATIONSERVICE_ID);
-        DocumentModel foundImpl = documentService.find(documentManager, CSP_FIRST_SERVICEIMPL_ID);
+        foundInfoServ = documentService.findSoanode(documentManager, CSP_INFORMATIONSERVICE_ID);
+        DocumentModel foundImpl = documentService.findSoanode(documentManager, CSP_FIRST_SERVICEIMPL_ID);
         Assert.assertEquals("Created information service must be linked to existing matching impl", foundInfoServ.getId(),
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     	
@@ -420,7 +420,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         discoveryService.runDiscovery(documentManager, CSP_SECOND_SERVICEIMPL_ID, implProperties, null);
 
         // check
-        foundImpl = documentService.find(documentManager, CSP_SECOND_SERVICEIMPL_ID);
+        foundImpl = documentService.findSoanode(documentManager, CSP_SECOND_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must be linked to existing matching information service", foundInfoServ.getId(),
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
         
@@ -432,7 +432,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         discoveryService.runDiscovery(documentManager, CSP_SECOND_SERVICEIMPL_SEPARATE_SUBPROJECT_ID, anotherImplProperties, null);
 
         // check
-        foundImpl = documentService.find(documentManager, CSP_SECOND_SERVICEIMPL_SEPARATE_SUBPROJECT_ID);
+        foundImpl = documentService.findSoanode(documentManager, CSP_SECOND_SERVICEIMPL_SEPARATE_SUBPROJECT_ID);
         Assert.assertEquals("Separate subproject impl must not be linked to existing matching information service", null,
                 foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
         // - SUBPROJECT
@@ -444,7 +444,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         discoveryService.runDiscovery(documentManager, THIRD_SERVICEIMPL_ID, impl3Properties, null);
         
         // check
-        foundImpl = documentService.find(documentManager, THIRD_SERVICEIMPL_ID);
+        foundImpl = documentService.findSoanode(documentManager, THIRD_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must not be linked to existing matching information service", null,
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
 
@@ -514,8 +514,8 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     	DocumentModel foundInfoServ = discoveryService.runDiscovery(documentManager, INFORMATIONSERVICE_ID, isProperties, null);
     	
     	// check
-        foundInfoServ = documentService.find(documentManager, INFORMATIONSERVICE_ID);
-        DocumentModel foundImpl = documentService.find(documentManager, FIRST_SERVICEIMPL_ID);
+        foundInfoServ = documentService.findSoanode(documentManager, INFORMATIONSERVICE_ID);
+        DocumentModel foundImpl = documentService.findSoanode(documentManager, FIRST_SERVICEIMPL_ID);
         Assert.assertEquals("Created information service must be linked to existing matching impls", foundInfoServ.getId(),
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     	
@@ -523,7 +523,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         discoveryService.runDiscovery(documentManager, SECOND_SERVICEIMPL_ID, implProperties, null);
 
         // check
-        foundImpl = documentService.find(documentManager, SECOND_SERVICEIMPL_ID);
+        foundImpl = documentService.findSoanode(documentManager, SECOND_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must be linked to existing matching information service", foundInfoServ.getId(),
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     	
@@ -536,7 +536,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         discoveryService.runDiscovery(documentManager, THIRD_SERVICEIMPL_ID, impl3Properties, null);
         
         // check
-        foundImpl = documentService.find(documentManager, THIRD_SERVICEIMPL_ID);
+        foundImpl = documentService.findSoanode(documentManager, THIRD_SERVICEIMPL_ID);
         Assert.assertEquals("Created impl must not be linked to existing matching information service", null,
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
 
@@ -607,7 +607,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
         SoaNodeId implId = foundEndpoint.getAdapter(SoaNode.class).getParentOfType(ServiceImplementation.DOCTYPE);
         Assert.assertNotNull("Created endpoint must be linked to an impl", implId);
-        foundImpl = documentService.find(documentManager, implId);
+        foundImpl = documentService.findSoanode(documentManager, implId);
         Assert.assertEquals("Created endpoint must be linked to a placeholder impl",
         		true, foundImpl.getPropertyValue(SoaNode.XPATH_ISPLACEHOLDER));
         

@@ -48,7 +48,7 @@ public class JavaServicesTest extends AbstractRegistryTest {
         documentManager.save();
         
         // Use helper to find implementations that match the consumption
-        consumptionModel = documentService.find(documentManager, consumptionId);
+        consumptionModel = documentService.findSoanode(documentManager, consumptionId);
         DocumentModelList matchingServiceImpls = JavaDoctypesHelper.getMatchingServiceImpls(documentManager,
                 (String) consumptionModel.getPropertyValue(JavaServiceConsumption.XPATH_CONSUMEDINTERFACE));
         Assert.assertEquals(1, matchingServiceImpls.size());

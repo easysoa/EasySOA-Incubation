@@ -36,6 +36,8 @@ import org.easysoa.registry.rest.integration.EndpointInformation;
 import org.easysoa.registry.rest.integration.EndpointStateService;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
 import org.easysoa.registry.types.Endpoint;
+import org.easysoa.registry.types.InformationService;
+import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ContextData;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -118,6 +120,16 @@ public class EndpointStateController extends ModuleRoot {
         // Get the enpoints associated with the environment
         //DocumentModelList endpointsModel = session.query("SELECT * FROM " + Endpoint.DOCTYPE + " WHERE " + Endpoint.XPATH_ENDP_ENVIRONMENT + " = " + envName);
 
+        // Get the endpoint
+        DocumentModel endpoint = docService.query(session, "SELECT * FROM " + Endpoint.DOCTYPE + " WHERE ecm:uuid = '" + endpointId + "'" , true, false).get(0);
+        // Get the service
+        String serviceId = endpoint.getProperty("impl:providedInformationService").getValue(String.class);
+        DocumentModel service = docService.query(session, "SELECT * FROM " + InformationService.DOCTYPE + " WHERE ecm:uuid = '" + serviceId + "'" , true, false).get(0);
+        String slaOrOlaSubprojectId = (String) service.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+        
+        //String serviceFolder = session.getDocument(service.getParentRef()).getPathAsString();
+        
+        // Get the indicators for the endpoint in the Nuxeo store
         EndpointStateService endpointStateService = new EndpointStateServiceImpl();
         List<SlaOrOlaIndicator> indicators =  endpointStateService.getSlaOrOlaIndicators(endpointId, "", null, null, 10, 0).getSlaOrOlaIndicatorList();
 
@@ -127,22 +139,21 @@ public class EndpointStateController extends ModuleRoot {
             indicator.setDescription("Aucune description");
             
             DocumentModel slaOrOla;
-            String indicatorType;
-            //if(org.easysoa.registry.types.SlaOrOlaIndicator.SLA_DOCTYPE.equals(indicator.getType())){
-                indicatorType = org.easysoa.registry.types.SlaOrOlaIndicator.SLA_DOCTYPE;
-            /*} else {
-                indicatorType = org.easysoa.registry.types.SlaOrOlaIndicator.OLA_DOCTYPE;
-            }*/
-            
+            // Get only the first par of the subprojectID
+            /*String subPath = "";
             if(subProjectId != null && !"".equals(subProjectId)){
-                slaOrOla = docService.findDocument(session, subProjectId, indicatorType, indicator.getSlaOrOlaName());
-            }
-            else {
-                slaOrOla = docService.find(session, new SoaNodeId(indicatorType, indicator.getSlaOrOlaName()));
+                subPath = subProjectId.substring(0, subProjectId.lastIndexOf("/"));
+            }*/
+            // Get the SLA or OLA indicator in the Nuxeo registry
+            slaOrOla = docService.findSoanode(session, new SoaNodeId(slaOrOlaSubprojectId, org.easysoa.registry.types.SlaOrOlaIndicator.SLA_DOCTYPE, indicator.getSlaOrOlaName()), true);
+            if(slaOrOla == null){
+                slaOrOla = docService.findSoanode(session, new SoaNodeId(slaOrOlaSubprojectId, org.easysoa.registry.types.SlaOrOlaIndicator.OLA_DOCTYPE, indicator.getSlaOrOlaName()), true);    
             }
             
+            // Set additionnal indicator informatons
             if(slaOrOla != null){
                 indicator.setDescription(slaOrOla.getProperty(org.easysoa.registry.types.SlaOrOlaIndicator.XPATH_SLA_OR_OLA_DESCRIPTION).getValue(String.class));
+                indicator.setPath(slaOrOla.getPathAsString());
             }
         }
         
@@ -152,7 +163,10 @@ public class EndpointStateController extends ModuleRoot {
         }
         view.arg("subprojectId", subProjectId)
                 .arg("visibility", visibility)
-                .arg("contextInfo", ContextData.getVersionData(session, subProjectId));
+                .arg("contextInfo", ContextData.getVersionData(session, subProjectId))
+                .arg("service", service.getName())
+                .arg("servicePath", service.getPathAsString())
+                .arg("endpoint", endpoint.getName().replace("|", "/"));
         
         return view; 
     }

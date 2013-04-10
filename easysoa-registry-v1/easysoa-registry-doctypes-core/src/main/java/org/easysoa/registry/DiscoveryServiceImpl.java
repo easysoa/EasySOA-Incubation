@@ -108,7 +108,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         
         if (foundDocumentModel == null) { // not matchFirst or no (or too many) match found
             // finding existing using SOA node ID :
-            foundDocumentModel = documentService.find(documentManager, identifier);
+            foundDocumentModel = documentService.findSoanode(documentManager, identifier);
         }
         
         if (foundDocumentModel != null && foundDocumentModel.isVersion()) {
@@ -336,7 +336,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
     private String createOrReuseIntermediateDocuments(CoreSession documentManager, DocumentService documentService,
 	        SoaNodeId parentDocumentId, List<String> pathBelowParent,
 	        List<SoaNodeId> parentDocuments) throws ClientException {
-        DocumentModel parentDocument = documentService.find(documentManager, parentDocumentId);
+        DocumentModel parentDocument = documentService.findSoanode(documentManager, parentDocumentId);
         
         // Create parent if necessary
         if (parentDocument == null) {

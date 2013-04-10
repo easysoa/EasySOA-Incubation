@@ -256,7 +256,7 @@ public class RepositoryManagementListener implements EventListener {
 		    
 		    documentService.getSourceFolder(documentManager, sourceDocument); // ensuring it exists
 		    
-		    DocumentModel repositoryDocument = documentService.find(documentManager, soaNodeId);
+		    DocumentModel repositoryDocument = documentService.findSoanode(documentManager, soaNodeId);
 		    if (repositoryDocument != null) {
 		    	if (!repositoryDocument.getRef().equals(sourceDocument.getRef())) {
 			        // If the source document already exists, only keep one
@@ -277,7 +277,7 @@ public class RepositoryManagementListener implements EventListener {
 		    
 		    // Create a proxy at the expected location
 		    if (documentService.isSoaNode(documentManager, parentModel.getType())) {
-		        parentModel = documentService.find(documentManager, documentService.createSoaNodeId(parentModel));
+		        parentModel = documentService.findSoanode(documentManager, documentService.createSoaNodeId(parentModel));
 		    }
 		    documentManager.createProxy(sourceDocument.getRef(), parentModel.getRef());
 		    structureChanged = true;

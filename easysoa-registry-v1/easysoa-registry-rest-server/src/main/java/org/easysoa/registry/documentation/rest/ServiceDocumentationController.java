@@ -87,6 +87,7 @@ public class ServiceDocumentationController extends ModuleRoot {
     public Object doGetHTML(/*@DefaultValue(null) */@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
 
+        // TODO Make a method with this code
         String subprojectPathCriteria;
         if (subprojectId == null || subprojectId.length() == 0) {
             subprojectPathCriteria = "";
@@ -208,7 +209,7 @@ public class ServiceDocumentationController extends ModuleRoot {
             }
         }
         
-        DocumentModel service = docService.find(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
+        DocumentModel service = docService.findSoanode(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
 
         Template view = getView("servicedoc");
         if (service != null) {
@@ -303,7 +304,7 @@ public class ServiceDocumentationController extends ModuleRoot {
         		+ InformationService.XPATH_PARENTSIDS + "/* = '" + TaggingFolder.DOCTYPE + ":" + tagName + "'"
         		+ subprojectPathCriteria;
         DocumentModelList tagServices = docService.query(session, query, true, false);
-        DocumentModel tag = docService.find(session, new SoaNodeId(subprojectId, TaggingFolder.DOCTYPE, tagName));
+        DocumentModel tag = docService.findSoanode(session, new SoaNodeId(subprojectId, TaggingFolder.DOCTYPE, tagName));
         
         Template view = getView("tagServices");
         return view
@@ -344,7 +345,7 @@ public class ServiceDocumentationController extends ModuleRoot {
             }
         }
         //TODO ?? SubprojectID mandatory to find service ....
-        DocumentModel service = docService.find(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
+        DocumentModel service = docService.findSoanode(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
         DocumentModelList tags = session.query(DocumentService.NXQL_SELECT_FROM + TaggingFolder.DOCTYPE
                 + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
         
@@ -377,7 +378,7 @@ public class ServiceDocumentationController extends ModuleRoot {
 
         subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
         
-        DocumentModel service = docService.find(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
+        DocumentModel service = docService.findSoanode(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
         DocumentModel tag = session.getDocument(new IdRef(tagId));
         
         if (service != null && tag != null) {

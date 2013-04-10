@@ -28,6 +28,8 @@ public class SlaOrOlaIndicator {
     
     private Boolean serviceLevelViolation;
     
+    private String path = "";
+    
     /**
      * @return the endpointId
      */
@@ -124,6 +126,20 @@ public class SlaOrOlaIndicator {
      */
     public void setType(String type) {
         this.type = type;
+    }
+
+    /**
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
+
+    /**
+     * @param path the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
     }
     
 }

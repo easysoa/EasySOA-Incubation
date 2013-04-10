@@ -101,7 +101,7 @@ public class IntelligentSystemTreeComponent extends DefaultComponent implements 
         // Find the document source & proxies
         DocumentService documentService = Framework.getService(DocumentService.class);
         SoaNodeId soaNodeId = documentService.createSoaNodeId(model);
-		DocumentModel sourceModel = documentService.find(documentManager, soaNodeId);
+		DocumentModel sourceModel = documentService.findSoanode(documentManager, soaNodeId);
         if (sourceModel == null) {
             // Can't find source document (can happen when the document is not saved yet)
             return;

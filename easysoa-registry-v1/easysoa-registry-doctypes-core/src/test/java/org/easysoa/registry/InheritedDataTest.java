@@ -68,14 +68,14 @@ public class InheritedDataTest extends AbstractRegistryTest {
 	@Test
 	public void testInheritanceOnUpdate() throws Exception {
 		// ...when impl is updated...
-		myServiceImplModel = documentService.find(documentManager, MYIMPL_ID);
+		myServiceImplModel = documentService.findSoanode(documentManager, MYIMPL_ID);
 		myServiceImpl = myServiceImplModel.getAdapter(ServiceImplementation.class);
 		List<String> implTests = myServiceImpl.getTests();
 		implTests.add("org.easysoa.Test2");
 		myServiceImpl.setTests(implTests);
 		documentManager.saveDocument(myServiceImplModel);
 		documentManager.save();
-		myEndpointModel = documentService.find(documentManager, MYENDPOINT_ID);
+		myEndpointModel = documentService.findSoanode(documentManager, MYENDPOINT_ID);
 		myEndpointServiceImpl = myEndpointModel.getAdapter(ServiceImplementation.class);
 		Assert.assertTrue("Inherited facets' metadata must be maintained on updates",
 				myEndpointServiceImpl.getTests() != null &&
@@ -94,7 +94,7 @@ public class InheritedDataTest extends AbstractRegistryTest {
 		documentManager.move(endpointProxyModel.getRef(), myServiceImpl2Model.getRef(), endpointProxyModel.getName());
 		documentManager.save();
 
-		myEndpointModel = documentService.find(documentManager, MYENDPOINT_ID);
+		myEndpointModel = documentService.findSoanode(documentManager, MYENDPOINT_ID);
 		myEndpointServiceImpl = myEndpointModel.getAdapter(ServiceImplementation.class);
 		Assert.assertTrue("Inherited facets' metadata must be updated when child is moved",
 				myEndpointServiceImpl.getTests() != null &&
@@ -135,7 +135,7 @@ public class InheritedDataTest extends AbstractRegistryTest {
 		// ...and when endpoint is removed from impl
 		documentManager.removeDocument(endpointProxyModel.getRef());
 		documentManager.save();
-		myEndpointModel = documentService.find(documentManager, MYENDPOINT_ID);
+		myEndpointModel = documentService.findSoanode(documentManager, MYENDPOINT_ID);
 		myEndpointServiceImpl = myEndpointModel.getAdapter(ServiceImplementation.class);
 		Assert.assertEquals("Inherited facets' metadata must be reset when child is deleted",
 				0, myEndpointServiceImpl.getTests().size());
@@ -153,11 +153,11 @@ public class InheritedDataTest extends AbstractRegistryTest {
 		documentManager.save();
 		
 		// Make sure that comp's metadata has been transfered to infoservice then to serviceimpl
-		DocumentModel myInfoServiceModel = documentService.find(documentManager, MYIS_ID);
+		DocumentModel myInfoServiceModel = documentService.findSoanode(documentManager, MYIS_ID);
 		Assert.assertEquals("Facet inheritance through UUID metadata must work",
 				infoServModel.getId(),
 				myInfoServiceModel.getPropertyValue(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE));
-		myServiceImplModel = documentService.find(documentManager, MYIMPL_ID);
+		myServiceImplModel = documentService.findSoanode(documentManager, MYIMPL_ID);
 		Assert.assertEquals("Facet inheritance through UUID metadata must work",
 				infoServModel.getId(),
 				myServiceImplModel.getPropertyValue(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE));

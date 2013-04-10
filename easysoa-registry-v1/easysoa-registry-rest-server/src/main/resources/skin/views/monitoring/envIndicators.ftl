@@ -35,8 +35,9 @@
 
                 <li class="span12">
                     <div class="thumbnail">
-                        <img data-src="holder.js/300x200" alt="">            
-                        <h2>Indicateurs pour le service&nbsp;<a href="#"><i class="icon-file-alt"></i></a></h2>
+                        <img data-src="holder.js/300x200" alt="">
+                        <h2>Indicateurs pour le service ${service}<a href="http://localhost:8080/nuxeo/nxpath/default${servicePath}@view_documents?" target="_blank"><i class="icon-file-alt"></i></a></h2>
+                        Déployé à ${endpoint}
                         <p>
                         <@displayIndicatorsShort indicators/>
                         </p>

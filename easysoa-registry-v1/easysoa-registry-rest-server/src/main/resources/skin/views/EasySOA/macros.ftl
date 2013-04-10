@@ -71,7 +71,7 @@
     <#macro displayIndicatorShort indicator>
         <tr>
             <td>
-                <a href="#"><i class="icon-edit"></i></a>
+                <a href="http://localhost:8080/nuxeo/nxpath/default${indicator.path}@view_documents?tabIds=%3ATAB_EDIT" target="_blank"><i class="icon-edit"></i></a>
                 <a href="#" data-toggle="tooltip" data-placement="top" title="${indicator.description}">${indicator.slaOrOlaName}</a>
             </td>
             <td>${indicator.timestamp?datetime?string.long}</td>

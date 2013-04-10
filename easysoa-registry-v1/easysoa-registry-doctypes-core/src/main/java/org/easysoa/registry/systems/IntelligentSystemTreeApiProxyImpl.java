@@ -73,7 +73,7 @@ public class IntelligentSystemTreeApiProxyImpl implements IntelligentSystemTreeA
         // If the model is missing, create a proxy
         DocumentModel existingModel = findSoaNodeModel(istModel, treeName, identifier);
         if (existingModel == null) {
-    		DocumentModel sourceModel = documentService.find(documentManager, identifier);
+    		DocumentModel sourceModel = documentService.findSoanode(documentManager, identifier);
             documentManager.createProxy(sourceModel.getRef(), expectedParentPath);
             treeChanged = true;
         }

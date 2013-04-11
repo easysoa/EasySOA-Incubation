@@ -71,6 +71,20 @@
       </contentViews>
     </type>
     
+    <!-- to allow creation of SoaNodes : -->
+    <type id="Folder">
+        <subtypes>
+            <type>JavaServiceImplementation</type>
+            <type>JavaServiceConsumption</type>
+        </subtypes>
+    </type>
+    <!-- type id=Subproject">
+        <subtypes>
+            <type>JavaServiceImplementation</type>
+            <type>JavaServiceConsumption</type>
+        </subtypes>
+    </type -->
+    
   </extension>
 
 </component>

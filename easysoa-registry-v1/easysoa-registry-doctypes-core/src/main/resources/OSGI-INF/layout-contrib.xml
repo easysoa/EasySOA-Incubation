@@ -7,7 +7,8 @@
   
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgettypes">
 
-    <!-- Display doctype in document title -->
+    <!-- Display doctype in document title , overriden (template) from
+    nuxeo-jsf/nuxeo-platform-webapp-base/src/main/resources/OSGI-INF/layouts-contrib.xml -->
     <widgetType name="title_and_permlink">
       <configuration>
         <sinceVersion>5.4.2</sinceVersion>

@@ -116,6 +116,13 @@ public class SubprojectActionsBean implements Serializable {
         // Historique > Versions archivées > Consulter la version archivée
         // which appears in the breadcrumb beneath MySubproject/Suivi de version/MySubproject
         
+        /*
+        REMOVING CUSTOM PUBLICATION CODE
+        because the new version may already be accessed (as said above)
+        and when browsing it from publication section, it would use the regular pageProvider
+        and therefore display no children (because they are not accessible anymore through
+        session.getChildren() but using nuxeo-tree-snapshot's own adapter and pageProvider) 
+        
         CoreSession coreSession = subproject.getCoreSession();
         String publishedSectionName = coreSession.getDocument(versionedSubprojectModel.getParentRef()).getName()
                 + "_" + versionedSubprojectModel.getName() + "_v" + versionedSubprojectModel.getVersionLabel();
@@ -127,6 +134,8 @@ public class SubprojectActionsBean implements Serializable {
         coreSession.save();
         
         DocumentModel versionedSubprojectProxy = coreSession.createProxy(versionedSubprojectModel.getRef(), publishedSection.getRef());
+        // (NB. versionedSubprojectProxy is not a version, even though its target is)
+        */
 
         outputMessage = "Successfully created new version " + versionedSubprojectModel.getVersionLabel(); // TODO ??
         Object[] params = { versionedSubprojectModel.getVersionLabel() };
@@ -152,9 +161,9 @@ public class SubprojectActionsBean implements Serializable {
         
         navigationContext.invalidateCurrentDocument(); // Else the current document is not refreshed and another clic on the 'create new version' button create a version on the previous 'live' document.
             
-        //DocumentModel publishedVersion = versionedSubprojectModel;// goes at MySubproject/Suivi de version/MySubproject
+        DocumentModel publishedVersion = versionedSubprojectModel;// goes at MySubproject/Suivi de version/MySubproject
         //DocumentModel publishedVersion = versionedSubprojectProxy;// goes at Publications/MySubproject_vx.y (but if create version again, error "can't set prop")
-        DocumentModel publishedVersion = subproject;// goes to live (but that's not what we'd want)
+        ///DocumentModel publishedVersion = subproject;// goes to live (but that's not what we'd want)
         if (publishedVersion != null) {
             return navigationContext.navigateToDocument(publishedVersion, "after-edit");
         }

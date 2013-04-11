@@ -163,8 +163,41 @@
         <type>Folder</type>
         <type>SystemTreeRoot</type>
         <type>IntelligentSystemTreeRoot</type>
+        
+        <!-- to allow creation of SoaNodes : -->
+        <!-- type>InformationService</type>
+        <type>SoftwareComponent</type>
+        <type>EndpointConsumer</type>
+        <type>DeployedDeliverable</type>
+        <type>Deliverable</type>
+        <type>ServiceImplementation</type>
+        <type>ServiceConsumption</type>
+        <type>EndpointConsumption</type>
+        <type>Endpoint</type -->
       </subtypes>
     </type>
+    
+    <!-- to allow creation of SoaNodes : -->
+    <type id="Folder">
+        <subtypes>
+            <!-- NB. (RequirementsDocument, ) Business Service, Actor, SLA ;
+            OLA ; Component are in easy-soa-open-wide Nuxeo Studio project -->
+            <type>InformationService</type>
+            <type>Platform</type>
+            <!-- type>SoftwareComponent</type -->
+            
+            <!-- NB. JavaServiceImplementation/Consumption are in easysoa-registry-doctypes-java-core -->
+            <!-- type>EndpointConsumer</type -->
+            <type>Deliverable</type>
+            <type>ServiceImplementation</type>
+            <type>ServiceConsumption</type>
+            
+            <type>DeployedDeliverable</type>
+            <type>Endpoint</type>
+            <type>EndpointConsumption</type>
+        </subtypes>
+    </type>
+    
     <type id="SystemTreeRoot" coretype="SystemTreeRoot">
       <label>System Tree Root</label>
       <icon>/icons/workspace.gif</icon>
@@ -245,13 +278,26 @@
       <subtypes>
         <type>File</type>
         <type>TaggingFolder</type>
-        <type>SoftwareComponent</type>
+        
+        <!-- to allow creation of SoaNodes : -->
+        <type>RequirementsDocument</type>
+        <type>BusinessService</type>
+        <type>SLA</type>
+        <type>OLA</type>
         <type>InformationService</type>
+        <type>Component</type>
+        <type>Platform</type>
+        <!-- type>SoftwareComponent</type -->
+        
+        <!-- NB. JavaServiceImplementation/Consumption are in easysoa-registry-doctypes-java-core -->
+        <!-- type>EndpointConsumer</type -->
         <type>Deliverable</type>
         <type>ServiceImplementation</type>
+        <type>ServiceConsumption</type>
+        
         <type>DeployedDeliverable</type>
         <type>Endpoint</type>
-        <type>Platform</type>
+        <type>EndpointConsumption</type>
       </subtypes>
     </type>
     <type id="IntelligentSystem" coretype="IntelligentSystem">
@@ -346,6 +392,7 @@
         <layout>informationservice</layout>
         <layout>wsdlinfo</layout>
         <layout>restinfo</layout>
+        <layout>file</layout><!-- for expected service interface definition ex. WSDL -->
         <layout>files</layout>
       </layouts>
       <layouts mode="listing">
@@ -499,7 +546,7 @@
         <layout>wsdlinfo</layout>
         <layout>restinfo</layout>
         <layout>environment</layout>
-        <layout>file</layout><!-- TODO to allow upload using CMIS in JWT export -->
+        <layout>file</layout><!-- for actual service interface definition ex. WSDL --><!-- TODO to allow upload using CMIS in JWT export -->
         <layout>files</layout>
       </layouts>
     </type>

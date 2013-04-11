@@ -28,7 +28,6 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
-import org.nuxeo.ecm.core.api.model.PropertyException;
 
 @Name("documentModelHelperBean")
 @Scope(ScopeType.CONVERSATION)

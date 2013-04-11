@@ -82,7 +82,7 @@
       <schema name="dublincore" />
       <!-- facet name="Folderish" / -->
     </doctype>
-    <doctype extends="Folder" name="Subproject">
+    <doctype extends="Workspace" name="Subproject"><!-- Folder -->
       <schema name="common" />
       <schema name="dublincore" />
       <schema name="subproject" />

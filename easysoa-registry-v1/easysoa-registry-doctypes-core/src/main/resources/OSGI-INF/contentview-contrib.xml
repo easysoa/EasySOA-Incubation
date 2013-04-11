@@ -5,6 +5,13 @@
 
   <extension target="org.nuxeo.ecm.platform.ui.web.ContentViewService" point="contentViews">
 
+    <!--
+    [EasySOA] overriden from nuxeo-jsf/nuxeo-platform-webapp-base/src/main/resources/OSGI-INF/contentviews-contrib.xml
+    
+    NB. document trees versioned using tree snapshot are rather displayed using dedicated contentView
+    in addons/nuxeo-tree-snapshot/src/main/resources/OSGI-INF/contentviews-contrib.xml and pageProvider
+    org.nuxeo.snapshot.pageprovider.VFolderPageProvider built on the tree Snapshot adapter.
+    -->
     <contentView name="document_content">
 
       <title>label.contentview.document_content</title>
@@ -25,14 +32,27 @@
             <field name="modified_min" schema="advanced_search"/>
             <field name="modified_max" schema="advanced_search"/>
           </predicate>
+          <!-- [EasySOA] ORIG : -->
+          <!-- fixedPart>
+            ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
+            ecm:mixinType !=
+            'HiddenInNavigation' AND ecm:currentLifeCycleState
+            != 'deleted'
+          </fixedPart -->
+          <!-- [EasySOA] also list documents that are proxied / "tagged" in this one : -->
           <fixedPart>
             ecm:parentId = ? AND ecm:isCheckedInVersion = 0 AND
             ecm:mixinType !=
             'HiddenInNavigation' AND ecm:currentLifeCycleState
             != 'deleted'
+             OR soan:parentIds = ?
           </fixedPart>
         </whereClause>
-        <parameter>#{documentManager.getWorkingCopy(currentDocument.getRef()).getId()}</parameter><!-- EasySOA: view working copy instead of proxy -->
+        <!-- [EasySOA] ORIG : -->
+        <!-- parameter>#{currentDocument.id}</parameter -->
+        <!-- [EasySOA] view source document instead of proxy : -->
+        <parameter>#{documentManager.getSourceDocument(currentDocument.getRef()).getId()}</parameter>
+        <parameter>#{documentManager.getSourceDocument(currentDocument.getRef()).getId()}</parameter>
         <sort ascending="true" column="dc:title"/>
         <pageSize>20</pageSize>
       </coreQueryPageProvider>

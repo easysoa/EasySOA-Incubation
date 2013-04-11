@@ -67,11 +67,17 @@ public class IndexController extends ModuleRoot {
            .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
     }
 
+    /**
+     * 
+     * @return The current user name
+     * @throws Exception 
+     */
     public String getCurrentUser() throws Exception {
         String user = "";
-        UserManager userManager = Framework.getService(UserManager.class);
-        //Principal currentUser = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
-        Principal currentUser = userManager.getPrincipal("Administrator");
+        
+        CoreSession session = SessionFactory.getSession(request);
+        Principal currentUser = session.getPrincipal();
+        
         if(currentUser != null){
             user = currentUser.getName();
         }

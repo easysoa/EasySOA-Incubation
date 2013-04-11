@@ -205,8 +205,12 @@
         </table>
     </#macro>
     
-    <#macro displayUserInfo>
-        Bonjour utilisateur | <a href="">deconnexion</a>
+    <#macro displayUserInfo user>
+        <#--<#if user == "">
+            <img src="/nuxeo/site/easysoa/skin/img/user.png" /> Not logged in (<a href="/login.html">log in</a>)
+        <#else>-->
+            <img src="/nuxeo/site/easysoa/skin/img/user.png" /> Logged as <span id="username">${user}</span> (<a href="/nuxeo/logout">logout</a>)
+        <#--</#if>-->
     </#macro>
     
 <#assign documentPropNames=["lifeCyclePolicy", "versionLabel", "facets", "children", "type", "sourceId", "id", "author", "title", "repository", "created", "name", "path", "schemas", "parent", "lifeCycleState", "allowedStateTransitions", "isLocked", "modified", "content", "ref", "versions", "isFolder", "sessionId", "session", "proxies"]/>

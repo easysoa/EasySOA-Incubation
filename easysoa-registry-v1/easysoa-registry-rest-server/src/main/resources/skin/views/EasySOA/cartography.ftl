@@ -21,7 +21,6 @@
         <div id="header">
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
-                <div id="headerUserBar"></div>
                 EasySOA Cartographie
             </div>
         </div>
@@ -41,7 +40,11 @@
                             <ul>
                                 <!-- TODO : Replace this hard coded link by a build in link ? -->
                                 <li>
-                                    <a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte de services</a>
+                                    <a href="${Root.path}/services∕cartography/sourceDiscovery">Découverte sources</a>
+                                    <small> : Sources Discovery allows to automatically extract known services, implementations and consumptions from source code (for now, Java) by analyzing it at compilation time.</small>
+                                </li>
+                                <li>
+                                    <a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte web</a>
                                     <small> : Find any useful service from your intranet, or even the web: as you browse pages, informations on services are collected and sent the registry</small>
                                 </li>
                                 <li><a href="${Root.path}/../services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>

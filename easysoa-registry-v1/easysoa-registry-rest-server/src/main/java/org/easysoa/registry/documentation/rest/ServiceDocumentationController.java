@@ -438,6 +438,24 @@ public class ServiceDocumentationController extends ModuleRoot {
     }
 
     @GET
+    @Path("cartography/sourceDiscovery") // TODO encoding
+    @Produces(MediaType.TEXT_HTML)
+    public Object doGetSourceDiscoveryPageHTML(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
+        
+        CoreSession session = SessionFactory.getSession(request);        
+        
+        // Indicators
+        IndicatorsController indicatorsController = new IndicatorsController();
+        Map<String, IndicatorValue> indicators = indicatorsController.computeIndicators(session, null, null, subprojectId, visibility);
+        
+        return getView("sourceDiscovery")
+                .arg("subprojectId", subprojectId)
+                .arg("visibility", visibility)
+                .arg("indicators", indicators)
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));        
+    }    
+    
+    @GET
     @Path("matchingFull") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doGetMatchingFullPageHTML(@QueryParam("subprojectId") String subprojectId,
@@ -473,6 +491,6 @@ public class ServiceDocumentationController extends ModuleRoot {
                 .arg("visibility", visibility)
                 .arg("indicators", indicators)
                 .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
-    }     
+    }
     
 }

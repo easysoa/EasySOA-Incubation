@@ -22,7 +22,7 @@
         <div id="header">
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
-                <div id="headerUserBar"></div>
+                <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
             </div>
         </div>
 
@@ -42,10 +42,15 @@
                         <p>
                             <!-- TODO : Replace this hard coded link by a build in link ? -->
                             <div class="btn-group">
-                                <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte de services</a>
+                                <a class="btn" href="${Root.path}/services/cartography/sourceDiscovery">Découverte sources</a>
+                                <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte web</a>
+                                <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte à l'éxécution</a>
+                            </div>
+                            <div class="btn-group">
                                 <a class="btn" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>
                                 <a class="btn" href="#">Qualité</a>
-                            </div>
+                            </div>                        
+                        
                         </p>
                         <p>
                             <table class="table table-bordered" width="100%">
@@ -83,7 +88,7 @@
                                     <td width="20%">${indicators["Placeholders"].count}</td>
                                 </tr>
                             </table>
-                        </p>                        
+                        </p>
                         <a class="btn btn-primary" href="${Root.path}/services/matchingFull/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
                     </div>
                 </li>

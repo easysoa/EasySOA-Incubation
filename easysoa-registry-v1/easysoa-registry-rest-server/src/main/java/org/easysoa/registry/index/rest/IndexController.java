@@ -20,26 +20,24 @@
 
 package org.easysoa.registry.index.rest;
 
+import java.security.Principal;
 import java.util.Map;
+import javax.faces.context.FacesContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.log4j.Logger;
-import org.easysoa.registry.DocumentServiceImpl;
-import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.indicators.rest.IndicatorValue;
 import org.easysoa.registry.indicators.rest.IndicatorsController;
-import org.easysoa.registry.types.Project;
 import org.easysoa.registry.utils.ContextData;
-import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * Controller for index view
@@ -69,6 +67,16 @@ public class IndexController extends ModuleRoot {
            .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
     }
 
+    public String getCurrentUser() throws Exception {
+        String user = "";
+        UserManager userManager = Framework.getService(UserManager.class);
+        //Principal currentUser = FacesContext.getCurrentInstance().getExternalContext().getUserPrincipal();
+        Principal currentUser = userManager.getPrincipal("Administrator");
+        if(currentUser != null){
+            user = currentUser.getName();
+        }
+        return user;
+    }
 
     
 }

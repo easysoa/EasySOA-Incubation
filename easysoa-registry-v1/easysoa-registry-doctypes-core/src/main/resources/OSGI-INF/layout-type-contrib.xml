@@ -16,21 +16,12 @@
       <rows>
         <row>
           <widget>subproject_parentSubprojects</widget>
+          <widget>subproject_parentSubprojects_edit</widget>
         </row>
       </rows>
-      <!-- widget name="subproject_parentSubprojects" type="template">
-         <labels>
-           <label mode="any">label.easysoa.layout.subproject.parentSubprojects</label>
-         </labels>
-         <translated>true</translated>
-         <fields>
-           <field>subproject:parentSubprojects</field>
-         </fields>
-         <properties widgetMode="any">
-           <property name="template">/widgets/list_widget_template.xhtml</property>
-           <property name="listTemplateItem">/widgets/document_id_link_template.xhtml</property>
-         </properties>
-      </widget -->
+      <!-- display complex property (list) :
+      (not displayed if empty field)
+      see http://community.nuxeo.com/5.3/books/nuxeo-book/html/layouts.html#d2452e2555 -->
       <widget name="subproject_parentSubprojects" type="list">
          <labels>
            <label mode="any">label.easysoa.layout.subproject.parentSubprojects</label>
@@ -39,28 +30,47 @@
          <fields>
            <field>subproject:parentSubprojects</field>
          </fields>
+         <widgetModes>
+          <mode value="create">hidden</mode>
+          <mode value="edit">hidden</mode>
+         </widgetModes>
+         <!-- list : see http://showcase.nuxeo.com/nuxeo/layoutDemo/listWidget/reference -->
          <subWidgets>
-	       <widget name="informationservice_linkedBusinessService" type="template">
+	       <widget name="subproject_parentSubprojects_subproject" type="template"><!-- text OK -->
 	         <labels>
 	           <label mode="any"></label><!-- label.easysoa.layout.subproject.parentSubproject -->
 	         </labels>
 	         <!-- translated>true</translated -->
 	         <fields>
-	           <field></field>
+	           <field></field><!-- #{value} -->
 	         </fields>
 	         <properties widgetMode="view">
- 	           <property name="template">/widgets/document_id_link_template.xhtml</property>
+               <!-- NB. template must be iteration-proof (i.e. no c:set, c:if but h:panelGroup rendered=...) -->
+ 	           <property name="template">/widgets/phase_document_id_link_template.xhtml</property>
  	         </properties>
+             <!-- properties widgetMode="edit">
+               <property name="template">/widgets/single_document_suggestion_widget_template.xhtml</property>
+             </properties -->
  	       </widget>
          </subWidgets>
-         <!-- properties widgetMode="any">
-           <- property name="directory">subject</property ->
-           <- propertyList name="list">
-             <value>fooListItem</value>
-             <value>barListItem</value>
-           </propertyList ->
-           <property name="listTemplateItem">/widgets/document_id_link_template.xhtml</property>
-         </properties -->
+      </widget>
+      <!-- display complex property (list) :
+      (not displayed if empty field)
+      see http://community.nuxeo.com/5.3/books/nuxeo-book/html/layouts.html#d2452e2555 -->
+      <widget name="subproject_parentSubprojects_edit" type="template">
+         <labels>
+           <label mode="any">label.easysoa.layout.subproject.parentSubprojects</label>
+         </labels>
+         <translated>true</translated>
+         <fields>
+           <field>subproject:parentSubprojects</field>
+         </fields>
+         <widgetModes>
+          <mode value="view">hidden</mode>
+         </widgetModes>
+         <properties widgetMode="edit">
+           <property name="template">/widgets/multiple_document_suggestion_widget_template.xhtml</property>
+         </properties>
       </widget>
       
     </layout>
@@ -75,7 +85,7 @@
           <widget>spnode_subproject</widget>
         </row>
       </rows>
-      <widget name="spnode_subproject" type="text">
+      <widget name="spnode_subproject" type="template">
          <labels>
            <label mode="any">label.easysoa.layout.spnode.subproject</label>
          </labels>
@@ -87,6 +97,9 @@
           <mode value="create">hidden</mode>
           <mode value="edit">hidden</mode>
          </widgetModes>
+         <properties widgetMode="view">
+           <property name="template">/widgets/phase_document_id_link_template.xhtml</property>
+         </properties>
       </widget>
       
     </layout>
@@ -186,6 +199,9 @@
         <properties widgetMode="view">
           <property name="template">/widgets/document_id_link_template.xhtml</property>
         </properties>
+        <properties widgetMode="edit">
+          <property name="template">/widgets/single_document_suggestion_widget_template.xhtml</property>
+        </properties>
       </widget>
     </layout>
     
@@ -205,7 +221,7 @@
           <widget>informationservice_operations</widget>
         </row>
       </rows>
-      <widget name="informationservice_providerActor" type="text">
+      <widget name="informationservice_providerActor" type="template">
         <labels>
           <label mode="any">label.easysoa.layout.informationservice.provideractor</label>
         </labels>
@@ -213,6 +229,12 @@
         <fields>
           <field>iserv:providerActor</field>
         </fields>
+        <properties widgetMode="view">
+          <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="template">/widgets/single_document_suggestion_widget_template.xhtml</property>
+        </properties>
       </widget>
       <widget name="informationservice_linkedBusinessService" type="template">
         <labels>
@@ -224,6 +246,9 @@
         </fields>
         <properties widgetMode="view">
           <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="template">/widgets/single_document_suggestion_widget_template.xhtml</property>
         </properties>
       </widget>
       <widget name="informationservice_operations" type="template">

@@ -10,28 +10,27 @@ xmlns:c="http://java.sun.com/jstl/core" id="#{widget.id}">
 <ui:remove>
 <!-- comments in jsf : see http://www.seamframework.org/Documentation/HowDoICommentOutBlocksOfMarkupInFacelets -->
 field: #{field} ; value: #{value} ; fieldOrValue: #{fieldOrValue}
-<nxu:methodResult name="targetDocument" value="#{documentModelHelperBean.safeGetDocument(field)}">
-    targetDocument: #{targetDocument} ; not empty : #{not empty targetDocument} ; isCheckedInVersion : #{targetDocument.isCheckedInVersion}
+<nxu:methodResult name="targetDocument" value="#{documentModelHelperBean.getSubprojectById(field)}">
+    targetDocument: #{targetDocument} ; not empty : #{not empty targetDocument}
+    <!-- isCheckedInVersion : #{targetDocument.isCheckedInVersion}
     <nxh:outputText value="#{nxd:titleOrId(targetDocument)}" />
     <nxh:outputText value="#{targetDocument.versionLabel}" />
-    <nxh:outputText value="#{documentModelHelperBean.displayDocument(targetDocument)}" />
+    <nxh:outputText value="#{documentModelHelperBean.displayDocument(targetDocument)}" / -->
 </nxu:methodResult>
 </ui:remove>
 
-<nxu:methodResult name="targetDocument" value="#{documentModelHelperBean.safeGetDocument(field)}">
+<nxu:methodResult name="targetDocument" value="#{documentModelHelperBean.getSubprojectById(field)}">
 
     <!-- using panelGroup instead of c:when/choose because it doesn't work within a loop (ex. in list property) -->
     <h:panelGroup rendered="#{not empty targetDocument}">
 		<nxu:graphicImage value="#{nxd:iconPath(targetDocument)}" alt="" />
 		<nxd:restDocumentLink document="#{targetDocument}">
-            <nxh:outputText value="#{nxd:titleOrId(targetDocument)}" /><!-- for an SoaNode, is its SoaName -->
+            <nxh:outputText value="#{documentModelHelperBean.displayPhase(targetDocument)}" />
 		</nxd:restDocumentLink>
 		<nxd:restDocumentLink document="#{targetDocument}" newConversation="true" target="_tab">
 			<nxu:graphicImage value="/icons/external.gif" style="vertical-align:middle"
 			   alt="#{messages['permalink.newTab']}" title="#{messages['permalink.newTab']}" />
 		</nxd:restDocumentLink>
-        <!-- displaying phase (if any) -->
-        <span style="font-style: italic; color: grey;"> <nxh:outputText value="#{documentModelHelperBean.displayPhase(targetDocument)}" /></span>
     </h:panelGroup>
 
     <h:panelGroup rendered="#{empty targetDocument}">

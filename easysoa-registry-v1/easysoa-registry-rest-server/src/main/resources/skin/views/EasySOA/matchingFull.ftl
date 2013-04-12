@@ -39,11 +39,8 @@
                         <p>
                             <ul>
                                 <li>
-                                    <a href="${Root.path}/../dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Réconciliation</a>
+                                    <a class="btn" href="${Root.path}/../dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Réconciliation</a>
                                     <small> : EasySOA Registry's Matching Dashboard lists all discovered SOA elements (implementations and endpoints) that its automatic matching algorithm couldn't link with the existing SOA model because of lack of information that could help it decide one way or the other, and further helps the SOA administrator link them by providing suggestions along the specified architecture (Components).</small>
-                                </li>
-                                <li>Gestion des versions
-                                    <small></small>
                                 </li>
                             </ul>
                         </p>

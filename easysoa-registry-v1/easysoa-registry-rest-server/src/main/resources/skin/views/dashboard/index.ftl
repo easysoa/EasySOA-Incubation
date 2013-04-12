@@ -4,7 +4,9 @@
 <head>
 	<title>EasySOA Matching dashboard</title>
 	<meta charset="utf-8" />
-	<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />
+        <!-- To solve temporarily the conflict between CSS styles -->
+        <!--<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />-->
+	<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/baseMatchboard.css" media="all" />
 	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" /> 
 	<script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
 	<style type="text/css">
@@ -14,8 +16,8 @@
 	</style>
         
         <!-- Bootstrap default style and scripts -->
-        <link href="/nuxeo/site/easysoa/skin/css/bootstrap.css" rel="stylesheet" media="screen">
-        <script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>
+        <!--<link href="/nuxeo/site/easysoa/skin/css/bootstrap.css" rel="stylesheet" media="screen">-->
+        <!--<script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>-->
 </head>
 	
 <body>

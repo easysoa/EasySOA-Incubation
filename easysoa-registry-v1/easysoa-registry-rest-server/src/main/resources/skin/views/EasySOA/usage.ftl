@@ -38,10 +38,10 @@
                         <p>
                             <ul>
                                 <li>
-                                    <a href="${Root.path}/../monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">Qualité de service</a>
+                                    <a class="btn" href="${Root.path}/../monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">Qualité de service</a>
                                     <small>EasySOA can be fed with runtime, live-computed business indicators that show how much expected business service levels are met.</small>
                                 </li>
-                                <li><a href="http://owsi-vm-easysoa-axxx-pivotal.accelance.net:9100/jasmine/" target="_blank">Statistiques</a>
+                                <li><a class="btn" href="http://owsi-vm-easysoa-axxx-pivotal.accelance.net:9100/jasmine/" target="_blank">Statistiques</a>
                                     <small></small>
                                 </li>
                             </ul>

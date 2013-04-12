@@ -80,7 +80,6 @@
                         <p>
                             <div class="btn-group">
                                 <a class="btn" href="${Root.path}/dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Réconciliation</a>
-                                <a class="btn" href="#">Gestion des versions</a>
                             </div>
                         </p>
                         <p>

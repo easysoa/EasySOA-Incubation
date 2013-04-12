@@ -25,12 +25,23 @@ $(document).ready(function() {
 </head>
 <body style="font-family: Arial, sans-serif; color: #002244;">
 
+<p>
+    La découverte web vous permet, tout en naviguant, de découvrir les Services Web liés depuis les pages web visités. 
+
+    Pour l'utiliser :
+    <ol>
+        <li><a href="#proxyConfig">configurez le proxy</a></li>
+        <li>taper l'url dans la barre <img src="/img/easysoa_url_bar.png" alt="Discovery url bar"/></li>
+    </ol>
+
+    <strong>ATTENTION !</strong> Ne s'applique pas aux sites sécurisés (protocole https), pour lesquels il est nécessaire de passer en mode notification avec le bouton <a href="#notifier">Notifier EasySOA</a>.
+</p>  
 
 <!--<h2>Goal</h2>-->
 <!--The goal is to help business users find and tag services that are interesting to them, by simply letting them browse the place they know best, where such services are most likely to be : their usual business applications and intranet.-->
 
 <h2>Objectif</h2>
-L'objectif de la découverte web est d'aider les utilisateurs business à trouver et marquer les services qui sont interressant pour lui, en lui permettant simplement de naviguer sur les sites qu'il connait le mieux et où de tels services sont les plus susceptibles d'être : leurs applications business habituelles et leur Intranet.
+L'objectif de la découverte web est d'aider les utilisateurs à trouver et marquer les services qui sont interressant pour eux, en leur permettant simplement de naviguer sur les sites qu'ils connaissent le mieux et où de tels services sont les plus susceptibles d'être : leurs applications business habituelles et leur Intranet.
 
 <!--<h2>How it works</h2>-->
 <!--It takes the form of a 'browser in the browser'. It automatically finds WSDL files while the user navigates, extracts business information about it such as the business application where it was found (taken from the title of the browsed page), then makes him check all of it before sending the files to the Nuxeo repository.-->
@@ -43,30 +54,48 @@ La découverte web prend la forme d'un navigateur dans le navigateur. Il trouve 
 <p>
 Pour naviguer, entrez simplement une adresse (correspondant avotre application metier ou votre Intranet) dans le champ de saisie blanc et appuyez sur "entrée". le site ciblé s'affiche en dessous du champs et les services sont automatiquement découverts et affichés dans la partie gauche de l'écran.
 </p>
-<img src="/img/easysoa_discovery_browsing.png" alt="Discovery browsing screenshot"/>
+<!--<img src="/img/easysoa_discovery_browsing.png" alt="Discovery browsing screenshot"/>-->
 
 <!--<h2>How to configure your browser to use the discovery by browsing tool</h2>-->
-<h2>Comment configurer votre navigateur pour utiliser la découverte web ?</h2>
+<h2><a id="proxyConfig">Comment configurer votre navigateur pour utiliser la découverte web ?</a></h2>
 
-    The proxy will be launched on http://localhost:8081, so you will have to edit your browser's options to set the proxy to this address. Please make sure to remove any proxy exceptions (like localhost/127.0.0.1).
-
+    <!--The proxy will be launched on http://localhost:8081, so you will have to edit your browser's options to set the proxy to this address. Please make sure to remove any proxy exceptions (like localhost/127.0.0.1).
+    
     If you are in Chrome browser and you don't discover any services or some authentication problems because of proxy configuration problems. Run :
 
     chromium-browser --proxy-server="127.0.0.1:8081" --proxy-bypass-list=""
 
-    It will launch the browser with the good configuration.
+    It will launch the browser with the good configuration.-->
 
+    La découverte web fonctionne avec un proxy démarré à l'adresse http://localhost:8081, vous devez donc configurer votre navigateur pour qu'il utilise ce proxy.
+    
+    <ul>
+        <li>Configurer Firefox<li><!-- Add a link to open another firefox config page OR Display the help in a bootstrap accordion -->
+        <li>Configurer Internet explorer</li>
+        <li>Configurer Google Chrome</li>
+    </ul>
+    
+    The proxy will be launched on http://localhost:8081, so you will have to edit your browser's options to set the proxy to this address. Please make sure to remove any proxy exceptions (like localhost/127.0.0.1).
+    
+    If you are in Chrome browser and you don't discover any services or some authentication problems because of proxy configuration problems. Run :
+
+    chromium-browser --proxy-server="127.0.0.1:8081" --proxy-bypass-list=""
+
+    It will launch the browser with the good configuration.    
+    
 <!--<h2>Getting started</h2>-->
 <h2>Exemples</h2>
 <!--<h2>Examples</h2>-->
 <!--<a href="/examples.html">Here</a> you can find some sample pages or web sites containing services to browse.-->
 <a href="/examples.html">Ici</a> vous pourrez trouver quelques pages d'exemples ou des sites contenant des services à découvrir.
 
-<h2>Bookmarklet</h2>
+<!--<h2>Bookmarklet</h2>-->
+<h2><a id="notifier">Notification</a></h2>
 
 <!--<p>If you need to browse to HTTPS places, our proxy will not work. Instead, try to drag this bookmarklet to your favorites: when you're on a page of interest (e.g. that contains links to WSDLs), click then on the bookmark to make EasySOA explore the page.</p>-->
 <p>Si vous avez besoin de naviguer sur des sites HTTPS, Le proxy de découverte EasySOA ne va pas fonctionner. A la place, essayez d'ajouter ce bookmarklet dans vos favoris. Quand vous naviguerez sur une page contenant des liens vers des fichiers WSDL, cliquez sur le favori pour déclencher l'exploration de la page et la décourte des services.</p>
 
+<!-- TODO set a button for notification -->
 <p id="bookmarklet" style="font-size: 15pt"><i>(loading)</i></p>
 
 </body>

@@ -15,7 +15,8 @@ $(document).ready(function() {
       if (xhr.responseText.substr(0, 11) != 'javascript:') {
         js = 'javascript:' + js;
       }
-      $('#bookmarklet').html('<a href="' + js + '">Find WSDLs</a>');
+      //$('#bookmarklet').html('<a href="' + js + '">Find WSDLs</a>');
+      $('#bookmarklet').html('<a href="' + js + '">Notifier EasySOA</a>');
     }
   });
 
@@ -24,38 +25,47 @@ $(document).ready(function() {
 </head>
 <body style="font-family: Arial, sans-serif; color: #002244;">
 
-<h2>Getting started</h2>
 
-<p>Welcome to the discovery by browsing tool! Why not beginning by browsing through your intranet ?</p>
-<ul>
-  <li><a href="http://localhost:8083/demo-intranet/index.html">http://localhost:8083/demo-intranet/</a></li>
-</ul>
+<!--<h2>Goal</h2>-->
+<!--The goal is to help business users find and tag services that are interesting to them, by simply letting them browse the place they know best, where such services are most likely to be : their usual business applications and intranet.-->
 
-<p>FraSCAti on the cloud examples:</p>
-<ul>
-	<li><a href="http://frascati.elasticbeanstalk.com/services/">FraSCAti services deployed on Amazon Web Services</a></li>
-	<li><a href="http://frascati.bitnamiapp.com:8080/services/">FraSCAti services deployed on Bitnami</a></li>
-	<li><a href="http://frascati.cloudfoundry.com/services/">FraSCAti services deployed on Cloud Foundry</a></li>
+<h2>Objectif</h2>
+L'objectif de la découverte web est d'aider les utilisateurs business à trouver et marquer les services qui sont interressant pour lui, en lui permettant simplement de naviguer sur les sites qu'il connait le mieux et où de tels services sont les plus susceptibles d'être : leurs applications business habituelles et leur Intranet.
 
-	<!--The following services doesn't works due to a problem in Discovery proxy-->
-	<!--<li><a href="http://ec2-79-125-45-33.eu-west-1.compute.amazonaws.com:8080/services/">FraSCAti services deployed on Amazon Web Services Elastic Beanstalk</a></li>-->
-	<!--<li><a href="http://frascati.frascati.cloudbees.net/services/">FraSCAti services deployed on Cloudbees</a></li>-->
-	<!--<li><a href="http://ow2-frascati.appspot.com/services/">FraSCAti services deployed on Google App Engine</a></li>-->
-</ul>
+<!--<h2>How it works</h2>-->
+<!--It takes the form of a 'browser in the browser'. It automatically finds WSDL files while the user navigates, extracts business information about it such as the business application where it was found (taken from the title of the browsed page), then makes him check all of it before sending the files to the Nuxeo repository.-->
+<!-- To browse, just enter an URL in the white bar and it the "enter" key of your keyboard. This target web site is displayed above the barand the services are autommatically discovered and displayed at in the left frame. -->
 
-<p>Other examples:</p>
-<ul>
-  <li><a href="http://www.ebi.ac.uk/Tools/webservices/wsdl/list">http://www.ebi.ac.uk/Tools/webservices/wsdl/list</a></li>
-  <li><a href="http://www.actionscript.org/forums/showthread.php3?t=70742">http://www.actionscript.org/forums/showthread.php3?t=70742</a></li>
-  <li><a href="https://predic8.com/svn/membrane/registry/trunk/servicelist.text">https://predic8.com/svn/membrane/registry/trunk/servicelist.text</a></li>
-        <li><a href="http://footballpool.dataaccess.eu/data/info.wso">Daehosting Web Services</a></li>
-        <li><a href="http://services.unitedplanet.de/blz/BlzService.asmx">United Planet Web Services</a></li>
-        <li> Some W3 Web Services: http://www.w3.org/2002/ws/ra/ </li>
-</ul>
+<h2>Fonctionnement</h2>
+<p>
+La découverte web prend la forme d'un navigateur dans le navigateur. Il trouve automatiquement les fichiers WSDL pendant la navigation, en extrait les informations business telles que les applications metier ou ces fichiers ont été trouvés (tirée du titre de la page) et permet à l'utilisateur de vérifier les informations découvertes avant de les envoyer dans le registre Nuxeo.
+</p>
+<p>
+Pour naviguer, entrez simplement une adresse (correspondant avotre application metier ou votre Intranet) dans le champ de saisie blanc et appuyez sur "entrée". le site ciblé s'affiche en dessous du champs et les services sont automatiquement découverts et affichés dans la partie gauche de l'écran.
+</p>
+<img src="/img/easysoa_discovery_browsing.png" alt="Discovery browsing screenshot"/>
+
+<!--<h2>How to configure your browser to use the discovery by browsing tool</h2>-->
+<h2>Comment configurer votre navigateur pour utiliser la découverte web ?</h2>
+
+    The proxy will be launched on http://localhost:8081, so you will have to edit your browser's options to set the proxy to this address. Please make sure to remove any proxy exceptions (like localhost/127.0.0.1).
+
+    If you are in Chrome browser and you don't discover any services or some authentication problems because of proxy configuration problems. Run :
+
+    chromium-browser --proxy-server="127.0.0.1:8081" --proxy-bypass-list=""
+
+    It will launch the browser with the good configuration.
+
+<!--<h2>Getting started</h2>-->
+<h2>Exemples</h2>
+<!--<h2>Examples</h2>-->
+<!--<a href="/examples.html">Here</a> you can find some sample pages or web sites containing services to browse.-->
+<a href="/examples.html">Ici</a> vous pourrez trouver quelques pages d'exemples ou des sites contenant des services à découvrir.
 
 <h2>Bookmarklet</h2>
 
-<p>If you need to browse to HTTPS places, our proxy will not work. Instead, try to drag this bookmarklet to your favorites: when you're on a page of interest (e.g. that contains links to WSDLs), click then on the bookmark to make EasySOA explore the page.</p>
+<!--<p>If you need to browse to HTTPS places, our proxy will not work. Instead, try to drag this bookmarklet to your favorites: when you're on a page of interest (e.g. that contains links to WSDLs), click then on the bookmark to make EasySOA explore the page.</p>-->
+<p>Si vous avez besoin de naviguer sur des sites HTTPS, Le proxy de découverte EasySOA ne va pas fonctionner. A la place, essayez d'ajouter ce bookmarklet dans vos favoris. Quand vous naviguerez sur une page contenant des liens vers des fichiers WSDL, cliquez sur le favori pour déclencher l'exploration de la page et la décourte des services.</p>
 
 <p id="bookmarklet" style="font-size: 15pt"><i>(loading)</i></p>
 

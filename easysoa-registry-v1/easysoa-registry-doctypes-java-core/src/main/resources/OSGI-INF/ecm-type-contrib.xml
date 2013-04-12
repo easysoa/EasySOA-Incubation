@@ -21,7 +21,7 @@
     </type>
     <type id="JavaServiceConsumption" coretype="JavaServiceConsumption">
       <label>Java Service Consumption</label>
-      <icon>/icons/file.gif</icon>
+      <icon>/icons/serviceconsumption.png</icon>
       <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <layouts mode="any">
@@ -46,7 +46,7 @@
     </type>
     <type id="JavaServiceImplementation" coretype="JavaServiceImplementation">
       <label>Java Service Implementation</label>
-      <icon>/icons/file.gif</icon>
+      <icon>/icons/serviceimplementation.png</icon>
       <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <layouts mode="any">

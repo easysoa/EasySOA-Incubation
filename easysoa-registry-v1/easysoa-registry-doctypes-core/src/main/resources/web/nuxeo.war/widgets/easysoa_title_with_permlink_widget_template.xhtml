@@ -7,8 +7,32 @@
 
   <h1>
     <!-- EasySOA: display document type -->
-    <span style="font-size: 85%; padding-right: 5px; color: #777">
+    <span style="font-size: 70%; padding-right: 3px; color: #777">
         <h:outputText value="#{documentModelHelperBean.getDocumentTypeLabel(field)}" />
+        <span style="font-size: 70%; padding-right: 3px; color: #777"> </span>
+        
+        <h:panelGroup rendered="#{'InformationService' eq field.getType()}"> 
+        <nxu:methodResult name="targetDocument" value="#{documentModelHelperBean.safeGetDocument(field.getPropertyValue('iserv:providerActor'))}">
+            <h:panelGroup rendered="#{not empty targetDocument}">
+                <nxu:graphicImage value="#{nxd:iconPath(targetDocument)}" alt="" />
+                <nxd:restDocumentLink document="#{targetDocument}">
+                    <nxh:outputText value="#{nxd:titleOrId(targetDocument)}" /><!-- for an SoaNode, is its SoaName -->
+                </nxd:restDocumentLink>
+                 / 
+            </h:panelGroup>
+        </nxu:methodResult>
+        <span style="font-size: 70%; padding-right: 3px; color: #777"> </span>
+        
+        <nxu:methodResult name="targetDocument" value="#{documentModelHelperBean.safeGetDocument(field.getPropertyValue('acomp:componentId'))}">
+            <h:panelGroup rendered="#{not empty targetDocument}">
+                <nxu:graphicImage value="#{nxd:iconPath(targetDocument)}" alt="" />
+                <nxd:restDocumentLink document="#{targetDocument}">
+                    <nxh:outputText value="#{nxd:titleOrId(targetDocument)}" /><!-- for an SoaNode, is its SoaName -->
+                </nxd:restDocumentLink>
+            </h:panelGroup>
+        </nxu:methodResult>
+        </h:panelGroup>
+        
     </span>
     
     <c:if test="#{field.version}">
@@ -28,6 +52,12 @@
           title="#{messages['label.permalink']}"/>
       </nxd:restDocumentLink>
     </span>
+    
+    <h:panelGroup rendered="#{'InformationService' eq field.getType()}"> 
+        <a href="/nuxeo/site/easysoa/services/path#{field.getPropertyValue('spnode:subproject')}:#{field.getPropertyValue('soan:name')}?subprojectId=#{field.getPropertyValue('spnode:subproject')}&amp;visibility=deep">
+            <nxu:graphicImage value="/icons/fiche.png" alt="Fiche Service" />
+        </a>
+    </h:panelGroup>
 
     <nxu:set var="actions"
       value="#{webActions.getActionsList('DOCUMENT_HEADER_ACTIONS_LIST')}"

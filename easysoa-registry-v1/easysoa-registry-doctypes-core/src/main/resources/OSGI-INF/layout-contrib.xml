@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="org.easysoa.registry.doctypes.core.layout.contrib">
 
+  <!-- requiring components to allow overriding their definitions
+  see http://www.nuxeo.com/blog/development/2012/07/qa-friday-overriding-templates-extension-point-nuxeo/ -->
+  <require>org.nuxeo.ecm.platform.forms.layouts.webapp.base</require>
+
   <!-- ============ -->
   <!-- Widget types -->
   <!-- ============ -->
   
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager" point="widgettypes">
 
-    <!-- Display doctype in document title , overriden (template) from
+    <!-- Display doctype in document title, overriden (template) from
     nuxeo-jsf/nuxeo-platform-webapp-base/src/main/resources/OSGI-INF/layouts-contrib.xml -->
     <widgetType name="title_and_permlink">
       <configuration>

@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <component name="org.easysoa.core.preview.contrib.convert">
 
+  <!-- requiring Component provding any2html converter to be loaded before this one,
+  else our wsdl2html will be hidden by the any2html converter : -->
   <require>org.nuxeo.ecm.platform.convert.preview.plugins</require>
 
   <extension target="org.nuxeo.ecm.core.convert.service.ConversionServiceImpl"

@@ -212,15 +212,33 @@
       </templates>
       <rows>
         <row>
+          <widget>informationservice_linkedBusinessService</widget>
+        </row>
+        <row>
           <widget>informationservice_providerActor</widget>
         </row>
         <row>
-          <widget>informationservice_linkedBusinessService</widget>
+          <widget>informationservice_component</widget><!-- inherited from component -->
         </row>
         <row>
           <widget>informationservice_operations</widget>
         </row>
       </rows>
+      <widget name="informationservice_linkedBusinessService" type="template">
+        <labels>
+          <label mode="any">label.easysoa.layout.informationservice.linkedbusinessservice</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>iserv:linkedBusinessService</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="template">/widgets/single_document_suggestion_widget_template.xhtml</property>
+        </properties>
+      </widget>
       <widget name="informationservice_providerActor" type="template">
         <labels>
           <label mode="any">label.easysoa.layout.informationservice.provideractor</label>
@@ -236,13 +254,13 @@
           <property name="template">/widgets/single_document_suggestion_widget_template.xhtml</property>
         </properties>
       </widget>
-      <widget name="informationservice_linkedBusinessService" type="template">
+      <widget name="informationservice_component" type="template">
         <labels>
-          <label mode="any">label.easysoa.layout.informationservice.linkedbusinessservice</label>
+          <label mode="any">label.easysoa.layout.informationservice.component</label>
         </labels>
         <translated>true</translated>
         <fields>
-          <field>iserv:linkedBusinessService</field>
+          <field>acomp:componentId</field><!-- inherited from component -->
         </fields>
         <properties widgetMode="view">
           <property name="template">/widgets/document_id_link_template.xhtml</property>

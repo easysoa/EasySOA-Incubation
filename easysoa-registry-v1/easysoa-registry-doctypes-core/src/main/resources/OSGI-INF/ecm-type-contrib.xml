@@ -326,7 +326,7 @@
     </type>
     <type id="Platform" coretype="Platform">
       <label>Platform</label>
-      <icon>/icons/file.gif</icon>
+      <icon>/icons/platform.png</icon>
       <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <layouts mode="any">
@@ -352,7 +352,8 @@
     </type>
 
     <!-- Architecture level -->
-    <type id="SoftwareComponent" coretype="SoftwareComponent">
+    <!-- NB. Component is defined in Nuxeo Studio artifact (along with Business-level types) -->
+    <!-- type id="SoftwareComponent" coretype="SoftwareComponent">
       <label>Software Component</label>
       <icon>/icons/file.gif</icon>
       <bigIcon>/icons/file_100.png</bigIcon>
@@ -379,10 +380,10 @@
       <subtypes>
         <type>Deliverable</type>
       </subtypes>
-    </type>
+    </type -->
     <type id="InformationService" coretype="InformationService">
       <label>Information Service</label>
-      <icon>/icons/file.gif</icon>
+      <icon>/icons/informationservice.png</icon>
       <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <layouts mode="any">
@@ -413,7 +414,7 @@
     <!-- Implementation level -->
     <type id="Deliverable" coretype="Deliverable">
       <label>Deliverable</label>
-      <icon>/icons/file.gif</icon>
+      <icon>/icons/deliverable.png</icon>
       <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <layouts mode="any">
@@ -445,7 +446,7 @@
     </type>
     <type id="ServiceImplementation" coretype="ServiceImplementation">
       <label>Service Implementation</label>
-      <icon>/icons/file.gif</icon>
+      <icon>/icons/serviceimplementation.png</icon>
       <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <layouts mode="any">
@@ -476,7 +477,7 @@
     </type>
     <type id="EndpointConsumption" coretype="EndpointConsumption">
       <label>Endpoint Consumption</label>
-      <icon>/icons/file.gif</icon>
+      <icon>/icons/serviceconsumption.png</icon>
       <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <layouts mode="any">
@@ -506,7 +507,7 @@
     <!-- Deployment level -->
     <type id="DeployedDeliverable" coretype="DeployedDeliverable">
       <label>Deployed Deliverable</label>
-      <icon>/icons/file.gif</icon>
+      <icon>/icons/deliverable.png</icon>
       <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <layouts mode="any">
@@ -535,7 +536,7 @@
     </type>
     <type id="Endpoint" coretype="Endpoint">
       <label>Endpoint</label>
-      <icon>/icons/file.gif</icon>
+      <icon>/icons/endpoint.png</icon>
       <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <layouts mode="any">

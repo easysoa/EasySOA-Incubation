@@ -51,7 +51,6 @@
                             <p>
                             <div class="btn-group">
                                 <a class="btn" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>
-                                <a class="btn" href="#">Qualité</a>
                             </div>                        
                             </p>    
                         </p>
@@ -80,7 +79,7 @@
                         <h3>Conformité</h3>
                         <p>
                             <div class="btn-group">
-                                <a class="btn" href="${Root.path}/dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Matching Dashboard</a>
+                                <a class="btn" href="${Root.path}/dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Réconciliation</a>
                                 <a class="btn" href="#">Gestion des versions</a>
                             </div>
                         </p>
@@ -101,7 +100,7 @@
                 <li class="span6">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>Usage des services</h3>
+                        <h3>Monitoring</h3>
                         <p>
                             <div class="btn-group">
                                 <a class="btn" href="${Root.path}/monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">Qualité de service</a>
@@ -129,7 +128,23 @@
                             <div class="btn-group">                            
                                 <a class="btn" href="#">Suivi des Phases de production SOA</a>
                                 <a class="btn" href="#">Indicateurs de complétion et gouvernance</a>
-                                <a class="btn" href="#">(?) Edition collaborative du modèle SOA</a><!-- ou Aide à la prise de décisions ? Registry des services, implementations ?? -->
+                            </div>
+                            <p/>
+                            <div class="btn-group">
+                                <#if subprojectId>
+                                    <#assign nuxeoUrl = "/nuxeo/nxdoc/default/"
+                                        + Session.query("select * from Subproject where spnode:subproject='" + subprojectId + "'")[0].id
+                                        + "/view_documents"/>
+                                    <#if !subprojectId?ends_with("_v")>
+                                        <#assign nuxeoUrl = nuxeoUrl + "?version=true" />
+                                    </#if>
+                                <#else>
+                                    <#assign nuxeoUrl = "/nuxeo/nxpath/default/default-domain@view_documents"/>
+                                </#if>
+                                
+                                <a class="btn" href="${nuxeoUrl}">Edition collaborative du modèle SOA</a>
+                                <!-- TODO make it work for versions -->
+                                <!-- et / ou Aide à la prise de décisions ? Registry des services, implementations ?? -->
                             </div>
                         </p>
                         <p>
@@ -144,8 +159,7 @@
                                 </tr>
                             </table>
                         </p>
-                        <!-- TODO redirect only on the nuxeo index page, redirect on the choosen version phase -->
-                        <a class="btn btn-primary" href="/nuxeo/" target="_blank">Plus...</a>
+                        <a class="btn btn-primary" href="#" target="_blank">Plus...</a><!-- TODO -->
                     </div>
                 </li>
             </ul>

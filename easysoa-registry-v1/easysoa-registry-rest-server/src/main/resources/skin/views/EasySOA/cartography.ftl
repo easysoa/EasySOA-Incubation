@@ -3,7 +3,7 @@
 <html xmlns:c="http://java.sun.com/jsp/jstl/core">
     
     <head>
-        <title>EasySOA Cartography</title>
+        <title>EasySOA Cartographie</title>
         <meta charset="utf-8" />
 	<script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
         
@@ -51,8 +51,8 @@
                                 <li><a href="${Root.path}/../services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>
                                     <small> : EasySOA provides an example of a simple "service portal" web user interface. It lists all services, allows to browse them by tags (a.k.a. TaggingFolder) and also to tag them. For each service, an example of a dedicated "service usage" documentation page can be displayed.</small>
                                 </li>
-                                <li>Qualité
-                                    <small></small>
+                                <li><a href="${Root.path}/../services/?subprojectId=${subprojectId}&visibility=${visibility}">Découverte à l'exécution</a>
+                                    <small> : TODO</small>
                                 </li>
                             </ul>
                         </p>
@@ -68,7 +68,7 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">            
-                        <a class="btn" href="${Root.path}/../?subprojectId=${subprojectId}&visibility=${visibility}">Retour à l'acceuil</a>
+                        <a class="btn" href="${Root.path}/../?subprojectId=${subprojectId}&visibility=${visibility}">Retour à l'accueil</a>
                     </div>
                 </li>                 
             </ul>

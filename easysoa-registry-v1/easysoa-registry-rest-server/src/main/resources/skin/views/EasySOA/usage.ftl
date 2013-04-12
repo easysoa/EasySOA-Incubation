@@ -20,7 +20,7 @@
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
                 <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
-                EasySOA Usage des services
+                EasySOA Monitoring
             </div>
         </div>
         <br/>
@@ -34,7 +34,7 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">            
-                        <h3>Usage des services</h3>
+                        <h3>Monitoring</h3>
                         <p>
                             <ul>
                                 <li>

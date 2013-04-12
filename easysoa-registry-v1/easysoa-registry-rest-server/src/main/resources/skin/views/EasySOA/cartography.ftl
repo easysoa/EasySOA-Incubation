@@ -21,6 +21,7 @@
         <div id="header">
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
+                <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
                 EasySOA Cartographie
             </div>
         </div>
@@ -40,7 +41,7 @@
                             <ul>
                                 <!-- TODO : Replace this hard coded link by a build in link ? -->
                                 <li>
-                                    <a href="${Root.path}/services∕cartography/sourceDiscovery">Découverte sources</a>
+                                    <a href="${Root.path}/cartography/sourceDiscovery">Découverte sources</a>
                                     <small> : Sources Discovery allows to automatically extract known services, implementations and consumptions from source code (for now, Java) by analyzing it at compilation time.</small>
                                 </li>
                                 <li>

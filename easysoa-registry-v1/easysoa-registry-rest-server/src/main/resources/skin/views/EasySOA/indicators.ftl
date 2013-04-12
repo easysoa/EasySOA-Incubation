@@ -139,6 +139,7 @@ td:first-child {
     
 	<div id="header">
 		<img id="headerLogo" src="/nuxeo/site/easysoa/skin/img/logo50px.png" />
+                <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
 	</div>
 	<div id="container">
 

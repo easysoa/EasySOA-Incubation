@@ -52,6 +52,7 @@ import org.easysoa.registry.types.adapters.SoaNodeAdapter;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ContextData;
 import org.easysoa.registry.utils.ContextVisibility;
+import org.easysoa.registry.utils.EasysoaModuleRoot;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -70,7 +71,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebObject(type = "EasySOA")
 @Path("easysoa/services")
-public class ServiceDocumentationController extends ModuleRoot {
+public class ServiceDocumentationController extends EasysoaModuleRoot {
 
     /** properties to be displayed in lists of services */
     private static final String SERVICE_LIST_PROPS = "*"; // "ecm:title" // TODO is this an optimization worth the hassle ??

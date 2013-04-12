@@ -56,6 +56,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.jersey.api.core.HttpContext;
+import org.easysoa.registry.utils.EasysoaModuleRoot;
 
 /**
  * REST service to find WSDLs from given URL.
@@ -70,7 +71,7 @@ import com.sun.jersey.api.core.HttpContext;
 @Path("easysoa/servicefinder")
 @Produces("application/x-javascript")
 @WebObject(type = "servicefinder")
-public class ServiceFinderRest extends ModuleRoot {
+public class ServiceFinderRest extends EasysoaModuleRoot {
 
 	private DocumentModelList endpointsCache = null;
 	

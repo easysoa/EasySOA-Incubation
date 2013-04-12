@@ -306,7 +306,7 @@ public class EndpointStateServiceImpl implements EndpointStateService {
                 // TODO : previous setting was to fix the from date to the current day
                 // But cause some problems to test the UI when the model is not reloaded daily
                 // Remove the "-1" when finished
-                calendarFrom.set(currentDate.get(Calendar.YEAR)/* - 1*/, currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH));
+                calendarFrom.set(currentDate.get(Calendar.YEAR) - 1, currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH));
             }            
             SQLBetweenFilter dateRangeFilter = new SQLBetweenFilter(calendarFrom, calendarTo);
             parameters.put("timestamp", dateRangeFilter);

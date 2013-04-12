@@ -24,7 +24,7 @@
         <div id="header">
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
-                <div id="headerUserBar"></div>
+                <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
                 EasySOA - Découverte sources
             </div>
         </div>
@@ -87,7 +87,7 @@
 ...
                             </pre>
                             
-                            <a href="https://github.com/easysoa/EasySOA-Incubation/blob/master/easysoa-samples/easysoa-samples-axxx/axxx-dps-apv/pom.xml">Here</a> you can find a complete pom.xml exemple.
+                            <a href="https://github.com/easysoa/EasySOA-Incubation/blob/master/easysoa-samples/easysoa-samples-axxx/axxx-dps-apv/pom.xml">Ici</a> vous pouvez trouver un exemple complet de fichier pom.xml.
                             
                     </div>
                 </li>

@@ -23,7 +23,7 @@
 <div id="header">
 	<div id="headerContents">
 	    <div id="logoLink">&nbsp;</div>
-    	<div id="headerUserBar"></div>
+    	<div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
 		EasySOA Matching dashboard
     </div>
 </div>

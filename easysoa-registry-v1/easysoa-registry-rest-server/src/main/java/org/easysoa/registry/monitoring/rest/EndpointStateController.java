@@ -40,6 +40,7 @@ import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ContextData;
+import org.easysoa.registry.utils.EasysoaModuleRoot;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -60,7 +61,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebObject(type = "monitoring")
 @Path("easysoa/monitoring")
-public class EndpointStateController extends ModuleRoot {
+public class EndpointStateController extends EasysoaModuleRoot {
 
     private static final String SERVICE_LIST_PROPS = "*"; // "ecm:title"
     

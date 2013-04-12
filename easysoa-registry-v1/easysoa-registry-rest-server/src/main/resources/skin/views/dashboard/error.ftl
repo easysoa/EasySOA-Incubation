@@ -16,9 +16,10 @@
 <body>
 
 <div id="header">
+        <#include "/views/EasySOA/macros.ftl">
 	<div id="headerContents">
 	    <div id="logoLink">&nbsp;</div>
-    	<div id="headerUserBar"></div>
+    	<div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
 		EasySOA Light summary
     </div>
 </div>

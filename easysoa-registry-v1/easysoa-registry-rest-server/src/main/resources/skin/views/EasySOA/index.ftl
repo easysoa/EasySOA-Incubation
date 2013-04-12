@@ -41,16 +41,19 @@
                         <h3>Cartographie des services</h3>
                         <p>
                             <!-- TODO : Replace this hard coded link by a build in link ? -->
+                            <p>
                             <div class="btn-group">
                                 <a class="btn" href="${Root.path}/services/cartography/sourceDiscovery">Découverte sources</a>
                                 <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte web</a>
                                 <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte à l'éxécution</a>
                             </div>
+                            </p>
+                            <p>
                             <div class="btn-group">
                                 <a class="btn" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>
                                 <a class="btn" href="#">Qualité</a>
                             </div>                        
-                        
+                            </p>    
                         </p>
                         <p>
                             <table class="table table-bordered" width="100%">
@@ -108,12 +111,12 @@
                         </p>
                         <p>
                             <!-- Replace by a new indicator showing the the nb or % of services in default -->
-                            <!--<table class="table table-bordered" width="100%">
+                            <table class="table table-bordered" width="100%">
                                 <tr>
-                                    <td width="80%">Nombre de service jamais consomés :</td>
-                                    <td width="20%">${indicators["Never consumed services"].count}</td>
+                                    <td width="80%">Nombre de services en défaut :</td>
+                                    <td width="20%">25%<#--${indicators["Never consumed services"].count}--></td>
                                 </tr>
-                            </table>-->
+                            </table>
                         </p>
                         <a class="btn btn-primary" href="${Root.path}/services/usage/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
                     </div>

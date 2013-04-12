@@ -20,18 +20,17 @@
 
 <body>
 
+        <#include "/views/EasySOA/macros.ftl">
 	<div id="header">
 		<div id="headerContents">
 		    <div id="logoLink">&nbsp;</div>
-	    	<div id="headerUserBar"></div>
+	    	<div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
 			EasySOA REST Services Documentation
 	    </div>
 	</div>
 	
 	<div id="container">
-
-		<#include "/views/EasySOA/macros.ftl">
-        
+       
 		<h1>Service</h1>
 		<@displayServiceShort service subprojectId visibility/>
 

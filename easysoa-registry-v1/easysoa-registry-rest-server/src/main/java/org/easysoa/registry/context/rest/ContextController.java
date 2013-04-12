@@ -33,6 +33,7 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.Project;
 import org.easysoa.registry.types.Subproject;
+import org.easysoa.registry.utils.EasysoaModuleRoot;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -47,7 +48,7 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
  */
 @WebObject(type = "context")
 @Path("easysoa/context")
-public class ContextController extends ModuleRoot {
+public class ContextController extends EasysoaModuleRoot {
 
     // Logger
     private static Logger logger = Logger.getLogger(ContextController.class);

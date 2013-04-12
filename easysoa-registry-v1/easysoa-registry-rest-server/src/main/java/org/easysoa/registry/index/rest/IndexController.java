@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.indicators.rest.IndicatorValue;
 import org.easysoa.registry.indicators.rest.IndicatorsController;
 import org.easysoa.registry.utils.ContextData;
+import org.easysoa.registry.utils.EasysoaModuleRoot;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
@@ -45,7 +46,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 @WebObject(type = "EasySOA")
 @Path("easysoa")
-public class IndexController extends ModuleRoot {
+public class IndexController extends EasysoaModuleRoot {
 
     private static Logger logger = Logger.getLogger(IndexController.class);
     
@@ -66,23 +67,5 @@ public class IndexController extends ModuleRoot {
            .arg("visibility", visibility)
            .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
     }
-
-    /**
-     * 
-     * @return The current user name
-     * @throws Exception 
-     */
-    public String getCurrentUser() throws Exception {
-        String user = "";
-        
-        CoreSession session = SessionFactory.getSession(request);
-        Principal currentUser = session.getPrincipal();
-        
-        if(currentUser != null){
-            user = currentUser.getName();
-        }
-        return user;
-    }
-
     
 }

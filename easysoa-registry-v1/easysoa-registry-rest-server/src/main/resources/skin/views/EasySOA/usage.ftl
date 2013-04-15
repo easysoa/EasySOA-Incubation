@@ -42,7 +42,7 @@
                             </p>
                             <p>
                                 <a class="btn" href="http://owsi-vm-easysoa-axxx-pivotal.accelance.net:9100/jasmine/" target="_blank">Statistiques</a>
-                                <small></small>
+                                <small>Jasmine for Easysoa computes and display business indicators from technical service events according to EasySOA-known SLA configuration</small>
                             </p>
                         </p>
                         

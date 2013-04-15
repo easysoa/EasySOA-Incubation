@@ -36,15 +36,14 @@
                         <img data-src="holder.js/300x200" alt="">            
                         <h3>Monitoring</h3>
                         <p>
-                            <ul>
-                                <li>
-                                    <a class="btn" href="${Root.path}/../monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">Qualité de service</a>
-                                    <small>EasySOA can be fed with runtime, live-computed business indicators that show how much expected business service levels are met.</small>
-                                </li>
-                                <li><a class="btn" href="http://owsi-vm-easysoa-axxx-pivotal.accelance.net:9100/jasmine/" target="_blank">Statistiques</a>
-                                    <small></small>
-                                </li>
-                            </ul>
+                            <p>
+                                <a class="btn" href="${Root.path}/../monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">Qualité de service</a>
+                                <small>EasySOA can be fed with runtime, live-computed business indicators that show how much expected business service levels are met.</small>
+                            </p>
+                            <p>
+                                <a class="btn" href="http://owsi-vm-easysoa-axxx-pivotal.accelance.net:9100/jasmine/" target="_blank">Statistiques</a>
+                                <small></small>
+                            </p>
                         </p>
                         
                         <h3>Indicateurs</h3>

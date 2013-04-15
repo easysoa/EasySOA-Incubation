@@ -38,23 +38,22 @@
                         <img data-src="holder.js/300x200" alt="">            
                         <h3>Cartographie des services</h3>
                         <p>
-                            <ul>
-                                <!-- TODO : Replace this hard coded link by a build in link ? -->
-                                <li>
-                                    <a class="btn" href="${Root.path}/cartography/sourceDiscovery">Découverte sources</a>
-                                    <small> : Sources Discovery allows to automatically extract known services, implementations and consumptions from source code (for now, Java) by analyzing it at compilation time.</small>
-                                </li>
-                                <li>
-                                    <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte web</a>
-                                    <small> : Find any useful service from your intranet, or even the web: as you browse pages, informations on services are collected and sent the registry</small>
-                                </li>
-                                <li><a class="btn" href="${Root.path}/../services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>
-                                    <small> : EasySOA provides an example of a simple "service portal" web user interface. It lists all services, allows to browse them by tags (a.k.a. TaggingFolder) and also to tag them. For each service, an example of a dedicated "service usage" documentation page can be displayed.</small>
-                                </li>
-                                <li><a class="btn" href="${Root.path}/../services/?subprojectId=${subprojectId}&visibility=${visibility}">Découverte à l'exécution</a>
-                                    <small> : TODO</small>
-                                </li>
-                            </ul>
+                            <p>
+                                <a class="btn" href="${Root.path}/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte sources</a>
+                                <small> : Sources Discovery allows to automatically extract known services, implementations and consumptions from source code (for now, Java) by analyzing it at compilation time.</small>
+                            </p>
+                            <p>
+                                <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte web</a>
+                                <small> : Find any useful service from your intranet, or even the web: as you browse pages, informations on services are collected and sent the registry</small>
+                            </p>
+                            <p>                                
+                                <a class="btn" href="${Root.path}/cartography/runDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte à l'exécution</a>
+                                <small> : Automatic discovery of web services by listenning exchanges between applications.</small>
+                            </p>
+                            <p>                                
+                                <a class="btn" href="${Root.path}/../services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>
+                                <small> : EasySOA provides an example of a simple "service portal" web user interface. It lists all services, allows to browse them by tags (a.k.a. TaggingFolder) and also to tag them. For each service, an example of a dedicated "service usage" documentation page can be displayed.</small>
+                            </p>
                         </p>
                         
                         <h3>Indicateurs</h3>

@@ -3,7 +3,7 @@
 <html xmlns:c="http://java.sun.com/jsp/jstl/core">
     
     <head>
-        <title>EasySOA Cartography</title>
+        <title>EasySOA Cartographie</title>
         <meta charset="utf-8" />
 	<script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
         

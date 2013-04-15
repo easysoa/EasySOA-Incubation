@@ -25,9 +25,14 @@
         <br/>
         <div class="container" id="container">
             <ul class="thumbnails">
+                <!-- Display the context bar -->
+                <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
+                <#assign subprojectId=subprojectId!"">
+                <@displayContextBar subprojectId contextInfo visibility "false"/>
+                
                 <li class="span12">
                     <div class="thumbnail">
-                        <img data-src="holder.js/300x200" alt="">
+                        <img data-src="holder.js/300x200" alt=""/>
                         <h1>Projets, phases et versions :</h1>
                         <br/>
                         <!--Choose the versions of phase you want to use as a point of view and the visibility scope (strict or deep, i.e. with or without parent phases).-->

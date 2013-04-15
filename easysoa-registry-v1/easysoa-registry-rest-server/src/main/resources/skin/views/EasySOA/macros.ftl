@@ -1,3 +1,4 @@
+
     <#macro displayPhase subprojectId>
         <#assign phaseShortId = subprojectId?replace('/default-domain/', '')/>
         <#assign phaseShortIdVersionIndex = phaseShortId?last_index_of('_v')/>
@@ -111,9 +112,15 @@
     <#macro displayProjectsPhasesAndVersionsShort projectVersionsList>
         <div class="accordion" id="accordion2">
             <#list projectVersionsList?keys as project>
+            <#if project != "Project Template">
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#${project?replace(' ', '_')}">${project}</a>
+                    <#if project == "MyProject" >
+                        <#assign projectTag="Projet par défaut">
+                    <#else>
+                        <#assign projectTag="Projet">
+                    </#if>
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#${project?replace(' ', '_')}">${projectTag} ${project}</a>
                 </div>
                 <div id="${project?replace(' ', '_')}" class="accordion-body collapse">
                     <div class="accordion-inner">
@@ -124,6 +131,7 @@
                     </div>
                 </div>
             </div>
+            </#if>
             </#list>
         </div>
     </#macro>
@@ -176,7 +184,7 @@
                         <td class="td-hidden"><strong>Perspective :</strong>&nbsp<@displayCurrentVersion subprojectId contextInfo visibility/>&nbsp;&nbsp;</td>
                         <td class="td-hidden" style="text-align:right">
                             <#if button == "true">
-                            <a class="btn btn-primary" href="/nuxeo/site/easysoa/context/">Changer la perspective</a>
+                            <a class="btn btn-primary" href="/nuxeo/site/easysoa/context?subprojectId=${subprojectId}&visibility=${visibility}">Changer la perspective</a>
                             </#if>
                         </td>
                     </tr>

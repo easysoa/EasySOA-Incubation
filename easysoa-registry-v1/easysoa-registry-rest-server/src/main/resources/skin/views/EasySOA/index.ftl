@@ -43,9 +43,9 @@
                             <!-- TODO : Replace this hard coded link by a build in link ? -->
                             <p>
                             <div class="btn-group">
-                                <a class="btn" href="${Root.path}/services/cartography/sourceDiscovery">Découverte sources</a>
+                                <a class="btn" href="${Root.path}/services/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte sources</a>
                                 <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte web</a>
-                                <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte à l'éxécution</a>
+                                <a class="btn" href="${Root.path}/services/cartography/runDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte à l'éxécution</a>
                             </div>
                             </p>
                             <p>
@@ -57,15 +57,15 @@
                         <p>
                             <table class="table table-bordered" width="100%">
                                 <tr>
-                                    <td width="80%">Nombre de services :</td>
+                                    <td width="80%">Nombre de services définis :</td>
                                     <td width="20%">${indicators["InformationService"].count}</td>
                                 </tr>
                                 <tr>
-                                    <td width="80%">Nombre d'implémentations de services :</td>
+                                    <td width="80%">Nombre services implémentés :</td>
                                     <td width="20%">${indicators["ServiceImplementation"].count}</td>
                                 </tr>
                                 <tr>
-                                    <td width="80%">Nombre d'endpoints :</td>
+                                    <td width="80%">Nombre de services déployés :</td>
                                     <td width="20%">${indicators["Endpoint"].count}</td>
                                 </tr>
                             </table>

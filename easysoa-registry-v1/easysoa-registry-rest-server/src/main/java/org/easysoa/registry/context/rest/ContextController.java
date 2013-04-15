@@ -27,12 +27,14 @@ import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.Project;
 import org.easysoa.registry.types.Subproject;
+import org.easysoa.registry.utils.ContextData;
 import org.easysoa.registry.utils.EasysoaModuleRoot;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -40,7 +42,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
 /**
  *
@@ -60,7 +61,7 @@ public class ContextController extends EasysoaModuleRoot {
      */
     @GET
     @Produces(MediaType.TEXT_HTML)    
-    public Template doGetHtml() throws Exception {
+    public Template doGetHtml(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         Template view = getView("context");
 
@@ -100,7 +101,10 @@ public class ContextController extends EasysoaModuleRoot {
         }
         
         // Pass projects map in the view
-        view.arg("projectIdToSubproject", projectIdToSubproject);
+        view.arg("projectIdToSubproject", projectIdToSubproject)
+            .arg("subprojectId", subprojectId)
+            .arg("visibility", visibility)
+            .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
         
         return view;
     }

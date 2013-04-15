@@ -33,7 +33,7 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h1>Services déployés</h1>
+                        <h1>Qualité des services déployés</h1>
                         <p>
                         <@displayEndpointsShort endpoints subprojectId visibility/>
                         </p>

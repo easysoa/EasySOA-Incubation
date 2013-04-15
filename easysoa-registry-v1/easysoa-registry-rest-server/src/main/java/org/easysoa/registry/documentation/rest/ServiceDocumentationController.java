@@ -455,6 +455,24 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
                 .arg("indicators", indicators)
                 .arg("contextInfo", ContextData.getVersionData(session, subprojectId));        
     }    
+
+    @GET
+    @Path("cartography/runDiscovery") // TODO encoding
+    @Produces(MediaType.TEXT_HTML)
+    public Object doGetRunDiscoveryPageHTML(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
+        
+        CoreSession session = SessionFactory.getSession(request);        
+        
+        // Indicators
+        IndicatorsController indicatorsController = new IndicatorsController();
+        Map<String, IndicatorValue> indicators = indicatorsController.computeIndicators(session, null, null, subprojectId, visibility);
+        
+        return getView("runDiscovery")
+                .arg("subprojectId", subprojectId)
+                .arg("visibility", visibility)
+                .arg("indicators", indicators)
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));        
+    }    
     
     @GET
     @Path("matchingFull") // TODO encoding

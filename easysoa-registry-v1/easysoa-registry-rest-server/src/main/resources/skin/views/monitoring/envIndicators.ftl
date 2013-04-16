@@ -36,7 +36,7 @@
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
                         <h2>Indicateurs pour le service ${service}<a href="<@urlToLocalNuxeoDocumentsUiShort servicePath/>" target="_blank"><i class="icon-file-alt"></i></a></h2>
-                        Déployé à ${endpoint}
+                        Déployé en ${endpoint['env:environment']} à ${endpoint['endp:url']}
                         <p>
                         <@displayIndicatorsShort indicators/>
                         </p>

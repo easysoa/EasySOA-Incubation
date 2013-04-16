@@ -109,25 +109,13 @@ public class EndpointStateController extends EasysoaModuleRoot {
         }
  
         DocumentModelList services = docService.query(session, query, true, false);
-        //String slaOrOlaSubprojectId = (String) service.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
-        
-        // For each service get the endpoints
-        CoreSession documentManager = SessionFactory.getSession(request);
-        //List<EndpointInformation> endpoints = SimpleRegistryServiceImpl.queryEndpoints(documentManager, "", subProjectId, visibility).getEndpointInformationList();
-
         Map<String, DocumentModelList> endpoints = new HashMap<String, DocumentModelList>();
         
         for(DocumentModel service : services){
             // Get the endpoint
-            //DocumentModelList endpoints = docService.query(session, "SELECT * FROM " + Endpoint.DOCTYPE + DocumentService.NXQL_WHERE + NXQLQueryHelper.buildSubprojectPathCriteria(session, subProjectId, visibility), true, false);
-            DocumentModelList endpointsList = docService.query(session, "SELECT * FROM " + Endpoint.DOCTYPE + DocumentService.NXQL_WHERE + " impl:providedInformationService = '" + service.getId() + "'", true, false);
+            DocumentModelList endpointsList = docService.query(session, "SELECT * FROM " + Endpoint.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY + DocumentService.NXQL_AND + " impl:providedInformationService = '" + service.getId() + "'", true, false);
             endpoints.put(service.getName(), endpointsList);
         }
-       
-        // TODO Return a map with the key corresponding to services and the value corresponding to a list of endpoints
-        /*for(EndpointInformation endpoint : endpoints){
-            
-        }*/
         
         return getView("dashboard")
                 .arg("envs", envs) // TODO later by (sub)project
@@ -198,7 +186,7 @@ public class EndpointStateController extends EasysoaModuleRoot {
                 .arg("contextInfo", ContextData.getVersionData(session, subProjectId))
                 .arg("service", service.getName())
                 .arg("servicePath", service.getPathAsString())
-                .arg("endpoint", endpoint.getName().replace("|", "/"));
+                .arg("endpoint", endpoint);
         
         return view; 
     }

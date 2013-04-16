@@ -229,6 +229,7 @@ public class DocumentServiceImpl implements DocumentService {
         queryString.append("SELECT * FROM ? WHERE ");
         queryString.append(NXQL.ECM_NAME);
         queryString.append(" = '?' ");
+        queryString.append(DocumentService.NXQL_AND);
         queryString.append(NXQLQueryHelper.buildSubprojectPathCriteria(documentManager, SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId), deepSearch));
         
         /*
@@ -260,6 +261,7 @@ public class DocumentServiceImpl implements DocumentService {
         queryString.append("SELECT * FROM ? WHERE ");/* + "ecm:path STARTSWITH '?' AND "*/
         queryString.append(SoaNode.XPATH_SOANAME);
         queryString.append(" = '?' ");
+        queryString.append(DocumentService.NXQL_AND);
         queryString.append(NXQLQueryHelper.buildSubprojectPathCriteria(documentManager, SubprojectServiceImpl.setDefaultSubprojectIfNone(documentManager, identifier), deepSearch));
         
         /*

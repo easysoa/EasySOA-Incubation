@@ -61,7 +61,7 @@ public class IndicatorsController extends EasysoaModuleRoot {
 
     private static Logger logger = Logger.getLogger(IndicatorsController.class);
     // New category for indicators
-    public static final String CATEGORY_STEERING = "steering";
+    public static final String CATEGORY_STEERING = "steering"; // Or Governance ?
     public static final String CATEGORY_CARTOGRAPHY = "cartography";
     public static final String CATEGORY_USAGE = "usage";
     public static final String CATEGORY_MATCHING = "matching";

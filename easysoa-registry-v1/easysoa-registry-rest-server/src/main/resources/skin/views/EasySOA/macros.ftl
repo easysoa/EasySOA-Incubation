@@ -59,8 +59,7 @@
     </#macro>
 		
     <#macro displayEndpointShort endpoint subprojectId visibility>
-         <!--<li>Qualité de service : <a href="${Root.path}/envIndicators/${endpoint.nuxeoID}?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint.name}</a></li>-->
-        <li>${endpoint.wsdlServiceName} : <a href="${Root.path}/envIndicators/${endpoint.nuxeoID}?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint.name}</a></li>
+         <li>Déployé en ${endpoint['env:environment']} à <a href="${Root.path}/envIndicators/${endpoint.id}?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint['endp:url']}</a></li>
     </#macro>
 		
     <#macro displayEndpointsShort endpoints subprojectId visibility>

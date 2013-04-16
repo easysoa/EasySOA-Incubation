@@ -113,7 +113,13 @@ public class EndpointStateController extends EasysoaModuleRoot {
         
         for(DocumentModel service : services){
             // Get the endpoint
-            DocumentModelList endpointsList = docService.query(session, "SELECT * FROM " + Endpoint.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY + DocumentService.NXQL_AND + " impl:providedInformationService = '" + service.getId() + "'", true, false);
+            query = "SELECT * FROM " + Endpoint.DOCTYPE + DocumentService.NXQL_WHERE
+                    + " impl:providedInformationService = '" + service.getId() + "'";
+            if(!"".equals(subProjectPathCriteria)){
+                query = query + DocumentService.NXQL_AND + subProjectPathCriteria;
+            }
+            
+            DocumentModelList endpointsList = docService.query(session, query, true, false);
             endpoints.put(service.getName(), endpointsList);
         }
         

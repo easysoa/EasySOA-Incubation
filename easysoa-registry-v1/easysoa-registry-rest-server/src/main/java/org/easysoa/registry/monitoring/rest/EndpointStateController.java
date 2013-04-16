@@ -21,7 +21,9 @@
 package org.easysoa.registry.monitoring.rest;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -41,6 +43,7 @@ import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ContextData;
 import org.easysoa.registry.utils.EasysoaModuleRoot;
+import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -79,6 +82,7 @@ public class EndpointStateController extends EasysoaModuleRoot {
     @Produces(MediaType.TEXT_HTML)
     public Object doGetHTML(@QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
+        DocumentService docService = Framework.getService(DocumentService.class);
         List<String> envs = new ArrayList<String>();
         
         // Get the environments
@@ -95,10 +99,37 @@ public class EndpointStateController extends EasysoaModuleRoot {
         //SimpleRegistryService simpleRegistryService = Framework.getService(SimpleRegistryService.class);
         //SimpleRegistryService simpleRegistryService = new SimpleRegistryServiceImpl();
        
-        CoreSession documentManager = SessionFactory.getSession(request);
-        List<EndpointInformation> endpoints = SimpleRegistryServiceImpl.queryEndpoints(documentManager, "", subProjectId, visibility).getEndpointInformationList();
+        // Get the deployed services
+        // Get the service
+        //String serviceId = endpoint.getProperty("impl:providedInformationService").getValue(String.class);
+        String query = "SELECT * FROM " + InformationService.DOCTYPE;
+        String subProjectPathCriteria = NXQLQueryHelper.buildSubprojectPathCriteria(session, subProjectId, visibility);
+        if(!"".equals(subProjectPathCriteria)){
+            query = query + DocumentService.NXQL_WHERE + subProjectPathCriteria;
+        }
+ 
+        DocumentModelList services = docService.query(session, query, true, false);
+        //String slaOrOlaSubprojectId = (String) service.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
         
-        return getView("dashboard") // TODO see services.ftl, dashboard/*.ftl...
+        // For each service get the endpoints
+        CoreSession documentManager = SessionFactory.getSession(request);
+        //List<EndpointInformation> endpoints = SimpleRegistryServiceImpl.queryEndpoints(documentManager, "", subProjectId, visibility).getEndpointInformationList();
+
+        Map<String, DocumentModelList> endpoints = new HashMap<String, DocumentModelList>();
+        
+        for(DocumentModel service : services){
+            // Get the endpoint
+            //DocumentModelList endpoints = docService.query(session, "SELECT * FROM " + Endpoint.DOCTYPE + DocumentService.NXQL_WHERE + NXQLQueryHelper.buildSubprojectPathCriteria(session, subProjectId, visibility), true, false);
+            DocumentModelList endpointsList = docService.query(session, "SELECT * FROM " + Endpoint.DOCTYPE + DocumentService.NXQL_WHERE + " impl:providedInformationService = '" + service.getId() + "'", true, false);
+            endpoints.put(service.getName(), endpointsList);
+        }
+       
+        // TODO Return a map with the key corresponding to services and the value corresponding to a list of endpoints
+        /*for(EndpointInformation endpoint : endpoints){
+            
+        }*/
+        
+        return getView("dashboard")
                 .arg("envs", envs) // TODO later by (sub)project
                 .arg("endpoints", endpoints)
                 .arg("subprojectId", subProjectId)

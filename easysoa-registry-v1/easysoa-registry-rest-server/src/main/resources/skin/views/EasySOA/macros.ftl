@@ -1,3 +1,6 @@
+    
+    <#assign web_discovery_host="http://owsi-vm-easysoa-axxx-registry.accelance.net"/>
+    <#assign web_discovery_port="8083"/>
 
     <#macro displayPhase subprojectId>
         <#assign phaseShortId = subprojectId?replace('/default-domain/', '')/>
@@ -56,17 +59,43 @@
     </#macro>
 		
     <#macro displayEndpointShort endpoint subprojectId visibility>
-         <li>Qualité de service : <a href="${Root.path}/envIndicators/${endpoint.nuxeoID}?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint.name}</a></li>
+         <!--<li>Qualité de service : <a href="${Root.path}/envIndicators/${endpoint.nuxeoID}?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint.name}</a></li>-->
+        <li>${endpoint.wsdlServiceName} : <a href="${Root.path}/envIndicators/${endpoint.nuxeoID}?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint.name}</a></li>
     </#macro>
 		
     <#macro displayEndpointsShort endpoints subprojectId visibility>
         <#if endpoints?has_content>
-            <ul>
-            <#list endpoints as endpoint><@displayEndpointShort endpoint subprojectId visibility/></#list>
-            </ul>
+        <div class="accordion" id="accordion2">
+            <#list endpoints?keys as service>
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#${service}">${service}</a>
+                </div>
+                <div id="${service}" class="accordion-body collapse">
+                    <div class="accordion-inner">
+                        <ul>
+                            <#list endpoints[service] as endpoint>
+                                <@displayEndpointShort endpoint subprojectId visibility/>
+                            </#list>
+                        </ul>
+                    </div>
+                </div>            
+            </div>
+            </#list>
+        </div>
         <#else>
             Aucun service déployé
         </#if>
+        
+        <#--<ul>
+            <#list endpoints?keys as service>
+            ${service.name}
+                <#list endpoints[service] as endpoint>
+                    <@displayEndpointShort endpoint subprojectId visibility/>
+                </#list>
+            </#list>
+            </ul>-->
+
     </#macro>		
 		
     <#macro displayIndicatorShort indicator>
@@ -345,3 +374,9 @@
             <@displayDoc doc propNames/>
 	</#list>
     </#macro>
+
+    <#--
+    <#macro displayPreviousButtonBar>
+        
+    </#macro>
+    -->

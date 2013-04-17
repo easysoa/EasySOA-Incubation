@@ -126,7 +126,7 @@
                         <p>
                             <div class="btn-group">                            
                                 <a class="btn" href="${Root.path}/services/governance/prodPhaseMonitoring?subprojectId=${subprojectId}&visibility=${visibility}">Suivi des Phases de production SOA</a>
-                                <a class="btn" href="#">Indicateurs de complétion et gouvernance</a>
+                                <a class="btn" href="${Root.path}/services/governance/governanceIndicators?subprojectId=${subprojectId}&visibility=${visibility}">Indicateurs de complétion et gouvernance</a>
                             </div>
                             <p/>
                             <div class="btn-group">

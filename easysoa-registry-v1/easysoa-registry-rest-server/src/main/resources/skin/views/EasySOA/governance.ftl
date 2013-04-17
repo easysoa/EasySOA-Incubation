@@ -43,7 +43,7 @@
                                 <small> : Affiche un graphique présentant l'état d'avancement de chaque phase.</small>
                             </p>
                             <p>
-                                <a class="btn" href="#">Indicateurs de complétion et gouvernance</a>
+                                <a class="btn" href="${Root.path}/governance/governanceIndicators?subprojectId=${subprojectId}&visibility=${visibility}">Indicateurs de complétion et gouvernance</a>
                                 <small> : Indicateurs détaillés de complétion des services</small>
                             </p>
                             <p>

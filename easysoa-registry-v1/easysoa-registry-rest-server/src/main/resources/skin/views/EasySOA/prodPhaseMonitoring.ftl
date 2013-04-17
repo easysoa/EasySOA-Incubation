@@ -44,10 +44,10 @@
                         <img data-src="holder.js/300x200" alt="">
                         <h2>Suivi des phases</h2>
                         <p>
-                        Ce graphique montre le degré d'avancement de chaque phase :
+                        Ce graphique montre le degré d'avancement (en pourcentage) de chaque phase :
                         </p>
                         <!-- Add here a diagram with phases in % -->
-                        <div id="phaseGraph" style="width:400px;height:300px"></div>
+                        <div id="phaseGraph" style="width:600px;height:400px"></div>
                     </div>
                 </li>
                 
@@ -62,38 +62,44 @@
     </body>
     
     <script type="text/javascript">
-        /*$(document).ready(
-            function() {
-                $.plot($("#phaseGraph"), [ [[0, 0], [1, 1]] ], { yaxis: { max: 1 }});
-            }
-        );*/
-
+        // Function for bargraph rendering
         $(function() {
+            //var data = [ ["Spécifications", 75], ["Réalisation", 54], ["Déploiement", 28] ];
+            
+            /*var data = [
+                {color:'green', data: [[1, 75],[2,0],[3,0]]},
+                {color:'yellow', data: [[1,0], [2, 54], [3,0]]},
+                {color:'red', data: [[1,0], [2,0], [3, 28]]},
+            ];*/
+            
+            var data = [
+                {color:'green', data: [[1, 75]]},
+                {color:'orange', data: [[2, 54]]},
+                {color:'red', data: [[3, 28]]},
+            ];
+            
+            $.plot("#phaseGraph", /*[*/ data /*]*/, {
+                series: {
+                    bars: {
+                        show: true,
+                        barWidth: 0.8,
+                        align: "center"
+                    }
+                },
+                xaxis: {
+                    ticks: [[1,'Spécifications'],[2,'Réalisation'],[3,'Déploiement']]
+                    //mode: "categories",
+                    //tickLength: 0
+                },
+                yaxis: {
+                    max: 100
+                }//,
+                //colors: ["#029710", "#bbe44b", "#88e8a9"]
+            });
 
-		var data = [ ["Spécifications", 75], ["Réalisation", 54], ["Déploiement", 28] ];
-
-		$.plot("#phaseGraph", [ data ], {
-			series: {
-				bars: {
-					show: true,
-					barWidth: 0.8,
-					align: "center"
-				}
-			},
-			xaxis: {
-				mode: "categories",
-				tickLength: 0
-			},
-                        yaxis: {
-                                max: 100
-                        }
-		});
-
-		// Add the Flot version string to the footer
-		$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+            // Add the Flot version string to the footer
+            $("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
 	});    
-    
-    
     </script>        
     
 </html>       

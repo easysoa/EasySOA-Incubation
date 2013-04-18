@@ -91,17 +91,8 @@ public class EndpointStateController extends EasysoaModuleRoot {
         for(DocumentModel model : environments){
             envs.add((String)model.getPropertyValue(Endpoint.XPATH_ENDP_ENVIRONMENT));
         }
-        
-        //EndpointStateService endpointStateService = Framework.getService(EndpointStateService.class);
-        //endpointStateService.getSlaOrOlaIndicatorsByEnv(environment, projectId, periodStart, periodEnd, pageSize, pageStart);
-        
-        // Get endpoints
-        //SimpleRegistryService simpleRegistryService = Framework.getService(SimpleRegistryService.class);
-        //SimpleRegistryService simpleRegistryService = new SimpleRegistryServiceImpl();
        
         // Get the deployed services
-        // Get the service
-        //String serviceId = endpoint.getProperty("impl:providedInformationService").getValue(String.class);
         String query = "SELECT * FROM " + InformationService.DOCTYPE;
         String subProjectPathCriteria = NXQLQueryHelper.buildSubprojectPathCriteria(session, subProjectId, visibility);
         if(!"".equals(subProjectPathCriteria)){
@@ -112,7 +103,7 @@ public class EndpointStateController extends EasysoaModuleRoot {
         Map<String, DocumentModelList> endpoints = new HashMap<String, DocumentModelList>();
         
         for(DocumentModel service : services){
-            // Get the endpoint
+            // Get the endpoints
             query = "SELECT * FROM " + Endpoint.DOCTYPE + DocumentService.NXQL_WHERE
                     + " impl:providedInformationService = '" + service.getId() + "'";
             if(!"".equals(subProjectPathCriteria)){
@@ -195,6 +186,21 @@ public class EndpointStateController extends EasysoaModuleRoot {
                 .arg("endpoint", endpoint);
         
         return view; 
+    }
+    
+    @GET
+    @Path("jasmine")
+    @Produces(MediaType.TEXT_HTML)
+    public Object doGetJasminePageHTML(@QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) throws Exception {
+        
+        CoreSession session = SessionFactory.getSession(request);
+        
+        Template view = getView("jasmine");
+        view.arg("subprojectId", subProjectId)
+                .arg("visibility", visibility)
+                .arg("contextInfo", ContextData.getVersionData(session, subProjectId));
+        
+        return view;         
     }
     
 }

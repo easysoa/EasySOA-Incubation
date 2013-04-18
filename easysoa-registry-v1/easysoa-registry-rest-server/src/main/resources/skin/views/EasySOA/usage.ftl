@@ -38,11 +38,13 @@
                         <p>
                             <p>
                                 <a class="btn" href="${Root.path}/../monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">Qualité de service</a>
-                                <small>EasySOA can be fed with runtime, live-computed business indicators that show how much expected business service levels are met.</small>
+                                <!--<small>EasySOA can be fed with runtime, live-computed business indicators that show how much expected business service levels are met.</small>-->
+                                <small> : EasySOA peut être alimenté avec des indicateurs métier lors de l'éxécution qui montrent les niveaux de services atteints.</small>
                             </p>
                             <p>
-                                <a class="btn" href="http://owsi-vm-easysoa-axxx-pivotal.accelance.net:9100/jasmine/" target="_blank">Statistiques</a>
-                                <small>Jasmine for Easysoa computes and display business indicators from technical service events according to EasySOA-known SLA configuration</small>
+                                <a class="btn" href="${Root.path}/../monitoring/jasmine/?subprojectId=${subprojectId}&visibility=${visibility}"">Statistiques</a>
+                                <!--<small>Jasmine for Easysoa computes and display business indicators from technical service events according to EasySOA-known SLA configuration</small>-->
+                                <small> : JASMINe pour Easysoa calcule et affiche des indicateurs metier issus d'événements de services techniques suivant les configurations SLA enregistrées dans EasySOA.</small>
                             </p>
                         </p>
                         

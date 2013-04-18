@@ -103,7 +103,7 @@
                         <p>
                             <div class="btn-group">
                                 <a class="btn" href="${Root.path}/monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">Qualité de service</a>
-                                <a class="btn" href="http://owsi-vm-easysoa-axxx-pivotal.accelance.net:9100/jasmine/" target="_blank">Statistiques</a>
+                                <a class="btn" href="${Root.path}/monitoring/jasmine/?subprojectId=${subprojectId}&visibility=${visibility}">Statistiques</a>
                                 <!--<a class="btn" href="#">Appropriation du modèle SOA par les utilisateurs de EasySOA</a>-->
                             </div>
                         </p>

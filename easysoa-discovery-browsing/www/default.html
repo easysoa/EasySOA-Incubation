@@ -36,7 +36,7 @@ $(document).ready(function() {
         js = 'javascript:' + js;
       }
       //$('#bookmarklet').html('<a href="' + js + '">Find WSDLs</a>');
-      $('#bookmarklet').html('<a class="button" href="' + js + '">Notifier EasySOA</a>');
+      $('#bookmarklet').html('<a class="button" href="' + js + '" title="Glissez moi dans les favoris de votre navigateur">Notifier EasySOA</a>');
       //$('#bookmarklet').html('<a href="' + js + '"><button style="font-size: 15pt">Notifer EasySOA</button></a>');
     }
   });
@@ -49,7 +49,7 @@ $(document).ready(function() {
 
 <h2>Démarrage rapide</h2>    
 <p>
-    La découverte web vous permet, tout en naviguant, de découvrir les Services Web liés depuis les pages web visités. 
+    La découverte web vous permet, tout en naviguant, de découvrir les services Web liés depuis les pages web visitées. 
 
     Pour l'utiliser :
     <ol>
@@ -57,7 +57,7 @@ $(document).ready(function() {
         <li>tapez l'url dans la barre <img src="/img/easysoa_url_bar.png" alt="Discovery url bar"/></li>
     </ol>
 
-    <strong>ATTENTION !</strong> Ne s'applique pas aux sites sécurisés (protocole https), pour lesquels il est nécessaire de passer en mode notification avec le bouton <a href="#notifier">Notifier EasySOA</a>.
+    <strong>ATTENTION !</strong> Ne s'applique pas aux sites sécurisés (protocole https), pour lesquels il est nécessaire de passer en mode notification <a href="#notifier">avec le bouton Notifier EasySOA</a>.
 </p>  
 
 <hr/>
@@ -78,7 +78,7 @@ L'objectif de la découverte web est d'aider les utilisateurs à trouver et marq
 La découverte web prend la forme d'un navigateur dans le navigateur. Il trouve automatiquement les fichiers WSDL pendant la navigation, en extrait les informations business telles que les applications metier ou ces fichiers ont été trouvés (tirée du titre de la page) et permet à l'utilisateur de vérifier les informations découvertes avant de les envoyer dans le registre Nuxeo.
 </p>
 <p>
-Pour naviguer, entrez simplement une adresse (correspondant avotre application metier ou votre Intranet) dans le champ de saisie blanc et appuyez sur "entrée". le site ciblé s'affiche en dessous du champs et les services sont automatiquement découverts et affichés dans la partie gauche de l'écran.
+Pour naviguer, entrez simplement une adresse (correspondant avotre application métier ou votre Intranet) dans le champ de saisie blanc et appuyez sur "entrée". le site ciblé s'affiche en dessous du champs et les services sont automatiquement découverts et affichés dans la partie gauche de l'écran.
 </p>
 <!--<img src="/img/easysoa_discovery_browsing.png" alt="Discovery browsing screenshot"/>-->
 
@@ -93,8 +93,10 @@ Pour naviguer, entrez simplement une adresse (correspondant avotre application m
 
     It will launch the browser with the good configuration.-->
 
-    La découverte web fonctionne avec un proxy démarré à l'adresse http://localhost:8081, vous devez donc configurer votre navigateur pour qu'il utilise ce proxy. Veuillez a ce que toutes les exceptions soit retirées (Par exemple localhost/127.0.0.1).
-    
+    La découverte web fonctionne avec un proxy démarré à l'adresse http://localhost:8081, vous devez donc configurer votre navigateur pour qu'il utilise ce proxy. Veuillez à ce que toutes les exceptions soit retirées (Par exemple localhost/127.0.0.1).
+    <br/>
+    <br/>
+    <img src="/img/firefoxProxy.png" alt="Firefox proxy configuration"/>
     <!--Si vous utilisez le navigateur Google Chrome et que vous ne découvrez aucun service or some authentication problems because of proxy configuration problems. Run :
 
     chromium-browser --proxy-server="127.0.0.1:8081" --proxy-bypass-list=""
@@ -111,10 +113,19 @@ Pour naviguer, entrez simplement une adresse (correspondant avotre application m
 <h2><a id="notifier">Notification</a></h2>
 
 <!--<p>If you need to browse to HTTPS places, our proxy will not work. Instead, try to drag this bookmarklet to your favorites: when you're on a page of interest (e.g. that contains links to WSDLs), click then on the bookmark to make EasySOA explore the page.</p>-->
-<p>Si vous avez besoin de naviguer sur des sites HTTPS, Le proxy de découverte EasySOA ne va pas fonctionner. A la place, essayez d'ajouter ce bookmarklet dans vos favoris. Quand vous naviguerez sur une page contenant des liens vers des fichiers WSDL, cliquez sur le favori pour déclencher l'exploration de la page et la découverte des services.</p>
+<p>Si vous avez besoin de naviguer sur des sites HTTPS, Le proxy de découverte EasySOA ne va pas fonctionner. A la place, essayez d'ajouter ce bookmarklet dans les favoris de votre navigateur. Quand vous naviguerez sur une page contenant des liens vers des fichiers WSDL, cliquez sur le favori pour déclencher l'exploration de la page et la découverte des services.</p>
+
 
 <!-- TODO set a button for notification -->
+<!--<table border="0">
+    <tr>
+        <td width="20%"><p id="bookmarklet" style="font-size: 15pt"><i>(loading)</i></p></td>
+        <td width="80%"><img src="/img/dragAndDropNotificationButton.gif" alt="Glisser/Déposer"/></td>
+    </tr>
+</table>-->
+
 <p id="bookmarklet" style="font-size: 15pt"><i>(loading)</i></p>
+<img src="/img/dragAndDropNotificationButton.gif" alt="Glisser/Déposer"/>
 
 </body>
 </html>

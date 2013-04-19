@@ -46,8 +46,13 @@
                         <p>
                         Ce graphique montre le degré d'avancement (en pourcentage) de chaque phase :
                         </p>
-                        <!-- Add here a diagram with phases in % -->
-                        <div id="phaseGraph" style="width:600px;height:400px"></div>
+                        <!-- Display a graph with phases state in % -->
+                        <table style="border: 0">
+                            <tr>
+                                <td style="width: 20%"><div id="legendholder"></div></td>
+                                <td style="width: 80%"><div id="phaseGraph" style="width:600px;height:400px"></div></td>
+                            </tr>
+                        </table>
                     </div>
                 </li>
                 
@@ -66,19 +71,13 @@
         $(function() {
             //var data = [ ["Spécifications", 75], ["Réalisation", 54], ["Déploiement", 28] ];
             
-            /*var data = [
-                {color:'green', data: [[1, 75],[2,0],[3,0]]},
-                {color:'yellow', data: [[1,0], [2, 54], [3,0]]},
-                {color:'red', data: [[1,0], [2,0], [3, 28]]},
-            ];*/
-            
             var data = [
-                {color:'green', data: [[1, 75]]},
-                {color:'orange', data: [[2, 54]]},
-                {color:'red', data: [[3, 28]]},
+                {label:'Plus de 75%', color:'green', data: [[1, 78]]},
+                {label:'De 50 à 75%', color:'orange', data: [[2, 55]]},
+                {label:'Moins de 50%', color:'red', data: [[3, 20]]},
             ];
             
-            $.plot("#phaseGraph", /*[*/ data /*]*/, {
+            $.plot("#phaseGraph", data, {
                 series: {
                     bars: {
                         show: true,
@@ -92,15 +91,18 @@
                     //tickLength: 0
                 },
                 yaxis: {
-                    max: 100
-                }//,
-                //colors: ["#029710", "#bbe44b", "#88e8a9"]
+                    max: 100,
+                    tickSize: 10
+                },
+                legend: { 
+                    show: true,
+                    container: $("#legendholder")
+                }
             });
 
             // Add the Flot version string to the footer
-            $("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+            //$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
 	});    
-    </script>        
+    </script>
     
-</html>       
-                        
+</html>

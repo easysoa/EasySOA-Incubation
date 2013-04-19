@@ -36,6 +36,8 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 public class NXQLQueryHelper {
 
     /**
+     * TODO call getSubprojectIdOrCreateDefault and rename to buildSubprojectCriteriaElseDefault
+     * 
      * Build a nxql request criteria with the subproject ID.
      * if the context visibility is STRICT the following request criteria will be returned : "AND spnode:subproject = 'subprojectId'"
      * otherwise for a DEEP visibility, the following request criteria will be returned : "AND spnode:subproject IN ('subprojectId', 'subprojectId', ...)"
@@ -43,7 +45,7 @@ public class NXQLQueryHelper {
      * The subprojectid's used in the DEEP request are the parent subprojects ID's
      * 
      * @param session Nuxeo session
-     * @param subprojectId Subproject ID
+     * @param subprojectId Subproject ID required (at worse should be the default subproject) 
      * @param deepVisibility True if the context visibility must be DEEP, false if it must be STRICT
      * @return
      * @throws PropertyException
@@ -58,14 +60,17 @@ public class NXQLQueryHelper {
     }
     
     /**
+     * TODO rename to buildSubprojectCriteria
+     * 
      * Build a nxql request criteria with the subproject ID.
-     * if the context visibility is STRICT the following request criteria will be returned : "spnode:subproject = 'subprojectId'"
+     * If no subproject id, returns an empty criteria
+     * else if the context visibility is STRICT the following request criteria will be returned : "spnode:subproject = 'subprojectId'"
      * otherwise for a DEEP visibility, the following request criteria will be returned : "spnode:subproject IN ('subprojectId', 'subprojectId', ...)"
      * 
      * The subprojectid's used in the DEEP request are the parent subprojects ID's
      * 
      * @param session Nuxeo session
-     * @param subprojectId Subproject ID
+     * @param subprojectId Subproject ID if null or empty, an empty criteria is returned
      * @param visibility Context visibility : deep or strict
      * @return
      * @throws PropertyException

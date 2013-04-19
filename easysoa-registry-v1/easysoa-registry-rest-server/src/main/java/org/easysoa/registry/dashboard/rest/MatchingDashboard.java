@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.EndpointMatchingService;
@@ -20,8 +22,11 @@ import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.utils.ContextData;
+import org.easysoa.registry.utils.ContextVisibility;
 import org.easysoa.registry.utils.EasysoaModuleRoot;
+import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -30,7 +35,6 @@ import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -52,26 +56,20 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 			DocumentService docService = Framework.getService(DocumentService.class);
 			Template view = getView("index");
 			
-            String subprojectPathCriteria;
-            if (subprojectId == null || "".equals(subprojectId)) {
-                subprojectPathCriteria = "";
-            } else {
-                subprojectPathCriteria = DocumentService.NXQL_AND
-                        + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(
-                                SubprojectServiceImpl.getSubprojectById(session, subprojectId));
-            }
+			String subprojectCriteria = NXQLQueryHelper.buildSubprojectPathCriteria(session, subprojectId, visibility);
                         
 			// All information services
 			DocumentModelList allInfoServices = docService.query(session, "SELECT * FROM "
-					+ InformationService.DOCTYPE /*+ subprojectPathCriteria*/, true, false);
+					+ InformationService.DOCTYPE + subprojectCriteria, true, false);
 			Map<String, DocumentModel> infoServicesById = new HashMap<String, DocumentModel>();
 			for (DocumentModel infoService : allInfoServices) {
 				infoServicesById.put(infoService.getId(), infoService);
 			}
  
 			// Find matched impls & their infoservice
-			DocumentModelList matchedImpls = docService.query(session, "SELECT * FROM " + ServiceImplementation.DOCTYPE + 
-					 " WHERE " + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + " IS NOT NULL " /*+ subprojectPathCriteria*/,
+			DocumentModelList matchedImpls = docService.query(session, "SELECT * FROM "
+					+ ServiceImplementation.DOCTYPE + subprojectCriteria + " AND "
+					+ ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + " IS NOT NULL ",
 					 true, false);
 			view.arg("matchedImpls", matchedImpls);
 			view.arg("infoServicesById", infoServicesById);
@@ -87,15 +85,16 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 
 			// List endpoints without impls
 			DocumentModelList unmatchedEndpoints = docService.query(session,
-					"SELECT * FROM " + Endpoint.DOCTYPE + " WHERE " +
-					Endpoint.XPATH_PARENTSIDS + " NOT LIKE '%" + ServiceImplementation.DOCTYPE + ":%' " /*+ subprojectPathCriteria*/, true, false);
+					"SELECT * FROM " + Endpoint.DOCTYPE + subprojectCriteria + " AND "
+					+ Endpoint.XPATH_PARENTSIDS + " NOT LIKE '%"
+					+ ServiceImplementation.DOCTYPE + ":%' ", true, false);
 			view.arg("endpointWithoutImpl", unmatchedEndpoints);
 			
 			// List impls without infoservice
 			DocumentModelList servWithoutSpecs = docService.query(session, 
-					 "SELECT * FROM " + ServiceImplementation.DOCTYPE + 
-					 " WHERE " + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + " IS NULL " /*+ subprojectPathCriteria*/,
-					 true, false);
+					 "SELECT * FROM " + ServiceImplementation.DOCTYPE + subprojectCriteria + " AND "
+					 + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE
+					 + " IS NULL ", true, false);
 			view.arg("servWithoutSpecs", servWithoutSpecs);
 			view.arg("subprojectId", subprojectId);
                         view.arg("visibility", visibility);
@@ -108,23 +107,29 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 
 	@GET
 	@Path("components/{uuid}")
-	public Template suggestComponents(@PathParam("uuid") String uuid, @QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) throws Exception {
+	public Template suggestComponents(@PathParam("uuid") String uuid,
+			@QueryParam("subprojectId") String subprojectId,
+			@QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
-		Template view = viewDashboard(subProjectId, visibility);
-		view.arg("components", fetchComponents(session));
+		Template view = viewDashboard(subprojectId, visibility);
+		DocumentModel modelElement = session.getDocument(new IdRef(uuid));
+		List<DocumentModel> suggestedComponents = fetchComponents(session, modelElement);
+		view.arg("components", suggestedComponents);
 		view.arg("selectedModel", uuid);
-                view.arg("subprojectId", subProjectId);
+                view.arg("subprojectId", subprojectId);
                 view.arg("visibility", visibility);
-                view.arg("contextInfo", ContextData.getVersionData(session, subProjectId));
+                view.arg("contextInfo", ContextData.getVersionData(session, subprojectId));
 		return view;
 	}
 	
 	@GET
 	@Path("suggest/{uuid}")
-	public Template suggestServices(@PathParam("uuid") String uuid, @QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) throws Exception {
+	public Template suggestServices(@PathParam("uuid") String uuid,
+			@QueryParam("subprojectId") String subprojectId,
+			@QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentModel model = session.getDocument(new IdRef(uuid));
-		Template view = viewDashboard(subProjectId, visibility);
+		Template view = viewDashboard(subprojectId, visibility);
 
 		// Args: suggestions
 		List<DocumentModel> suggestions = fetchSuggestions(session, model, null, false);
@@ -139,9 +144,9 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 		
 		// Arg: selected document
 		view.arg("selectedModel", uuid);
-		view.arg("subprojectId", subProjectId);
+		view.arg("subprojectId", subprojectId);
                 view.arg("visibility", visibility);
-                view.arg("contextInfo", ContextData.getVersionData(session, subProjectId));
+                view.arg("contextInfo", ContextData.getVersionData(session, subprojectId));
 		return view;
 	}
 
@@ -149,15 +154,15 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 	@Path("suggest/{uuid}/{componentUuid}")
 	public Template suggestServicesFromComponent(@PathParam("uuid") String uuid,
 			@PathParam("componentUuid") String componentUuid, 
-                        @QueryParam("subprojectId") String subProjectId,
+                        @QueryParam("subprojectId") String subprojectId,
                         @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentModel model = session.getDocument(new IdRef(uuid));
-		Template view = viewDashboard(subProjectId, visibility);
+		Template view = viewDashboard(subprojectId, visibility);
 
 		// Args: components
-		List<DocumentModel> components = fetchComponents(session);
-		view.arg("components", fetchComponents(session));
+		List<DocumentModel> components = fetchComponents(session, model);
+		view.arg("components", fetchComponents(session, model));
 		for (DocumentModel component : components) {
 			if (component.getId().equals(componentUuid)) {
 				view.arg("selectedComponentTitle", component.getTitle());
@@ -179,7 +184,12 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 			String targetDoctype = Endpoint.DOCTYPE.equals(model.getType()) ?
 					ServiceImplementation.DOCTYPE : 
 					InformationService.DOCTYPE;
-			String infoServicesQuery = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE ? = '?'",
+			String modelElementSubprojectId = (String) model.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+			String subprojectCriteria = " AND " + NXQLQueryHelper.buildSubprojectPathCriteria(session, modelElementSubprojectId, true);
+			// TODO or according to model element type ??
+			// TODO or both subproject criteria intersected ?
+			//		NXQLQueryHelper.buildSubprojectPathCriteria(session, subprojectId, visibility));
+			String infoServicesQuery = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE ? = '?'" + subprojectCriteria,
 					new Object[] {
 						targetDoctype,
 						Component.XPATH_COMPONENT_ID,
@@ -191,16 +201,16 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 		
 		// Arg: selected document
 		view.arg("selectedModel", uuid);
-		view.arg("subprojectId", subProjectId);
+		view.arg("subprojectId", subprojectId);
                 view.arg("visibility", visibility);
-                view.arg("contextInfo", ContextData.getVersionData(session, subProjectId));
+                view.arg("contextInfo", ContextData.getVersionData(session, subprojectId));
 		return view;
 	}
 	
 	@POST
 	public Object submit(@FormParam("unmatchedModelId") String unmatchedModelId,
 			@FormParam("targetId") String targetId, 
-                        @QueryParam("subprojectId") String subProjectId,
+                        @QueryParam("subprojectId") String subprojectId,
                         @QueryParam("visibility") String visibility) {
 	    try {
 	    	if (unmatchedModelId != null && !unmatchedModelId.isEmpty()) {
@@ -241,7 +251,7 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 							((newTargetId != null) ? docService.createSoaNodeId(session.getDocument(new IdRef(newTargetId))) : null),
 							true/*, "strict"*/);
 				}
-				return viewDashboard(subProjectId, visibility);
+				return viewDashboard(subprojectId, visibility);
 	    	}
 	    	else {
 	    		throw new Exception("Service Implementation not selected");
@@ -253,14 +263,29 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 
 	@POST
 	@Path("samples")
-	public Object submit(@QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) throws Exception {
+	public Object submit(@QueryParam("subprojectId") String subprojectId,
+			@QueryParam("visibility") String visibility) throws Exception {
 		new DashboardMatchingSamples("http://localhost:8080").run();
-		return viewDashboard(subProjectId, visibility);
+		return viewDashboard(subprojectId, visibility);
 	}
 	
-	private List<DocumentModel> fetchComponents(CoreSession session) throws Exception {
+	/**
+	 * TODO refactor as ComponentMatchingService.findComponents() ?
+	 * @param session whose subproject will be used as point of view / perspective
+	 * to find components
+	 * @param modelElement
+	 * @return
+	 * @throws Exception
+	 */
+	private List<DocumentModel> fetchComponents(CoreSession session,
+			DocumentModel modelElement) throws Exception {
+		String modelElementSubprojectId = (String) modelElement.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+		String subprojectCriteria = " AND " + NXQLQueryHelper.buildSubprojectPathCriteria(session, modelElementSubprojectId, true);
+		// TODO or according to model element type ??
+		// TODO or both subproject criteria intersected ?
+		//		NXQLQueryHelper.buildSubprojectPathCriteria(session, subprojectId, visibility));
 		DocumentService docService = Framework.getService(DocumentService.class);
-		return docService.query(session, "SELECT * FROM Component", true, false);
+		return docService.query(session, "SELECT * FROM Component" + subprojectCriteria, true, false);
 	}
 	
 	private List<DocumentModel> fetchSuggestions(CoreSession session, DocumentModel model, String componentUuid,
@@ -270,12 +295,12 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 			if (Endpoint.DOCTYPE.equals(model.getType())) {
 				EndpointMatchingService matchingService = Framework.getService(EndpointMatchingService.class);
 				return matchingService.findServiceImplementations(session,
-				        model, componentUuid, skipPlatformMatching, false/*, "strict"*/);
+				        model, componentUuid, skipPlatformMatching, false);
 			}
 			else { // ServiceImplementation
 				ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);
 				return matchingService.findInformationServices(session,
-				        model, componentUuid, skipPlatformMatching, false/*, "strict"*/);
+				        model, componentUuid, skipPlatformMatching, false);
 			}
 		}
 		else {

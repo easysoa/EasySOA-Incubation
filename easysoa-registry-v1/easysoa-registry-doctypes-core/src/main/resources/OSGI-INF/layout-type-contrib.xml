@@ -497,6 +497,15 @@
       </widget>
       <widget name="endpoint_serviceSecurity" type="text">
         <labels>
+          <label mode="any">label.easysoa.layout.endpoint.serviceSecurity</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>endp:serviceSecurity</field>
+        </fields>
+      </widget>
+      <widget name="endpoint_serviceSecurityManagerUrl" type="text">
+        <labels>
           <label mode="any">label.easysoa.layout.endpoint.serviceSecurityManagerUrl</label>
         </labels>
         <translated>true</translated>
@@ -550,6 +559,9 @@
         </fields>
         <properties widgetMode="view">
           <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="template">/widgets/single_document_suggestion_widget_template.xhtml</property>
         </properties>
       </widget>
     </layout>
@@ -792,6 +804,11 @@
         <fields>
           <field>impl:providedInformationService</field>
         </fields>
+        <widgetModes>
+          <!-- must be set through matching dashboard -->
+          <mode value="create">hidden</mode>
+          <mode value="edit">hidden</mode>
+        </widgetModes>
         <properties widgetMode="view">
           <property name="template">/widgets/document_id_link_template.xhtml</property>
         </properties>
@@ -804,6 +821,11 @@
         <fields>
           <field>impl:component</field>
         </fields>
+        <widgetModes>
+          <!-- TODO (only) used by matching dashboard, monit disco... -->
+          <mode value="create">hidden</mode>
+          <mode value="edit">hidden</mode>
+        </widgetModes>
         <properties widgetMode="view">
           <property name="template">/widgets/document_id_link_template.xhtml</property>
         </properties>
@@ -816,6 +838,11 @@
         <fields>
           <field>impl:platform</field>
         </fields>
+        <widgetModes>
+          <!-- TODO (only) used by matching dashboard, monit disco... -->
+          <mode value="create">hidden</mode>
+          <mode value="edit">hidden</mode>
+        </widgetModes>
         <properties widgetMode="view">
           <property name="template">/widgets/document_id_link_template.xhtml</property>
         </properties>

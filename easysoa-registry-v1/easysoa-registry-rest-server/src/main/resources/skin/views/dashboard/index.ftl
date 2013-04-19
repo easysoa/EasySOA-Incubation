@@ -68,12 +68,14 @@
     	</td>
     	<td><b>&gt;</b></td>
     	<td>
-    	  <#if document['wsdl:wsdlPortTypeName'] != matchedImpl['wsdl:wsdlPortTypeName']>
-      	  <form style="float: right" method="post">
+    	  <#-- Displaying the button to break matched link always (and not only when incompatible) : -->
+    	  <#-- if document['wsdl:wsdlPortTypeName'] != matchedImpl['wsdl:wsdlPortTypeName'] -->
+      	  <form style="float: right" method="post" action="/nuxeo/site/easysoa/dashboard?subprojectId=${subprojectId}&visibility=${visibility}">
       	  	<input type="submit" value="X" style="width: 30px" />
-      	  	<input type="hidden" name="serviceImplId" value="${matchedImpl.id}" />
+      	  	<input type="hidden" name="unmatchedModelId" value="${matchedImpl.id}" />
+            <input type="hidden" name="targetId" value="" />
       	  </form>
-    	  </#if>
+    	  <#-- /#if -->
     	  <#assign document = matchedImpl>
     	  <#include "/views/dashboard/document.ftl">
     	</td>

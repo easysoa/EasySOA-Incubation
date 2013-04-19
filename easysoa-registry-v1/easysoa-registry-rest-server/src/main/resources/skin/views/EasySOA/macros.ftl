@@ -115,10 +115,18 @@
                     </#if>
                 </#if>
             </td>
-            <td>${indicator.serviceLevelViolation}</td>
+            <td>
+                <#if indicator.isServiceLevelViolation()>
+                    <#--${indicator.serviceLevelViolation}-->
+                    <#-- TODO : how to display the lvl violation ?? round icon with red an d green color ?? -->
+                    <span class="icon-circle" style="color: red"></span>
+                <#else>
+                <span class="icon-circle" style="color: green"></span>
+                </#if>
+            </td>
         </tr>
     </#macro>
-		
+    
     <#macro displayIndicatorsShort indicators>
         <table class="table table-bordered">
             <tr>

@@ -92,8 +92,10 @@ public class IndicatorsController extends EasysoaModuleRoot {
         // Miscellaneous indicators
         addIndicator(new PlaceholdersIndicatorProvider(CATEGORY_MATCHING));
 
-        //
+        // 
         addIndicator(new LastCodeDiscoveryIndicatorProvider(CATEGORY_CARTOGRAPHY));
+        //
+        addIndicator(new ServiceDefaultCountIndicatorProvider(CATEGORY_STEERING));
         
     }
 

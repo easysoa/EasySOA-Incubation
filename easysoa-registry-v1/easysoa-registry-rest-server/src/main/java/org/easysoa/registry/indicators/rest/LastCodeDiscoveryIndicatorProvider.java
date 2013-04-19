@@ -21,7 +21,6 @@
 package org.easysoa.registry.indicators.rest;
 
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +33,7 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- *
+ * Compute the last Code Discovery Indicator.
  * @author jguillemotte
  */
 public class LastCodeDiscoveryIndicatorProvider implements IndicatorProvider {
@@ -47,7 +46,7 @@ public class LastCodeDiscoveryIndicatorProvider implements IndicatorProvider {
         } else {
             this.category = category;
         }
-    }    
+    }
     
     @Override
     public List<String> getRequiredIndicators() {
@@ -79,7 +78,7 @@ public class LastCodeDiscoveryIndicatorProvider implements IndicatorProvider {
             Date lastModificationDate = app.getProperty("dc:modified").getValue(Date.class);
             
             // TODO : modify the IndicatorValue to be able to pass dates as value
-            IndicatorValue iValue = new IndicatorValue("Date de la dernière découverte code/analyse pour l'application " + app.getTitle(), "cartography", -1, -1);
+            IndicatorValue iValue = new IndicatorValue("Date de la dernière découverte code/analyse pour l'application " + app.getTitle(), category, -1, -1);
             iValue.setDate(lastModificationDate);
             indicators.put("Date de la dernière découverte code/analyse pour l'application " + app.getTitle(), iValue);
         }

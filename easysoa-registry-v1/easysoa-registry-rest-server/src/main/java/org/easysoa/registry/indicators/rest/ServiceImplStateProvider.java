@@ -42,8 +42,11 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ServiceImplStateProvider implements IndicatorProvider {
 
-    private static final String SERVICEIMPL_DOCTYPE_INDICATOR = DoctypeCountProvider.getName(ServiceImplementation.DOCTYPE);
+    //private static final String SERVICEIMPL_DOCTYPE_INDICATOR = DoctypeCountProvider.getName(ServiceImplementation.DOCTYPE);
     
+    // TODO : Add a key and a name in indicators
+    private static final String SERVICEIMPL_DOCTYPE_INDICATOR = "Nombre de " + ServiceImplementation.DOCTYPE;
+
     private String category;
     
     /**

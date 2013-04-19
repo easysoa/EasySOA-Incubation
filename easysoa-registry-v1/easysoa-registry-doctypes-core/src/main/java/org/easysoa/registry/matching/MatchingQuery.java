@@ -33,7 +33,7 @@ public class MatchingQuery {
 		params.add(value);
 	}
 	public void addCriteriaIfSet(String xpath, Object value) {
-    	if (value != null) {
+    	if (value != null && !"".equals(value)) { // NB. may be empty if set by Nuxeo UI
     		addCriteria(xpath, value);
     	}
 	}
@@ -72,7 +72,7 @@ public class MatchingQuery {
 	 * @param value
 	 */
 	public void addConstraintMatchCriteriaIfSet(String xpath, Object value) {
-    	if (value != null) {
+    	if (value != null && !"".equals(value)) { // NB. may be empty if set by Nuxeo UI
     		addConstraintMatchCriteria(xpath, value);
     	}
 	}
@@ -129,7 +129,7 @@ public class MatchingQuery {
 	 * @param value
 	 */
 	public void addConstraintMatchCriteriaWithAltIfSet(String xpath, String altXpath, Object value) {
-    	if (value != null) {
+    	if (value != null && !"".equals(value)) { // NB. may be empty if set by Nuxeo UI
     		addConstraintMatchCriteriaWithAlt(xpath, altXpath, value);
     	}
 	}

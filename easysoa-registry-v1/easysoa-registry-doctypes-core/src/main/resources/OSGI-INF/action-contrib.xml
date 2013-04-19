@@ -64,17 +64,92 @@
     <action id="newWorkspace" enabled="false" />
     
     <!-- Redefine content tab to display both listing & properties -->
+    <!-- Overriden from ./nuxeo-dm/nuxeo-platform-webapp-core/src/main/resources/OSGI-INF/actions-contrib.xml -->
     <action id="TAB_CONTENT" link="/incl/tabs/easysoa_document_content.xhtml" order="10"
-      label="action.view.content" icon="/icons/file.gif">
+      label="action.view.content" icon="/icons/file.gif" accessKey="c">
       <category>VIEW_ACTION_LIST</category>
-      <filter-id>isFolderish</filter-id>
+      <!-- filter-id>view_content</filter-id>
+      <filter-id>outSection</filter-id -->
+      <filter-id>isFolderish</filter-id><!-- overrides -->
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
     </action>
     
     <!-- Redefine view tab to display parents -->
+    <!-- Overriden from ./nuxeo-dm/nuxeo-platform-webapp-core/src/main/resources/OSGI-INF/actions-contrib.xml -->
     <action id="TAB_VIEW" link="/incl/tabs/easysoa_document_view.xhtml" order="0"
-      label="action.view.summary" icon="/icons/file.gif">
+      label="action.view.summary" icon="/icons/file.gif" accessKey="v">>
       <category>VIEW_ACTION_LIST</category>
       <filter-id>view</filter-id>
+      <properties>
+        <property name="ajaxSupport">true</property>
+      </properties>
+    </action>
+    
+    <!-- hiding some tabs : workflow, jbpm, publish -->
+    <action id="TAB_ROUTE_WORKFLOW">
+        <filter id="easysoa.deny.tab_route_workflow">
+            <rule grant="false">
+                <!-- NB. (RequirementsDocument, ) Business Service, Actor, SLA ;
+                OLA ; Component are in easy-soa-open-wide Nuxeo Studio project -->
+                <type>InformationService</type>
+                <type>Platform</type>
+                <!-- type>SoftwareComponent</type -->
+                
+                <!-- NB. JavaServiceImplementation/Consumption are in easysoa-registry-doctypes-java-core -->
+                <!-- type>EndpointConsumer</type -->
+                <type>Deliverable</type>
+                <type>ServiceImplementation</type>
+                <type>ServiceConsumption</type>
+                
+                <type>DeployedDeliverable</type>
+                <type>Endpoint</type>
+                <type>EndpointConsumption</type>
+            </rule>
+        </filter>
+    </action>
+    <action id="TAB_CONTENT_JBPM">
+        <filter id="easysoa.deny.tab_content_jbpm">
+            <rule grant="false">
+                <!-- NB. (RequirementsDocument, ) Business Service, Actor, SLA ;
+                OLA ; Component are in easy-soa-open-wide Nuxeo Studio project -->
+                <type>InformationService</type>
+                <type>Platform</type>
+                <!-- type>SoftwareComponent</type -->
+                
+                <!-- NB. JavaServiceImplementation/Consumption are in easysoa-registry-doctypes-java-core -->
+                <!-- type>EndpointConsumer</type -->
+                <type>Deliverable</type>
+                <type>ServiceImplementation</type>
+                <type>ServiceConsumption</type>
+                
+                <type>DeployedDeliverable</type>
+                <type>Endpoint</type>
+                <type>EndpointConsumption</type>
+            </rule>
+        </filter>
+    </action>
+    <action id="TAB_PUBLISH">
+        <filter id="easysoa.deny.tab_publish">
+            <rule grant="false">
+                <!-- NB. (RequirementsDocument, ) Business Service, Actor, SLA ;
+                OLA ; Component are in easy-soa-open-wide Nuxeo Studio project -->
+                <type>InformationService</type>
+                <type>Platform</type>
+                <!-- type>SoftwareComponent</type -->
+                
+                <!-- NB. JavaServiceImplementation/Consumption are in easysoa-registry-doctypes-java-core -->
+                <!-- type>EndpointConsumer</type -->
+                <type>Deliverable</type>
+                <type>ServiceImplementation</type>
+                <type>ServiceConsumption</type>
+                
+                <type>DeployedDeliverable</type>
+                <type>Endpoint</type>
+                <type>EndpointConsumption</type>
+            </rule>
+        </filter>
     </action>
   
     <action id="createSubprojectVersion" link="#{subprojectActions.createSubprojectVersion()}"

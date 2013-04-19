@@ -512,6 +512,7 @@ public class SubprojectServiceImpl {
     
     /**
      * Uses getParent. To rather use spnode:subproject, use getSubprojectById()
+     * @obsolete
      * @param subprojectNode
      * @return
      * @throws ClientException

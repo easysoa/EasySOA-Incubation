@@ -22,7 +22,7 @@ field: #{field} ; value: #{value} ; fieldOrValue: #{fieldOrValue}
 
     <!-- using panelGroup instead of c:when/choose because it doesn't work within a loop (ex. in list property) -->
     <h:panelGroup rendered="#{not empty targetDocument}">
-		<nxu:graphicImage value="#{nxd:iconPath(targetDocument)}" alt="" />
+		<nxu:graphicImage value="#{nxd:iconPath(targetDocument)}" alt="" rendered="true"/><!--  ccc#{nxd:iconPath(targetDocument)}cc -->
 		<nxd:restDocumentLink document="#{targetDocument}">
             <nxh:outputText value="#{nxd:titleOrId(targetDocument)}" /><!-- for an SoaNode, is its SoaName -->
 		</nxd:restDocumentLink>

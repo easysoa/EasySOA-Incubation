@@ -20,6 +20,7 @@
 
 package org.easysoa.registry.indicators.rest;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,11 +30,12 @@ import java.util.Set;
  */
 public class IndicatorValue {
     
-    private String name; // TODO : good idea to put the name in the indicator value ???
-    private String description; // TODO : add description methods
+    private String name;
+    private String description;
     private Set<String> categories = new HashSet<String>(); // TODO : several categories ??
     private int count;
     private int percentage;
+    private Date date = null;
 
     /**
      * 
@@ -114,6 +116,20 @@ public class IndicatorValue {
         String countString = (count != -1) ? Integer.toString(count) : "N.A.";
         String percentageString = (percentage != -1) ? Integer.toString(percentage) + "%" : "N.A.";
         return "[" + countString + " / " + percentageString + "]";
+    }
+
+    /**
+     * @return the date
+     */
+    public Date getDate() {
+        return date;
+    }
+
+    /**
+     * @param date the date to set
+     */
+    public void setDate(Date date) {
+        this.date = date;
     }
 
 }

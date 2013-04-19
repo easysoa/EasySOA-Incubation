@@ -72,15 +72,15 @@ public class IndicatorsController extends EasysoaModuleRoot {
      */
     public IndicatorsController() {
         // Document count by type
-        addIndicator(new DoctypeCountProvider(SoaNode.ABSTRACT_DOCTYPE, CATEGORY_CARTOGRAPHY)); // TODO : replace all these providers by a unique provider
-        addIndicator(new DoctypeCountProvider(InformationService.DOCTYPE, CATEGORY_CARTOGRAPHY));
-        addIndicator(new DoctypeCountProvider(SoftwareComponent.DOCTYPE, CATEGORY_CARTOGRAPHY));
-        addIndicator(new DoctypeCountProvider(ServiceImplementation.DOCTYPE, CATEGORY_CARTOGRAPHY));
-        addIndicator(new DoctypeCountProvider(Deliverable.DOCTYPE, CATEGORY_CARTOGRAPHY));
-        addIndicator(new DoctypeCountProvider(DeployedDeliverable.DOCTYPE, CATEGORY_CARTOGRAPHY));
-        addIndicator(new DoctypeCountProvider(Endpoint.DOCTYPE, CATEGORY_CARTOGRAPHY));
-        addIndicator(new DoctypeCountProvider(EndpointConsumption.DOCTYPE, CATEGORY_CARTOGRAPHY));
-        addIndicator(new DoctypeCountProvider(TaggingFolder.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(new DoctypeCountProvider("Nombre de " + SoaNode.ABSTRACT_DOCTYPE, "", SoaNode.ABSTRACT_DOCTYPE, CATEGORY_CARTOGRAPHY)); // TODO : replace all these providers by a unique provider
+        addIndicator(new DoctypeCountProvider("Nombre de " + InformationService.DOCTYPE, "", InformationService.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(new DoctypeCountProvider("Nombre de " + SoftwareComponent.DOCTYPE, "", SoftwareComponent.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(new DoctypeCountProvider("Nombre de " + ServiceImplementation.DOCTYPE, "", ServiceImplementation.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(new DoctypeCountProvider("Nombre de " + Deliverable.DOCTYPE, "", Deliverable.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(new DoctypeCountProvider("Nombre de " + DeployedDeliverable.DOCTYPE, "", DeployedDeliverable.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(new DoctypeCountProvider("Nombre de " + Endpoint.DOCTYPE, "", Endpoint.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(new DoctypeCountProvider("Nombre de " + EndpointConsumption.DOCTYPE, "", EndpointConsumption.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicator(new DoctypeCountProvider("Nombre de " + TaggingFolder.DOCTYPE, "", TaggingFolder.DOCTYPE, CATEGORY_CARTOGRAPHY));
 
         // Doctype-specific indicators
         //addIndicator(new ServiceStateProvider()); // Disabled because outdated (see Comment in ServiceStateProvider.class)
@@ -92,6 +92,9 @@ public class IndicatorsController extends EasysoaModuleRoot {
         // Miscellaneous indicators
         addIndicator(new PlaceholdersIndicatorProvider(CATEGORY_MATCHING));
 
+        //
+        addIndicator(new LastCodeDiscoveryIndicatorProvider(CATEGORY_CARTOGRAPHY));
+        
     }
 
     /**

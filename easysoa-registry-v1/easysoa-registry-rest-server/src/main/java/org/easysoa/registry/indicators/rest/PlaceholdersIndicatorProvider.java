@@ -46,7 +46,7 @@ public class PlaceholdersIndicatorProvider extends QueryCountIndicator {
         this.category = category;
     }
 
-    @Override
+    @Override 
     public List<String> getRequiredIndicators() {
         return null;
     }
@@ -54,12 +54,22 @@ public class PlaceholdersIndicatorProvider extends QueryCountIndicator {
     @Override
     public String getName() {
         //return "Placeholders count";
-        return "Placeholders";
+        return "Nombre de Placeholders";
     }
     
     @Override
     public String getCategory(){
         return category;
+    }
+
+    @Override
+    public String getDescription() {
+        return "";
+    }
+
+    @Override
+    public String getDocType() {
+        return "";
     }
 
 }

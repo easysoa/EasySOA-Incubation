@@ -30,32 +30,60 @@ import org.easysoa.registry.DocumentService;
  */
 public class DoctypeCountProvider extends QueryCountIndicator {
 
-    private final String doctype;
+    private final String docType;
     private final String category;
     private final String description;
+    private final String name;
+
+    /**
+     * 
+     * @param name
+     * @param description
+     * @param doctype
+     * @param category 
+     */
+    public DoctypeCountProvider(String name, String description, String docType, String category) {
+        super(DocumentService.NXQL_SELECT_FROM + docType + DocumentService.NXQL_WHERE_NO_PROXY);
+        this.docType = docType;
+        this.name = name;
+        this.description = description;
+        this.category = category;
+    }    
+    
+    /**
+     * 
+     * @param name
+     * @param doctype
+     * @param category 
+     */
+    public DoctypeCountProvider(String name, String docType, String category) {
+        this(name, "", docType, category);
+    }
 
     /**
      * 
      * @param doctype
      * @param category 
      */
-    public DoctypeCountProvider(String doctype, /*String description,*/ String category) {
-        super(DocumentService.NXQL_SELECT_FROM + doctype + DocumentService.NXQL_WHERE_NO_PROXY);
-        this.doctype = doctype;
-        //this.description = description;
-        this.description = "";
-        this.category = category;
+    public DoctypeCountProvider(String docType, String category) {
+        this("", "", docType, category);
+    }
+    
+    @Override
+    public String getName() {
+        //return getName(doctype);
+        return this.name;
     }
 
     @Override
-    public String getName() {
-        return getName(doctype);
+    public String getDocType(){
+        return this.docType;
     }
-
-    /*@Override
+    
+    @Override
     public String getDescription() {
         return this.description;
-    }*/
+    }
     
     @Override
     public String getCategory(){
@@ -67,8 +95,8 @@ public class DoctypeCountProvider extends QueryCountIndicator {
         return null;
     }
     
-    public static String getName(String doctype) {
-        return doctype;// + " count";
+    public static String getName(String docType) {
+        return /*"Nombre de " + */docType;// + " count";
     }
     
 }

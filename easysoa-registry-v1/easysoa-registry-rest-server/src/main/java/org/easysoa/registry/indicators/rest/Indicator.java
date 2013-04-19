@@ -41,7 +41,9 @@ public abstract class Indicator implements IndicatorProvider {
     
     public abstract String getName();
     
-    //public abstract String getDescription();
+    public abstract String getDescription();
+    
+    public abstract String getDocType();
     
     public abstract String getCategory();
     

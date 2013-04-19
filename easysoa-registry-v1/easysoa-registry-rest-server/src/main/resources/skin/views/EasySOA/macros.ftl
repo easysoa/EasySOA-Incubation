@@ -224,10 +224,18 @@
     <#macro displayIndicatorsInTable indicators category>
         <table class="table table-bordered">
         <#list indicators?keys as indicatorsKey>
-            <#if indicators[indicatorsKey].count != -1 && indicators[indicatorsKey].containsCategory(category) == "true">
+            <#--<#if indicators[indicatorsKey].count != -1 && indicators[indicatorsKey].containsCategory(category) == "true">-->
+            <#if indicators[indicatorsKey].containsCategory(category) == "true">
             <tr>
-                <td>Nombre de ${indicatorsKey}</td>
-                <td><b>${indicators[indicatorsKey].count}</b></td>
+                <#--<td>${indicatorsKey}</td>-->
+                <td>${indicators[indicatorsKey].name}</td>
+                <td><b>
+                    <#if indicators[indicatorsKey].count != -1>
+                        ${indicators[indicatorsKey].count}
+                    <#else>
+                        ${indicators[indicatorsKey].date?date}
+                    </#if>
+                </b></td>
                 <!-- TODO : Display the percentage ??? -->
                 <td>    <#if indicators[indicatorsKey].percentage != -1>
                             Pourcentage : <b>${indicators[indicatorsKey].percentage}%</b>

@@ -58,15 +58,15 @@
                             <table class="table table-bordered" width="100%">
                                 <tr>
                                     <td width="80%">Nombre de services définis :</td>
-                                    <td width="20%">${indicators["InformationService"].count}</td>
+                                    <td width="20%">${indicators["Nombre de InformationService"].count}</td>
                                 </tr>
                                 <tr>
                                     <td width="80%">Nombre services implémentés :</td>
-                                    <td width="20%">${indicators["ServiceImplementation"].count}</td>
+                                    <td width="20%">${indicators["Nombre de ServiceImplementation"].count}</td>
                                 </tr>
                                 <tr>
                                     <td width="80%">Nombre de services déployés :</td>
-                                    <td width="20%">${indicators["Endpoint"].count}</td>
+                                    <td width="20%">${indicators["Nombre de Endpoint"].count}</td>
                                 </tr>
                             </table>
                         </p>
@@ -86,7 +86,7 @@
                             <table class="table table-bordered" width="100%">
                                 <tr>
                                     <td width="80%">Nombre de Placeholders (implémentations inconnues d'endpoints) :</td>
-                                    <td width="20%">${indicators["Placeholders"].count}</td>
+                                    <td width="20%">${indicators["Nombre de Placeholders"].count}</td>
                                 </tr>
                             </table>
                         </p>

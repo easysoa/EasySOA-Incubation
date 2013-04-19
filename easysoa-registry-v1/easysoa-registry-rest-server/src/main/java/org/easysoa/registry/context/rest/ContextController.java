@@ -76,7 +76,7 @@ public class ContextController extends EasysoaModuleRoot {
             List<DocumentModel> lives = new ArrayList<DocumentModel>();
             String nxqlRequest = DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY
                     + DocumentService.NXQL_AND + "spnode:subproject STARTSWITH '" + project.getPathAsString() + "'"
-                    + DocumentService.NXQL_AND + DocumentService.NXQL_IS_NOT_VERSIONED + "' ORDER BY dc:title ASC";
+                    + DocumentService.NXQL_AND + DocumentService.NXQL_IS_NOT_VERSIONED + " ORDER BY dc:title";
             DocumentModelList liveList = session.query(nxqlRequest);
             for(DocumentModel live : liveList){
                 lives.add(live);
@@ -87,7 +87,7 @@ public class ContextController extends EasysoaModuleRoot {
             nxqlRequest = DocumentService.NXQL_SELECT_FROM + Subproject.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY
                     + DocumentService.NXQL_AND + "spnode:subproject STARTSWITH '" + project.getPathAsString() + "'"
                     + DocumentService.NXQL_AND + DocumentService.NXQL_IS_VERSIONED
-                    + " ORDER BY dc:title ASC, major_version DESC, minor_version DESC";
+                    + " ORDER BY dc:title, major_version DESC, minor_version DESC";
             DocumentModelList versionList = session.query(nxqlRequest);
             List<DocumentModel> versions = new ArrayList<DocumentModel>();
             for(DocumentModel version : versionList){

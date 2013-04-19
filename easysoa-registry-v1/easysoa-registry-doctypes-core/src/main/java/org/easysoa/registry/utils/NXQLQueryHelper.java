@@ -37,8 +37,8 @@ public class NXQLQueryHelper {
 
     /**
      * Build a nxql request criteria with the subproject ID.
-     * if the context visibility is STRICT the following request criteria will be returned : "AND spnode:subproject = 'subprojectId'"
-     * otherwise for a DEEP visibility, the following request criteria will be returned : "AND spnode:subproject IN ('subprojectId', 'subprojectId', ...)"
+     * if the context visibility is STRICT the following request criteria will be returned : "spnode:subproject = 'subprojectId'"
+     * otherwise for a DEEP visibility, the following request criteria will be returned : "spnode:subproject IN ('subprojectId', 'subprojectId', ...)"
      * 
      * The subprojectid's used in the DEEP request are the parent subprojects ID's
      * 

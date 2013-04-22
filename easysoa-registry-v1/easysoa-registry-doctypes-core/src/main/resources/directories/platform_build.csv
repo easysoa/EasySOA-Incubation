@@ -1,4 +1,4 @@
-"id","label","obsolete"
-"maven","Maven","0"
-"ivy","Ivy","0"
-"fstudio","FraSCAti Studio","0"
+"id","label","obsolete","ordering"
+"Maven","Maven","0","0"
+"Ivy","Ivy","0","1"
+"FraSCAti Studio","FraSCAti Studio","0","2"

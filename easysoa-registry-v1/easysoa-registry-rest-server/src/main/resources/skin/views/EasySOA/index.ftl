@@ -44,7 +44,7 @@
                             <p>
                             <div class="btn-group">
                                 <a class="btn" href="${Root.path}/services/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte sources</a>
-                                <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/" target="_blank">Découverte web</a>
+                                <a class="btn" href="${web_discovery_url}" target="_blank">Découverte web</a>
                                 <a class="btn" href="${Root.path}/services/cartography/runDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte à l'éxécution</a>
                             </div>
                             </p>

@@ -1,7 +1,15 @@
+    <#-- Constants -->
     
-    <#assign web_discovery_host="http://owsi-vm-easysoa-axxx-registry.accelance.net"/>
+    <#assign web_discovery_host="owsi-vm-easysoa-axxx-registry.accelance.net"/>
     <#assign web_discovery_port="8083"/>
-
+    <#assign web_discovery_url="http://" + web_discovery_host + ":" + web_discovery_port + "/"/>
+    
+    <#assign jasmine_host="owsi-vm-easysoa-axxx-pivotal.accelance.net" />
+    <#assign jasmine_port="9100" />
+    <#assign jasmine_url="http://" + jasmine_host + ":" + jasmine_port + "/jasmine/" />
+    
+    <#-- Macros -->
+    
     <#macro displayPhase subprojectId>
         <#assign phaseShortId = subprojectId?replace('/default-domain/', '')/>
         <#assign phaseShortIdVersionIndex = phaseShortId?last_index_of('_v')/>
@@ -241,7 +249,9 @@
                     <#if indicators[indicatorsKey].count != -1>
                         ${indicators[indicatorsKey].count}
                     <#else>
-                        ${indicators[indicatorsKey].date?date}
+                        <#if indicators[indicatorsKey].date>
+                            ${indicators[indicatorsKey].date?date}
+                        </#if>
                     </#if>
                 </b></td>
                 <!-- TODO : Display the percentage ??? -->
@@ -382,16 +392,20 @@
 	</#list -->
     </#macro>
     
-    
     <#macro displayDocs docs propNames=documentPropNames>
          <#list docs as doc>
             <h4><@displayDocShort doc/></h4>
             <@displayDoc doc propNames/>
 	</#list>
     </#macro>
-
+   
     <#--
     <#macro displayPreviousButtonBar>
-        
+        <li class="span12">
+            <div class="thumbnail">
+                <img data-src="holder.js/300x200" alt="">            
+                <a class="btn" href="${Root.path}/../?subprojectId=${subprojectId}&visibility=${visibility}">Retour à l'accueil</a>
+            </div>
+        </li>        
     </#macro>
     -->

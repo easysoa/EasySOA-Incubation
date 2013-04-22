@@ -42,7 +42,7 @@ public class ServiceDefaultCountIndicatorProvider implements IndicatorProvider {
 
     private String category;
     
-    public ServiceDefaultCountIndicatorProvider(String category){
+    public ServiceDefaultCountIndicatorProvider(String category) {
         if(category == null){
             this.category = "";
         } else {
@@ -58,18 +58,17 @@ public class ServiceDefaultCountIndicatorProvider implements IndicatorProvider {
     @Override
     public Map<String, IndicatorValue> computeIndicators(CoreSession session, String subProjectId, Map<String, IndicatorValue> computedIndicators, String visibility) throws Exception {
 
+        // Get each SLA or OLA and check the ind:serviceLevelViolation attribute
+        // If violation => set +1
+        
         DocumentService documentService = Framework.getService(DocumentService.class);        
         EndpointStateService endpointStateService = new EndpointStateServiceImpl();
         
         // Init the result map
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
         
-        // Get each SLA or OLA and check the ind:serviceLevelViolation attribute
-        // If violation => set +1
-        
         // Get endpoints
         String subProjectPathCriteria = NXQLQueryHelper.buildSubprojectPathCriteria(session, subProjectId, visibility);
-        
         StringBuilder query = new StringBuilder();
         query.append(DocumentService.NXQL_SELECT_FROM);
         query.append(Endpoint.DOCTYPE);
@@ -77,7 +76,6 @@ public class ServiceDefaultCountIndicatorProvider implements IndicatorProvider {
             query.append(DocumentService.NXQL_WHERE);
             query.append(subProjectPathCriteria);
         }
-            
         DocumentModelList endpointsList = documentService.query(session, query.toString(), true, false);
         
         // For each endpoint, get the SLA/OLA indicators : check the violation and increase or not the counter
@@ -86,7 +84,7 @@ public class ServiceDefaultCountIndicatorProvider implements IndicatorProvider {
         int totalNumberOfIndicators = 0;
         
         for(DocumentModel endpoint : endpointsList){
-            // TODO : take only the latest indicator
+            // TODO : take only the latest indicator ?
             List<SlaOrOlaIndicator> slaOlaIndicators = endpointStateService.getSlaOrOlaIndicators(endpoint.getId(), "", null, null, 10, 0).getSlaOrOlaIndicatorList();
             for(SlaOrOlaIndicator indicator : slaOlaIndicators){
                 totalNumberOfIndicators++;

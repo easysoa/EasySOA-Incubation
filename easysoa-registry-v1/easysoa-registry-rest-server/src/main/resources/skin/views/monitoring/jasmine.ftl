@@ -50,7 +50,7 @@
                                 <li><a href="#NotifiationEditorWidget">Notification editor</a> permettant de configurer les notifications et alertes.</li>
                             </ul>
                             <br/>
-                            <a class="btn" href="http://owsi-vm-easysoa-axxx-pivotal.accelance.net:9100/jasmine/" target="_blank">Ouvrir l'outil JASMINe</a>
+                            <a class="btn" href="${jasmine_url}" target="_blank">Ouvrir l'outil JASMINe</a>
                         </p>
                         
                         <hr/>

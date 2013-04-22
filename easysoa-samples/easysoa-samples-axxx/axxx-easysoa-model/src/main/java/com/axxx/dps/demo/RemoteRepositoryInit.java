@@ -4,7 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.easysoa.registry.rest.RegistryApi;
 import org.easysoa.registry.rest.client.ClientBuilder;
@@ -48,7 +50,7 @@ import com.sun.jersey.api.client.UniformInterfaceException;
  * * clean : deletes the existing model
  * * (Specifications are always (updated or) created)
  * * (Realisation must be done by source discovery)
- * * Deploiement : creates a Prod endpoint for TdrWebService
+ * * Deploiement : creates a Prod endpoint for PrecomptePartenaireService
  * * Exploitation : creates an SOA monitoring indicator for it (by calling EndpointStateService)
  * 
  * B. properties, in [key]=[value] syntax
@@ -81,6 +83,13 @@ public class RemoteRepositoryInit {
 	public static final String COMPONENT_TYPE = "acomp:componentCategory";
 	public static final String COMPONENT_INFORMATION_SERVICE = "acomp:linkedInformationService";
 	public static final String COMPONENT_PROVIDER_ACTOR = "acomp:providerActor";
+	
+	@SuppressWarnings("serial")
+	public static final Map<String, Integer> subprojectNameToIndex = new HashMap<String, Integer>(3) {{
+		put(Subproject.SPECIFICATIONS_SUBPROJECT_NAME, 1);
+		put(Subproject.REALISATION_SUBPROJECT_NAME, 2);
+		put(Subproject.DEPLOIEMENT_SUBPROJECT_NAME, 3);
+	}};
 	
 	private static RegistryApi registryApi;
 	private static Session session;
@@ -170,7 +179,7 @@ public class RemoteRepositoryInit {
         //String specificationsSubprojectId = (String) getDocByPath(specificationsPath).getProperties().get("spnode:subproject");
         Document specificationsSubprojectDoc = getSubproject(specificationsPath + "_v");
         if (specificationsSubprojectDoc == null) {
-            /*String realisationPath = */createDocument(Subproject.DOCTYPE, Subproject.SPECIFICATIONS_SUBPROJECT_NAME, projectPath);
+            /*String specificationsPath = */createSubproject(projectPath, Subproject.SPECIFICATIONS_SUBPROJECT_NAME, null);
             specificationsSubprojectDoc = getSubproject(specificationsPath + "_v");
         }
         String specificationsSubprojectId = (String) specificationsSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
@@ -248,17 +257,17 @@ public class RemoteRepositoryInit {
         createSoaNode(olaCheckAddressId, isCheckAddressPath,
                 "dc:description=temps de réponse max, taux de disponibilité par période");
 
-        SoaNodeId isTdrWebServiceId = new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "TdrWebService");
-        String isTdrWebServicePath = createSoaNode(isTdrWebServiceId, infoArchitecturePath,
+        SoaNodeId isPrecomptePartenaireServiceId = new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "PrecomptePartenaireService"); // OLD TdrWebService
+        String isPrecomptePartenaireServicePath = createSoaNode(isPrecomptePartenaireServiceId, infoArchitecturePath,
                 InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actSIDPSId)/*,
 		        InformationService.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService"*/);
-		uploadWsdl(isTdrWebServicePath, "../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
+		uploadWsdl(isPrecomptePartenaireServicePath, "../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
 		    // or manually upload WSDL on it
-		///isTdrWebServiceId = new SoaNodeId(isTdrWebServiceId.getType(), "ws:http://www.axxx.com/dps/apv:PrecomptePartenaireService");
+		///isPrecomptePartenaireServiceId = new SoaNodeId(isPrecomptePartenaireServiceId.getType(), "ws:http://www.axxx.com/dps/apv:PrecomptePartenaireService");
 		    // updating soaname to what the wsdl upload has set it to
 		    // TODO or never let it change ?!
-		SoaNodeId olaTdrWebServiceId = new SoaNodeId(specificationsSubprojectId, OLA_DOCTYPE, "OLA TdrWebService");
-		createSoaNode(olaTdrWebServiceId, isTdrWebServicePath,
+		SoaNodeId olaPrecomptePartenaireServiceId = new SoaNodeId(specificationsSubprojectId, OLA_DOCTYPE, "OLA PrecomptePartenaireService"); // OLD OLA TdrWebService
+		createSoaNode(olaPrecomptePartenaireServiceId, isPrecomptePartenaireServicePath,
 		        "dc:description=temps de réponse max, taux de disponibilité par période");
 		
 		SoaNodeId isInformationAPVId = new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "Information_APV");
@@ -325,23 +334,23 @@ public class RemoteRepositoryInit {
         
 		// Components
         
-        SoaNodeId cptCheckAddressId = new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "checkAddress");
+        SoaNodeId cptCheckAddressId = new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "Uniserv"); // TODO ? OLD checkAddress
         createSoaNode(cptCheckAddressId, compArchitecturePath,
 				COMPONENT_TYPE + "=Application",
-				COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isCheckAddressId)); // réalise IS checkAddress TODO not the other way ??
+				COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isCheckAddressId)); // réalise IS checkAddress TODO not the other way ?!?
         createSoaNode(cptCheckAddressId, getPath(genericWSPlatform)); // again, to give it its platform
 		
-		SoaNodeId cptTdrWebServiceId = new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "TdrWebService");
-		createSoaNode(cptTdrWebServiceId, compArchitecturePath,
+		SoaNodeId cptPrecomptePartenaireServiceId = new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "APV"); // OLD PrecomptePartenaireService, TdrWebService
+		createSoaNode(cptPrecomptePartenaireServiceId, compArchitecturePath,
 				COMPONENT_TYPE + "=Application",
 				/*"platform:serviceLanguage=JAX-WS",*/
-                COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isTdrWebServiceId));
-        createSoaNode(cptTdrWebServiceId, getPath(axxxJavaWSPlatform)); // again, to give it its platform
+                COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isPrecomptePartenaireServiceId)); // TODO the other way ?!?
+        createSoaNode(cptPrecomptePartenaireServiceId, getPath(axxxJavaWSPlatform)); // again, to give it its platform
 		
-        SoaNodeId cptInformationAPVId = new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "Information_APV");
+        SoaNodeId cptInformationAPVId = new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "Pivotal"); // OLD Information_APV
         createSoaNode(cptInformationAPVId, compArchitecturePath,
 				COMPONENT_TYPE + "=Application",
-                COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isInformationAPVId));
+                COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isInformationAPVId)); // TODO the other way ?!?
         createSoaNode(cptInformationAPVId, getPath(axxxDotNETWSPlatform)); // again, to give it its platform
 		
         SoaNodeId cptOrchestrationDCVId = new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "Orchestration_DCV");
@@ -384,9 +393,8 @@ public class RemoteRepositoryInit {
             Document realisationSubprojectParentSpecificationsDoc = getExistingVersionedElseLiveSubprojectId(specificationsPath);
             
             System.out.println("   creating Realisation subproject");
-            /*String realisationPath = */createDocument(Subproject.DOCTYPE, Subproject.REALISATION_SUBPROJECT_NAME, projectPath,
-                    Subproject.XPATH_PARENT_SUBPROJECTS + "=" + realisationSubprojectParentSpecificationsDoc.getId());
-            //String realisationSubprojectId = (String) getDocByPath(realisationPath).getProperties().get("spnode:subproject");
+            /*String realisationPath = */createSubproject(projectPath, Subproject.REALISATION_SUBPROJECT_NAME,
+            		realisationSubprojectParentSpecificationsDoc.getId());
             realisationSubprojectDoc = getDocByPath(realisationPath);
         }
         String realisationSubprojectId = (String) realisationSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
@@ -395,8 +403,8 @@ public class RemoteRepositoryInit {
 		// do a source discovery
 		//publish(specificationsPath, realizationPath);
 //		createSoaNode(new SoaNodeId(realisationSubprojectId, ???.DOCTYPE, "checkAddress"), realizationPath);
-//		createSoaNode(new SoaNodeId(realisationSubprojectId, ???.DOCTYPE, "TdrWebService"), realizationPath,
-//				?????? + "=" + getIdRef(new SoaNodeId(COMPONENT_DOCTYPE, "TdrWebService")));
+//		createSoaNode(new SoaNodeId(realisationSubprojectId, ???.DOCTYPE, "PrecomptePartenaireService"), realizationPath,
+//				?????? + "=" + getIdRef(new SoaNodeId(COMPONENT_DOCTYPE, "PrecomptePartenaireService")));
 //		createSoaNode(new SoaNodeId(realisationSubprojectId, ???.DOCTYPE, "Information_APV"), realizationPath);
 //		createSoaNode(new SoaNodeId(realisationSubprojectId, ???.DOCTYPE, "Orchestration_DCV"), realizationPath);
 //		createSoaNode(new SoaNodeId(realisationSubprojectId, ???.DOCTYPE, "Orchestration_DPS"), realizationPath);
@@ -419,25 +427,24 @@ public class RemoteRepositoryInit {
             Document deploiementSubprojectParentRealisationDoc = getExistingVersionedElseLiveSubprojectId(realisationPath);
             
             System.out.println("   creating Deploiement subproject");
-            /*String deploiementPath = */createDocument(Subproject.DOCTYPE, Subproject.DEPLOIEMENT_SUBPROJECT_NAME, projectPath,
-                    Subproject.XPATH_PARENT_SUBPROJECTS + "=" + deploiementSubprojectParentRealisationDoc.getId());
-            //String realisationSubprojectId = (String) getDocByPath(realisationPath).getProperties().get("spnode:subproject");
+            /*String deploiementPath = */createSubproject(projectPath, Subproject.DEPLOIEMENT_SUBPROJECT_NAME,
+            		deploiementSubprojectParentRealisationDoc.getId());
             deploiementSubprojectDoc = getDocByPath(deploiementPath);
         }
         String deploiementSubprojectId = (String) deploiementSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
         
-        SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService");//TODO host
+        SoaNodeId precomptePartenaireServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService");//TODO host
         SoaNodeId checkAddressProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:" + fromEnc("iuuq;00xxx/ebub.rvbmjuz.tfswjdf/dpn0npdlxtr5220tfswjdft0JoufsobujpobmQptubmWbmjebujpo/JoufsobujpobmQptubmWbmjebujpoIuuqTpbq22Foeqpjou0"));//checkAddressProdEndpoint
         SoaNodeId informationAPVProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getPivotalHost() + ":7080/WS/ContactSvc.asmx");//TODO host // 18000
 
 		// manually : do a web discovery
 		// TODO web discovery : upload wsdl
 		    
-        String tdrWebServiceProdEndpointPath = createSoaNode(tdrWebServiceProdEndpointId, (String) null,
+        String precomptePartenaireServiceProdEndpointPath = createSoaNode(precomptePartenaireServiceProdEndpointId, (String) null,
                 Endpoint.XPATH_ENDP_ENVIRONMENT + "=Prod", // required even with soaname else integrity check fails
                 Endpoint.XPATH_URL + "=http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService"/*, // required even with soaname else integrity check fails
                 Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService"*/);
-        uploadWsdl(tdrWebServiceProdEndpointPath, "../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
+        uploadWsdl(precomptePartenaireServiceProdEndpointPath, "../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
             // or do a web discovery
             // TODO web discovery : upload wsdl (for now manually upload WSDL on it)
 
@@ -474,23 +481,23 @@ public class RemoteRepositoryInit {
 	        String deploiementSubprojectId = (String) deploiementSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
 
 	        // copied from Specifications
-	        SoaNodeId isTdrWebServiceId = new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "TdrWebService");
-	        String isTdrWebServicePath = createSoaNode(isTdrWebServiceId);
-	        SoaNodeId olaTdrWebServiceId = new SoaNodeId(specificationsSubprojectId, OLA_DOCTYPE, "OLA TdrWebService");
-	        createSoaNode(olaTdrWebServiceId);
+	        SoaNodeId isPrecomptePartenaireServiceId = new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "PrecomptePartenaireService");
+	        String isPrecomptePartenaireServicePath = createSoaNode(isPrecomptePartenaireServiceId);
+	        SoaNodeId olaPrecomptePartenaireServiceId = new SoaNodeId(specificationsSubprojectId, OLA_DOCTYPE, "OLA PrecomptePartenaireService");
+	        createSoaNode(olaPrecomptePartenaireServiceId);
 	        
 	        // copied from Deploiement
-	        SoaNodeId tdrWebServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService");//TODO host
-	        String tdrWebServiceProdEndpointPath = createSoaNode(tdrWebServiceProdEndpointId);
-	        //String tdrWebServiceProdEndpointNuxeoId = getIdRef(tdrWebServiceProdEndpointId); // alt, does not work in jasmine
-	        String tdrWebServiceProdEndpointNuxeoId = registryApi.get(tdrWebServiceProdEndpointId.getSubprojectId(),
-	                tdrWebServiceProdEndpointId.getType(), tdrWebServiceProdEndpointId.getName()).getUuid();
+	        SoaNodeId precomptePartenaireServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService");//TODO host
+	        String precomptePartenaireServiceProdEndpointPath = createSoaNode(precomptePartenaireServiceProdEndpointId);
+	        //String precomptePartenaireServiceProdEndpointNuxeoId = getIdRef(precomptePartenaireServiceProdEndpointId); // alt, does not work in jasmine
+	        String precomptePartenaireServiceProdEndpointNuxeoId = registryApi.get(precomptePartenaireServiceProdEndpointId.getSubprojectId(),
+	                precomptePartenaireServiceProdEndpointId.getType(), precomptePartenaireServiceProdEndpointId.getName()).getUuid();
 	        
 	        SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();
 	        slaOrOlaIndicators.setSlaOrOlaIndicatorList(new ArrayList<SlaOrOlaIndicator>());
 	        SlaOrOlaIndicator slaOrOlaIndicator = new SlaOrOlaIndicator();
-	        slaOrOlaIndicator.setEndpointId(tdrWebServiceProdEndpointNuxeoId);
-	        slaOrOlaIndicator.setSlaOrOlaName(olaTdrWebServiceId.getName());
+	        slaOrOlaIndicator.setEndpointId(precomptePartenaireServiceProdEndpointNuxeoId);
+	        slaOrOlaIndicator.setSlaOrOlaName(olaPrecomptePartenaireServiceId.getName());
 	        slaOrOlaIndicator.setTimestamp(new Date());
 	        slaOrOlaIndicator.setServiceLevelHealth(ServiceLevelHealth.gold);
 	        slaOrOlaIndicator.setServiceLevelViolation(false);
@@ -559,26 +566,35 @@ public class RemoteRepositoryInit {
     }
 
     public static String getIdRef(SoaNodeId soaNodeId) throws Exception {
-		Documents info = (Documents) session
-				.newRequest("Document.Query")
-				.set("query", "SELECT * FROM " + soaNodeId.getType() + 
-						" WHERE soan:name = '" + soaNodeId.getName() + "'" +
-						" AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0").execute();
-		if (info != null && !info.isEmpty()) {
-			return info.get(0).getId();
-		}
-		return null;
+        Document soaNode = getSoaNode(soaNodeId);
+        if (soaNode != null) {
+        	return soaNode.getId();
+        }
+        return null;
 	}
 
     public static String getPath(SoaNodeId soaNodeId) throws Exception {
+        Document soaNode = getSoaNode(soaNodeId);
+        if (soaNode != null) {
+        	return soaNode.getPath();
+        }
+        return null;
+    }
+
+    public static Document getSoaNode(SoaNodeId soaNodeId) throws Exception {
         Documents info = (Documents) session
                 .newRequest("Document.Query")
                 .set("query", "SELECT * FROM " + soaNodeId.getType() + 
-                        " WHERE soan:name = '" + soaNodeId.getName() + "'" +
+                        " WHERE spnode:subproject = '" + soaNodeId.getSubprojectId() + "'" +
+                        " AND soan:name = '" + soaNodeId.getName() + "'" +
                         " AND ecm:isProxy = 0 AND ecm:isCheckedInVersion = 0").execute();
-        if (info != null && !info.isEmpty()) {
-            return info.get(0).getPath();
-        }
+		if (info != null) {
+			if (info.size() == 1) {
+				return info.get(0);
+			} else if (!info.isEmpty()) {
+				System.out.println("WARNING more than one document with soaNodeId=" + soaNodeId);
+			}
+		}
         return null;
     }
 	
@@ -614,7 +630,7 @@ public class RemoteRepositoryInit {
         }
     }
 
-	public static String createDocument(String doctype, String title, String path, String... properties) throws Exception {
+	public static String createDocument(String doctype, String name, String path, String... properties) throws Exception {
 		if (path == null) {
 			throw new Exception("Path is null");
 		}
@@ -624,17 +640,22 @@ public class RemoteRepositoryInit {
         Documents existingDocuments = (Documents) session
                 .newRequest("Document.Query")
                 .set("query", "SELECT * FROM " + doctype + " WHERE ecm:parentId = '" + parentDocument.getId()
-                        + "' AND dc:title='" + title + "'").execute();
+                        + "' AND ecm:name='" + name + "'").execute();
         if (existingDocuments != null && !existingDocuments.isEmpty()) {
             return existingDocuments.get(0).getPath();
         }
 		
 		OperationRequest request = session.newRequest("Document.Create")
 				.setInput(parentDocument).set("type", doctype)
-				.set("name", title);
-		StringBuilder propertiesString = new StringBuilder("dc:title=" + title);
+				.set("name", name);
+		StringBuilder propertiesString = new StringBuilder();
+		boolean customTitle = false;
 		for (String property : properties) {
 			propertiesString.append('\n' + property);
+			customTitle = customTitle || property.startsWith("dc:title=");
+		}
+		if (!customTitle) {
+			propertiesString.append('\n' + "dc:title=" + name);
 		}
 		request.set("properties", propertiesString);
 		Document createdDocument = (Document) request.execute();
@@ -643,6 +664,22 @@ public class RemoteRepositoryInit {
 
 	private static String createSoaNode(SoaNodeId soaNodeId) throws Exception {
 		return createSoaNode(soaNodeId, (String) null);
+	}
+	
+	public static Document createSubproject(String projectPath, String subprojectName,
+			String deploiementSubprojectParentRealisationDocId) throws Exception {
+        ///System.out.println("   creating " + subprojectName + " subproject");
+        int subprojectIndex = subprojectNameToIndex.get(subprojectName);
+        String titlePropLine = "dc:title=" + subprojectIndex + ". " + subprojectName;
+        String subprojectPath;
+        if (deploiementSubprojectParentRealisationDocId == null || deploiementSubprojectParentRealisationDocId.isEmpty()) {
+        	subprojectPath= createDocument(Subproject.DOCTYPE, subprojectName, projectPath, titlePropLine);
+        } else {
+        	subprojectPath= createDocument(Subproject.DOCTYPE, subprojectName, projectPath, titlePropLine,
+                Subproject.XPATH_PARENT_SUBPROJECTS + "=" + deploiementSubprojectParentRealisationDocId);
+        }
+        //String realisationSubprojectId = (String) getDocByPath(realisationPath).getProperties().get("spnode:subproject");
+        return getDocByPath(subprojectPath); 
 	}
 	
 	public static String createSoaNode(SoaNodeId soaNodeId, String parentPath, String... properties) throws Exception {

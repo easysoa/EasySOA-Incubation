@@ -107,7 +107,7 @@ public class WSDLToHtmlConverter implements Converter {
             if (out != null) {
                 boolean delete = out.delete();
                 if (!delete) {
-                    log.warn("Unable to delete output file.");
+                    log.warn("Unable to delete output file " + out.getAbsolutePath());
                 }
             }
         }

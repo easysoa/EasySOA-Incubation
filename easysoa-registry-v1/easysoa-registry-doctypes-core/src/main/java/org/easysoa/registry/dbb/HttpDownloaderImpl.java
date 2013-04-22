@@ -135,7 +135,8 @@ public class HttpDownloaderImpl implements HttpDownloader {
 			FileOutputStream fos = null;
 			try {
 				// Export bytes to file
-		        this.file = File.createTempFile("tmp", "tmp");
+		        this.file = File.createTempFile("easysoaHttpDownloader", "tmp");
+		        file.deleteOnExit(); // cleanup between executions
 		        fos = new FileOutputStream(this.file);
 				fos.write(this.bytes);
 				fos.flush();

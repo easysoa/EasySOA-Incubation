@@ -1,7 +1,5 @@
 package org.easysoa.registry;
 
-import java.io.Serializable;
-
 import org.apache.log4j.Logger;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;

@@ -149,7 +149,11 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                         JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(
                                 this.codeDiscovery.getSubproject(), c.getFullyQualifiedName());
                         serviceImpl.setTitle(c.getName());
+
+                		serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPL_LANGUAGE, Platform.LANGUAGE_JAVA);
+                		serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPL_BUILD, Platform.BUILD_MAVEN);
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXRS);
+                        
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_DOCUMENTATION, c.getComment());
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_ISMOCK, ParsingUtils.isTestClass(c));
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTATIONCLASS, c.getFullyQualifiedName());
@@ -183,6 +187,10 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                             }
                             InformationServiceInformation serviceDef = new InformationServiceInformation(
                                     this.codeDiscovery.getSubproject(), itfSoaName);
+                            // TODO LATER if refactoring to allow technical matching of service interfaces :
+                            /*serviceDef.setProperty(InformationService.XPATH_LANGUAGE, Platform.LANGUAGE_JAVA);
+                            serviceDef.setProperty(InformationService.XPATH_BUILD, Platform.BUILD_MAVEN);
+                            serviceDef.setProperty(InformationService.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXRS);*/
                             //serviceDef.setOperations(operations);//TODO
                             serviceImpl.addParentDocument(serviceDef.getSoaNodeId());
 

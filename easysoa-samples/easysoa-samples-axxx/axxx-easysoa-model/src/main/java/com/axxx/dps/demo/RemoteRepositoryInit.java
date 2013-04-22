@@ -236,13 +236,17 @@ public class RemoteRepositoryInit {
         
 		// Information services
         
-        createSoaNode(new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "Cré_Précpte"), infoArchitecturePath,
+        SoaNodeId isCrePrecpteId = new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "Cré_Précpte");
+        String isCrePrecptePath = createSoaNode(isCrePrecpteId, infoArchitecturePath,
                 InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actSIDCVId),
                 InformationService.XPATH_LINKED_BUSINESS_SERVICE + "=" + getIdRef(bsDdeCrePrecompteId));
+		uploadWsdl(isCrePrecptePath, "../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
         
-        createSoaNode(new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "Projet_Vacances"), infoArchitecturePath,
+		SoaNodeId isProjetVacancesId = new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "Projet_Vacances");
+		String isProjetVacancesPath = createSoaNode(isProjetVacancesId, infoArchitecturePath,
                 InformationService.XPATH_PROVIDER_ACTOR + "=" + getIdRef(actSIDPSId),
                 InformationService.XPATH_LINKED_BUSINESS_SERVICE + "=" + getIdRef(bsDdeProjetVacancesId));
+        uploadWsdl(isProjetVacancesPath, "../axxx-dcv-pivotal/src/main/resources/api/ContactSvc.asmx.wsdl");
         
 		SoaNodeId isCheckAddressId = new SoaNodeId(specificationsSubprojectId, InformationService.DOCTYPE, "checkAddress");
 		String isCheckAddressPath = createSoaNode(isCheckAddressId, infoArchitecturePath,
@@ -355,20 +359,16 @@ public class RemoteRepositoryInit {
 		
         SoaNodeId cptOrchestrationDCVId = new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "Orchestration_DCV");
         createSoaNode(cptOrchestrationDCVId, compArchitecturePath,
-				COMPONENT_TYPE + "=Application"); // TODO réalise IS Cré_Précpte
+				COMPONENT_TYPE + "=Application",
+				COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isCrePrecpteId)); // TODO the other way ?!?
         createSoaNode(cptOrchestrationDCVId, getPath(axxxTalendESBPlatform)); // again, to give it its platform
 
         // TODO ??!!??
         SoaNodeId cptOrchestrationDPSId = new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "Orchestration_DPS");
         createSoaNode(cptOrchestrationDPSId, compArchitecturePath,
-				COMPONENT_TYPE + "=Application"); // TODO réalise IS Projet_Vacances
+				COMPONENT_TYPE + "=Application",
+				COMPONENT_INFORMATION_SERVICE + "=" + getIdRef(isProjetVacancesId)); // TODO the other way ?!?
         createSoaNode(cptOrchestrationDPSId, getPath(axxxTalendESBPlatform)); // again, to give it its platform
-		
-        createSoaNode(new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "Pivotal"), compArchitecturePath,
-				COMPONENT_TYPE + "=Application");
-		
-        createSoaNode(new SoaNodeId(specificationsSubprojectId, COMPONENT_DOCTYPE, "APV_Web"), compArchitecturePath,
-				COMPONENT_TYPE + "=Application");
         
         // OPT contactClient
 

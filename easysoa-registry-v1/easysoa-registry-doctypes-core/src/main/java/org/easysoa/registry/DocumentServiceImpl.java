@@ -26,9 +26,8 @@ import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
-import org.nuxeo.ecm.core.schema.DocumentType;
-import org.nuxeo.ecm.core.schema.types.Type;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
+import org.nuxeo.runtime.api.Framework;
 
 public class DocumentServiceImpl implements DocumentService {
 	
@@ -465,7 +464,7 @@ public class DocumentServiceImpl implements DocumentService {
 	public boolean isTypeOrSubtype(CoreSession documentManager,
 			String doctypeToTest, String expectedDoctype)
 			throws ClientException {
-		if (doctypeToTest == null || expectedDoctype == null) {
+		/*if (doctypeToTest == null || expectedDoctype == null) {
 			return false;
 		}
 		if (doctypeToTest.equals(expectedDoctype)) {
@@ -477,7 +476,14 @@ public class DocumentServiceImpl implements DocumentService {
 				return true;
 			}
 		}
-		return false;
+		return false;*/
+		SoaMetamodelService soaMetamodelService;
+		try {
+			soaMetamodelService = Framework.getService(SoaMetamodelService.class);
+		} catch (Exception e) {
+			throw new ClientException("Unable to get SoaMetamodelService", e);
+		}
+		return soaMetamodelService.isAssignable(doctypeToTest, expectedDoctype);
 	}
 
 	/**

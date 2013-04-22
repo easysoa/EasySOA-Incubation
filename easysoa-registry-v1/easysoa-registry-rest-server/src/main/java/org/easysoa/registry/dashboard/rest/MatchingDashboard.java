@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.EndpointMatchingService;
 import org.easysoa.registry.ServiceMatchingService;
+import org.easysoa.registry.SoaMetamodelService;
 import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.rest.samples.DashboardMatchingSamples;
 import org.easysoa.registry.types.Component;
@@ -218,18 +219,22 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 	            CoreSession session = SessionFactory.getSession(request);
 				DocumentModel model = session.getDocument(new IdRef(unmatchedModelId));
 				String doctype = model.getType();
-				
+
+	    		SoaMetamodelService soaMetamodelService = Framework.getService(SoaMetamodelService.class);
+	    		boolean isServiceImplementation = soaMetamodelService.isAssignable(doctype, ServiceImplementation.DOCTYPE);
+				boolean isEndpoint = soaMetamodelService.isAssignable(doctype, Endpoint.DOCTYPE);
+	    		
 				// Compute new link value
 	            String newTargetId; 
 	    		if (targetId != null && !targetId.isEmpty()) {
 	    			newTargetId = targetId; // Create link
 	    		}
 	    		else {
-					if (ServiceImplementation.DOCTYPE.equals(doctype)
+					if (isServiceImplementation
 							&& model.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE) == null) {
 			    		throw new Exception("Information Service not selected");
 					}
-					else if (Endpoint.DOCTYPE.equals(doctype)) {
+					else if (isEndpoint) {
 						Endpoint endpointAdapter = model.getAdapter(Endpoint.class);
 						if (endpointAdapter.getParentOfType(ServiceImplementation.DOCTYPE) != null) {
 				    		throw new Exception("Service Implementation not selected");
@@ -239,11 +244,11 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 	    		}
 	    		
 	    		// Apply on document
-				if (ServiceImplementation.DOCTYPE.equals(doctype)) {
+				if (isServiceImplementation) {
 		    		ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);
 					matchingService.linkInformationService(session, model, newTargetId, true);
 				}
-				else {
+				else { // isEndpoint
 					DocumentService docService = Framework.getService(DocumentService.class);
 		    		EndpointMatchingService matchingService = Framework.getService(EndpointMatchingService.class);
 					matchingService.linkServiceImplementation(session,

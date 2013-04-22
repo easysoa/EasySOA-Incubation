@@ -21,7 +21,6 @@
 
 package org.easysoa.registry.utils;
 
-import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.types.SubprojectNode;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -83,7 +82,11 @@ public class NXQLQueryHelper {
             subprojectPathCriteria = "";
         } else {
             if(ContextVisibility.DEEP.getValue().equalsIgnoreCase(visibility)){
-                subprojectPathCriteria = buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
+            	DocumentModel subproject = SubprojectServiceImpl.getSubprojectById(session, subprojectId);
+            	if (subproject == null) {
+            		throw new ClientException("No subproject with id " + subprojectId);
+            	}
+                subprojectPathCriteria = buildCriteriaSeenFromSubproject(subproject);
             } else {
                 subprojectPathCriteria = buildCriteriaInSubproject(subprojectId);                
             }

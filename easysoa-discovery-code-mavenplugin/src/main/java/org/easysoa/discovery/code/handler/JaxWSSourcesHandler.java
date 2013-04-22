@@ -393,7 +393,11 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 		// TODO Cleaner porttype/servicename discovery + revert soanodeid
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, wsdlPortTypeName);
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_WSDL_SERVICE_NAME, wsdlServiceName);
+
+		serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPL_LANGUAGE, Platform.LANGUAGE_JAVA);
+		serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPL_BUILD, Platform.BUILD_MAVEN);
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
+		
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_ISMOCK,
 		        c.getSource().getURL().getPath().contains("src/test/"));
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTATIONCLASS, c.getFullyQualifiedName());
@@ -426,7 +430,10 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 	    }
 	    InformationServiceInformation informationService = new InformationServiceInformation(
 	            this.codeDiscovery.getSubproject(), itfSoaName);
-	    informationService.setProperty(Platform.XPATH_SERVICE_LANGUAGE, Platform.SERVICE_LANGUAGE_JAXWS);
+        // TODO LATER if refactoring to allow technical matching of service interfaces :
+        /*informationService.setProperty(InformationService.XPATH_LANGUAGE, Platform.LANGUAGE_JAVA);
+        informationService.setProperty(InformationService.XPATH_BUILD, Platform.BUILD_MAVEN);
+        informationService.setProperty(InformationService.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXRS);*/
 	    String wsdlPortTypeName = toShortNsName(wsNamespace, wsName);
 	    informationService.setProperty(InformationService.XPATH_WSDL_PORTTYPE_NAME, wsdlPortTypeName);
 	    informationService.setTitle(itfClassName.substring(itfClassName.lastIndexOf(".") + 1));

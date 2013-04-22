@@ -28,6 +28,8 @@ public interface PlatformDataFacet {
 
     static final String LANGUAGE_JAVA = "Java";
     static final String LANGUAGE_JAVASCRIPT = "Javascript";
+
+    static final String BUILD_MAVEN = "Maven";
     
     static final String SERVICE_LANGUAGE_JAXWS = "JAX-WS";
     static final String SERVICE_LANGUAGE_JAXRS = "JAX-RS";

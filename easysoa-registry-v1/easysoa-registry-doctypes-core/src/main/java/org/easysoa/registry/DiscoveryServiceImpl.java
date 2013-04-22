@@ -77,6 +77,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         // (for nodes that the probe does't control but wants to refer to, ex. InformationService in source disco)
         boolean matchFirst = identifier.getName() == null || identifier.getName().length() == 0
                 || identifier.getName().startsWith("matchFirst:");
+        int matchingFirstCandidateNb = 0;
         if (matchFirst) { // TODO extract to API // TODO or == null ??!?? (NOO)
             // try to find an existing one that matches on at least one exact prop
 
@@ -99,11 +100,12 @@ public class DiscoveryServiceImpl implements DiscoveryService {
                         newDocumentModel, filterComponentId, false, true);
             }
             
-            if (matchingFirstResults.size() == 1) {
+            matchingFirstCandidateNb = matchingFirstResults.size();
+            if (matchingFirstCandidateNb == 1) {
                 DocumentModel matchingSoaNode = matchingFirstResults.get(0);
                 identifier = documentService.createSoaNodeId(matchingSoaNode);
                 foundDocumentModel = matchingSoaNode;
-            } // TOOD if > 1 don't create it else many new ones ??
+            }
         }
         
         if (foundDocumentModel == null) { // not matchFirst or no (or too many) match found
@@ -115,6 +117,12 @@ public class DiscoveryServiceImpl implements DiscoveryService {
             // exists but is readonly version : do nothing (else triggers SQLDocumentVersion$VersionNotModifiableException)
             // TODO LATER maybe find a way to still provide info, such as adding a "code-level service layer" between iserv & serviceimpl ??
             return foundDocumentModel;
+        }
+        
+        if (matchingFirstCandidateNb > 1) {
+        	// don't know which one but at least there are candidates
+        	// therefore don't create it, else impl wouldn't know which one to match
+        	return null;
         }
         
         DocumentModel documentModel = null;

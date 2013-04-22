@@ -17,7 +17,8 @@
   </platforms>
   <!-- Dependencies on other packages -->
   <dependencies>
-    <package>nuxeo-dm:5.6.0:5.7.0-SNAPSHOT</package>
+    <!-- package>nuxeo-dm:5.6.0:5.7.0-SNAPSHOT</package -->
+    <!-- WARNING COMMENTED else error "Missing mapping for [package] with target platform nuxeo-dm:5.6.0:5.7.0-SNAPSHOT -->
   </dependencies>
   <license>LGPL v3</license>
   <license-url>http://www.gnu.org/licenses/lgpl-3.0.txt</license-url>

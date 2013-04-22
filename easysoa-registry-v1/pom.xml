@@ -94,8 +94,13 @@
   <profiles>
       <profile>
           <id>marketplace</id>
+	  <activation>
+	    <property>
+	      <name>!skipMarketplace</name>
+	    </property>
+	  </activation>
           <modules>
-              <module>easysoa-registry-marketplace/</module>
+              <module>easysoa-registry-marketplace</module>
           </modules>
       </profile>
   </profiles>

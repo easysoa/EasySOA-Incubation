@@ -60,13 +60,13 @@ ARGV.each do |arg|
       system('mvnDebug -DforkMode=never test')
       
     when 'build'
-      system('mvn clean install -Pmarketplace')
+      system('mvn clean install')
     
     when 'fastbuild'
-      system('mvn clean install -DskipTests=true -Pmarketplace')
+      system('mvn clean install -DskipTests=true')
       
     when 'fastestbuild'
-      system('mvn clean install -DskipTests=true -o -Pmarketplace')
+      system('mvn clean install -DskipTests=true -o')
     
     when 'deploy'
       if defined? NUXEO_PATH

@@ -46,11 +46,41 @@
   </extension>
   
   <extension target="org.easysoa.registry.SoaMetamodelService" point="inheritedFacets">
+    <!-- SubprojectData inheritance in subproject tree :
+    NO done in custom listener (to handle versioning time...)
+    else would require facet inheritance to use hasFacet
+    and support "to Document & Folder" OR "ancestor" instead of "children"
+    OR have a flat SoaNode repository (OR duplicate this conf)... -->
+    <!-- inheritedFacet facetName="SubprojectData">
+      <transfer>
+        <from>Subproject</from>
+        <to>SoaNode</to>
+        <selector type="children" />
+      </transfer>
+    </inheritedFacet -->
+    
+    <!-- Inheritance of InformationServiceData from service down -->
+    <inheritedFacet facetName="InformationServiceData">
+      <transfer>
+        <from>InformationService</from>
+        <to>ServiceImplementation</to>
+        <selector type="uuidInTarget">
+          <parameter name="metadata">impl:providedInformationService</parameter>
+        </selector>
+      </transfer>
+      <transfer>
+        <from>ServiceImplementation</from>
+        <to>Endpoint</to>
+        <selector type="children" /><!-- TODO uuidInTarget -->
+      </transfer>
+    </inheritedFacet>
+    
+    <!-- Inheritance of ServiceImplementationData from impl down -->
     <inheritedFacet facetName="ServiceImplementationData">
       <transfer>
         <from>ServiceImplementation</from>
         <to>Endpoint</to>
-        <selector type="children" />
+        <selector type="children" /><!-- TODO uuidInTarget -->
       </transfer>
     </inheritedFacet>
     <inheritedFacet facetName="DeliverableType">
@@ -79,7 +109,7 @@
       <transfer>
         <from>ServiceImplementation</from>
         <to>Endpoint</to>
-        <selector type="children" />
+        <selector type="children" /><!-- TODO uuidInTarget -->
       </transfer>
     </inheritedFacet>
     
@@ -96,12 +126,20 @@
           <parameter name="metadata">acomp:linkedInformationService</parameter>
         </selector>
       </transfer>
+      
+      <!-- PlatformData inheritance from service down :
+      TODO should it really be done ? or using other metadata ? -->
       <transfer>
         <from>InformationService</from>
         <to>ServiceImplementation</to>
         <selector type="uuidInTarget">
           <parameter name="metadata">impl:providedInformationService</parameter>
         </selector>
+      </transfer>
+      <transfer>
+        <from>ServiceImplementation</from>
+        <to>Endpoint</to>
+        <selector type="children" /><!-- TODO uuidInTarget -->
       </transfer>
     </inheritedFacet>
   </extension>

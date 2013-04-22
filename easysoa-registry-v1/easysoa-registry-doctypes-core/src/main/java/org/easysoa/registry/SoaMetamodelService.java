@@ -69,5 +69,12 @@ public interface SoaMetamodelService {
 	void validateWriteRightsOnProperties(DocumentModel documentModel,
 			Map<String, Serializable> nuxeoProperties) throws ModelIntegrityException, ClientException;
 
+	/**
+	 * Built on Nuxeo's TypeManager. Used by impl & childSelectors...
+	 * @param from ex. JavaServiceImplementation
+	 * @param to ex. ServiceImplementation
+	 * @return
+	 */
+	public boolean isAssignable(String from, String to);
 	
 }

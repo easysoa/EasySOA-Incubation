@@ -362,8 +362,9 @@ public class WSDLParsingListener implements EventListener {
 
     public static Description tryParsingWsdlFromBlob(Blob blob) {
         if (blob.getFilename().toLowerCase().endsWith("wsdl")) {
+            File file = null;
             try {
-                File file = File.createTempFile("wsdlCandidate", null);
+                file = File.createTempFile("wsdlCandidate", null);
                 blob.transferTo(file);
                 WSDLReader wsdlReader = WSDLFactory.newInstance().newWSDLReader();
                 
@@ -377,6 +378,13 @@ public class WSDLParsingListener implements EventListener {
                 }
             } catch (Exception e) {
                 logger.error("Failed to extract or parse potential WSDL", e);
+            } finally {
+                if (file != null) {
+                    boolean delete = file.delete();
+                    if (!delete) {
+                        logger.warn("Unable to delete temp WSDL file " + file.getAbsolutePath());
+                    }
+                }
             }
         }
         return null;

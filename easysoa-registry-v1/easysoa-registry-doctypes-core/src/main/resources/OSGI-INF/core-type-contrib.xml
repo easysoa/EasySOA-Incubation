@@ -149,17 +149,19 @@
     </doctype>
     <facet name="ServiceImplementationData">
       <schema name="serviceimpl" />
+      <!-- inherited : -->
       <schema name="deliverabletype" />
     </facet>
     <doctype extends="SoaNode" name="ServiceImplementation">
       <facet name="Folderish" /><!-- to put endpoints in -->
       <facet name="WsdlInfo" /><!-- TODO different than iserv & endp's ?? -->
       <facet name="RestInfo" />
-      <facet name="ServiceImplementationData" />
-      <!-- NB. schemas to be inherited are in ServiceImplementationData : DeliverableType -->
+      <facet name="ServiceImplementationData" /><!-- inherits in Realisation : DeliverableType -->
+      <!-- inherited from Specifications :
+      (NB. can't be put in ServiceImplementationData because facets in facets) don't work -->
       <facet name="ComponentData" /><!-- TODO MDU not necessary ?! does not comprise Component id where impl has been successfully classified which is required-->
-      <!-- facet name="DeliverableType" / -->
       <facet name="PlatformData" />
+      <facet name="InformationServiceData" />
     </doctype>
     <doctype extends="SoaNode" name="ServiceConsumption">
     </doctype>
@@ -175,8 +177,12 @@
       <schema name="endpoint" />
       <facet name="WsdlInfo" /><!-- TODO different than iserv & impl's ?? -->
       <facet name="RestInfo" />
-      <facet name="ServiceImplementationData" />
+      <facet name="ServiceImplementationData" /><!-- inherits in Realisation : DeliverableType -->
+      <!-- inherited from Specifications :
+      (NB. can't be put in ServiceImplementationData because facets in facets) don't work -->
       <facet name="ComponentData" /><!-- TODO MDU not necessary ?! does not comprise Component id where impl has been successfully classified which is required-->
+      <facet name="PlatformData" />
+      <facet name="InformationServiceData" />
     </doctype>
 
   </extension>

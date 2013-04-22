@@ -3,6 +3,7 @@ package org.easysoa.registry;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -27,6 +28,7 @@ import org.nuxeo.ecm.core.schema.SchemaManager;
 import org.nuxeo.ecm.core.schema.types.CompositeType;
 import org.nuxeo.ecm.core.schema.types.Field;
 import org.nuxeo.ecm.core.schema.types.Schema;
+import org.nuxeo.ecm.platform.types.TypeManager;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentInstance;
 import org.nuxeo.runtime.model.DefaultComponent;
@@ -135,7 +137,7 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 		for (String facet : getInheritedFacets(model.getFacets())) {
 			InheritedFacetDescriptor inheritance = inheritedFacets.get(facet);
 			for (TransferLogic transferLogic : inheritance.transferLogicList) {
-				if (isFacetSource && model.getType().equals(transferLogic.from)) {
+				if (isFacetSource && isAssignable(model.getType(), transferLogic.from)) { // OLD model.getType().equals(transferLogic.from))
 					DocumentModelList modelsToWriteOn = facetTransferSelectors 
 							.get(transferLogic.selectorType)
 							.findTargets(documentManager, model, transferLogic.to, transferLogic.parameters);
@@ -166,7 +168,7 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 						}
 					}
 				}
-				if (!isFacetSource && model.getType().equals(transferLogic.to)) {
+				if (!isFacetSource && isAssignable(model.getType(), transferLogic.to)) { // OLD model.getType().equals(transferLogic.to)
 					DocumentModel modelToReadFrom = facetTransferSelectors 
 							.get(transferLogic.selectorType)
 							.findSource(documentManager, model, transferLogic.from, transferLogic.parameters);
@@ -264,6 +266,28 @@ public class SoaMetamodelServiceImpl extends DefaultComponent implements SoaMeta
 				}
 			}
 		}
+	}
+
+	public boolean isAssignable(String from, String to) {
+		if (from.equals(to))
+			return true;
+
+		TypeManager typeManager;
+		try {
+			typeManager = Framework.getService(TypeManager.class);
+		} catch (Exception e) {
+			throw new RuntimeException("Unable to get type service", e);
+		}
+
+		// NB. using example of inheritance of ServiceImplementationData facet
+		// from JavaServiceImplementation to Endpoint :
+		Set<String> superTypes = new HashSet<String>();
+		superTypes.add(from); // ex. JavaServiceImplementation
+		Collections.addAll(superTypes, typeManager.getSuperTypes(from));
+		// ex. ServiceImplementation, SoaNode, Document
+
+		return superTypes.contains(to); // ex. ServiceImplementation
+
 	}
 
 }

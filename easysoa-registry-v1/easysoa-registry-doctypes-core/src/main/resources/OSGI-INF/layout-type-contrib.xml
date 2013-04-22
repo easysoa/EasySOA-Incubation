@@ -319,6 +319,9 @@
         </fields>
         <properties mode="any">
           <property name="directoryName">deliverable_nature</property>
+          <property name="ordering">ordering</property>
+          <!-- property name="localize">true</property -->
+          <!-- property name="required">true</property -->
         </properties>
         <properties widgetMode="edit">
           <property name="required">true</property>
@@ -635,6 +638,9 @@
         </fields>
         <properties mode="any">
           <property name="directoryName">platform_language</property>
+          <property name="ordering">ordering</property>
+          <!-- property name="localize">true</property -->
+          <!-- property name="required">true</property -->
         </properties>
       </widget>
       <widget name="platform_build" type="selectOneDirectory">
@@ -647,6 +653,9 @@
         </fields>
         <properties mode="any">
           <property name="directoryName">platform_build</property>
+          <property name="ordering">ordering</property>
+          <!-- property name="localize">true</property -->
+          <!-- property name="required">true</property -->
         </properties>
       </widget>
       <widget name="platform_serviceLanguage" type="selectOneDirectory">
@@ -659,6 +668,9 @@
         </fields>
         <properties mode="any">
           <property name="directoryName">platform_serviceLanguage</property>
+          <property name="ordering">ordering</property>
+          <!-- property name="localize">true</property -->
+          <!-- property name="required">true</property -->
         </properties>
       </widget>
       <widget name="platform_deliverableNature" type="selectOneDirectory">
@@ -671,6 +683,9 @@
         </fields>
         <properties mode="any">
           <property name="directoryName">deliverable_nature</property>
+          <property name="ordering">ordering</property>
+          <!-- property name="localize">true</property -->
+          <!-- property name="required">true</property -->
         </properties>
       </widget>
       <widget name="platform_deliverableRepositoryUrl" type="text">
@@ -857,6 +872,9 @@
         </fields>
         <properties mode="any">
           <property name="directoryName">platform_language</property>
+          <property name="ordering">ordering</property>
+          <!-- property name="localize">true</property -->
+          <!-- property name="required">true</property -->
         </properties>
       </widget>
       <widget name="serviceimpl_ide" type="text">
@@ -878,6 +896,9 @@
         </fields>
         <properties mode="any">
           <property name="directoryName">platform_build</property>
+          <property name="ordering">ordering</property>
+          <!-- property name="localize">true</property -->
+          <!-- property name="required">true</property -->
         </properties>
       </widget>
       <widget name="serviceimpl_technology" type="selectOneDirectory">
@@ -890,6 +911,9 @@
         </fields>
         <properties mode="any">
           <property name="directoryName">platform_serviceLanguage</property>
+          <property name="ordering">ordering</property>
+          <!-- property name="localize">true</property -->
+          <!-- property name="required">true</property -->
         </properties>
       </widget>
       <widget name="serviceimpl_documentation" type="textarea">

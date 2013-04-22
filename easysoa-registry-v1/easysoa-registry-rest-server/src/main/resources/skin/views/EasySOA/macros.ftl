@@ -399,13 +399,17 @@
 	</#list>
     </#macro>
    
-    <#--
-    <#macro displayPreviousButtonBar>
+    <#macro displayReturnToIndexButtonBar>
+        <@displayBackButtonBar "Retour à l'accueil"/>
+    </#macro>
+    
+    <#macro displayBackButtonBar buttonLabel>
         <li class="span12">
             <div class="thumbnail">
-                <img data-src="holder.js/300x200" alt="">            
-                <a class="btn" href="${Root.path}/../?subprojectId=${subprojectId}&visibility=${visibility}">Retour à l'accueil</a>
+                <img data-src="holder.js/300x200" alt=""/>            
+                <a class="btn" href="${Root.path}/../?subprojectId=${subprojectId}&visibility=${visibility}">${buttonLabel}</a>
             </div>
         </li>        
     </#macro>
-    -->
+    
+    

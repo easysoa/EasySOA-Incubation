@@ -126,7 +126,7 @@
 </div>
   
 <div id="container">
-    <a href="${Root.path}/../?subprojectId=${subprojectId}&visibility=${visibility}">Back to dashboard</a>
+    <a href="${Root.path}/../?subprojectId=${subprojectId}&visibility=${visibility}">Retour à l'acceuil</a>
 </div>
 
 </body>

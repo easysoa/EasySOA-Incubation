@@ -46,8 +46,10 @@
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
                         <a class="btn" href="${Root.path}/../">Retour à la prespective globale</a>
+                        &nbsp;
+                        <a class="btn" href="javascript:window.history.back();">Annuler</a>
                     </div>
-                </li>                
+                </li>
             </ul>
         </div>
     </body>

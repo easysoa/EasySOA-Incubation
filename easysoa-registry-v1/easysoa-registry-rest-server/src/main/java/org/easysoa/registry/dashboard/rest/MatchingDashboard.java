@@ -57,7 +57,7 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 			DocumentService docService = Framework.getService(DocumentService.class);
 			Template view = getView("index");
 			
-			String subprojectCriteria = /*" AND " +*/ NXQLQueryHelper.buildSubprojectPathCriteria(session, subprojectId, visibility);
+			String subprojectCriteria = NXQLQueryHelper.buildSubprojectPathCriteria(session, subprojectId, visibility);
                         if(!"".equals(subprojectCriteria)){
                             subprojectCriteria = " WHERE " + subprojectCriteria;
                         }

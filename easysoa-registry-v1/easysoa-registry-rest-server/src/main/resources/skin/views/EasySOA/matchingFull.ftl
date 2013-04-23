@@ -51,12 +51,6 @@
                     </div>
                 </li>
             
-                <!--<li class="span12">
-                    <div class="thumbnail">
-                        <img data-src="holder.js/300x200" alt="">            
-                        <a class="btn" href="${Root.path}/../?subprojectId=${subprojectId}&visibility=${visibility}">Retour à l'acceuil</a>
-                    </div>
-                </li>-->
                 <@displayReturnToIndexButtonBar/>                
             </ul>
         </div>

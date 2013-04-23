@@ -1,4 +1,4 @@
-    <#-- Constants -->
+    <#-- URL Constants -->
     
     <#assign web_discovery_host="owsi-vm-easysoa-axxx-registry.accelance.net"/>
     <#assign web_discovery_port="8083"/>

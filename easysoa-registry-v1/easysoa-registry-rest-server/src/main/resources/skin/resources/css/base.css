@@ -104,6 +104,12 @@ td {
   background-color: white;
 }
 
+th {
+  border: 1px solid grey;
+  padding: 5px;
+  background-color: #cde;
+}
+
 /*
 #username {
     text-decoration: underline;
@@ -182,12 +188,6 @@ a img {
   border: 0;
 }
 
-fieldset { 
-	max-width: 800px;
-	background-color: #EEE;
-	padding-bottom: 10px;
-}
-
 legend {
   margin: 5px;
   font-weight: bold;
@@ -226,4 +226,27 @@ legend {
   border: 1px solid red;
   margin-bottom: 10px;
   padding: 4px;
+}
+
+fieldset { 
+    max-width: 800px;
+    background-color: #EEE;
+    padding-bottom: 10px;
+    border: 1px solid black;
+    /*-moz-border-radius:4px;*/
+    /*-webkit-border-radius:4px;*/
+    border-radius:4px;
+}
+
+.clickable:hover {
+    cursor: pointer; 
+    background-color: #FFC; 
+}
+
+.id { 
+    display: none
+}
+
+.selected {
+    background-color: #CFC; 
 }

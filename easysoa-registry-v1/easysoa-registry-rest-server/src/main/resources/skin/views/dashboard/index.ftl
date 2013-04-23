@@ -4,12 +4,21 @@
 <head>
 	<title>EasySOA Matching dashboard</title>
 	<meta charset="utf-8" />
+
+        <!-- Bootstrap default style and scripts -->
+        <!--<link href="/nuxeo/site/easysoa/skin/css/bootstrap.css" rel="stylesheet" media="screen">
+        <script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>-->
+
+        <!-- font-awesome style for icons -->
+        <link rel="stylesheet" href="/nuxeo/site/easysoa/skin/css/font-awesome.css">
+
         <!-- To solve temporarily the conflict between CSS styles -->
-        <!--<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />-->
+        <!--<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />-->        
 	<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/baseMatchboard.css" media="all" />
 	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" /> 
 	<script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
-	<style type="text/css">
+	
+        <style type="text/css">
 	  .clickable:hover { cursor: pointer; background-color: #FFC; }
 	  .id { display: none }
 	  .selected { background-color: #CFC; }
@@ -59,6 +68,7 @@
 	    <th>Information service</th>
 	    <th></th>
 	    <th>Service implementation</th>
+            <th>Matching</th>
     </tr>
   <#list matchedImpls as matchedImpl>
     <tr>
@@ -79,6 +89,7 @@
     	  <#assign document = matchedImpl>
     	  <#include "/views/dashboard/document.ftl">
     	</td>
+        <td><span class="icon-ok" style="color:green"></span></td>
     </tr>
   </#list>
   <#list unimplementedServs as unimplementedServ>
@@ -89,6 +100,7 @@
     	</td>
     	<td>x</td>
     	<td></td>
+        <td><span class="icon-remove" style="color:red"></span></td>
     </tr>
   </#list>
   </table>

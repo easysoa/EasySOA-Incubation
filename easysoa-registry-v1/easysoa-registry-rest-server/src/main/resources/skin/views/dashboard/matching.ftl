@@ -9,7 +9,7 @@
 <#list unmatched as unmatched>
   <tr>
   	<td class="clickable unmatchedModel" id="${unmatched.id}">
-  	  <div class="selectedFormInputName">${matchingPrefix}unmatchedModelId</div>
+  	  <div class="selectedFormInputName"><!--${matchingPrefix}unmatchedModelId--></div>
   	  <div style="float: right">
   	  	<input class="components" type="button" value="Select component" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/components/${unmatched.id}?subprojectId=${subprojectId}&visibility=${visibility}'" />
   	  	<input class="suggestions" type="button" value="Get suggestions" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/suggest/${unmatched.id}?subprojectId=${subprojectId}&visibility=${visibility}'" />
@@ -26,7 +26,7 @@
        <#list suggestions as suggestion>
           <tr>
           	<td class="clickable target">
-              <div class="selectedFormInputName">${matchingPrefix}targetId</div>
+              <div class="selectedFormInputName"><!--${matchingPrefix}targetId--></div>
           	  <#assign document = suggestion>
           	  <#include "/views/dashboard/document.ftl">
           	</td>
@@ -44,7 +44,7 @@
          <#list anyPlatformSuggestions as suggestion>
             <tr>
             	<td class="clickable target">
-                  <div class="selectedFormInputName">${matchingPrefix}targetId</div>
+                  <div class="selectedFormInputName"><!--${matchingPrefix}targetId--></div>
             	  <#assign document = suggestion>
             	  <#include "/views/dashboard/document.ftl">
             	</td>

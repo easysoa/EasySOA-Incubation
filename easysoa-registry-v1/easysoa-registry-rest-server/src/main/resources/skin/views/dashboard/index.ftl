@@ -26,12 +26,14 @@
                 <div id="logoLink">&nbsp;</div>
                 <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
                 EasySOA Matching dashboard
-                <form action="/nuxeo/site/easysoa/dashboard/samples?subprojectId=${subprojectId}&visibility=${visibility}" method="post"><!-- style="position: absolute; right: 20px; top: 20px"-->
+                <form action="/nuxeo/site/easysoa/dashboard/samples?subprojectId=${subprojectId}&visibility=${visibility}" method="post" style="position: absolute; right: 20px; top: 20px">
                     <input type="submit" value="Fill with samples" />
                 </form>                
             </div>
         </div>
             
+        <br/>
+        
         <div class="container" id="container">
             <ul class="thumbnails">
                 <!-- Context bar -->

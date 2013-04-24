@@ -55,7 +55,8 @@
                             </p>
                             <p>                                
                                 <a class="btn" href="${Root.path}/../services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>
-                                <small> : EasySOA provides an example of a simple "service portal" web user interface. It lists all services, allows to browse them by tags (a.k.a. TaggingFolder) and also to tag them. For each service, an example of a dedicated "service usage" documentation page can be displayed.</small>
+                                <!--<small> : EasySOA provides an example of a simple "service portal" web user interface. It lists all services, allows to browse them by tags (a.k.a. TaggingFolder) and also to tag them. For each service, an example of a dedicated "service usage" documentation page can be displayed.</small>-->
+                                <small> : EasySOA fournit un exemple d'une interface web simple pour un "portail service". Cette interface liste tous les services, permet de parcourir ces services via des étiquettes (ou TaggingFolder) et de les étiquetter. Pour chaque service, un exemple d'une page de documention dédiée à l'utilisation du service peut etre affichée.</small>
                             </p>
                         </p>
                         

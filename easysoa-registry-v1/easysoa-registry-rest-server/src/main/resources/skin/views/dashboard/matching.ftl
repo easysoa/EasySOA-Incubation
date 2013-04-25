@@ -99,7 +99,7 @@
     <form action="/nuxeo/site/easysoa/dashboard?subprojectId=${subprojectId}&visibility=${visibility}" method="post" style="float: left; width: 100%; margin-top: 10px">
         <fieldset style="width: 400px; padding: 10px;">
             <!--Click on an a ${doctypeTitle} and a ${targetDoctypeTitle}, then click:<br />-->
-            Cliquez sur un ${doctypeTitle} et sur un ${targetDoctypeTitle}, ensuite cliquez sur :<br />
+            Cliquez sur un(e) ${doctypeTitle} et sur un(e) ${targetDoctypeTitle}, ensuite cliquez sur :<br />
             <!--<input type="submit" value="Create a link" />-->
             <input type="submit" value="Créer un lien" />
             <input id="${matchingPrefix}unmatchedModelId" name="unmatchedModelId" type="hidden" />

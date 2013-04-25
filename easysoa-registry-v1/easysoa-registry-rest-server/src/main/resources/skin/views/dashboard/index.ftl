@@ -47,24 +47,40 @@
 
                         <div id="selectedServiceImpl" style="display: none">${selectedServiceImpl}</div>
 
+                        <#--
                         <#assign doctypeTitle = "Endpoint">
                         <#assign targetDoctypeTitle = "implementation">
                         <#assign unmatched = endpointWithoutImpl>
+                        -->
+                        <#assign doctypeTitle = "Service déployé">
+                        <#assign targetDoctypeTitle = "implémentation">
+                        <#assign unmatched = endpointWithoutImpl>                        
                         <#include "/views/dashboard/matching.ftl">
 
+                        <#--
                         <#assign doctypeTitle = "Service implementation">
                         <#assign targetDoctypeTitle = "service">
                         <#assign unmatched = servWithoutSpecs>
+                        -->
+                        <#assign doctypeTitle = "Implémentation">
+                        <#assign targetDoctypeTitle = "service">
+                        <#assign unmatched = servWithoutSpecs>                        
                         <#include "/views/dashboard/matching.ftl">
 
-                        <h2>My services</h2>
+                        <!--<h2>My services</h2>-->
+                        <h2>Mes services</h2>
 
                         <table class="table table-bordered" style="border:1px solid black">
                             <tr>
-                                <th>Information service</th>
+                                <!--<th>Information service</th>
                                 <th></th>
                                 <th>Service implementation</th>
-                                <th>Matching</th>
+                                <th>Matching</th>-->
+                                <th>Définitions</th>
+                                <th></th>
+                                <th>Implémentations</th>
+                                <!--<th>Correspondance</th>-->
+                                <th>Liaison</th>
                             </tr>
                             <#list matchedImpls as matchedImpl>
                             <tr>

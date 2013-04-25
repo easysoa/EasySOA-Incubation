@@ -406,10 +406,10 @@
     <#macro displayBackButtonBar buttonLabel>
         <li class="span12">
             <div class="thumbnail">
-                <img data-src="holder.js/300x200" alt=""/>            
+                <img data-src="holder.js/300x200" alt=""/>
                 <a class="btn" href="${Root.path}/../?subprojectId=${subprojectId}&visibility=${visibility}">${buttonLabel}</a>
             </div>
-        </li>        
+        </li>
     </#macro>
     
     

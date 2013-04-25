@@ -1,5 +1,5 @@
 <#if unmatched?has_content>
-    <h3 style="color: red; border-color: red">${doctypeTitle}s to classify</h3>
+    <h3 style="color: red; border-color: red">${doctypeTitle}s à classer <!-- to classify--></h3>
     <#assign matchingPrefix = doctypeTitle?replace(" ", "_") + "_to_" + targetDoctypeTitle?replace(" ", "_") + "_">
 
     <table class="table table-bordered" style="width: 500px; border: 1px solid black">
@@ -11,8 +11,10 @@
             <td class="clickable unmatchedModel" id="${unmatched.id}">
                 <div class="selectedFormInputName"><!--${matchingPrefix}unmatchedModelId--></div>
                 <div style="float: right">
-                    <input class="components" type="button" value="Select component" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/components/${unmatched.id}?subprojectId=${subprojectId}&visibility=${visibility}'" />
-                    <input class="suggestions" type="button" value="Get suggestions" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/suggest/${unmatched.id}?subprojectId=${subprojectId}&visibility=${visibility}'" />
+                    <!--<input class="components" type="button" value="Select component" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/components/${unmatched.id}?subprojectId=${subprojectId}&visibility=${visibility}'" />-->
+                    <!--<input class="suggestions" type="button" value="Get suggestions" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/suggest/${unmatched.id}?subprojectId=${subprojectId}&visibility=${visibility}'" />-->
+                    <input class="components" type="button" value="Selectionner" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/components/${unmatched.id}?subprojectId=${subprojectId}&visibility=${visibility}'" />
+                    <input class="suggestions" type="button" value="Obtenir les suggestions" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/suggest/${unmatched.id}?subprojectId=${subprojectId}&visibility=${visibility}'" />
                 </div>
                 <#assign document = unmatched>
                 <#include "/views/dashboard/document.ftl">
@@ -20,7 +22,7 @@
                 <#if suggestions?? && selectedModel == unmatched.id>
                 <table class="table table-bordered" style="width: 500px; border: 1px solid black">
                     <tr>
-                        <th style="background-color: #FFA">Suggested ${targetDoctypeTitle}s <#if selectedComponentTitle??>from <i>${selectedComponentTitle}</i></#if></th>
+                        <th style="background-color: #FFA">Suggestion<!--Suggested--> ${targetDoctypeTitle}s <#if selectedComponentTitle??>depuis<!--from--> <i>${selectedComponentTitle}</i></#if></th>
                     </tr>
                     <#if suggestions?has_content>
                     <#list suggestions as suggestion>
@@ -34,11 +36,11 @@
                     </#list>
                     <#else>
                         <td style="text-align: center; font-style: italic">
-                        No matches
+                        Pas de correspondances<!--No matches-->
                         </td>
                     </#if>
                     <tr>
-                        <th style="background-color: #FFA">Suggested ${targetDoctypeTitle} <#if selectedComponentTitle??>from <i>${selectedComponentTitle}</i></#if> (any platform)</th>
+                        <th style="background-color: #FFA">Suggestion<!--Suggested--> ${targetDoctypeTitle} <#if selectedComponentTitle??>depuis<!--from--> <i>${selectedComponentTitle}</i></#if> (Toutes plateformes)<!--(any platform)--></th>
                     </tr>
                     <#if anyPlatformSuggestions?has_content>
                     <#list anyPlatformSuggestions as suggestion>
@@ -52,16 +54,16 @@
                     </#list>
                     <#elseif anyPlatformSuggestionsCount??>
                         <td style="text-align: center">
-                            ${anyPlatformSuggestionsCount} additional matches
+                            ${anyPlatformSuggestionsCount} correspondances additionelles<!--additional matches-->
                         </td>
                     <#else>
                         <td style="text-align: center; font-style: italic">
-                        No matches
+                        Pas de correspondances<!--No matches-->
                         </td>
                     </#if>
                     <#if allFromComponent?? && allFromComponent?has_content>
                     <tr>
-                        <th style="background-color: #FFA">All ${targetDoctypeTitle}s from <i>${selectedComponentTitle}</i></th>
+                        <th style="background-color: #FFA">Tous les<!--All--> ${targetDoctypeTitle}s depuis<!--from--> <i>${selectedComponentTitle}</i></th>
                     </tr>
                     <#list allFromComponent as suggestion>
                     <tr>
@@ -96,8 +98,10 @@
 
     <form action="/nuxeo/site/easysoa/dashboard?subprojectId=${subprojectId}&visibility=${visibility}" method="post" style="float: left; width: 100%; margin-top: 10px">
         <fieldset style="width: 400px; padding: 10px;">
-            Click on an a ${doctypeTitle} and a ${targetDoctypeTitle}, then click:<br />
-            <input type="submit" value="Create a link" />
+            <!--Click on an a ${doctypeTitle} and a ${targetDoctypeTitle}, then click:<br />-->
+            Cliquez sur un ${doctypeTitle} et sur un ${targetDoctypeTitle}, ensuite cliquez sur :<br />
+            <!--<input type="submit" value="Create a link" />-->
+            <input type="submit" value="Créer un lien" />
             <input id="${matchingPrefix}unmatchedModelId" name="unmatchedModelId" type="hidden" />
             <input id="${matchingPrefix}targetId" name="targetId" type="hidden" />
         </fieldset>    

@@ -106,20 +106,28 @@ function findWSDLs() {
 function runServiceFinder(theUrl) {
 	// Send request to Nuxeo
 	jQuery.ajax({
-		url : EASYSOA_WEB + '/nuxeo/servicefinder/find/' + theUrl,
+		url : EASYSOA_WEB + '/nuxeo/servicefinder/find/' + theUrl, // + '.js',
 		dataType : 'jsonp',
-		success : function(data) {
+		accepts : 'application/javascript',
+		//crossDomain : true, // default: false for same-domain requests, true for cross-domain requests
+		//async = false, // default
+        xhrFields: {
+            withCredentials: true
+        }, // for cross-domain requests
+		//scriptCharset
+		// error : This handler is not called for cross-domain script and cross-domain JSONP requests.
+		success : function(data, textStatus, xhr) {
 			if (data.foundLinks) {
 				appendWSDLs(data);
 			}
 			else {
 				for (errorKey in data.errors) {
-					console.log("EasySOA ERROR: ", data.errors[errorKey]);
+					console.log("EasySOA link parsing ERROR: ", data.errors[errorKey]);
 				}
 			}
 		},
-		error : function(xhr) {
-			console.log("EasySOA ERROR: ", xhr.responseText);
+		error : function(xhr, textStatus, errorThrown) {
+			console.log("EasySOA jsonp ERROR: ", xhr.responseText);
 		}
 	});
 }
@@ -150,6 +158,7 @@ function sendWSDL(domElement) {
 			dataType : 'json',
 			data : {
         'id': {
+           // TODO v1 Phase
           'type': 'Endpoint',
           'name': environmentName + ':' + wsdlToSend.serviceURL // TODO Environment should not be hardcoded
         },
@@ -157,6 +166,7 @@ function sendWSDL(domElement) {
           'endp:url': wsdlToSend.serviceURL,
           'env:environment': environmentName,
           'dc:title': environmentName + ': ' + wsdlToSend.serviceName
+          // TODO v1 LATER component / platform, probe
         }
       },
 			success : function(data) {

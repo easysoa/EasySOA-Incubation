@@ -48,8 +48,8 @@ fetchServiceList = function(session, callback) {
 	try {
 		nuxeo.runAutomationDocumentQuery(
 			session,
-			"SELECT * FROM Service WHERE ecm:currentLifeCycleState <> 'deleted'",
-			'dublincore, servicedef',
+			"SELECT * FROM Service WHERE ecm:currentLifeCycleState <> 'deleted'", // TODO v1 InformationService +Phase, -proxy
+			'dublincore, servicedef', // TODO v1 spnode, soanode, informationservice, (wsdlinfo, restinfo, platform, architecturecomponent) (possibly also lookup impls ??)
 			function(data) {
 				try {
 					data = JSON.parse(data);
@@ -58,8 +58,8 @@ fetchServiceList = function(session, callback) {
 						document = data.entries[documentIndex];
 						entry = new Object();
 						entry.title = document.properties['dc:title'];
-						entry.url = document.properties['serv:url'];
-						if (document.properties['serv:fileUrl'] === null) {
+						entry.url = document.properties['serv:url']; // TODO v1 endp:url
+						if (document.properties['serv:fileUrl'] === null) { // TODO v1
 						  document.properties['serv:fileUrl'] = entry.url + '?wsdl';
 						}
 						entry.lightUrl = '/scaffoldingProxy/?wsdlUrl=' + document.properties['serv:fileUrl'];

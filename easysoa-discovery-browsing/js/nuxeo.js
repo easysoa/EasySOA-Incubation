@@ -128,7 +128,7 @@ exports.runAutomationDocumentQuery = function(session, query, schemasToInclude, 
 			session,
 			'Document.Query',
 			{'query': query},
-			(schemasToInclude) ? {'X-NXDocumentProperties': 'dublincore, servicedef'} : null,
+			(schemasToInclude) ? {'X-NXDocumentProperties': 'dublincore, servicedef'} : null, // TODO v1 spnode, soanode, informationservice, (wsdlinfo, restinfo, platform, architecturecomponent) (possibly also lookup impls ??)
 			callback
 		);
 	}

@@ -77,24 +77,30 @@ public class ScrapingStrategy extends DefaultAbstractStrategy implements Service
                     String ref = new URL(url, link.getAttributeByName("href"))
                             .toString();
                     String name = (link.getText() != null) ? link.getText()
-                            .toString() : ref;
+                            .toString() : ref; // TODO else title attr
     
                     // Truncate if name is an URL (serviceName cannot contain slashes)
                     if (name.contains("/")) {
                         String[] nameParts = name.split("/}");
                         name = nameParts[nameParts.length - 1].replaceAll(
-                                "(\\?|\\.|wsdl)", "");
+                                "(\\?|\\.|\\?wsdl)", ""); // AND NOT 'wsdl' only (see below)
                     }
     
                     // Append digits to the link name if it already exists
                     int i = 1;
-                    if (ref != null && ref.toLowerCase().endsWith("wsdl")) {
+                    if (ref != null && ref.toLowerCase().endsWith("?wsdl")) { // AND NOT "wsdl" only (see below)
                         while (foundServicesNames.contains(name)) {
                             name = (i == 1 ? name + i++ : name.substring(0,
                                     name.length() - 1))
                                     + i++;
                         }
-                        name = name.replaceAll("([\n\r]|[ ]*WSDL|[ ]*wsdl)", "").trim();
+                        name = name.replaceAll("[\n\r]", "").trim();
+                        String nameWithoutWsdl =  name.replaceAll("([ ]*\\?WSDL|[ ]*\\?wsdl)", "").trim();
+                        // and not only replace "wsdl" else link to http://www.w3.org/TR/wsdl titled idem would fail
+                        ///name = name.replaceAll("([\n\r]|[ ]*WSDL|[ ]*wsdl)", "").trim();
+                        if (!nameWithoutWsdl.isEmpty()) { // NOT REQUIRED ANYMORE
+                        	name = nameWithoutWsdl;
+                        }
                         foundServices.add(new FoundService(name, ref, applicationName));
                         foundServicesNames.add(name);
                     }

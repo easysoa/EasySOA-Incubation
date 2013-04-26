@@ -69,7 +69,8 @@ import org.easysoa.registry.utils.EasysoaModuleRoot;
  * 
  */
 @Path("easysoa/servicefinder")
-@Produces("application/x-javascript")
+//@Produces("application/x-javascript") // doesn't work for bookmarklet's jquery $.ajax() in jspon
+@Produces("application/javascript") // required (?!) for bookmarklet's jquery $.ajax() in jspon
 @WebObject(type = "servicefinder")
 public class ServiceFinderRest extends EasysoaModuleRoot {
 
@@ -92,7 +93,7 @@ public class ServiceFinderRest extends EasysoaModuleRoot {
     public Object getEnvironmentList() throws Exception {
     	CoreSession session = SessionFactory.getSession(request);
     	DocumentService docService = Framework.getService(DocumentService.class);
-    	DocumentModelList allEndpoints = docService.query(session, "SELECT * FROM " + Endpoint.DOCTYPE, true, false);
+    	DocumentModelList allEndpoints = docService.query(session, "SELECT * FROM " + Endpoint.DOCTYPE, true, false); // TODO Phase (LATER +component)
     	
     	// Use a cache for performance
     	boolean computeEnvList = true;
@@ -117,6 +118,14 @@ public class ServiceFinderRest extends EasysoaModuleRoot {
 		return new JSONArray(environmentsNamesCache).toString();
     }
     
+    /**
+     * JSONP for bookmarklet
+     * NB. requires application/javascript mimetype to work on bookmarklet's
+     * jquery $.ajax() side in jsonp, but doesn't work if set here, has to be put at the tope
+     * @param uriInfo
+     * @return
+     * @throws Exception
+     */
     @GET
     @Path("/find/{url:.*}")
     public Object findServices(@Context UriInfo uriInfo) throws Exception {
@@ -132,7 +141,7 @@ public class ServiceFinderRest extends EasysoaModuleRoot {
         		List<NameValuePair> queryTokens = URLEncodedUtils.parse(url.toURI(), "UTF-8");
         		for (NameValuePair token : queryTokens) {
         			if (token.getName().equals("callback")) {
-        				callback = token.getValue(); // TODO remove callback from original URL
+        				callback = token.getValue(); // now let's remove this callback from original jsonp URL
         			}
         		}
         	}
@@ -142,12 +151,15 @@ public class ServiceFinderRest extends EasysoaModuleRoot {
         }
         
         // Find WSDLs
+        String foundServicesJson = findServices(new BrowsingContext(url));
+        String res;
         if (callback != null) {
-        	return callback + '(' + findServices(new BrowsingContext(url)) + ')';
+        	res = callback + '(' + foundServicesJson + ");"; // ')' // TODO OK
         }
         else {
-        	return findServices(new BrowsingContext(url));
+        	res = foundServicesJson;
         }
+        return res;
     }
     
 

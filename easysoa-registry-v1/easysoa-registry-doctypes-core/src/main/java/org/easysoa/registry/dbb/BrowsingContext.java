@@ -48,11 +48,16 @@ public class BrowsingContext {
 			
 			// Download the file at the given URL
 	    	HttpDownloaderService httpDownloaderService = new HttpDownloaderServiceImpl();
-	        HttpDownloader file = httpDownloaderService.createHttpDownloader(url);
+	        HttpDownloader fileDownloader = httpDownloaderService.createHttpDownloader(url);
 	        FileInputStream fis = null;
 	        try {
-		        file.download();
-		        fis = new FileInputStream(file.getFile());
+	        	fileDownloader.download();
+	        	java.io.File file = fileDownloader.getFile();
+		        if (file == null) {
+		        	// ex. if site root url returns something else than 200 (ex. 403)
+		        	return; // else cleaner.clean(siteRootFile) throws NullPointerException 
+		        }
+		        fis = new FileInputStream(file);
 		        StringBuffer dataBuffer = new StringBuffer();
 		        int c;
 		        while ((c = fis.read()) != -1) {
@@ -67,7 +72,7 @@ public class BrowsingContext {
 	            if (fis != null) {
 	                fis.close();
 	            }
-	        	file.delete();
+	        	fileDownloader.delete();
 	        }
 		}
 	}

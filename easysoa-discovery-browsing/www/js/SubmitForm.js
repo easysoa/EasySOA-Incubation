@@ -34,6 +34,7 @@ $(function() {
 			        url: '/dbb/send?token=' + Math.random(), // avoids caching
 			        data: {
 			            'id': {
+			              // TODO v1 Phase
 			              'type': 'Endpoint',
 			              'name': environmentName + ':' + url
 			            },
@@ -41,6 +42,7 @@ $(function() {
 			              'endp:url': url,
 			              'env:environment': environmentName,
 			              'dc:title': environmentName + ': ' + $('#submitService').attr('value') //FIXME Better property sync with getServiceName()
+			              // TODO v1 LATER component / platform, probe
 			            }
 			          },
 			        success: function (data) {

@@ -63,10 +63,15 @@ public abstract class DefaultAbstractStrategy implements ServiceFinderStrategy {
     
     private static String extractApplicationNameFromUrl(URL url) throws Exception {
     	HttpDownloaderService httpDownloaderService = new HttpDownloaderServiceImpl();
-        HttpDownloader siteRootFile = httpDownloaderService.createHttpDownloader(url);
-        siteRootFile.download();
+        HttpDownloader siteRootFileDownloader = httpDownloaderService.createHttpDownloader(url);
+        siteRootFileDownloader.download();
+        java.io.File siteRootFile = siteRootFileDownloader.getFile();
+        if (siteRootFile == null) {
+        	// ex. if site root url returns something else than 200 (ex. 403)
+        	return null; // else cleaner.clean(siteRootFile) throws NullPointerException 
+        }
         try {
-            TagNode siteRootCleanHtml = cleaner.clean(siteRootFile.getFile());
+            TagNode siteRootCleanHtml = cleaner.clean(siteRootFile);
             return extractApplicationName(siteRootCleanHtml);
         }
         catch (StackOverflowError e) {
@@ -78,7 +83,7 @@ public abstract class DefaultAbstractStrategy implements ServiceFinderStrategy {
     private static String extractApplicationName(TagNode html) {
         TagNode[] titles = html.getElementsByName("title", true);
         if (titles.length > 0) {
-            return titles[0].getText().toString();
+            return titles[0].getText().toString().trim();
         }
         else {
             return null;

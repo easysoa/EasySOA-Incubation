@@ -91,8 +91,7 @@ public class ScrapingStrategy extends DefaultAbstractStrategy implements Service
                     if (ref != null && ref.toLowerCase().endsWith("?wsdl")) { // AND NOT "wsdl" only (see below)
                         while (foundServicesNames.contains(name)) {
                             name = (i == 1 ? name + i++ : name.substring(0,
-                                    name.length() - 1))
-                                    + i++;
+                                    name.length() - 1)) + i++;
                         }
                         name = name.replaceAll("[\n\r]", "").trim();
                         String nameWithoutWsdl =  name.replaceAll("([ ]*\\?WSDL|[ ]*\\?wsdl)", "").trim();

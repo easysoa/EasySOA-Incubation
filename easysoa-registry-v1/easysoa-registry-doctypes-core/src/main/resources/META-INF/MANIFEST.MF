@@ -6,6 +6,7 @@ Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.easysoa.registry.doctypes.core;singleton:=true
 Nuxeo-Component: OSGI-INF/DocumentService.xml,
  OSGI-INF/DiscoveryService.xml,
+ OSGI-INF/ResourceDownloadService.xml,
  OSGI-INF/SoaMetamodelService.xml,
  OSGI-INF/ServiceMatchingService.xml,
  OSGI-INF/EndpointMatchingService.xml,

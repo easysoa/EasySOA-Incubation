@@ -26,6 +26,7 @@ import java.net.URL;
 import org.easysoa.registry.dbb.HttpDownloader;
 import org.easysoa.registry.dbb.HttpDownloaderService;
 import org.easysoa.registry.dbb.HttpDownloaderServiceImpl;
+import org.nuxeo.runtime.api.Framework;
 
 public class BrowsingContext {
 
@@ -46,10 +47,12 @@ public class BrowsingContext {
 		if (url != null) {
 			this.url = url;
 			
-			// Download the file at the given URL
-	    	HttpDownloaderService httpDownloaderService = new HttpDownloaderServiceImpl();
-	        HttpDownloader fileDownloader = httpDownloaderService.createHttpDownloader(url);
-	        FileInputStream fis = null;
+                // Download the file at the given URL
+	    	//HttpDownloaderService httpDownloaderService = new HttpDownloaderServiceImpl();
+	        //HttpDownloader fileDownloader = httpDownloaderService.createHttpDownloader(url);
+                ResourceDownloadService resourceDownloadService = Framework.getService(ResourceDownloadService.class);     
+                this.data = resourceDownloadService.getData(resourceDownloadService.get(url));
+	        /*FileInputStream fis = null;
 	        try {
 	        	fileDownloader.download();
 	        	java.io.File file = fileDownloader.getFile();
@@ -73,7 +76,7 @@ public class BrowsingContext {
 	                fis.close();
 	            }
 	        	fileDownloader.delete();
-	        }
+	        }*/
 		}
 	}
 	

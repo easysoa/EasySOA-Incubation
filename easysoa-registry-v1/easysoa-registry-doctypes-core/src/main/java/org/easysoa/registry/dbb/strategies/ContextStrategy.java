@@ -51,7 +51,7 @@ public class ContextStrategy extends DefaultAbstractStrategy implements ServiceF
             foundServices.add(new FoundService(
                     "Orders service",
                     "http://localhost:9010/PureAirFlowers?wsdl",
-                    guessApplicationName(url)));
+                    guessApplicationName(context)));
         }
         
         return foundServices;

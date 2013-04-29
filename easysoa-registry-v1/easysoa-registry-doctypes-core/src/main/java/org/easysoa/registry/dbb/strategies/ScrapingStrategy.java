@@ -64,7 +64,7 @@ public class ScrapingStrategy extends DefaultAbstractStrategy implements Service
             }
     
             // Find app name
-            String applicationName = guessApplicationName(url);
+            String applicationName = guessApplicationName(context);
             
             // Find links
             List<String> foundServicesNames = new LinkedList<String>();

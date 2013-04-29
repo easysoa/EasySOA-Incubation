@@ -24,6 +24,7 @@ import java.net.URL;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.easysoa.registry.dbb.BrowsingContext;
 import org.easysoa.registry.dbb.ServiceFinderStrategy;
 import org.easysoa.registry.dbb.HttpDownloader;
 import org.easysoa.registry.dbb.HttpDownloaderService;
@@ -51,12 +52,12 @@ public abstract class DefaultAbstractStrategy implements ServiceFinderStrategy {
      * @return The application name or null if neither of the pages has a title tag.
      * @throws Exception 
      */
-    protected static String guessApplicationName(URL url) throws Exception  {
-        URL siteRootUrl = new URL(url.getProtocol() + "://" + url.getHost()
-                + ":" + ((url.getPort() == -1) ? 80 : url.getPort()));
+    protected static String guessApplicationName(BrowsingContext browsingContext) throws Exception  {
+        URL siteRootUrl = new URL(browsingContext.getURL().getProtocol() + "://" + browsingContext.getURL().getHost()
+                + ":" + ((browsingContext.getURL().getPort() == -1) ? 80 : browsingContext.getURL().getPort()));
         String applicationName = extractApplicationNameFromUrl(siteRootUrl);
         if (applicationName == null) {
-            applicationName = extractApplicationNameFromUrl(url);
+            applicationName = extractApplicationNameFromUrl(browsingContext.getURL());
         }
         return applicationName;
     }

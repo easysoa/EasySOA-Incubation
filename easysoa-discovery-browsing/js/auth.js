@@ -21,6 +21,10 @@ JSONP_HEADERS = { 'Content-Type' : 'application/javascript' };
 LOGIN_FORM_PATH = '/login.html';
 
 var noAuthNeeded = settings.NO_AUTH_NEEDED;
+
+var clientAddressToSessionMap = {};
+exports.clientAddressToSessionMap = clientAddressToSessionMap;
+
 noAuthNeeded.push(LOGIN_FORM_PATH);
 noAuthNeeded.push('/login');
 noAuthNeeded.push('/userdata');
@@ -60,9 +64,18 @@ login = function(request, response, next) {
 					function(isValid) {
 						if (isValid) {
 							// Create session
+							///request.session = {};
 							request.session.username = params.username;
 							// XXX: Could store the Base64 hash instead
-							request.session.password = params.password; 
+							request.session.password = params.password;
+                                                        // add ip/session in map
+                                                        //clientAddressToSessionMap[request.connection.remoteAddress] = request.session; //request.headers['X-EasySOA-Orig-IP']
+                                                        if(request.headers['x-easysoa-orig-ip']){
+                                                            clientAddressToSessionMap[request.headers['x-easysoa-orig-ip']] = request.session; // Connexion with proxy
+                                                        } else {
+                                                            clientAddressToSessionMap[request.connection.remoteAddress] = request.session; // Connexion without proxy
+                                                        }
+                                                        
 							console.log("[INFO] Session created for: " + params.username);
 							if (params.callback) {
 								response.writeHead(200, JSONP_HEADERS);
@@ -95,6 +108,16 @@ login = function(request, response, next) {
 logout = function(request, response, next) {
 	var username = request.session.username;
 	request.session.destroy();
+        
+        // remove ip/session
+        if(request.headers['x-easysoa-orig-ip']){
+            delete clientAddressToSessionMap[request.headers['x-easysoa-orig-ip']]; // Connexion with proxy
+        } else {
+            delete clientAddressToSessionMap[request.connection.remoteAddress]; // Connexion without proxy
+        }        
+        
+        //delete clientAddressToSessionMap[request.connection.remoteAddress];
+        
 	console.log("[INFO] Session destroyed for: " + username);
 	if (request.query && request.query.callback) {
 		response.end(request.query.callback + '({result: "ok"})');

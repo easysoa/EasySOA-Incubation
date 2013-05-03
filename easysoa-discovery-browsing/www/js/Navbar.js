@@ -17,7 +17,9 @@ $(function() {
 		},
 		
 		getURL: function(withHTTP) {
-			var url = this.get("url");
+			// TODO : Add a test to check for HTTPS
+                        // If HTTPS => return a warning
+                        var url = this.get("url");
 			if (url.indexOf(this.HTTP) == -1)
 				return (withHTTP) ? this.HTTP+url : url;
 	  		else

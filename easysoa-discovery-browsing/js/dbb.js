@@ -15,6 +15,11 @@ var proxy = require('./proxy');
 var nuxeo = require('./nuxeo');
 var utils = require('./utils');
 
+var clientAddressToSessionMap; // must be set to auth's by easysoa.js'
+exports.setClientAddressToSessionMap = function(map) {
+    clientAddressToSessionMap = map;
+}
+
 /**
  * Discovery by Browsing component, responsible for communicating with the DBB client.
  *
@@ -31,7 +36,7 @@ var clientWellConfigured = false; // XXX: Is common to everybody (should be part
 var io = null;
 var foundWSDLs = [];
 
-saveWSDLs = function(data) {
+returnFoundWSDLsToDbbProxyUi = function(data) {
   if (typeof data == 'string') {
     data = JSON.parse(data);
   } 
@@ -71,6 +76,14 @@ exports.configure = function(app, webServer) {
 	io.sockets.on('connection', initSocketIOConnection);
 };
 
+function getNuxeoSession(request) {
+    // NB. strategies to find Nuxeo session :
+    // 1. by per-user proxy instance ; but none yet for now, will have to be done in FStudio on-demand HTTProxy LATER
+    // 2. by client OS i.e. IP :
+    var clientAddress = request.connection.remoteAddress;
+    return clientAddressToSessionMap[clientAddress];
+}
+
 exports.handleProxyRequest = function(request, response) {
 	
 	// Confirms that the proxy is indeed seeing requests coming
@@ -78,7 +91,17 @@ exports.handleProxyRequest = function(request, response) {
 	
 	// Run service finder
 	if (!isIgnoredUrl(request.url)) {
-		findWSDLs(request.url);
+		//findWSDLs(request.url);
+                var nuxeoSession = getNuxeoSession(request);
+                if(nuxeoSession){
+                    findWSDLsAndReturnToDbbProxyUi(nuxeoSession, request.url);                    
+                } else {
+                    // Send back an error
+                    console.log("ERROR:", "Not logged in");
+                    //redirectToLoginForm(request, response);
+                    response.writeHead(500);
+                    response.end("You are not logged in !");
+                }
 	}
 	
 };
@@ -114,16 +137,18 @@ isIgnoredUrl = function(url) {
 	return false;
 };
 
-findWSDLs = function(url) {
+//findWSDLsAndReturnToDbbProxyUi = function(url) {
+findWSDLsAndReturnToDbbProxyUi = function(session, url) {
 	nuxeo.runRestRequest(
-		{username: 'Administrator', password: 'Administrator'},
+		//{username: 'Administrator', password: 'Administrator'}, // Session TODO better, I guess that's because findWSDLs must be able to be called in JSONP
+                session,
 		settings.EASYSOA_SERVICE_FINDER_PATH + '/find/' + url,
 		'GET',
 		null,
 		null,
 		function(data, error) {
 			try {
-				saveWSDLs(JSON.parse(data));
+				returnFoundWSDLsToDbbProxyUi(JSON.parse(data));
 			}
 			catch (error) {
 				console.log("ERROR: While finding WSDLs:", error);

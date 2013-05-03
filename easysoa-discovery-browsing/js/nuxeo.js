@@ -45,14 +45,35 @@ forwardToNuxeo = function(request, response, next) {
 };
 
 forwardBookmarkletPosts = function(request, response, next) {
-	request.headers['content-type'] = 'application/json';
-  runRestRequest(request.session, 'easysoa/registry',
-		  'POST', request.headers, request.query,
-		  function(responseData) {
-		    response.end(responseData);
-		  }
+        var forwardedRequestHeaders = request.headers; // TODO if pb, clone
+    var forwardedBody = request.query; // TODO if pb, clone
+    forwardedRequestHeaders['content-type'] = 'application/json';
+    //delete forwardedBody['_']; // (timestamp ??) from jquery's $ajax' 'script' & 'jsonp' dataType
+        
+    if (forwardedBody.callback) {
+        var callback = forwardedBody.callback;
+        delete forwardedBody.callback;
+        delete forwardedBody['_']; // (timestamp ??) from jquery's $ajax' 'script' & 'jsonp' dataType
+    }
+
+    runRestRequest(request.session, 'easysoa/registry',
+        'POST', forwardedRequestHeaders, forwardedBody,
+        function(responseData) {
+            response.setHeader("Content-Type", "application/json");
+            //response.setHeader("Access-Control-Allow-Origin", "*"); // doesn't work because error "XMLHttpRequest cannot load [url]. Cannot
+            // use wildcard in Access-Control-Allow-Origin when credentials flag is true.", see http://stackoverflow.com/questions/3506208/jquery-ajax-cross-domain http://caniuse.com/#feat=cors
+            //response.writeHead(200, {'Content-Length': responseData.length});
+            //response.write("{}"); // responseData
+            if (callback) {
+                responseData = callback + '(' + responseData + ")";
+            }
+            response.write(responseData); // responseData
+            response.end();
+        }
   );
+    
 };
+
 
 exports.runRestRequest = runRestRequest = function(session, path, method, headers, body, callback) {
   // Normalize optional params
@@ -90,7 +111,7 @@ exports.runRestRequest = runRestRequest = function(session, path, method, header
     response.on('data', function(data) {
       responseData += data;
     });
-		response.on('end', function() {
+      response.on('end', function() {
       callback(responseData);
 		});
   });
@@ -160,7 +181,7 @@ exports.startConnectionChecker = function() {
 };
 
 checkConnection = function() {
-	areCredentialsValid('Administrator', 'Administrator', function(valid) {
+	areCredentialsValid('Administrator', 'Administrator', function(valid) { // TODO : credential hard coded here ??
 		if (valid) {
 			console.log('Nuxeo is ready.');
 			ready = true;

@@ -21,9 +21,9 @@ $(function() {
 			this.serviceListView = new ServiceListView;
 			
 			var app = this;
-      socket = io.connect();
+        socket = io.connect();
       
-      // Show proxy warning after a delay
+        // Show proxy warning after a delay
         setTimeout(function() {
         	nothingProxiedDiv = $('#nothingProxied');
         	if (nothingProxiedDiv != null) {

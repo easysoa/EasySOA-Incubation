@@ -9,7 +9,8 @@ var username = null;
 var frameDragged = false;
 
 var LIBS_POLLING_INTERVAL = 20;
-var EASYSOA_WEB = 'http://localhost:8083';
+//var EASYSOA_WEB = 'http://localhost:8083';
+var EASYSOA_WEB = 'http://#{host}:#{port}';
 
 /**
  * Load libs
@@ -89,6 +90,22 @@ function checkIsLoggedIn(callbackOnSuccess, callbackOnError) {
 	});
 }
 
+/**
+		success : function(data, textStatus, xhr) {
+			if (data.foundLinks) {
+				appendWSDLs(data);
+			}
+			else {
+				for (errorKey in data.errors) {
+					console.log("EasySOA link parsing ERROR: ", data.errors[errorKey]);
+				}
+			}
+		},
+		error : function(xhr, textStatus, errorThrown) {
+			console.log("EasySOA jsonp ERROR: ", xhr.responseText);
+		}
+*/
+
 function findWSDLs() {
 	runTemplate('results');
 	runServiceFinder(window.location.href, appendWSDLs);
@@ -96,8 +113,10 @@ function findWSDLs() {
 	links.each(function (key) {
 		// Scraping to filter WSDLs and send them to Nuxeo,
 		// in case it couldn't get access to the page
-		var linkUrl = jQuery(this).attr('href');
-		if (linkUrl && linkUrl.substr(-4) == 'wsdl') {
+		var linkUrl = jQuery(this).prop('href');
+                // And not the following otherwise only a relative link
+                //var linkUrl = jQuery(this).attr('href');
+                if (linkUrl && (linkUrl.substr(-4) == 'wsdl' || linkUrl.substr(-4) == 'WSDL')) {
 			runServiceFinder(linkUrl);
 		}
 	});
@@ -109,7 +128,7 @@ function runServiceFinder(theUrl) {
 		url : EASYSOA_WEB + '/nuxeo/servicefinder/find/' + theUrl, // + '.js',
 		dataType : 'jsonp',
 		accepts : 'application/javascript',
-		//crossDomain : true, // default: false for same-domain requests, true for cross-domain requests
+		crossDomain : true, // default: false for same-domain requests, true for cross-domain requests
 		//async = false, // default
         xhrFields: {
             withCredentials: true
@@ -151,11 +170,20 @@ function appendWSDLs(data) {
 function sendWSDL(domElement) {
 	var $domElement = jQuery(domElement);
 	var wsdlToSend = wsdls[$domElement.attr('id')];
-	$domElement.animate({opacity:0.5}, 'fast', function() {
+        
 	  var environmentName = jQuery('#easysoa-environment').attr('value');
 		jQuery.ajax({
 			url : EASYSOA_WEB + '/nuxeo/registry/post',
-			dataType : 'json',
+			dataType : 'jsonp',
+			//dataType : 'json', // result is sent to success callback (but sends Origin header,
+                        // and if not same domaine origin, there will be no response body, see http://en.wikipedia.org/wiki/Same_origin_policy )
+			//dataType : 'script', // result is evaluated but not sent to success callback
+                        //accepts : 'application/javascript',
+                        //crossDomain : true, // default: false for same-domain requests, true for cross-domain requests
+		//async = false, // default
+        xhrFields: {
+            withCredentials: true
+        }, // for cross-domain requests (REQUIRED for sendWSDL to /nuxeo/registry/post)
 			data : {
         'id': {
            // TODO v1 Phase
@@ -169,7 +197,7 @@ function sendWSDL(domElement) {
           // TODO v1 LATER component / platform, probe
         }
       },
-			success : function(data) {
+			success : function(data, textStatus, xhr) {
 				if (data.result == "success") {
 					jQuery(domElement).css({ 'background-color': '#CD5', 'opacity' : 1 });
 				}
@@ -178,10 +206,12 @@ function sendWSDL(domElement) {
 					jQuery(domElement).css({ 'background-color': '#C77', 'opacity' : 1 });
 				}
 			},
-			error : function(msg) {
-				console.warn("EasySOA ERROR: Request failure - ", msg);
+                        error : function(xhr, textStatus, errorThrown) {
+                            console.warn("EasySOA ERROR: Request failure - ", xhr.responseText);
 			}
 		});
+        
+	$domElement.animate({opacity:0.5}, 'fast', function() {
 	});
 }
 

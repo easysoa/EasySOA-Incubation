@@ -91,14 +91,12 @@ exports.handleProxyRequest = function(request, response) {
 	
 	// Run service finder
 	if (!isIgnoredUrl(request.url)) {
-		//findWSDLs(request.url);
                 var nuxeoSession = getNuxeoSession(request);
                 if(nuxeoSession){
                     findWSDLsAndReturnToDbbProxyUi(nuxeoSession, request.url);                    
                 } else {
                     // Send back an error
                     console.log("ERROR:", "Not logged in");
-                    //redirectToLoginForm(request, response);
                     response.writeHead(500);
                     response.end("You are not logged in !");
                 }
@@ -137,7 +135,6 @@ isIgnoredUrl = function(url) {
 	return false;
 };
 
-//findWSDLsAndReturnToDbbProxyUi = function(url) {
 findWSDLsAndReturnToDbbProxyUi = function(session, url) {
 	nuxeo.runRestRequest(
 		//{username: 'Administrator', password: 'Administrator'}, // Session TODO better, I guess that's because findWSDLs must be able to be called in JSONP

@@ -64,12 +64,10 @@ login = function(request, response, next) {
 					function(isValid) {
 						if (isValid) {
 							// Create session
-							///request.session = {};
 							request.session.username = params.username;
 							// XXX: Could store the Base64 hash instead
 							request.session.password = params.password;
                                                         // add ip/session in map
-                                                        //clientAddressToSessionMap[request.connection.remoteAddress] = request.session; //request.headers['X-EasySOA-Orig-IP']
                                                         if(request.headers['x-easysoa-orig-ip']){
                                                             clientAddressToSessionMap[request.headers['x-easysoa-orig-ip']] = request.session; // Connexion with proxy
                                                         } else {
@@ -115,9 +113,7 @@ logout = function(request, response, next) {
         } else {
             delete clientAddressToSessionMap[request.connection.remoteAddress]; // Connexion without proxy
         }        
-        
-        //delete clientAddressToSessionMap[request.connection.remoteAddress];
-        
+       
 	console.log("[INFO] Session destroyed for: " + username);
 	if (request.query && request.query.callback) {
 		response.end(request.query.callback + '({result: "ok"})');

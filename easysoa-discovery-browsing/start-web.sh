@@ -11,3 +11,4 @@ echo $LINE
 cd js
 ../node -v
 ../node --debug easysoa.js
+

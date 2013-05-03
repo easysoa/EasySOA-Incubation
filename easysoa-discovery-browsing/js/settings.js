@@ -52,7 +52,5 @@ exports.SERVICE_FINDER_IGNORE = [
   '/socket\\.io/',
   'google',
   '8083',
-  //'\\login',
-  //'\\userdata',
   NUXEO_URL
 ];

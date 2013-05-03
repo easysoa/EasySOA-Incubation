@@ -41,33 +41,7 @@ var networkIPAddress;
 // * execute & parse output of programs like ifconfig & ipconfig
 // http://stackoverflow.com/questions/3653065/get-local-ip-address-in-node-js
 exports.getNetworkIP = getNetworkIP = function(callback) {
-    
-  /*var requestOptions = {
-	  'port' : 80,
-	  //'method' : GET,
-	  'host' : 'www.google.com'
-	  //'path' : 'NUXEO_REST_PARSED_URL.path + '/' + path''',
-	  //'headers' : headers
-  };
-    var googleRequest = http.request(requestOptions, function(response) {
-        //var responseData = '';
-        //response.on('data', function(data) {
-        //  responseData += data;
-        //});
-        response.on('connect', function() {
-          //callback(responseData);
-          callback(undefined, this.connection.address().address);
-          googleRequest.abort();
-        });
-        //response.on('end', function(data) {
-        //  ...
-        //});
-    });
-  
-  googleRequest.on('error', function(e) {
-    callback(e, 'error');
-  });*/
-    
+   
     var socket = net.createConnection(80, 'www.google.com');
     socket.on('connect', function() {
         callback(undefined, socket.address().address);
@@ -93,9 +67,6 @@ app.configure(function(){
   app.use(express.cookieParser());
   app.use(express.session({ secret: 'easysoa-web' }));
   app.use(express.bodyParser());
-  
-  //app.use(express.cookieParser('manny is cool'));
-  //app.use(cookieSessions('sid'));
   
   // Components routing & middleware configuration
   authComponent.configure(app);

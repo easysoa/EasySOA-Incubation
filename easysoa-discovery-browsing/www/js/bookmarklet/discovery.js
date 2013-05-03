@@ -5,6 +5,7 @@
 var jQuery, underscore;
 var templates = new Object();
 var wsdls = new Array();
+var wsdlMap = {};
 var username = null;
 var frameDragged = false;
 
@@ -109,17 +110,6 @@ function checkIsLoggedIn(callbackOnSuccess, callbackOnError) {
 function findWSDLs() {
 	runTemplate('results');
 	runServiceFinder(window.location.href, appendWSDLs);
-	var links = jQuery('a');
-	links.each(function (key) {
-		// Scraping to filter WSDLs and send them to Nuxeo,
-		// in case it couldn't get access to the page
-		var linkUrl = jQuery(this).prop('href');
-                // And not the following otherwise only a relative link
-                //var linkUrl = jQuery(this).attr('href');
-                if (linkUrl && (linkUrl.substr(-4) == 'wsdl' || linkUrl.substr(-4) == 'WSDL')) {
-			runServiceFinder(linkUrl);
-		}
-	});
 }
 
 function runServiceFinder(theUrl) {
@@ -162,9 +152,26 @@ function appendWSDLs(data) {
 			serviceURL: data.foundLinks[key]
 		};
 		wsdls.push(newWSDL);
+		wsdlMap[newWSDL.serviceURL] = newWSDL;
 		$resultsDiv.append(wsdlEntryTpl(newWSDL));
 		$resultsDiv.append(templates['afterWsdls'](null));
 	}
+
+	// Scraping to filter WSDLs and send them to Nuxeo,
+	// in case it couldn't get access to the page
+	// NB. done after end of first runServiceFinder() else twice as much WSDLs in UI
+	var links = jQuery('a');
+	links.each(function (key) {
+		// TODO TODO may be the cause of double WSDLs ?????
+		var linkUrl = jQuery(this).prop('href');
+            // And not the following otherwise only a relative link
+            //var linkUrl = jQuery(this).attr('href');
+            if (linkUrl
+            		&& (linkUrl.substr(-4) == 'wsdl' || linkUrl.substr(-4) == 'WSDL')
+            		&& !wsdlMap[linkUrl]) {
+			runServiceFinder(linkUrl);
+		}
+	});
 }
 
 function sendWSDL(domElement) {

@@ -69,8 +69,8 @@ import org.easysoa.registry.utils.EasysoaModuleRoot;
  * 
  */
 @Path("easysoa/servicefinder")
-//@Produces("application/x-javascript") // doesn't work for bookmarklet's jquery $.ajax() in jspon
-@Produces("application/javascript") // required (?!) for bookmarklet's jquery $.ajax() in jspon
+//@Produces("application/x-javascript") // doesn't work for bookmarklet's jquery $.ajax() in jsonp ("parsing error")
+@Produces("application/javascript") // required (?!) for bookmarklet's jquery $.ajax() in jsonp (else "parsing error")
 @WebObject(type = "servicefinder")
 public class ServiceFinderRest extends EasysoaModuleRoot {
 
@@ -179,7 +179,6 @@ public class ServiceFinderRest extends EasysoaModuleRoot {
 
         JSONArray errors = new JSONArray();
         JSONObject result = new JSONObject();
-        
 
         // Run finders
         List<FoundService> foundServices = new LinkedList<FoundService>();

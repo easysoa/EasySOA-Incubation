@@ -8,26 +8,26 @@
 	<link href="/css/easysoa.css" type="text/css" media="all" rel="stylesheet" />
 	<script type="text/javascript" src="/lib/jquery.js"></script>
 	<script type="text/javascript">
-	<!--
 	
 	function getURLParameter(name) {
-        return decodeURI(
-            (RegExp('[?|&]'+ name + '=' + '(.+?)(&|$)').exec(location.search)||[,''])[1]
-        );
-    }
+            return decodeURI(
+                (RegExp('[?|&]'+ name + '=' + '(.+?)(&|$)').exec(location.search)||[,''])[1]
+            );
+        }
    
-   $(window).load(function () {
-        if (getURLParameter('error') == 'true') {
-            $('#error').show();
-        }
-        if (getURLParameter('nuxeoNotReady') == 'true') {
-           $('#nuxeoNotReady').show();
-        }
-        $('#prev').attr('value', getURLParameter('prev'));
-    });
-    
+        $(window).load(function () {
+             if (getURLParameter('error') == 'true') {
+                 $('#error').show();
+             }
+             if (getURLParameter('nuxeoNotReady') == 'true') {
+                $('#nuxeoNotReady').show();
+             }
+             $('#prev').attr('value', getURLParameter('prev'));
+             //subprojectId = getURLParameter('subprojectId');
+             //visibility = getURLParameter('visibility');
+             $("#loginForm").attr("action", "/login?subprojectId=" + getURLParameter('subprojectId') + "&visibility=" + getURLParameter('visibility'));
+         });
 
-	-->
 	</script>
 </head>
 	
@@ -36,20 +36,22 @@
 <div id="headerWelcome">
     <a href="/" id="logoLink">&nbsp;</a>
     <div id="headerWelcomeContents">
-      Authentication form
+      Formulaire de connextion <!--Authentication form-->
     </div>
 </div>
 
 <div id="container" style="width: 100%">
     
-    <form method="post" action="/login">
+    <form id="loginForm" method="post" action="/login">
     
         <input type="hidden" id="prev" name="prev" value="" />
         
-        <p>User name<br />
+        <!--<p>User name<br />-->
+        <p>Utilisateur<br />
         <input type="text" name="username" value="" style="width: 300px" /></p>
         
-        <p>Password<br />
+        <!--<p>Password<br />-->
+        <p>Mot de passe<br />
         <input type="password" name="password" value="" style="width: 300px" /></p>
         
         <p><input type="submit" value="Log in" /></p>

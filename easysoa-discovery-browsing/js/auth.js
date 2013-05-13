@@ -75,11 +75,15 @@ login = function(request, response, next) {
                                                         }
                                                         
 							console.log("[INFO] Session created for: " + params.username);
+                                                        console.log("[DEBUG] subprojectId: " + request.query.subprojectId);
+                                                        console.log("[DEBUG] visibility: " + request.query.visibility);
 							if (params.callback) {
+                                                                console.log("[DEBUG] callback : " + params.callback);
 								response.writeHead(200, JSONP_HEADERS);
 								response.end(params.callback + '({result: "ok"})');
 							} else {
-								response.redirect(params.prev || '/easysoa');
+                                                                console.log("[DEBUG] prev : " + params.prev);    
+								response.redirect(params.prev || '/easysoa?subprojectId=' + request.query.subprojectId + "&visibility=" + request.query.visibility); // TODO add params from Easysoa registry
 							}
 						} else {
 							redirectToLoginForm(request, response, true);

@@ -39,10 +39,11 @@ function getUrlVars()
 }
 
    $(window).load(function () {
-        //$('#frame').attr('src', "default.html?subprojectId=" + getUrlVars()['subprojectId'] + "&visibility=" + getUrlVars()['visibility']);
+        $('#frame').attr('src', "default.html?subprojectId=" + getUrlVars()['subprojectId'] + "&visibility=" + getUrlVars()['visibility']);
         // Display the current context
         if(typeof getUrlVars()["subprojectId"] != "undefined"){
             $('#context').html(decodeURI(getUrlVars()["subprojectId"]));
+            $('#contextField').attr('value', decodeURI(getUrlVars()["subprojectId"]));
         }
     });
 
@@ -84,7 +85,7 @@ function getUrlVars()
   					
   					<h3>Service details</h3>
                                         <div class="inputLabel">Perspective:</div>
-                                        <i><span id="context"></span></i><br />
+                                        <i><span id="context"></span></i><input type="hidden" id="contextField"/><br />
                                         <br />                                       
   					<div class="inputLabel">Service Name:</div>
   					<input id="submitService" type="text" /><br />

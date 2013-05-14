@@ -179,6 +179,7 @@ function sendWSDL(domElement) {
 	var wsdlToSend = wsdls[$domElement.attr('id')];
         
 	  var environmentName = jQuery('#easysoa-environment').attr('value');
+          var context = jQuery('#contextField').attr('value');
 		jQuery.ajax({
 			url : EASYSOA_WEB + '/nuxeo/registry/post',
 			dataType : 'jsonp',
@@ -193,7 +194,8 @@ function sendWSDL(domElement) {
         }, // for cross-domain requests (REQUIRED for sendWSDL to /nuxeo/registry/post)
 			data : {
         'id': {
-           // TODO v1 Phase
+          // TODO v1 Phase
+          'phase' : context,
           'type': 'Endpoint',
           'name': environmentName + ':' + wsdlToSend.serviceURL // TODO Environment should not be hardcoded
         },
@@ -260,7 +262,8 @@ function initTemplates() {
     </div>');
     
 	templates['afterWsdls'] = underscore.template(
-	'<div class="easysoa-doc">Environment name: <input type="text" id="easysoa-environment" value="Production" /></div>'
+	'<div class="easysoa-doc">Environment name: <input type="text" id="easysoa-environment" value="Production" /></div>' + 
+        '<div class="easysoa-doc">Phase: #{context}<input type="hidden" id="easysoa-context" value="#{context}"/></div>'
 	);
 }
 

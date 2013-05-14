@@ -84,21 +84,27 @@ app.configure(function(){
 
   // To set dynamically the host and port in the bookmarklet template to generate the bookmarklet script  
   app.get('/js/bookmarklet/bookmarklet-min.js', function(req, res) {
+    var context = unescape(req.param('subprojectId', ''));
     var jsFile = fs.readFileSync("../www/js/bookmarklet/bookmarklet-min.js","utf8");
     //jsFile = jsFile.replace("#{host}", webServer.address().address); // this method webServer.address().address is useless, return always local loopback 0.0.0.0
     jsFile = jsFile.replace("#{host}", networkIPAddress);
     jsFile = jsFile.replace("#{port}", webServer.address().port);
+    jsFile = jsFile.replace("#{context}", context);
     res.writeHead(200);
     res.end(jsFile);
   });
 
   // To set dynamically the host and port in the discovery.js file  
-  app.get('/js/bookmarklet/discovery.js', function(req, res) {
+  app.get('/js/bookmarklet/discovery.js*', function(req, res) {
+    console.log("[DEBUG] ", "passing in discovery.js template function");
+    var context = unescape(req.param('subprojectId', ''));
     var jsFile = fs.readFileSync("../www/js/bookmarklet/discovery.js","utf8");
     //jsFile = jsFile.replace("#{host}", webServer.address().address); // this method webServer.address().address is useless, return always local loopback 0.0.0.0
     jsFile = jsFile.replace("#{host}", networkIPAddress);
     jsFile = jsFile.replace("#{port}", webServer.address().port);
+    jsFile = jsFile.replace("#{context}", context);
     res.writeHead(200);
+    console.log("[DEBUG] ", "End of discovery.js template function");
     res.end(jsFile);
   });
 

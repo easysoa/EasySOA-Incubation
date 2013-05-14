@@ -29,12 +29,15 @@ $(function() {
 			if (this.getURL() != '') {
           this.view.info("Sending request...");
           var environmentName = $('#environmentSelect option').filter(":selected").attr('value');
+          var context = $('contextField').attr('value');
+          
           var url = this.getURL();
 			    jQuery.ajax({
 			        url: '/dbb/send?token=' + Math.random(), // avoids caching
 			        data: {
 			            'id': {
 			              // TODO v1 Phase
+                                      'phase' : context,
 			              'type': 'Endpoint',
 			              'name': environmentName + ':' + url
 			            },

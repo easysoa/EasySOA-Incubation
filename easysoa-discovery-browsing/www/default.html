@@ -75,15 +75,19 @@ $(document).ready(function() {
   /**
    * Load bookmarklet script
    */
+  
+  ///alert('ajax url : /js/bookmarklet/bookmarklet-min.js?subprojectId=' + decodeURI(getUrlVars()["subprojectId"])); // OK
   $.ajax({
-    url: '/js/bookmarklet/bookmarklet-min.js',
+    url: '/js/bookmarklet/bookmarklet-min.js?subprojectId=' + decodeURI(getUrlVars()["subprojectId"]),
     dataType: 'text', // Prevents JS execution
     success: function(data, status, xhr) {
-      var js = escape(xhr.responseText);
+      ///alert('ajax response : ' + xhr.responseText); // OK
+      var js = encodeURI(xhr.responseText); // and not escape(), else é becomes %E9 (from UTF-8 u+00e9) instead of %C3%A9 (E9 encoded as 2 UTF-8 bytes), see http://stackoverflow.com/questions/5300803/how-to-encode-a-url-with-accent-characters-in-javascript
       //var faviconCode = "<!DOCTYPE html><html><head><title>Notifier EasySOA</title><link rel=”icon” type=”image/png” href=”/img/favicon.png”/></head><body>Notifier EasySOA</body></html> ";
       if (xhr.responseText.substr(0, 11) != 'javascript:') {
         js = 'javascript:' + js;
       }
+      //alert('encoded : ' + encodeURI(xhr.responseText));
       //$('#bookmarklet').html('<a href="' + js + '">Find WSDLs</a>');
       $('#bookmarklet').html('<a class="button" href="' + js + '" title="Glissez moi dans les favoris de votre navigateur">Notifier EasySOA</a>');
       

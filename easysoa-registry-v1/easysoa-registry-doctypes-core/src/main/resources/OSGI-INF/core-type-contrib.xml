@@ -24,6 +24,8 @@
     <schema name="restinfo" src="schemas/restinfo.xsd" prefix="rest" />
     <schema name="platform" src="schemas/platform.xsd" prefix="platform" />
     <schema name="architecturecomponent" src="schemas/architecture-component.xsd" prefix="acomp" />
+    <schema name="resourceDownloadInfo" src="schemas/resource-download-info.xsd" prefix="rdi" />
+    <schema name="resource" src="schemas/resource.xsd" prefix="res" />
   </extension>
 
   <!-- ============= -->
@@ -57,7 +59,10 @@
     <facet name="RestInfo" >
       <schema name="restinfo" />
     </facet>
-
+    <facet name="ResourceDownloadInfo" >
+        <schema name="resourceDownloadInfo" />
+    </facet>
+    
     <!-- Abstract doctypes -->
     <doctype extends="Document" name="SoaNode">
       <schema name="uid" />
@@ -136,6 +141,7 @@
       <facet name="ComponentData" /><!-- TODO MDU not necessary if PlatformData ?! does not comprise Component id where impl has been successfully classified which is required-->
       <facet name="WsdlInfo" />
       <facet name="RestInfo" />
+      <facet name="ResourceDownloadInfo" />
     </doctype>
 
     <!-- Implementation level -->
@@ -183,8 +189,22 @@
       <facet name="ComponentData" /><!-- TODO MDU not necessary ?! does not comprise Component id where impl has been successfully classified which is required-->
       <facet name="PlatformData" />
       <facet name="InformationServiceData" />
+      <facet name="ResourceDownloadInfo" />
     </doctype>
 
+    <doctype extends="SoaNode" name="resource">
+      <schema name="resource" />
+    </doctype>
+    <!-- TODO : Add a new doctype resource + derived doctypes jaxrs resource and web resource -->    
+    <!--
+    <doctype extends="resource" name="jaxrsResource">
+        
+    </doctype>
+
+    <doctype extends="resource" name="webResource">
+        
+    </doctype>
+    -->
   </extension>
 
 </component>

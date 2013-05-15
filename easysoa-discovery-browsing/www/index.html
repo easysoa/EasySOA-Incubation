@@ -43,7 +43,7 @@ function getUrlVars()
         // Display the current context
         if(typeof getUrlVars()["subprojectId"] != "undefined"){
             $('#context').html(decodeURI(getUrlVars()["subprojectId"]));
-            $('#contextField').attr('value', decodeURI(getUrlVars()["subprojectId"]));
+            $('#easysoa-context').attr('value', decodeURI(getUrlVars()["subprojectId"]));
         }
     });
 
@@ -85,7 +85,7 @@ function getUrlVars()
   					
   					<h3>Service details</h3>
                                         <div class="inputLabel">Perspective:</div>
-                                        <i><span id="context"></span></i><input type="hidden" id="contextField"/><br />
+                                        <i><span id="context"></span></i><input type="hidden" id="easysoa-context" value=""/><br />
                                         <br />                                       
   					<div class="inputLabel">Service Name:</div>
   					<input id="submitService" type="text" /><br />

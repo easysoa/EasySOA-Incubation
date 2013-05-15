@@ -102,6 +102,8 @@ app.configure(function(){
     //jsFile = jsFile.replace("#{host}", webServer.address().address); // this method webServer.address().address is useless, return always local loopback 0.0.0.0
     jsFile = jsFile.replace("#{host}", networkIPAddress);
     jsFile = jsFile.replace("#{port}", webServer.address().port);
+    // Replace 2 times the context
+    jsFile = jsFile.replace("#{context}", context);
     jsFile = jsFile.replace("#{context}", context);
     res.writeHead(200);
     console.log("[DEBUG] ", "End of discovery.js template function");

@@ -29,7 +29,7 @@ $(function() {
 			if (this.getURL() != '') {
           this.view.info("Sending request...");
           var environmentName = $('#environmentSelect option').filter(":selected").attr('value');
-          var context = $('contextField').attr('value');
+          var context = $('#easysoa-context').attr('value');
           
           var url = this.getURL();
 			    jQuery.ajax({
@@ -37,11 +37,12 @@ $(function() {
 			        data: {
 			            'id': {
 			              // TODO v1 Phase
-                                      'phase' : context,
+                                      'subprojectId' : context,
 			              'type': 'Endpoint',
 			              'name': environmentName + ':' + url
 			            },
 			            'properties': {
+                                      'spnode:subproject':context,
 			              'endp:url': url,
 			              'env:environment': environmentName,
 			              'dc:title': environmentName + ': ' + $('#submitService').attr('value') //FIXME Better property sync with getServiceName()

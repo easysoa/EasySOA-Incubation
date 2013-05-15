@@ -179,7 +179,7 @@ function sendWSDL(domElement) {
 	var wsdlToSend = wsdls[$domElement.attr('id')];
         
 	  var environmentName = jQuery('#easysoa-environment').attr('value');
-          var context = jQuery('#contextField').attr('value');
+          var context = jQuery('#easysoa-context').attr('value');
 		jQuery.ajax({
 			url : EASYSOA_WEB + '/nuxeo/registry/post',
 			dataType : 'jsonp',
@@ -195,11 +195,12 @@ function sendWSDL(domElement) {
 			data : {
         'id': {
           // TODO v1 Phase
-          'phase' : context,
+          'subprojectId' : context,
           'type': 'Endpoint',
           'name': environmentName + ':' + wsdlToSend.serviceURL // TODO Environment should not be hardcoded
         },
         'properties': {
+          'spnode:subproject':context,
           'endp:url': wsdlToSend.serviceURL,
           'env:environment': environmentName,
           'dc:title': environmentName + ': ' + wsdlToSend.serviceName

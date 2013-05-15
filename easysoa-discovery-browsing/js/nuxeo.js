@@ -93,9 +93,10 @@ exports.runRestRequest = runRestRequest = function(session, path, method, header
   // Set headers
   if (session && session.username) {
 	  headers['Authorization'] = utils.encodeAuthorization(session.username, session.password);
-	  if (bodyString) {
-	    headers['Content-Length'] = bodyString.length;
-	  }
+          // TODO OPT specify Content-Length to ease the work of the server, but patch this code (fails for ex. "é")
+	  //if (bodyString) {
+	  //  headers['Content-Length'] = bodyString.length;
+	  //}
   }
   
   var requestOptions = {

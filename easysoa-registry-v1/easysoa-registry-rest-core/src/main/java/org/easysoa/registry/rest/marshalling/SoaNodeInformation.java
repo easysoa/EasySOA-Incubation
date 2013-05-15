@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.codehaus.jackson.annotate.JsonIgnore;
@@ -17,20 +16,17 @@ import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ListUtils;
 
-@JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE, setterVisibility=Visibility.NONE)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class SoaNodeInformation implements SoaNode {
 
     protected SoaNodeId id;
-
     @JsonTypeInfo(use = Id.MINIMAL_CLASS, include = As.WRAPPER_OBJECT, property = "type")
     protected Map<String, Serializable> properties;
-    
     protected List<SoaNodeId> parentDocuments;
-    
+
     protected SoaNodeInformation() {
-        
     }
-    
+
     public SoaNodeInformation(SoaNodeId id, Map<String, Serializable> properties, List<SoaNodeId> parentDocuments) {
         this.id = id;
         this.properties = (properties == null) ? new HashMap<String, Serializable>() : properties;
@@ -42,7 +38,7 @@ public class SoaNodeInformation implements SoaNode {
     public SoaNodeId getSoaNodeId() {
         return id;
     }
-    
+
     public void setSoaNodeId(SoaNodeId id) {
         this.id = id;
     }
@@ -52,22 +48,25 @@ public class SoaNodeInformation implements SoaNode {
         return id.getName();
     }
 
+    @Override
     public String getSubprojectId() {
         return (String) properties.get(SubprojectNode.XPATH_SUBPROJECT);
     }
-    
+
     public Map<String, Serializable> getProperties() {
         return properties;
     }
-    
+
     public void setProperties(Map<String, Serializable> properties) {
         this.properties = properties;
     }
-    
+
+    @Override
     public Object getProperty(String xpath) throws Exception {
         return this.properties.get(xpath);
     }
 
+    @Override
     public void setProperty(String xpath, Serializable value) throws Exception {
         this.properties.put(xpath, value);
     }
@@ -75,7 +74,7 @@ public class SoaNodeInformation implements SoaNode {
     public List<SoaNodeId> getParentDocuments() {
         return parentDocuments;
     }
-    
+
     public void setParentDocuments(List<SoaNodeId> correlatedDocuments) {
         this.parentDocuments = correlatedDocuments;
     }
@@ -84,67 +83,75 @@ public class SoaNodeInformation implements SoaNode {
         this.parentDocuments.add(correlatedDocument);
     }
 
+    @Override
     public String getName() {
         return (String) properties.get(SoaNode.XPATH_NAME);
     }
 
+    @Override
     public String getTitle() {
         return (String) properties.get(SoaNode.XPATH_TITLE);
     }
-    
+
+    @Override
     public void setTitle(String title) {
         properties.put(SoaNode.XPATH_TITLE, title);
     }
-    
+
     @JsonIgnore
+    @Override
     public boolean isPlaceholder() throws Exception {
         return (Boolean) properties.get(SoaNode.XPATH_TITLE);
     }
 
     @JsonIgnore
+    @Override
     public void setIsPlaceholder(boolean isPlaceholder) throws Exception {
         properties.put(SoaNode.XPATH_TITLE, isPlaceholder);
     }
 
+    @Override
     public String toString() {
         return this.id.toString();
     }
 
+    @Override
     public List<SoaNodeId> getParentIds() throws Exception {
-		Serializable[] parentsIdsArray = (Serializable[]) properties.get(XPATH_PARENTSIDS);
-		List<String> parentsIdsStringList = ListUtils.toStringList(parentsIdsArray);
-		List<SoaNodeId> parentsIds = new ArrayList<SoaNodeId>();
-		for (String parentIdString : parentsIdsStringList) {
-			SoaNodeId parentId = SoaNodeId.fromString(parentIdString);
-			if (parentId != null) {
-				parentsIds.add(parentId);
-			}
-		}
-		return parentsIds;
+        Serializable[] parentsIdsArray = (Serializable[]) properties.get(XPATH_PARENTSIDS);
+        List<String> parentsIdsStringList = ListUtils.toStringList(parentsIdsArray);
+        List<SoaNodeId> parentsIds = new ArrayList<SoaNodeId>();
+        for (String parentIdString : parentsIdsStringList) {
+            SoaNodeId parentId = SoaNodeId.fromString(parentIdString);
+            if (parentId != null) {
+                parentsIds.add(parentId);
+            }
+        }
+        return parentsIds;
     }
-    
-	public SoaNodeId getParentOfType(String doctype) throws Exception {
-		Serializable[] parentsIdsArray = (Serializable[]) properties.get(XPATH_PARENTSIDS);
-		for (Serializable parentIdString : parentsIdsArray) {
-			 SoaNodeId parentId = SoaNodeId.fromString((String) parentIdString);
-			if (parentId.getType().equals(doctype)) {
-				return parentId;
-			}
-		}
-		return null;
-	}
 
-	public void setParentIds(List<SoaNodeId> parentIds) throws Exception {
-		List<String> parentsIdsStringList = new ArrayList<String>();
-		for (SoaNodeId parentId : parentIds) {
-			parentsIdsStringList.add(parentId.toString());
-		}
-		properties.put(XPATH_PARENTSIDS, (Serializable) parentsIdsStringList);
-	}
+    @Override
+    public SoaNodeId getParentOfType(String doctype) throws Exception {
+        Serializable[] parentsIdsArray = (Serializable[]) properties.get(XPATH_PARENTSIDS);
+        for (Serializable parentIdString : parentsIdsArray) {
+            SoaNodeId parentId = SoaNodeId.fromString((String) parentIdString);
+            if (parentId.getType().equals(doctype)) {
+                return parentId;
+            }
+        }
+        return null;
+    }
 
-	@Override
-	public String getUuid() throws Exception {
-		return (String) properties.get(XPATH_UUID);
-	}
-    
+    @Override
+    public void setParentIds(List<SoaNodeId> parentIds) throws Exception {
+        List<String> parentsIdsStringList = new ArrayList<String>();
+        for (SoaNodeId parentId : parentIds) {
+            parentsIdsStringList.add(parentId.toString());
+        }
+        properties.put(XPATH_PARENTSIDS, (Serializable) parentsIdsStringList);
+    }
+
+    @Override
+    public String getUuid() throws Exception {
+        return (String) properties.get(XPATH_UUID);
+    }
 }

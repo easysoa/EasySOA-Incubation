@@ -20,6 +20,7 @@
 	<script type="text/javascript" src="js/Descriptors.js"></script>
 	<script type="text/javascript" src="js/ServiceList.js"></script>
 	<script type="text/javascript" src="js/App.js"></script>
+        <script type="text/javascript" src="js/utils.js"></script>
 </head>
 	
 <body>
@@ -42,7 +43,7 @@ function getUrlVars()
         $('#frame').attr('src', "default.html?subprojectId=" + getUrlVars()['subprojectId'] + "&visibility=" + getUrlVars()['visibility']);
         // Display the current context
         if(typeof getUrlVars()["subprojectId"] != "undefined"){
-            $('#context').html(decodeURI(getUrlVars()["subprojectId"]));
+            $('#context').html(formatPhaseForDisplay(decodeURI(getUrlVars()["subprojectId"])));
             $('#easysoa-context').attr('value', decodeURI(getUrlVars()["subprojectId"]));
         }
     });

@@ -194,7 +194,6 @@ function sendWSDL(domElement) {
         }, // for cross-domain requests (REQUIRED for sendWSDL to /nuxeo/registry/post)
 			data : {
         'id': {
-          // TODO v1 Phase
           'subprojectId' : context,
           'type': 'Endpoint',
           'name': environmentName + ':' + wsdlToSend.serviceURL // TODO Environment should not be hardcoded
@@ -264,7 +263,7 @@ function initTemplates() {
     
 	templates['afterWsdls'] = underscore.template(
 	'<div class="easysoa-doc">Environment name: <input type="text" id="easysoa-environment" value="Production" /></div>' + 
-        '<div class="easysoa-doc">Phase: #{context}<input type="hidden" id="easysoa-context" value="#{context}"/></div>'
+        '<div class="easysoa-doc">Phase: #{context-display}<input type="hidden" id="easysoa-context" value="#{context}"/></div>'
 	);
 }
 

@@ -17,6 +17,7 @@ var proxyComponent = require('./proxy');
 var dbbComponent = require('./dbb');
 var lightComponent = require('./light');
 var nuxeoComponent = require('./nuxeo');
+var utils = require('./utils');
 
 dbbComponent.setClientAddressToSessionMap(authComponent.clientAddressToSessionMap);
 
@@ -102,9 +103,8 @@ app.configure(function(){
     //jsFile = jsFile.replace("#{host}", webServer.address().address); // this method webServer.address().address is useless, return always local loopback 0.0.0.0
     jsFile = jsFile.replace("#{host}", networkIPAddress);
     jsFile = jsFile.replace("#{port}", webServer.address().port);
-    // Replace 2 times the context
-    jsFile = jsFile.replace("#{context}", context);
-    jsFile = jsFile.replace("#{context}", context);
+    jsFile = jsFile.replace("#{context-display}", utils.formatPhaseForDisplay(context)); // For display
+    jsFile = jsFile.replace("#{context}", context); // For input field
     res.writeHead(200);
     console.log("[DEBUG] ", "End of discovery.js template function");
     res.end(jsFile);

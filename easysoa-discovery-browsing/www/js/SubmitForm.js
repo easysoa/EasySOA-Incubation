@@ -36,7 +36,6 @@ $(function() {
 			        url: '/dbb/send?token=' + Math.random(), // avoids caching
 			        data: {
 			            'id': {
-			              // TODO v1 Phase
                                       'subprojectId' : context,
 			              'type': 'Endpoint',
 			              'name': environmentName + ':' + url

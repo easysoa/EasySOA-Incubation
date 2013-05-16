@@ -109,12 +109,12 @@ function checkIsLoggedIn(callbackOnSuccess, callbackOnError) {
 
 function findWSDLs() {
 	runTemplate('results');
-	runServiceFinder(window.location.href, appendWSDLs);
+	runServiceFinder(window.location.href);
 }
 
 // Scrapes HTML links using remote Nuxeo ServiceFinder
 // and its configured strategies.
-function runServiceFinder(theUrl) {
+function runServiceFinder(theUrl, localScrapingLinks, localScrapingIndex) {
 	// Send request to Nuxeo
 	jQuery.ajax({
 		url : EASYSOA_WEB + '/nuxeo/servicefinder/find/' + theUrl, // + '.js',
@@ -136,7 +136,9 @@ function runServiceFinder(theUrl) {
 					console.log("EasySOA link parsing ERROR: ", data.errors[errorKey]);
 				}
 			}
-			runLocalScrapingServiceFinder(); // NB. not done in appendWSDLs() else twice as much WSDLs in UI
+			
+			// local scraping loop using recursive callback
+			runLocalScrapingServiceFinder(localScrapingLinks, localScrapingIndex);
 		},
 		error : function(xhr, textStatus, errorThrown) {
 			console.log("EasySOA jsonp ERROR: ", xhr.responseText);
@@ -154,26 +156,44 @@ function appendWSDLs(data) {
 			serviceName: key,
 			serviceURL: data.foundLinks[key]
 		};
-		wsdls.push(newWSDL);
-		wsdlMap[newWSDL.serviceURL] = newWSDL;
-		$resultsDiv.append(wsdlEntryTpl(newWSDL));
-		$resultsDiv.append(templates['afterWsdls'](null));
+		
+		// avoiding to display twice the same service (happens when local scraping
+		// sends a link to this same HTML page, therefore containing the same WSDL URLs)
+		if (!wsdlMap[newWSDL.serviceURL]) {
+			wsdls.push(newWSDL);
+			wsdlMap[newWSDL.serviceURL] = newWSDL;
+			$resultsDiv.append(wsdlEntryTpl(newWSDL));
+			$resultsDiv.append(templates['afterWsdls'](null));
+		}
 	}
 }
 
 // HACK Local scraping to filter WSDLs and send them to Nuxeo,
 // in case it couldn't get access to the page
-// NB. done after end of first runServiceFinder() else twice as much WSDLs in UI
-function runLocalScrapingServiceFinder() {
-	var links = jQuery('a');
-	links.each(function (key) {
-		var linkUrl = jQuery(this).prop('href'); // And not jQuery(this).attr('href') otherwise only a relative link
-         if (linkUrl
-         		&& (linkUrl.substr(-4) == 'wsdl' || linkUrl.substr(-4) == 'WSDL')
-         		&& !wsdlMap[linkUrl]) {
-			runServiceFinder(linkUrl);
+// NB. scraping sequentially using recursive callbacks rather than "for" loop
+// to avoid messing with condition !wsdlMap[linkUrl] below
+function runLocalScrapingServiceFinder(links, i) {
+	if (!links) {
+		// loop init
+		var links = jQuery('a');
+		var i = 0;
+	}
+	
+	// loop end condition
+	if (i < links.length) {
+
+		// loop iteration code
+		var linkUrl = jQuery(links[i]).prop('href'); // And not jQuery(this).attr('href') otherwise only a relative link
+        if (linkUrl
+        		&& (linkUrl.substr(-4) == 'wsdl' || linkUrl.substr(-4) == 'WSDL')
+        		&& !wsdlMap[linkUrl]) {
+        	// next iteration through async runServiceFinder
+			runServiceFinder(linkUrl, links, i + 1);
+		} else {
+			// next iteration directly
+			runLocalScrapingServiceFinder(links, i + 1);
 		}
-	});
+	}
 }
 
 function sendWSDL(domElement) {

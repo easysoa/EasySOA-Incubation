@@ -1070,6 +1070,111 @@
       </widget>
     </layout>
     
+    <!-- Layout for resource download info schema -->
+    <layout name="resourcedownloadinfo">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>resourcedownloadinfo_url</widget>
+        </row>
+        <row>
+          <widget>resourcedownloadinfo_downloadable_url</widget>
+        </row>
+        <row>
+          <widget>resourcedownloadinfo_timestamp</widget>
+        </row>
+        <row>
+          <widget>resourcedownloadinfo_probe_type</widget>
+        </row>
+        <row>
+          <widget>resourcedownloadinfo_probe_instance_id</widget>
+        </row>        
+      </rows>
+      <widget name="resourcedownloadinfo_url" type="template">
+        <labels>
+          <label mode="any">label.easysoa.layout.resourcedownloadinfo.url</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rdi:url</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="template">/widgets/single_document_suggestion_widget_template.xhtml</property>
+        </properties>
+      </widget>
+      <widget name="resourcedownloadinfo_downloadable_url" type="template">
+        <labels>
+          <label mode="any">label.easysoa.layout.resourcedownloadservice.downloadableUrl</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rdi:downloadableUrl</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="template">/widgets/single_document_suggestion_widget_template.xhtml</property>
+        </properties>
+      </widget>
+      <widget name="resourcedownloadinfo_timestamp" type="template">
+        <labels>
+          <label mode="any">label.easysoa.layout.resourcedownloadinfo.timestamp</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rdi:timestamp</field>
+        </fields>
+        <properties widgetMode="view">
+          <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
+        <properties widgetMode="edit">
+          <property name="template">/widgets/single_document_suggestion_widget_template.xhtml</property>
+        </properties>
+      </widget>
+      <widget name="resourcedownloadinfo_probe_type" type="template">
+        <labels>
+          <label mode="any">label.easysoa.layout.resourcedownloadinfo.probeType</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rdi:probeType</field>
+        </fields>
+        <widgetModes>
+          <mode value="create">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="view">
+          <property name="template">/widgets/serviceimpl_operations_template.xhtml</property>
+        </properties>
+        <properties widgetMode="edit">
+            <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
+      </widget>
+      <widget name="resourcedownloadinfo_probe_instance_id" type="template">
+        <labels>
+          <label mode="any">label.easysoa.layout.resourcedownloadinfo.probeInstanceId</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>rdi:instanceId</field>
+        </fields>
+        <widgetModes>
+          <mode value="create">hidden</mode>
+        </widgetModes>
+        <properties widgetMode="view">
+          <property name="template">/widgets/serviceimpl_operations_template.xhtml</property>
+        </properties>
+        <properties widgetMode="edit">
+            <property name="template">/widgets/document_id_link_template.xhtml</property>
+        </properties>
+      </widget>      
+    </layout>    
+    
   </extension>
   
 </component>

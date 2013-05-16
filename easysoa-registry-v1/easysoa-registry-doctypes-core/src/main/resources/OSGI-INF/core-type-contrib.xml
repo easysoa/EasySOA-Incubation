@@ -25,7 +25,6 @@
     <schema name="platform" src="schemas/platform.xsd" prefix="platform" />
     <schema name="architecturecomponent" src="schemas/architecture-component.xsd" prefix="acomp" />
     <schema name="resourceDownloadInfo" src="schemas/resource-download-info.xsd" prefix="rdi" />
-    <schema name="resource" src="schemas/resource.xsd" prefix="res" />
   </extension>
 
   <!-- ============= -->
@@ -53,14 +52,16 @@
       <facet name="SubprojectNode" /><!-- TODO other types ? or always add dynamically ? -->
     </doctype>
     
+    <!-- Resource framework -->
+    <!-- TODO LATER move WsdlInfo & RestInfo to separate Resource Documents -->
+    <facet name="ResourceDownloadInfo" >
+        <schema name="resourceDownloadInfo" />
+    </facet>
     <facet name="WsdlInfo" >
       <schema name="wsdlinfo" />
     </facet>
     <facet name="RestInfo" >
       <schema name="restinfo" />
-    </facet>
-    <facet name="ResourceDownloadInfo" >
-        <schema name="resourceDownloadInfo" />
     </facet>
     
     <!-- Abstract doctypes -->
@@ -192,19 +193,18 @@
       <facet name="ResourceDownloadInfo" />
     </doctype>
 
-    <doctype extends="SoaNode" name="resource">
-      <schema name="resource" />
+    <!-- Resource framework -->
+    <doctype extends="SoaNode" name="Resource">
+      <facet name="ResourceDownloadInfo" />
     </doctype>
-    <!-- TODO : Add a new doctype resource + derived doctypes jaxrs resource and web resource -->    
-    <!--
-    <doctype extends="resource" name="jaxrsResource">
-        
-    </doctype>
-
-    <doctype extends="resource" name="webResource">
-        
-    </doctype>
-    -->
+    <doctype extends="Resource" name="InterfaceResource" />
+    <doctype extends="InterfaceResource" name="JaxrsInterfaceResource" /><!-- LATER (push it from source &) use it -->
+    <doctype extends="InterfaceResource" name="WsdlInterfaceResource" /><!-- LATER use it instead of ResourceDownloadInfo on iserv/endpoint -->
+    <doctype extends="Resource" name="PolicyResource" />
+    <doctype extends="PolicyResource" name="EasiFabJasminePolicyResource" /><!-- LATER push it from source & parse it -->
+    <doctype extends="Resource" name="ConfigurationResource" />
+    <doctype extends="ConfigurationResource" name="ScaConfigurationResource" /><!-- LATER (push it from source &) update SCA import feature (NB. this is NOT for SCA for Design / Specifications but only for Realisation/Deploiement) -->
+    
   </extension>
 
 </component>

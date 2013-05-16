@@ -3,17 +3,26 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:nxs="http://www.nuxeo.org/ecm/schemas/rdi/">
     
-  <xs:element name="actualUrl" type="xs:string" />
+  <!--url, valid from download probe (instance) context (which includes network, auth i.e. WRDS...). May also be a file URL.--><xs:annotation>  
+  <xs:element name="url" type="xs:string" />
+  <!--downloadable url, where download probe provides the resource. Optional because may stay hidden in probe's ResourceUpdater. Null if it doesn't. Null until inited by probe, which may be ex. WSDLParsingListener using the (OPT probe's) configured WebResourceDownloadService.-->
   <xs:element name="downloadableUrl" type="xs:string" />
-  <xs:element name="timestamp" type="xs:dateTime" />    
+  <!--timestamp of retrieval. If differs, triggers parsing if no dedicated notif con'd for the probe. If null, inited by the registry. May also be used for caching.-->
+  <xs:element name="timestamp" type="xs:dateTime" />
   
-  <xs:complexType name="probe">
+  <!-- probeId constituents : -->
+  <!--(type) (instanceId) to build the id. ? allows routing (meaning host/ip must be available, directly from id or mapped in a routing conf ex. genapp)-->
+  <xs:element name="probeType" type="xs:string" /> 
+  <xs:element name="probeInstanceId" type="xs:string" />
+  
+  <!-- A complex type can be used but too complex to store only one probe -->
+  <!--<xs:complexType name="probe">
     <xs:sequence>
       <xs:element name="probeId" type="xs:string" />
       <xs:element name="type" type="xs:string" />
-      <xs:element name="instance" type="xs:string" />
+      <xs:element name="instanceId" type="xs:string" />
     </xs:sequence>
   </xs:complexType>
-  <xs:element name="probe" type="nxs:probe" />
+  <xs:element name="probe" type="nxs:probe" />-->
 
 </xs:schema>

@@ -25,12 +25,14 @@ import java.net.URL;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.easysoa.registry.dbb.BrowsingContext;
+import org.easysoa.registry.dbb.ResourceDownloadService;
 import org.easysoa.registry.dbb.ServiceFinderStrategy;
 import org.easysoa.registry.dbb.HttpDownloader;
 import org.easysoa.registry.dbb.HttpDownloaderService;
 import org.easysoa.registry.dbb.HttpDownloaderServiceImpl;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * 
@@ -63,10 +65,8 @@ public abstract class DefaultAbstractStrategy implements ServiceFinderStrategy {
     }
     
     private static String extractApplicationNameFromUrl(URL url) throws Exception {
-    	HttpDownloaderService httpDownloaderService = new HttpDownloaderServiceImpl();
-        HttpDownloader siteRootFileDownloader = httpDownloaderService.createHttpDownloader(url);
-        siteRootFileDownloader.download();
-        java.io.File siteRootFile = siteRootFileDownloader.getFile();
+        ResourceDownloadService resourceDownloadService = Framework.getService(ResourceDownloadService.class); 
+        java.io.File siteRootFile = resourceDownloadService.get(url);
         if (siteRootFile == null) {
         	// ex. if site root url returns something else than 200 (ex. 403)
         	return null; // else cleaner.clean(siteRootFile) throws NullPointerException 

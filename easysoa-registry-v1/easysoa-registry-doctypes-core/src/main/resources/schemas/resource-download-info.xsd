@@ -3,7 +3,7 @@
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:nxs="http://www.nuxeo.org/ecm/schemas/rdi/">
     
-  <!--url, valid from download probe (instance) context (which includes network, auth i.e. WRDS...). May also be a file URL.--><xs:annotation>  
+  <!--url, valid from download probe (instance) context (which includes network, auth i.e. WRDS...). May also be a file URL.--> 
   <xs:element name="url" type="xs:string" />
   <!--downloadable url, where download probe provides the resource. Optional because may stay hidden in probe's ResourceUpdater. Null if it doesn't. Null until inited by probe, which may be ex. WSDLParsingListener using the (OPT probe's) configured WebResourceDownloadService.-->
   <xs:element name="downloadableUrl" type="xs:string" />

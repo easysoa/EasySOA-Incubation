@@ -393,9 +393,9 @@
         <layout>informationservice</layout>
         <layout>wsdlinfo</layout>
         <layout>restinfo</layout>
+        <layout>resourcedownloadinfo</layout>
         <layout>file</layout><!-- for expected service interface definition ex. WSDL -->
         <layout>files</layout>
-        <layout>resourcedownloadinfo</layout>
       </layouts>
       <layouts mode="listing">
         <layout>document_listing</layout>
@@ -547,10 +547,10 @@
         <layout>endpoint</layout>
         <layout>wsdlinfo</layout>
         <layout>restinfo</layout>
+        <layout>resourcedownloadinfo</layout>
         <layout>environment</layout>
         <layout>file</layout><!-- for actual service interface definition ex. WSDL --><!-- TODO to allow upload using CMIS in JWT export -->
         <layout>files</layout>
-        <layout>resourcedownloadinfo</layout>
       </layouts>
     </type>
 

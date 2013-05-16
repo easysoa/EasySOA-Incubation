@@ -24,7 +24,7 @@
     <schema name="restinfo" src="schemas/restinfo.xsd" prefix="rest" />
     <schema name="platform" src="schemas/platform.xsd" prefix="platform" />
     <schema name="architecturecomponent" src="schemas/architecture-component.xsd" prefix="acomp" />
-    <schema name="resourceDownloadInfo" src="schemas/resource-download-info.xsd" prefix="rdi" />
+    <schema name="resourcedownloadinfo" src="schemas/resource-download-info.xsd" prefix="rdi" />
   </extension>
 
   <!-- ============= -->
@@ -55,7 +55,7 @@
     <!-- Resource framework -->
     <!-- TODO LATER move WsdlInfo & RestInfo to separate Resource Documents -->
     <facet name="ResourceDownloadInfo" >
-        <schema name="resourceDownloadInfo" />
+        <schema name="resourcedownloadinfo" />
     </facet>
     <facet name="WsdlInfo" >
       <schema name="wsdlinfo" />

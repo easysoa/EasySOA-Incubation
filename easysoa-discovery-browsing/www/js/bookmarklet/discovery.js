@@ -112,6 +112,8 @@ function findWSDLs() {
 	runServiceFinder(window.location.href, appendWSDLs);
 }
 
+// Scrapes HTML links using remote Nuxeo ServiceFinder
+// and its configured strategies.
 function runServiceFinder(theUrl) {
 	// Send request to Nuxeo
 	jQuery.ajax({
@@ -134,6 +136,7 @@ function runServiceFinder(theUrl) {
 					console.log("EasySOA link parsing ERROR: ", data.errors[errorKey]);
 				}
 			}
+			runLocalScrapingServiceFinder(); // NB. not done in appendWSDLs() else twice as much WSDLs in UI
 		},
 		error : function(xhr, textStatus, errorThrown) {
 			console.log("EasySOA jsonp ERROR: ", xhr.responseText);
@@ -156,19 +159,18 @@ function appendWSDLs(data) {
 		$resultsDiv.append(wsdlEntryTpl(newWSDL));
 		$resultsDiv.append(templates['afterWsdls'](null));
 	}
+}
 
-	// Scraping to filter WSDLs and send them to Nuxeo,
-	// in case it couldn't get access to the page
-	// NB. done after end of first runServiceFinder() else twice as much WSDLs in UI
+// HACK Local scraping to filter WSDLs and send them to Nuxeo,
+// in case it couldn't get access to the page
+// NB. done after end of first runServiceFinder() else twice as much WSDLs in UI
+function runLocalScrapingServiceFinder() {
 	var links = jQuery('a');
 	links.each(function (key) {
-		// TODO TODO may be the cause of double WSDLs ?????
-		var linkUrl = jQuery(this).prop('href');
-            // And not the following otherwise only a relative link
-            //var linkUrl = jQuery(this).attr('href');
-            if (linkUrl
-            		&& (linkUrl.substr(-4) == 'wsdl' || linkUrl.substr(-4) == 'WSDL')
-            		&& !wsdlMap[linkUrl]) {
+		var linkUrl = jQuery(this).prop('href'); // And not jQuery(this).attr('href') otherwise only a relative link
+         if (linkUrl
+         		&& (linkUrl.substr(-4) == 'wsdl' || linkUrl.substr(-4) == 'WSDL')
+         		&& !wsdlMap[linkUrl]) {
 			runServiceFinder(linkUrl);
 		}
 	});
@@ -258,7 +260,7 @@ function initTemplates() {
 	templates['wsdl'] = underscore.template(
 	'<div class="easysoa-wsdl-result" onclick="sendWSDL(this)" id="<%= id %>">\
       <span class="easysoa-wsdl-name"><%= serviceName %></span><br />\
-	  <a href="<%= serviceURL %>" onclick="sendWSDL(this.parentNode); return false;" class="easysoa-wsdl-link"><%= serviceURL %></a>\
+	  <a href="<%= serviceURL %>" onclick="return false;" class="easysoa-wsdl-link"><%= serviceURL %></a>\
     </div>');
     
 	templates['afterWsdls'] = underscore.template(

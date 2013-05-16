@@ -4,42 +4,98 @@
 package org.easysoa.registry.dbb;
 
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.Properties;
+
+import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.DefaultComponent;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 
 /**
- * @author jguillemotte
+ * Impl of ResourceDownloadService for Nuxeo components.
+ * 
+ * Makes the global ResourceDownloadService available in Nuxeo,
+ * but if not available or timeout at activation, disables it and does instead
+ * a local synchronous download (using HttpDownloaderServiceImpl).
+ * 
+ * Default configuration (change it in nxserver/config/easysoa.properties ) :
+ * * ResourceDownloadServiceImpl.delegateResourceDownloadServiceUrl = http://localhost:7080/get
+ * 
+ * Reuses a single Jersey client (rather than creating one per download which costs too much).
+ * 
+ * TODO LATER better :
+ * test delegate async at start
+ * called by ResourceUpdate within async using Nuxeo Work
+ * 
+ * @author jguillemotte, mdutoo
  *
  */
-public class ResourceDownloadServiceImpl implements ResourceDownloadService {
+public class ResourceDownloadServiceImpl extends DefaultComponent implements ResourceDownloadService {
 
-    private String resourceDownloaderAddress = "http://localhost:7080/get";
+    private String delegateResourceDownloadServiceUrl;
+    
+    private Client client = null;
+    private boolean isDelegatedDownloadDisabled = false;
+
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        super.activate(context);
+        
+        // Configuration (following ex. SchedulerImpl)
+        // TODO LATER maybe rather as an extension point / contribution ??
+        URL cfg = context.getRuntimeContext().getResource("config/easysoa.properties");
+        if (cfg != null) {
+            InputStream cfgIn = cfg.openStream();
+            try {
+                Properties props = new Properties();
+                props.load(cfgIn);
+                
+                delegateResourceDownloadServiceUrl = props.getProperty("ResourceDownloadServiceImpl.delegateResourceDownloadServiceUrl");
+                
+            } finally {
+            	cfgIn.close();
+            }
+        } else {
+            // use default config (unit tests)
+        	delegateResourceDownloadServiceUrl = "http://localhost:7080/get";
+        } 
+
+        // Create reusable Jersey client, rather than creating one per download else costs too much
+        // (ex. lots of threads at SignatureParser l. 79 within annotation parsing).
+        // TODO LATER better : called by ResourceUpdate within async using Nuxeo Work
+		client = Client.create();
+        client.setConnectTimeout(3000); // Set timeout to 3 seconds TODO LATER make it configurable
+        
+        // TODO LATER start async Work that tests delegated download and sets isDelegatedDownloadDisabled
+    }
+
+    @Override
+    public void deactivate(ComponentContext context) throws Exception {
+        client = null;
+        super.deactivate(context);
+    }
     
     @Override
     public File get(URL url) throws Exception {
 
-        // First try : Connect to FraSCAti studio download service (TODO : this service must be exposed as REST service ...)
-        try {
-            Client client = Client.create();
-            client.setConnectTimeout(3000); // Set timeout to 3 seconds
-            WebResource webResource = client.resource(resourceDownloaderAddress);
-            
-            // TODO for frascati service side : Add a parameter to pass the url
-            webResource.setProperty("fileURL", url.toURI().toString());
-            
-            // Get the resource
-            File resource = webResource.get(File.class);
-            return resource;
-        }
-        catch(Exception ex){
-            // Error or timeout, try the second donwload method
-        }
+    	if (!isDelegatedDownloadDisabled) {
+	        // First try : Connect to FraSCAti studio download service (TODO : this service must be exposed as REST service ...)
+	        try {
+	            return delegatedDownload(url);
+	        }
+	        catch(Exception ex){
+	            // Error or timeout, try the second donwload method
+	        	isDelegatedDownloadDisabled = true;
+	        }
+    	}
         
         // If no response : Use local downloader service
-        return download(url);
+        return localDownload(url);
     }
 
     /**
@@ -48,9 +104,29 @@ public class ResourceDownloadServiceImpl implements ResourceDownloadService {
      * @return
      * @throws Exception 
      */
-    private File download(URL url) throws Exception{
+    private File delegatedDownload(URL url) throws Exception {
+        WebResource webResource = client.resource(delegateResourceDownloadServiceUrl);
+        // NB. reuses Jersey client rather than creating one per download else costs too much
+        // (ex. lots of threads at SignatureParser l. 79 within annotation parsing)
+        // TODO LATER better : called by ResourceUpdate within async using Nuxeo Work
+        
+        // TODO for frascati service side : Add a parameter to pass the url
+        webResource.setProperty("fileURL", url.toURI().toString());
+        
+        // Get the resource
+        File resourceFile = webResource.get(File.class);
+        return resourceFile;
+    }
+
+    /**
+     * 
+     * @param url
+     * @return
+     * @throws Exception 
+     */
+    private File localDownload(URL url) throws Exception{
         HttpDownloaderService httpDownloaderService = new HttpDownloaderServiceImpl();
-	HttpDownloader fileDownloader = httpDownloaderService.createHttpDownloader(url);
+        HttpDownloader fileDownloader = httpDownloaderService.createHttpDownloader(url);
         fileDownloader.download();
         return fileDownloader.getFile();
     }

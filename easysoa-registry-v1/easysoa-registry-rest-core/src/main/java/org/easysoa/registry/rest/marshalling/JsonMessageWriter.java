@@ -15,7 +15,6 @@ import javax.ws.rs.ext.Provider;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonGenerator;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.nuxeo.ecm.core.api.impl.blob.AbstractBlob;
 
 @Provider
 @Produces({ MediaType.APPLICATION_JSON, "application/x-javascript" })
@@ -31,7 +30,10 @@ public class JsonMessageWriter implements MessageBodyWriter<Object> {
     public boolean isWriteable(Class<?> type, Type genericType, Annotation[] annotations,
             MediaType mediaType) {
 
-        return !AbstractBlob.class.isAssignableFrom(type)
+    	String typeFqn = type.getName();
+        return !(typeFqn.endsWith("Blob") && typeFqn.startsWith("org.nuxeo"))
+        		// NB. hack to avoid problematic nuxeo Blobs without depending
+        		// from nuxeo API like !AbstractBlob.class.isAssignableFrom(type)
                 && (MediaType.APPLICATION_JSON_TYPE.isCompatible(mediaType) || "application/x-javascript".equals(mediaType.toString()));
     }
 

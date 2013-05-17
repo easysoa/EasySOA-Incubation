@@ -28,7 +28,7 @@ public interface ResourceDownloadInfo extends SoaNode {
 
     static final String DOCTYPE = "ResourceDownloadInfo";
     
-    static final String XPATH_ACTUAL_URL = "rdi:url";
+    static final String XPATH_URL = "rdi:url";
 
     static final String XPATH_DOWNLOADABLE_URL = "rdi:downloadableUrl";
     

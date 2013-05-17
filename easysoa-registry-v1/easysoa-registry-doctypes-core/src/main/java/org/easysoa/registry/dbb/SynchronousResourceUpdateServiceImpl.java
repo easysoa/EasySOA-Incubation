@@ -21,14 +21,16 @@
 package org.easysoa.registry.dbb;
 
 import java.io.File;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.easysoa.registry.wsdl.WsdlBlob;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -47,7 +49,7 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
     }
 
     @Override
-    public boolean isNewResourceRetrieval(DocumentModel newRdi, DocumentModel oldRdi) throws Exception {
+    public boolean isNewResourceRetrieval(DocumentModel newRdi, DocumentModel oldRdi) throws ClientException {
 
         //CoreSession documentManager = SessionFactory.getSession(request);
         //DocumentService documentService = Framework.getService(DocumentService.class);
@@ -68,7 +70,8 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
     }
     
     @Override
-    public void updateResource(DocumentModel newRdi, DocumentModel oldRdi, DocumentModel documentToUpdate) throws Exception {
+    public void updateResource(DocumentModel newRdi, DocumentModel oldRdi,
+            DocumentModel documentToUpdate, ResourceDownloadService resourceDownloadService) throws ClientException {
         
         // Get probe conf
         // ProbeConfUtil probeConf = new ProbeConfUtil();
@@ -86,11 +89,17 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
         
         // For test only, to remove
         if(newUrl == null){
-            //newUrl = "http://footballpool.dataaccess.eu/data/info.wso?WSDL";
-            return;
+            newUrl = "http://footballpool.dataaccess.eu/data/info.wso?WSDL";
+            //return;
         }
-        ResourceDownloadService resourceDownloadService = Framework.getService(ResourceDownloadService.class);
-        File resourceFile = resourceDownloadService.get(new URL(newUrl));
+        File resourceFile;
+        try {
+            resourceFile = resourceDownloadService.get(new URL(newUrl));
+        } catch (MalformedURLException ex) {
+            throw new ClientException("Bad URL : " + newUrl, ex);
+        } catch (Exception ex) {
+            throw new ClientException("Error downloading " + newUrl, ex);
+        }
         
         // Update registry with new resource
         FileBlob fileBlob = new FileBlob(resourceFile);
@@ -99,7 +108,7 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
         documentToUpdate.setProperty("file", "content", fileBlob);
         
         //coreSession.saveDocument(documentToUpdate); // updates & triggers events ; TODO now or later ??
-        //coreSession.save(); // persists ; TODO now or later ??
+        coreSession.save(); // persists ; TODO now or later ??
         
         // Parse the updated document here or in the listener ??
         //ResourceParsingService resourceParsingService = Framework.getService(ResourceParsingService.class);        

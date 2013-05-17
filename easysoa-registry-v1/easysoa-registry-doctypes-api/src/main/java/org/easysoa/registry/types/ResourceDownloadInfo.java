@@ -21,12 +21,12 @@
 package org.easysoa.registry.types;
 
 /**
- *
+ * TODO move to facets package
  * @author jguillemotte
  */
-public interface ResourceDownloadInfo extends SoaNode {
+public interface ResourceDownloadInfo {
 
-    static final String DOCTYPE = "ResourceDownloadInfo";
+    static final String FACET_RESOURCEDOWNLOADINFO = "ResourceDownloadInfo";
     
     static final String XPATH_URL = "rdi:url";
 

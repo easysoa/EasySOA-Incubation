@@ -20,6 +20,7 @@
 
 package org.easysoa.registry.dbb;
 
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
@@ -34,16 +35,17 @@ public interface ResourceUpdateService {
      * @param oldRdi The old resource
      * @return true if the resource will be retrieved for the first time, false otherwise
      */
-    public boolean isNewResourceRetrieval(DocumentModel newRdi, DocumentModel oldRdi) throws Exception;
+    public boolean isNewResourceRetrieval(DocumentModel newRdi, DocumentModel oldRdi) throws ClientException;
     
     /**
      * Update resource method
      * @param newRdi The new resource
      * @param oldRdi The old resource
-     * @param The registry document to update
+     * @param documentToUpdate The registry document to update
+     * @param resourceDownloadService to be used to download the resource from its url
      * @throws Exception 
      */
-    public void updateResource(DocumentModel newRdi,
-            DocumentModel oldRdi, DocumentModel documentToUpdate) throws Exception;
+    public void updateResource(DocumentModel sourceDocument, DocumentModel previousDocumentModel,
+            DocumentModel documentToUpdate, ResourceDownloadService resourceDownloadService) throws ClientException;
     
 }

@@ -20,7 +20,8 @@
 
 package org.easysoa.registry.dbb;
 
-import org.nuxeo.ecm.core.event.Event;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -35,7 +36,10 @@ public class ProbeConfUtil {
      * @param event
      * @return 
      */
-    public boolean isResourceProbeEventCustom(Object probe, Event event){
+    public static boolean isResourceProbeEventCustom(String probeType, String probeInstanceId) {
+        if ("myCustomProbeTypeUsingACustomEvent".equals(probeType)) { // example
+            return true;
+        }
         return false;
     }
     
@@ -43,7 +47,7 @@ public class ProbeConfUtil {
      * 
      * @return 
      */
-    public boolean isSelfUpdated(){
+    public static boolean isSelfUpdated(){
         return false;
     }
     
@@ -51,8 +55,16 @@ public class ProbeConfUtil {
      * 
      * @return A ResourceUpdaterService
      */
-    public ResourceUpdateService getRegistryResourceUpdater() throws Exception {
-        return Framework.getService(ResourceUpdateService.class);
+    public static ResourceDownloadService getResourceDownloadService(String probeType, String probeInstanceId) {
+        if ("myCustomProbeTypeUsingACustomEvent".equals(probeType)) { // example
+            return null; // return remote ResourceDownloadService exposed by probe
+        }
+        try {
+            // else default : use Registry's default ResourceDownloadService
+            return Framework.getService(ResourceDownloadService.class);
+        } catch (Exception ex) {
+            throw new RuntimeException("Can't get ResourceDownloadService", ex);
+        }
     }
     
 }

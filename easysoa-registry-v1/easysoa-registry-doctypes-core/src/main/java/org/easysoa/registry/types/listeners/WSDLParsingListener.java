@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.log4j.Logger;
+import org.easysoa.registry.dbb.ProbeConfUtil;
 import org.easysoa.registry.dbb.ResourceDownloadService;
 import org.easysoa.registry.dbb.ResourceUpdateService;
 import org.easysoa.registry.dbb.SynchronousResourceUpdateServiceImpl;
@@ -18,6 +19,7 @@ import org.easysoa.registry.facets.WsdlInfoFacet;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.OperationInformation;
+import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaModelSerializationUtil;
 import org.easysoa.registry.types.ids.InformationServiceName;
@@ -82,10 +84,6 @@ public class WSDLParsingListener implements EventListener {
         return wsdlDocumentTypes.contains(documentType);
     }
     
-    public boolean isWsdlFileDocumentType(String documentType) {
-        return wsdlFileDocumentTypes.contains(documentType);
-    }
-    
     
 	@Override
 	public void handleEvent(Event event) throws ClientException {
@@ -114,15 +112,28 @@ public class WSDLParsingListener implements EventListener {
         // NB. available if beforeDocumentModification event
         DocumentModel previousDocumentModel = (DocumentModel) context.getProperty("previousDocumentModel");
         
-        // TODO test event
-        // Starting update :
-        try {
-            ResourceUpdateService resourceUpdateService = Framework.getService(ResourceUpdateService.class);
-            resourceUpdateService.updateResource(sourceDocument, previousDocumentModel, sourceDocument);
-        }
-        catch(Exception ex){
-            logger.error("Error during the update", ex);
-            throw new ClientException("Error during the update", ex);
+        if (sourceDocument.getFacets().contains(ResourceDownloadInfo.FACET_RESOURCEDOWNLOADINFO)) { // TODO extract to isResourceDocument()
+        
+            String probeType = "";//TODO
+            String probeInstanceId = "";//TODO
+            
+            // exit if document change but probe conf says it triggers using dedicated event
+            if (ProbeConfUtil.isResourceProbeEventCustom(probeType, probeInstanceId)) {
+                return;
+            }
+            
+            ResourceDownloadService probeResourceDownloadService = ProbeConfUtil.getResourceDownloadService(probeType, probeInstanceId);
+        
+            // Starting update :
+            try {
+                ResourceUpdateService resourceUpdateService = Framework.getService(ResourceUpdateService.class);
+                resourceUpdateService.updateResource(sourceDocument, previousDocumentModel,
+                        sourceDocument, probeResourceDownloadService);
+            }
+            catch(Exception ex){
+                logger.error("Error during the update", ex);
+                throw new ClientException("Error during the update", ex);
+            }
         }
         
         // TODO test it

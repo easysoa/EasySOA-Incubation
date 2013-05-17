@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<component name="org.easysoa.registry.dbb.ResourceParsingService" version="1.0">
+
+  <implementation class="org.easysoa.registry.dbb.WsdlResourceParsingServiceImpl" />
+
+  <service>
+    <provide interface="org.easysoa.registry.dbb.ResourceParsingService" />
+  </service>
+
+</component>

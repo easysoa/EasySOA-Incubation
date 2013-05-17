@@ -20,30 +20,39 @@
 
 package org.easysoa.registry.dbb;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  *
  * @author jguillemotte
  */
-public interface ResourceUpdateService {
+public class ProbeConfUtil {
 
     /**
-     * Check if the resource to update has already been updated
-     * @param newRdi The new resource
-     * @param oldRdi The old resource
-     * @return true if the resource will be retrieved for the first time, false otherwise
+     * 
+     * @param probe
+     * @param event
+     * @return 
      */
-    public boolean isNewResourceRetrieval(DocumentModel newRdi, DocumentModel oldRdi) throws Exception;
+    public boolean isResourceProbeEventCustom(Object probe, Event event){
+        return false;
+    }
     
     /**
-     * Update resource method
-     * @param newRdi The new resource
-     * @param oldRdi The old resource
-     * @param The registry document to update
-     * @throws Exception 
+     * 
+     * @return 
      */
-    public void updateResource(DocumentModel newRdi,
-            DocumentModel oldRdi, DocumentModel documentToUpdate) throws Exception;
+    public boolean isSelfUpdated(){
+        return false;
+    }
+    
+    /**
+     * 
+     * @return A ResourceUpdaterService
+     */
+    public ResourceUpdateService getRegistryResourceUpdater() throws Exception {
+        return Framework.getService(ResourceUpdateService.class);
+    }
     
 }

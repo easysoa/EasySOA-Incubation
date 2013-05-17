@@ -20,30 +20,19 @@
 
 package org.easysoa.registry.dbb;
 
-import org.nuxeo.ecm.core.api.DocumentModel;
+import org.easysoa.registry.wsdl.WsdlBlob;
+import org.ow2.easywsdl.wsdl.api.Description;
 
 /**
  *
  * @author jguillemotte
  */
-public interface ResourceUpdateService {
-
-    /**
-     * Check if the resource to update has already been updated
-     * @param newRdi The new resource
-     * @param oldRdi The old resource
-     * @return true if the resource will be retrieved for the first time, false otherwise
-     */
-    public boolean isNewResourceRetrieval(DocumentModel newRdi, DocumentModel oldRdi) throws Exception;
+public interface ResourceParsingService {
     
     /**
-     * Update resource method
-     * @param newRdi The new resource
-     * @param oldRdi The old resource
-     * @param The registry document to update
+     * Parse WSDL file
      * @throws Exception 
      */
-    public void updateResource(DocumentModel newRdi,
-            DocumentModel oldRdi, DocumentModel documentToUpdate) throws Exception;
+    public Description parse(WsdlBlob wsdlBlob) throws Exception;
     
 }

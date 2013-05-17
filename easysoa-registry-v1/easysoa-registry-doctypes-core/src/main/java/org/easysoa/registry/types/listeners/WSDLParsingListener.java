@@ -10,6 +10,9 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.log4j.Logger;
+import org.easysoa.registry.dbb.ResourceDownloadService;
+import org.easysoa.registry.dbb.ResourceUpdateService;
+import org.easysoa.registry.dbb.SynchronousResourceUpdateServiceImpl;
 import org.easysoa.registry.facets.InformationServiceDataFacet;
 import org.easysoa.registry.facets.WsdlInfoFacet;
 import org.easysoa.registry.types.Endpoint;
@@ -31,6 +34,7 @@ import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.runtime.api.Framework;
 import org.ow2.easywsdl.schema.api.Element;
 import org.ow2.easywsdl.wsdl.WSDLFactory;
 import org.ow2.easywsdl.wsdl.api.Description;
@@ -109,6 +113,22 @@ public class WSDLParsingListener implements EventListener {
 
         // NB. available if beforeDocumentModification event
         DocumentModel previousDocumentModel = (DocumentModel) context.getProperty("previousDocumentModel");
+        
+        // TODO test event
+        // Starting update :
+        try {
+            ResourceUpdateService resourceUpdateService = Framework.getService(ResourceUpdateService.class);
+            resourceUpdateService.updateResource(sourceDocument, previousDocumentModel, sourceDocument);
+        }
+        catch(Exception ex){
+            logger.error("Error during the update", ex);
+            throw new ClientException("Error during the update", ex);
+        }
+        
+        // TODO test it
+        // TODO copy this file to ResourceListener & replace it in *listener.xml conf,
+        // remove the following code from it, hook WsdlParsingListener rather on resourceDownloaded event in xml conf,
+        // trigger resourceDownloaded event in ResourceUpdateService impl
         
         boolean documentModified = false;
         

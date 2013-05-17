@@ -24,11 +24,12 @@ public class SoaNodeInformationFactory {
     private static Set<String> marshalledSchemaSet = new HashSet<String>() {{
         add("dublincore");
 
-        //marshalledSchemaSet.add("subproject");
-        add("spnode");
+        //marshalledSchemaSet.add("subproject"); // TODO why not ?? because no subproject returned ?
+        add("spnode"); // TODO or directly serialized in SoaNodeId ??
         add("istr");
         add("environment");
-        add("soanode");
+        add("soanode"); // TODO or directly serialized in SoaNodeId ??
+        //add("soaversionable"); // TODO why not ?? not used ??
         add("deliverable");
         add("deliverabletype");
         add("informationservice");
@@ -36,10 +37,12 @@ public class SoaNodeInformationFactory {
         add("endpoint");
         add("wsdlinfo");
         add("restinfo");
+        add("resourcedownloadinfo"); // TODO test
         add("platform");
         add("architecturecomponent");
     }};
 
+    @SuppressWarnings("serial")
     private static Set<String> skippedPropertySet = new HashSet<String>() {{
         add("files");
         add("content"); // else JsonMappingException no mapper for FileDescriptor ; value is org.nuxeo.ecm.core.storage.sql.coremodel.SQLBlob

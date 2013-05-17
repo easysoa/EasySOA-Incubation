@@ -3,6 +3,7 @@ package org.easysoa.registry;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -47,6 +48,15 @@ public interface DocumentService {
     /** WARNING can't be used in cross-Phase/subproject queries, TODO hard to use with ecm:Path STARTSWITH */
     static final String NXQL_WHERE_PROXY = NXQL_WHERE + NXQL_IS_NOT_DELETED + NQXL_PROXIES_CRITERIA; // NB. doesn't use NXQL_IS_NOT_VERSIONED because of Phase/subproject
 
+    
+    /**
+     * EasySOA configuration properties
+     * TODO LATER move properties in their own extension point contributions,
+     * else move it in its own service
+     * @return
+     */
+    Properties getProperties();
+    
     /**
      * Helper for non-SOA nodes documents (ex. SystemTreeRoot, IntelligentSystemTreeRoot...)
      * Direct use is not recommended for SoaNode types (whose auto reclassification requires soaId).

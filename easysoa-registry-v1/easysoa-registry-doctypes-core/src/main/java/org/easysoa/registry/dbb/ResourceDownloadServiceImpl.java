@@ -6,10 +6,11 @@ package org.easysoa.registry.dbb;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
+import org.easysoa.registry.DocumentService;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 
@@ -39,6 +40,7 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
 
     private String delegateResourceDownloadServiceUrl;
     
+    // caches
     private Client client = null;
     private boolean isDelegatedDownloadDisabled = false;
 
@@ -48,22 +50,16 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
         
         // Configuration (following ex. SchedulerImpl)
         // TODO LATER maybe rather as an extension point / contribution ??
-        URL cfg = context.getRuntimeContext().getResource("config/easysoa.properties");
-        if (cfg != null) {
-            InputStream cfgIn = cfg.openStream();
-            try {
-                Properties props = new Properties();
-                props.load(cfgIn);
-                
-                delegateResourceDownloadServiceUrl = props.getProperty("ResourceDownloadServiceImpl.delegateResourceDownloadServiceUrl");
-                
-            } finally {
-            	cfgIn.close();
-            }
-        } else {
-            // use default config (unit tests)
-        	delegateResourceDownloadServiceUrl = "http://localhost:7080/get";
-        } 
+    	try {
+	    	DocumentService documentService = Framework.getService(DocumentService.class);
+	    	Properties props = documentService.getProperties();
+	    	if (props != null) {
+		    	delegateResourceDownloadServiceUrl = props.getProperty(
+		    			"ResourceDownloadServiceImpl.delegateResourceDownloadServiceUrl", "http://localhost:7080/get");
+	    	}
+		} catch (Exception e) {
+			throw new RuntimeException("Unable to get DocumentService", e);
+		}
 
         // Create reusable Jersey client, rather than creating one per download else costs too much
         // (ex. lots of threads at SignatureParser l. 79 within annotation parsing).

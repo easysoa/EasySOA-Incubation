@@ -39,11 +39,13 @@ import javax.ws.rs.core.UriInfo;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.dbb.BrowsingContext;
 import org.easysoa.registry.dbb.FoundService;
 import org.easysoa.registry.dbb.ServiceFinderService;
 import org.easysoa.registry.dbb.ServiceFinderStrategy;
+import org.easysoa.registry.rest.EasysoaModuleRoot;
 import org.easysoa.registry.types.Endpoint;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -52,11 +54,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 
 import com.sun.jersey.api.core.HttpContext;
-import org.easysoa.registry.utils.EasysoaModuleRoot;
 
 /**
  * REST service to find WSDLs from given URL.
@@ -73,6 +73,8 @@ import org.easysoa.registry.utils.EasysoaModuleRoot;
 @Produces("application/javascript") // required (?!) for bookmarklet's jquery $.ajax() in jsonp (else "parsing error")
 @WebObject(type = "servicefinder")
 public class ServiceFinderRest extends EasysoaModuleRoot {
+	
+    private static Logger logger = Logger.getLogger(ServiceFinderRest.class);
 
 	private DocumentModelList endpointsCache = null;
 	
@@ -147,6 +149,7 @@ public class ServiceFinderRest extends EasysoaModuleRoot {
         	}
         }
         catch (MalformedURLException e) {
+			logger.debug(e);
             return "{ errors: '" + formatError(e) + "' }";
         }
         

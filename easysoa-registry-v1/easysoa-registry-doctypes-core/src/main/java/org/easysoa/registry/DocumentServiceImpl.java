@@ -1,10 +1,13 @@
 package org.easysoa.registry;
 
+import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
@@ -28,8 +31,36 @@ import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.model.ComponentContext;
+import org.nuxeo.runtime.model.DefaultComponent;
 
-public class DocumentServiceImpl implements DocumentService {
+public class DocumentServiceImpl extends DefaultComponent implements DocumentService {
+
+	private Properties properties;
+	
+    @Override
+    public void activate(ComponentContext context) throws Exception {
+        super.activate(context);
+        
+        // Loading configuration
+        // NB. accesses the file in config/ using bundle resource (like SchedulerImpl)
+        // rather than using Environment.getDefault().getConfig() (like Composer.createMailer())
+        // TODO LATER maybe rather as an extension point / contribution ?? else in its own service
+    	properties = new Properties();
+        URL cfg = context.getRuntimeContext().getResource("config/easysoa.properties");
+        if (cfg != null) {
+            InputStream cfgIn = cfg.openStream();
+            try {
+            	properties.load(cfgIn);
+            } finally {
+            	cfgIn.close();
+            }
+        } //  will have to use default config (unit tests...)
+    }
+        
+	public Properties getProperties() {
+		return properties;
+	}
 	
     /* (non-Javadoc)
      * @see org.easysoa.registry.DocumentService#createDocument(org.nuxeo.ecm.core.api.CoreSession, java.lang.String, java.lang.String, java.lang.String, java.lang.String)

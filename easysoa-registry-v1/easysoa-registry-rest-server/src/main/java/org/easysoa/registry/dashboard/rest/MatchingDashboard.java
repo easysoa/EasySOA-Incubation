@@ -17,7 +17,7 @@ import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.EndpointMatchingService;
 import org.easysoa.registry.ServiceMatchingService;
 import org.easysoa.registry.SoaMetamodelService;
-import org.easysoa.registry.SubprojectServiceImpl;
+import org.easysoa.registry.rest.EasysoaModuleRoot;
 import org.easysoa.registry.rest.samples.DashboardMatchingSamples;
 import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Endpoint;
@@ -25,8 +25,6 @@ import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.utils.ContextData;
-import org.easysoa.registry.utils.ContextVisibility;
-import org.easysoa.registry.utils.EasysoaModuleRoot;
 import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -47,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
 @Path("easysoa/dashboard")
 public class MatchingDashboard extends EasysoaModuleRoot {
 	
-        private static Logger logger = Logger.getLogger(MatchingDashboard.class);    
+    private static Logger logger = Logger.getLogger(MatchingDashboard.class);
     
 	@GET
 	public Template viewDashboard(@QueryParam("subprojectId") String subprojectId,
@@ -105,6 +103,7 @@ public class MatchingDashboard extends EasysoaModuleRoot {
                         view.arg("contextInfo", ContextData.getVersionData(session, subprojectId));
 			return view;
 		} catch (Exception e) {
+			logger.debug(e);
 			return getView("error").arg("error", e);
 		}
 	}
@@ -265,6 +264,7 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 	    		throw new Exception("Service Implementation not selected");
 	    	}
 		} catch (Exception e) {
+			logger.debug(e);
 			return getView("error").arg("error", e);
 		}
 	}

@@ -36,6 +36,7 @@ var webServer = http.createServer(app);
 var networkIPAddress;
 
 // Gets network (non local 0.0.0.0) IP
+// TODO BETTER USE request.headers.host ex. 192.168.2.163:8083
 // Works by opening a socket with google
 // NB. alternatives :
 // * os.networkInterfaces() BUT doesn't work on Windows (in dec 2012)
@@ -51,6 +52,15 @@ exports.getNetworkIP = getNetworkIP = function(callback) {
     socket.on('error', function(e) {
         callback(e, 'error');
     });
+}
+exports.getClientHost = getClientHost = function(request) {
+	// TODO handle proxying ex. by using custom header,
+	// see X-EasySOA-Orig-IP at bottom or Nuxeo's VirtualHostHelper
+	var reqHostPort = request.headers.host;
+    var colonIndex = reqHostPort.indexOf(':');
+    var reqHost = reqHostPort.substring(0, colonIndex);
+    ///console.log(reqHost);
+    return reqHost;
 }
 
 app.configure(function(){
@@ -88,7 +98,7 @@ app.configure(function(){
     var context = unescape(req.param('subprojectId', ''));
     var jsFile = fs.readFileSync("../www/js/bookmarklet/bookmarklet-min.js","utf8");
     //jsFile = jsFile.replace("#{host}", webServer.address().address); // this method webServer.address().address is useless, return always local loopback 0.0.0.0
-    jsFile = jsFile.replace("#{host}", networkIPAddress);
+    jsFile = jsFile.replace("#{host}", getClientHost(req)); // better than networkIPAddress because works offline
     jsFile = jsFile.replace("#{port}", webServer.address().port);
     jsFile = jsFile.replace("#{context}", context);
     res.writeHead(200);
@@ -101,7 +111,7 @@ app.configure(function(){
     var context = unescape(req.param('subprojectId', ''));
     var jsFile = fs.readFileSync("../www/js/bookmarklet/discovery.js","utf8");
     //jsFile = jsFile.replace("#{host}", webServer.address().address); // this method webServer.address().address is useless, return always local loopback 0.0.0.0
-    jsFile = jsFile.replace("#{host}", networkIPAddress);
+    jsFile = jsFile.replace("#{host}", getClientHost(req)); // better than networkIPAddress because works offline
     jsFile = jsFile.replace("#{port}", webServer.address().port);
     jsFile = jsFile.replace("#{context-display}", utils.formatPhaseForDisplay(context)); // For display
     jsFile = jsFile.replace("#{context}", context); // For input field

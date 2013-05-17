@@ -24,17 +24,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.integration.EndpointStateServiceImpl;
-import org.easysoa.registry.integration.SimpleRegistryServiceImpl;
-import org.easysoa.registry.rest.integration.EndpointInformation;
+import org.easysoa.registry.rest.EasysoaModuleRoot;
 import org.easysoa.registry.rest.integration.EndpointStateService;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
 import org.easysoa.registry.types.Endpoint;
@@ -42,7 +43,6 @@ import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ContextData;
-import org.easysoa.registry.utils.EasysoaModuleRoot;
 import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -50,7 +50,6 @@ import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 
 
@@ -65,8 +64,6 @@ import org.nuxeo.runtime.api.Framework;
 @WebObject(type = "monitoring")
 @Path("easysoa/monitoring")
 public class EndpointStateController extends EasysoaModuleRoot {
-
-    private static final String SERVICE_LIST_PROPS = "*"; // "ecm:title"
     
     @SuppressWarnings("unused")
     private static Logger logger = Logger.getLogger(EndpointStateController.class);

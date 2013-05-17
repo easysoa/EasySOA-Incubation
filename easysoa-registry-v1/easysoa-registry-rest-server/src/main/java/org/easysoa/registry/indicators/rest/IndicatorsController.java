@@ -23,13 +23,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
 import org.apache.log4j.Logger;
 import org.easysoa.registry.SubprojectServiceImpl;
+import org.easysoa.registry.rest.EasysoaModuleRoot;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.DeployedDeliverable;
 import org.easysoa.registry.types.Endpoint;
@@ -40,11 +43,9 @@ import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.SoftwareComponent;
 import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.utils.ContextData;
-import org.easysoa.registry.utils.EasysoaModuleRoot;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 
 /**
  * Indicators
@@ -58,13 +59,15 @@ import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 //@Path("easysoa") // TODO move the indicators page in easysoa/indicators
 // TODO Add a new controller for index page
 public class IndicatorsController extends EasysoaModuleRoot {
-
-    private static Logger logger = Logger.getLogger(IndicatorsController.class);
+    
     // New category for indicators
     public static final String CATEGORY_STEERING = "steering"; // Or Governance ?
     public static final String CATEGORY_CARTOGRAPHY = "cartography";
     public static final String CATEGORY_USAGE = "usage";
     public static final String CATEGORY_MATCHING = "matching";
+
+    private static Logger logger = Logger.getLogger(IndicatorsController.class);
+    
     private List<IndicatorProvider> indicatorProviders = new ArrayList<IndicatorProvider>();
 
     /**

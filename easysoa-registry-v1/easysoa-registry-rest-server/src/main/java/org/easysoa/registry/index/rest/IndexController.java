@@ -20,25 +20,22 @@
 
 package org.easysoa.registry.index.rest;
 
-import java.security.Principal;
 import java.util.Map;
-import javax.faces.context.FacesContext;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
 import org.apache.log4j.Logger;
 import org.easysoa.registry.indicators.rest.IndicatorValue;
 import org.easysoa.registry.indicators.rest.IndicatorsController;
+import org.easysoa.registry.rest.EasysoaModuleRoot;
 import org.easysoa.registry.utils.ContextData;
-import org.easysoa.registry.utils.EasysoaModuleRoot;
 import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
-import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
-import org.nuxeo.runtime.api.Framework;
 
 /**
  * Controller for index view
@@ -48,6 +45,7 @@ import org.nuxeo.runtime.api.Framework;
 @Path("easysoa")
 public class IndexController extends EasysoaModuleRoot {
 
+    @SuppressWarnings("unused")
     private static Logger logger = Logger.getLogger(IndexController.class);
     
     @GET

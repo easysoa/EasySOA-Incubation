@@ -21,16 +21,22 @@
 package org.easysoa.registry.dbb;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.types.ResourceDownloadInfo;
-import org.easysoa.registry.wsdl.WsdlBlob;
+import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.impl.blob.FileBlob;
+import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventProducer;
+import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -50,9 +56,6 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
 
     @Override
     public boolean isNewResourceRetrieval(DocumentModel newRdi, DocumentModel oldRdi) throws ClientException {
-
-        //CoreSession documentManager = SessionFactory.getSession(request);
-        //DocumentService documentService = Framework.getService(DocumentService.class);
         
         if (oldRdi == null) {
             return true;
@@ -72,10 +75,6 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
     @Override
     public void updateResource(DocumentModel newRdi, DocumentModel oldRdi,
             DocumentModel documentToUpdate, ResourceDownloadService resourceDownloadService) throws ClientException {
-        
-        // Get probe conf
-        // ProbeConfUtil probeConf = new ProbeConfUtil();
-        // for now hardcoded in ProbeConfUtil
 
         // Check if update is needed
         if (!isNewResourceRetrieval(newRdi, oldRdi)) {
@@ -89,12 +88,14 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
         
         // For test only, to remove
         if(newUrl == null){
-            newUrl = "http://footballpool.dataaccess.eu/data/info.wso?WSDL";
-            //return;
+            //newUrl = "http://footballpool.dataaccess.eu/data/info.wso?WSDL";
+            return;
         }
         File resourceFile;
+        InputStream file;
         try {
             resourceFile = resourceDownloadService.get(new URL(newUrl));
+            file = new FileInputStream(resourceFile);
         } catch (MalformedURLException ex) {
             throw new ClientException("Bad URL : " + newUrl, ex);
         } catch (Exception ex) {
@@ -102,19 +103,33 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
         }
         
         // Update registry with new resource
-        FileBlob fileBlob = new FileBlob(resourceFile);
+        Blob resourceBlob = FileUtils.createSerializableBlob(file, resourceFile.getName(), null);
+        //FileBlob fileBlob = new FileBlob(resourceFile);
+        //fileBlob.setFilename(resourceFile.getName());
         //fileBlob.setMimeType("text/html");
         //fileBlob.setEncoding("UTF-8"); // this specifies that content bytes will be stored as UTF-8
-        documentToUpdate.setProperty("file", "content", fileBlob);
+        documentToUpdate.setProperty("file", "content", resourceBlob);
         
         //coreSession.saveDocument(documentToUpdate); // updates & triggers events ; TODO now or later ??
         coreSession.save(); // persists ; TODO now or later ??
         
-        // Parse the updated document here or in the listener ??
-        //ResourceParsingService resourceParsingService = Framework.getService(ResourceParsingService.class);        
-        
-        //resourceParsingService.parse(fileBlob);
-        //resourceParsingService.parse(documentToUpdate);
+        // Parse the updated document here or in the listener ?? Not here, just trigger a resourceDownloaded event
+        EventProducer eventProducer;
+        try {
+            eventProducer = Framework.getService(EventProducer.class);
+        } catch (Exception ex) {
+            throw new ClientException("Cannot get EventProducer", ex);
+        }
+ 
+        DocumentEventContext ctx = new DocumentEventContext(coreSession, coreSession.getPrincipal(), documentToUpdate);
+        //ctx.setProperty("myprop", "something"); // TODO any property to set ???
+ 
+        Event event = ctx.newEvent("resourceDownloaded");
+        try {
+            eventProducer.fireEvent(event);
+        } catch (ClientException ex) {
+            throw new ClientException("Cannot fire event", ex);            
+        }        
         
     }
     

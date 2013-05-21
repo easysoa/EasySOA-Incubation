@@ -15,17 +15,28 @@
       <event>documentModified</event>
       <event>aboutToRemove</event>
     </listener>
+    
     <listener name="soaNodeMatchingListener" class="org.easysoa.registry.SoaNodeMatchingListener"
     	priority="156">
       <event>documentCreated</event>
       <event>documentModified</event>
     </listener>
     
-    <listener name="wsdlParsingListener" class="org.easysoa.registry.types.listeners.WSDLParsingListener"
+    <!-- TODO : priority ? set to 151 ?? -->
+    <!-- Events : keep documentCreated & documentModified ? -->
+    <listener name="resourceListener" class="org.easysoa.registry.types.listeners.ResourceListener"
       priority="151">
       <event>documentCreated</event>
       <event>documentModified</event>
+    </listener>    
+    <!-- TODO : Refactoring ? modify event for wsdlParsingListener ?? -->
+    <listener name="wsdlParsingListener" class="org.easysoa.registry.types.listeners.WSDLParsingListener"
+      priority="151">
+      <event>documentCreated</event><!-- Keep this event ? -->
+      <event>documentModified</event><!-- Keep this event ? -->
+      <event>resourceDownloaded</event><!-- triggered by ResourceUpdateService -->
     </listener>
+    
     <listener name="componentListener" class="org.easysoa.registry.types.listeners.ComponentListener"
       priority="151">
       <event>documentCreated</event>

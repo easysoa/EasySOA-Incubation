@@ -112,10 +112,11 @@ public class WSDLParsingListener implements EventListener {
         // NB. available if beforeDocumentModification event
         DocumentModel previousDocumentModel = (DocumentModel) context.getProperty("previousDocumentModel");
         
-        if (sourceDocument.getFacets().contains(ResourceDownloadInfo.FACET_RESOURCEDOWNLOADINFO)) { // TODO extract to isResourceDocument()
-        
-            String probeType = "";//TODO
-            String probeInstanceId = "";//TODO
+        // MOVED in ResourceListener !!
+        /*if (sourceDocument.getFacets().contains(ResourceDownloadInfo.FACET_RESOURCEDOWNLOADINFO)) { // TODO extract to isResourceDocument()
+            
+            String probeType = (String) sourceDocument.getPropertyValue(ResourceDownloadInfo.XPATH_PROBE_TYPE);//TODO
+            String probeInstanceId = (String) sourceDocument.getPropertyValue(ResourceDownloadInfo.XPATH_PROBE_INSTANCEID);//TODO
             
             // exit if document change but probe conf says it triggers using dedicated event
             if (ProbeConfUtil.isResourceProbeEventCustom(probeType, probeInstanceId)) {
@@ -134,7 +135,7 @@ public class WSDLParsingListener implements EventListener {
                 logger.error("Error during the update", ex);
                 throw new ClientException("Error during the update", ex);
             }
-        }
+        }*/
         
         // TODO test it
         // TODO copy this file to ResourceListener & replace it in *listener.xml conf,

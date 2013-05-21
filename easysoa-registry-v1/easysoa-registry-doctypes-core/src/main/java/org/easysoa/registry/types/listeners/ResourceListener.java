@@ -71,6 +71,13 @@ public class ResourceListener implements EventListener {
         
         // NB. available if beforeDocumentModification event
         DocumentModel previousDocumentModel = (DocumentModel) context.getProperty("previousDocumentModel");        
+        ResourceUpdateService resourceUpdateService;
+        try {
+            resourceUpdateService = Framework.getService(ResourceUpdateService.class);
+        }
+        catch(Exception ex){
+            throw new ClientException("Error during the update", ex);
+        }
         
         // if is an RDI (external, to be downloaded resource), update it
         if (isResourceDownloadInfo(sourceDocument)) { // TODO extract to isResourceDocument()
@@ -85,20 +92,14 @@ public class ResourceListener implements EventListener {
             ResourceDownloadService probeResourceDownloadService = ProbeConfUtil.getResourceDownloadService(probeType, probeInstanceId);
         
             // Starting update :
-            try {
-                ResourceUpdateService resourceUpdateService = Framework.getService(ResourceUpdateService.class);
-                resourceUpdateService.updateResource(sourceDocument, previousDocumentModel,
-                        sourceDocument, probeResourceDownloadService);
-            }
-            catch(Exception ex){
-                logger.error("Error during the update", ex);
-                throw new ClientException("Error during the update", ex);
-            }
+            resourceUpdateService.updateResource(sourceDocument, previousDocumentModel,
+                sourceDocument, probeResourceDownloadService);
             
             // NB. parsing is triggered by (possibly async) resourceDownloaded event fired by resourceUpdateService
             
         } else if (isResource(sourceDocument)) {
-            // TODO trigger event to call (WSDL) parsing listener
+            // Trigger event to call (WSDL) parsing listener
+            resourceUpdateService.fireResourceDownloadedEvent(sourceDocument);
         }
 
         // TODO test it

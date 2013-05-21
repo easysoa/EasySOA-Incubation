@@ -113,8 +113,14 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
         //coreSession.saveDocument(documentToUpdate); // updates & triggers events ; TODO now or later ??
         coreSession.save(); // persists ; TODO now or later ??
         
-        // TODO method fireResourceDownloadedEvent()
-        // Parse the updated document here or in the listener ?? Not here, just trigger a resourceDownloaded event
+        // Fire event
+        fireResourceDownloadedEvent(documentToUpdate);
+
+    }
+
+    @Override
+    public void fireResourceDownloadedEvent(DocumentModel document) throws ClientException {
+        // Trigger a resourceDownloaded event
         EventProducer eventProducer;
         try {
             eventProducer = Framework.getService(EventProducer.class);
@@ -122,7 +128,7 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
             throw new ClientException("Cannot get EventProducer", ex);
         }
  
-        DocumentEventContext ctx = new DocumentEventContext(coreSession, coreSession.getPrincipal(), documentToUpdate);
+        DocumentEventContext ctx = new DocumentEventContext(document.getCoreSession(), document.getCoreSession().getPrincipal(), document);
         //ctx.setProperty("myprop", "something"); // TODO any property to set ???
  
         Event event = ctx.newEvent("resourceDownloaded");
@@ -130,8 +136,7 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
             eventProducer.fireEvent(event);
         } catch (ClientException ex) {
             throw new ClientException("Cannot fire event", ex);
-        }        
-        
+        }                
     }
     
 }

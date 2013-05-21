@@ -48,4 +48,12 @@ public interface ResourceUpdateService {
     public void updateResource(DocumentModel sourceDocument, DocumentModel previousDocumentModel,
             DocumentModel documentToUpdate, ResourceDownloadService resourceDownloadService) throws ClientException;
     
+    /**
+     * Fire a "resourceDownloaded" event
+     * @param coreSession The Nuxeo core session
+     * @param document The document to associate with the event
+     * @throws ClientException
+     */    
+    public void fireResourceDownloadedEvent(DocumentModel document) throws ClientException;
+    
 }

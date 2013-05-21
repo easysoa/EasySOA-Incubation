@@ -83,7 +83,7 @@ public class ServiceConsumptionIndicatorProvider implements IndicatorProvider {
             ServiceConsumption serviceConsumption = serviceConsumptionModel.getAdapter(ServiceConsumption.class);
             List<SoaNodeId> consumableServiceImpls = serviceConsumption.getConsumableServiceImpls();
             for (SoaNodeId consumableServiceImpl : consumableServiceImpls) {
-                DocumentModelList consumableParents = documentService.findAllParents(session, documentService.findSoanode(session, consumableServiceImpl));
+                DocumentModelList consumableParents = documentService.findAllParents(session, documentService.findSoaNode(session, consumableServiceImpl));
                 for (DocumentModel consumableParent : consumableParents) {
                     if (InformationService.DOCTYPE.equals(consumableParent.getType())) {
                         unconsumedServiceIds.remove(documentService.createSoaNodeId(consumableParent));

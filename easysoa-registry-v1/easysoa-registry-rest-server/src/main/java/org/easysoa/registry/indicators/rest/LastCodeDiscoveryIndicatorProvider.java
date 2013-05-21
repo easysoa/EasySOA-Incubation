@@ -66,7 +66,7 @@ public class LastCodeDiscoveryIndicatorProvider implements IndicatorProvider {
         query.append(DocumentService.NXQL_SELECT_FROM);
         query.append(Deliverable.DOCTYPE);
         // set the subproject criteria
-        String subProjectCriteria = NXQLQueryHelper.buildSubprojectPathCriteria(session, subprojectId, visibility);
+        String subProjectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
         if(!"".equals(subProjectCriteria)){
             query.append(DocumentService.NXQL_AND);
             query.append(subProjectCriteria);

@@ -41,5 +41,13 @@ public class RepositoryHelper {
         String subprojectPath = subproject.getPathAsString();
         return subprojectPath + '/' + Repository.REPOSITORY_NAME;
     }
+
+    public static String getRepositoryPath(CoreSession documentManager, DocumentModel doc) throws ClientException {
+    	String subprojectId = SubprojectServiceImpl.getSubprojectId(doc);
+        DocumentModel subproject = SubprojectServiceImpl.getSubprojectOrCreateDefault(documentManager, subprojectId);
+        //TODO or PathRef ??
+        String subprojectPath = subproject.getPathAsString();
+        return subprojectPath + '/' + Repository.REPOSITORY_NAME;
+    }
     
 }

@@ -90,7 +90,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
         if (isSoaNode(documentManager, doctype)) {
             
             // Create or fetch source document
-            DocumentModel documentModel = findSoanode(documentManager, identifier);
+            DocumentModel documentModel = findSoaNode(documentManager, identifier);
         	if (documentModel == null) {
                 documentModel = newSoaNodeDocument(documentManager, identifier);
                 documentModel = documentManager.createDocument(documentModel);
@@ -104,7 +104,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
                 DocumentModel parentModel = documentManager.getDocument(parentRef);
                 if (parentModel != null) {
                     if (parentModel.isProxy()) {
-                        parentModel = findSoanode(documentManager, createSoaNodeId(parentModel));
+                        parentModel = findSoaNode(documentManager, createSoaNodeId(parentModel));
                     }
                 }
                 else {
@@ -150,7 +150,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
         DocumentModel documentModel = null;
         
         if (isSoaNode(documentManager, identifier.getType())) {
-        	documentModel = findSoanode(documentManager, identifier);
+        	documentModel = findSoaNode(documentManager, identifier);
         	if (documentModel == null) {
                 documentModel = newSoaNodeDocument(documentManager, identifier);
                 documentModel = documentManager.createDocument(documentModel);
@@ -222,7 +222,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 
     @Override
     public boolean delete(CoreSession documentManager, SoaNodeId soaNodeId) throws ClientException {
-        DocumentModel sourceDocument = findSoanode(documentManager, soaNodeId);
+        DocumentModel sourceDocument = findSoaNode(documentManager, soaNodeId);
         if (sourceDocument != null) {
             documentManager.removeDocument(sourceDocument.getRef());
             return true;
@@ -260,7 +260,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
         queryString.append(NXQL.ECM_NAME);
         queryString.append(" = '?' ");
         queryString.append(DocumentService.NXQL_AND);
-        queryString.append(NXQLQueryHelper.buildSubprojectPathCriteria(documentManager, SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId), deepSearch));
+        queryString.append(NXQLQueryHelper.buildSubprojectCriteria(documentManager, SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId), deepSearch));
         
         /*
         queryString.append(" = '?' AND ");
@@ -280,34 +280,33 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
     }
     
     @Override
-    public DocumentModel findSoanode(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
-        return findSoanode(documentManager, identifier, false);
+    public DocumentModel findSoaNode(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
+        return findSoaNode(documentManager, identifier, true);
     }
     
     @Override
-    public DocumentModel findSoanode(CoreSession documentManager, SoaNodeId identifier, boolean deepSearch) throws ClientException {
+    public DocumentModel findSoaNode(CoreSession documentManager, SoaNodeId identifier, boolean deepSearch) throws ClientException {
         
         StringBuilder queryString = new StringBuilder();
-        queryString.append("SELECT * FROM ? WHERE ");/* + "ecm:path STARTSWITH '?' AND "*/
+        queryString.append("SELECT * FROM ? WHERE ");
+        
+        // checking SOA name :
         queryString.append(SoaNode.XPATH_SOANAME);
         queryString.append(" = '?' ");
-        queryString.append(DocumentService.NXQL_AND);
-        queryString.append(NXQLQueryHelper.buildSubprojectPathCriteria(documentManager, SubprojectServiceImpl.setDefaultSubprojectIfNone(documentManager, identifier), deepSearch));
         
-        /*
-        queryString.append(" = '?' AND ");
-        queryString.append(SubprojectNode.XPATH_SUBPROJECT);
-        if(deepSearch){
-            queryString.append(" STARTSWITH '?'");
-        } else {
-            queryString.append(" = '?'");
-        }*/
+        // checking subproject :
+        queryString.append(DocumentService.NXQL_AND);
+        queryString.append(NXQLQueryHelper.buildSubprojectCriteria(documentManager,
+        		SubprojectServiceImpl.setDefaultSubprojectIfNone(documentManager, identifier), deepSearch));
+        // NB. not using subproject path because doesn't work on versions
+        
+        // NB. not checking that it's below the Repository (in ex. REPOSITORY_PATH = /default-domain/MyProject/Default/Repository)
+        // because costlier, so check it in RepositoryManagementListener when still putting it there !
+        /// if (!resDoc.isVersion()) if (!resDoc.startsWith(RepositoryHelper.getRepositoryPath(documentManager, subprojectId)) return null;
         
         String query = NXQLQueryBuilder.getQuery(queryString.toString(),
-                // TODO rather using subproject Path ??
-                // TODO REPOSITORY_PATH = /default-domain/Repository but default path /default-domain/MyProject/Default/Repository
-                new Object[] { identifier.getType()/*, Repository.REPOSITORY_PATH*/, identifier.getName()/*,
-                        SubprojectServiceImpl.setDefaultSubprojectIfNone(documentManager, identifier)*/ },
+                // TODO must be 
+                new Object[] { identifier.getType()/*, Repository.REPOSITORY_PATH*/, identifier.getName() },
                 false, true);
         DocumentModelList results = query(documentManager, query, true, false);
         return results.size() > 0 ? results.get(0) : null;
@@ -340,7 +339,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
         PathRef parentRef = new PathRef(parentPath);
         DocumentModel parentModel = documentManager.getDocument(parentRef);
         if (parentModel.isProxy()) {
-            parentModel = findSoanode(documentManager, createSoaNodeId(parentModel));
+            parentModel = findSoaNode(documentManager, createSoaNodeId(parentModel));
         }
         
         // Find proxy among children
@@ -437,8 +436,12 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
     public String getSourceFolderPath(CoreSession documentManager,
             String subprojectId, String doctype) throws ClientException {
         String repositoryPath = RepositoryHelper.getRepositoryPath(documentManager, subprojectId);
-        //return Repository.REPOSITORY_PATH + '/' + doctype;
-        return repositoryPath + '/' + doctype;
+        return getSourceFolderPathBelowSubprojectRepository(repositoryPath, doctype);
+    }
+
+    public String getSourceFolderPathBelowSubprojectRepository(
+    		String subprojectRepositoryPath, String doctype) throws ClientException {
+        return subprojectRepositoryPath + '/' + doctype;
     }
     
     public DocumentModelList getChildren(CoreSession session, DocumentRef parentRef, String type) throws ClientException {
@@ -518,10 +521,10 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 	}
 
 	/**
-	 * 
-     * @obsolete
+     * @obsolete actual code is in Service/EndpointMatchingService
+	 * TODO test component-scoped request in actual scenario
+	 * TODO impl multi component-scoped request 
 	 */
-	@Override
 	public DocumentModel findEndpoint(CoreSession documentManager,
 			SoaNodeId identifier, Map<String, Object> properties,
 			List<SoaNodeId> suggestedParentIds /*NOT USED*/, List<SoaNodeId> knownComponentIds)

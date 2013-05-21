@@ -529,6 +529,11 @@ public class SubprojectServiceImpl {
         return parent;
     }
     
+    public static String getSubprojectId(DocumentModel docModel) throws ClientException {
+    	return (String) docModel.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+    }
+    
+    
     public static DocumentModel createSubprojectVersion(DocumentModel subproject,
             VersioningOption vOpt) throws ClientException {
         long oldVersionMajor = getVersion(subproject, "major_version");//"uid:major_version"

@@ -44,7 +44,7 @@ public class DocumentServiceTest extends AbstractRegistryTest {
 
     @Test
     public void testModelQuery() throws ClientException {
-        DocumentModel systemModel = documentService.findSoanode(documentManager, MYSYSTEM_ID);
+        DocumentModel systemModel = documentService.findSoaNode(documentManager, MYSYSTEM_ID);
         Assert.assertNotNull("Created system must be found by name", systemModel);
         Assert.assertEquals(MYSYSTEM_ID.getName(), systemModel.getTitle());
         Assert.assertTrue("Returned document must be in the repository, in the System folder",
@@ -56,7 +56,7 @@ public class DocumentServiceTest extends AbstractRegistryTest {
     public void testModelDeletion() throws ClientException {
         boolean success = documentService.delete(documentManager, MYSYSTEM_ID);
         Assert.assertTrue("Document deletion must be successful", success);
-        DocumentModel systemModel = documentService.findSoanode(documentManager, MYSYSTEM_ID);
+        DocumentModel systemModel = documentService.findSoaNode(documentManager, MYSYSTEM_ID);
         Assert.assertNull("Deleted system must not be available after deletion", systemModel);
         documentManager.save();
         

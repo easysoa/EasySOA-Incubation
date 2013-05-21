@@ -68,7 +68,7 @@ public class ServiceDefaultCountIndicatorProvider implements IndicatorProvider {
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
         
         // Get endpoints
-        String subProjectPathCriteria = NXQLQueryHelper.buildSubprojectPathCriteria(session, subProjectId, visibility);
+        String subProjectPathCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subProjectId, visibility);
         StringBuilder query = new StringBuilder();
         query.append(DocumentService.NXQL_SELECT_FROM);
         query.append(Endpoint.DOCTYPE);

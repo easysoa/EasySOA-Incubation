@@ -155,7 +155,7 @@ public class RegistryApiImpl implements RegistryApi {
         
         try {
             // Fetch SoaNode
-            DocumentModel foundDocument = documentService.findSoanode(documentManager, soaNodeId);
+            DocumentModel foundDocument = documentService.findSoaNode(documentManager, soaNodeId);
             if (foundDocument == null) {
                 throw new Exception("Document doesnt exist"); // TODO 404
             }
@@ -201,7 +201,7 @@ public class RegistryApiImpl implements RegistryApi {
         
         try {
             // Delete proxy of SoaNode
-            DocumentModel correlatedSoaNodeModel = documentService.findSoanode(documentManager, correlatedSoaNodeId);
+            DocumentModel correlatedSoaNodeModel = documentService.findSoaNode(documentManager, correlatedSoaNodeId);
             if (correlatedSoaNodeModel != null) {
                 documentService.deleteProxy(documentManager, soaNodeId, correlatedSoaNodeModel.getPathAsString());
             }

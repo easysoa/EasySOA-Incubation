@@ -63,7 +63,7 @@ public class EndpointConsumptionAdapter extends SoaNodeAdapter implements Endpoi
     public List<SoaNodeId> getConsumableServiceImpls() throws Exception {
         List<SoaNodeId> consumableServiceImpls = new LinkedList<SoaNodeId>();
         DocumentService documentService = Framework.getService(DocumentService.class);
-        DocumentModel foundEndpoint = documentService.findSoanode(documentManager, getConsumedEndpoint());
+        DocumentModel foundEndpoint = documentService.findSoaNode(documentManager, getConsumedEndpoint());
         DocumentModelList endpointParents = documentService.findAllParents(documentManager, foundEndpoint);
         for (DocumentModel endpointParent : endpointParents) {
             if (ServiceImplementation.DOCTYPE.equals(endpointParent)) {

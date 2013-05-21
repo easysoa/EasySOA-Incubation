@@ -1,7 +1,6 @@
 package org.easysoa.registry;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -9,10 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
-import org.easysoa.registry.facets.WsdlInfoFacet;
-import org.easysoa.registry.matching.MatchingQuery;
-import org.easysoa.registry.types.Component;
-import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
@@ -110,7 +105,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         
         if (foundDocumentModel == null) { // not matchFirst or no (or too many) match found
             // finding existing using SOA node ID :
-            foundDocumentModel = documentService.findSoanode(documentManager, identifier);
+            foundDocumentModel = documentService.findSoaNode(documentManager, identifier);
         }
         
         if (foundDocumentModel != null && foundDocumentModel.isVersion()) {
@@ -344,7 +339,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
     private String createOrReuseIntermediateDocuments(CoreSession documentManager, DocumentService documentService,
 	        SoaNodeId parentDocumentId, List<String> pathBelowParent,
 	        List<SoaNodeId> parentDocuments) throws ClientException {
-        DocumentModel parentDocument = documentService.findSoanode(documentManager, parentDocumentId);
+        DocumentModel parentDocument = documentService.findSoaNode(documentManager, parentDocumentId);
         
         // Create parent if necessary
         if (parentDocument == null) {
@@ -384,109 +379,5 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         }
         return parentDocument.getPathAsString();
     }
-    
-
-    /**
-     * Code copied from ServiceMatchingServiceImpl etc.
-     * TODO merge with (Service/Endpoint)MatchingServiceImpl code
-     * 
-     * @param documentManager
-     * @param documentService
-     * @param serviceMatchingService
-     * @param endpointMatchingService
-     * @param identifier
-     * @param properties
-     * @param subprojectDocModel 
-     * @return
-     * @throws ClientException
-     */
-    private DocumentModel findMatching(CoreSession documentManager, DocumentService documentService,
-            ServiceMatchingService serviceMatchingService, EndpointMatchingService endpointMatchingService,
-            SoaNodeId identifier, Map<String, Object> properties, DocumentModel subprojectDocModel) throws ClientException {
-        boolean anyExactCriteria = false;
-        MatchingQuery query = null;
-        
-        if (documentService.isTypeOrSubtype(documentManager, identifier.getType(), InformationService.DOCTYPE)) {
-            query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
-            
-            if (properties.get(WsdlInfoFacet.XPATH_WSDL_PORTTYPE_NAME) != null) { // MatchingHelper.isWsdlInfo(documentModel)
-                //query.addCriteria("ecm:mixinType = '" + InformationService.FACET_WSDLINFO + "'"); // not required unless added dynamically but hard to do in DiscoveryServiceImpl
-                //query.addCriteria(Platform.XPATH_SERVICE_LANGUAGE , Platform.SERVICE_LANGUAGE_JAXWS); // TODO required ?
-                    // NO not necessarily JAXWS ! .NET, HTTP mock or no requirement at all would be OK
-                String implPortTypeName = (String) properties.get(WsdlInfoFacet.XPATH_WSDL_PORTTYPE_NAME);
-                query.addCriteria(InformationService.XPATH_WSDL_PORTTYPE_NAME, implPortTypeName); anyExactCriteria = true;
-                    // NB. NB. exact match (else useless because too wide), is set since is WS(DL)
-            }
-            // else TODO if REST...
-            
-            // TODO also platform criteria...
-        }
-        
-        // if impl, endpoint...
-        
-        if (query == null) {
-            return null;
-        }
-        // Filter by subproject
-        query.addCriteria(SubprojectServiceImpl.buildCriteriaSeesSubproject(subprojectDocModel)); // NB. multivalued prop
-
-        // Filter by component
-        // TODO component also as parent ?!?!??
-        //filterComponentId = MatchingHelper.appendComponentFilterToQuery(documentManager, query, null, impl);
-        String filterComponentId = (String) properties.get(Endpoint.XPATH_COMPONENT_ID);
-        if (filterComponentId != null) {
-            query.addCriteria(Component.XPATH_COMPONENT_ID + " = '" + filterComponentId + "'");
-            anyExactCriteria = anyExactCriteria || filterComponentId != null;
-        }
-
-        if (/*requireAtLeastOneExactCriteria && */!anyExactCriteria) {
-            return null;//return EmptyDocumentModelList.INSTANCE;
-        }
-        
-        String infoServiceQuery = query.build();
-        DocumentModelList foundInfoServices = documentService.query(documentManager,
-                infoServiceQuery, true, false);
-        //return foundInfoServices;
-        if (foundInfoServices.size() == 1) {
-            return foundInfoServices.get(0);
-        }
-        return null;
-    }
-
-	
-    /**
-     * @obsolete
-     * @param documentManager
-     * @param identifier
-     * @param properties
-     * @param parentDocuments
-     * @return
-     * @throws Exception
-     */
-	private DocumentModel discoverEndpoint(CoreSession documentManager,
-			SoaNodeId identifier, Map<String, Object> properties,
-			List<SoaNodeId> parentDocuments) throws Exception {
-        DocumentService documentService = Framework.getService(DocumentService.class);
-
-		// TODO differ between :
-        List<SoaNodeId> suggestedParentIds = new ArrayList<SoaNodeId>(); // better : those that don't exist
-        List<SoaNodeId> knownComponentIds = parentDocuments; // better : those that exist
-        // TODO check that all component ids exist
-        
-        // Fetch or create document
-        DocumentModel documentModel = documentService.findEndpoint(documentManager, identifier,
-        		properties, suggestedParentIds, knownComponentIds);
-
-        if (documentModel == null) {
-            documentModel = documentService.create(documentManager, identifier);
-            // TODO create suggestedParentIds if don't exist
-            // TODO link with suggestedParentIds
-            
-        } else {
-        	// TODO create assumedParentIds if don't exist
-        }
-        
-        return documentModel;
-	}
 
 }

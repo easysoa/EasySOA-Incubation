@@ -6,9 +6,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.systems.IntelligentSystemTreeService;
 import org.easysoa.registry.types.SoaNode;
-import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.RepositoryHelper;
+import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -29,6 +29,8 @@ import org.nuxeo.runtime.api.Framework;
  *
  */
 public class RepositoryManagementListener implements EventListener {
+	
+	private static final String CONTEXT_REQUEST_REPOSITORY_ALREADY_MANAGED = "repositoryAlreadyManaged";
 
     private static Logger logger = Logger.getLogger(RepositoryManagementListener.class);
     
@@ -42,6 +44,15 @@ public class RepositoryManagementListener implements EventListener {
         }
         DocumentEventContext documentContext = (DocumentEventContext) context;
         DocumentModel sourceDocument = documentContext.getSourceDocument();
+        
+        // Prevent looping on source document changes
+        // (required at least when changing SOA name)
+        if (context.hasProperty(CONTEXT_REQUEST_REPOSITORY_ALREADY_MANAGED)) {
+            return;
+        }
+        sourceDocument.getContextData().putScopedValue(ScopeType.REQUEST,
+        		CONTEXT_REQUEST_REPOSITORY_ALREADY_MANAGED, true);
+        
         if (!sourceDocument.hasSchema(SoaNode.SCHEMA)) {
             return; // nothing to do on non SOA nodes
         }
@@ -90,7 +101,7 @@ public class RepositoryManagementListener implements EventListener {
 		}
         boolean documentModified = false;
         
-        boolean isCreationOnCheckinMode = "ProjetWebServiceImpl".equals(sourceDocument.getPropertyValue("dc:title")); // isJwt(OrCmis)
+        boolean isCreationOnCheckinMode = "ProjetWebServiceImpl".equals(sourceDocument.getPropertyValue("dc:title")); // TODO isJwt(OrCmis) using probeType
         boolean isCreationOnCheckin = isCreationOnCheckinMode && DocumentEventTypes.DOCUMENT_CHECKEDIN.equals(event.getName());
         boolean isCreation = isCreationOnCheckin
         		|| !isCreationOnCheckinMode && DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName());
@@ -122,16 +133,18 @@ public class RepositoryManagementListener implements EventListener {
 	        			DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName()));
 	        	if (newSoaName != null) {
 	        		sourceDocument.setPropertyValue(SoaNode.XPATH_SOANAME, newSoaName); // TODO [soaname change]
+	                // NB. looping must be prevented here
+	                sourceDocument = documentManager.saveDocument(sourceDocument);// required when created using Nuxeo UI not in repo, else when moved is revalidated and set to null
 	                documentModified = false;//true
-	                sourceDocument = documentManager.saveDocument(sourceDocument);//TODO required ?? when ?
 	        	}
 	        	
 	            // Working copy/proxies management
 	            sourceDocument = manageRepositoryStructure(documentManager, documentService, sourceDocument);
-	            documentManager.save(); // required, else loops on classifySoaNode() within
-	            // intelligentSystemTreeServiceCache.handleDocumentModel() below
-
+	            documentManager.save(); // else loops on classifySoaNode() within IST's handleDocumentModel() below
+	            
 	    		// Intelligent system trees update
+	            sourceDocument.getContextData().remove(ScopeType.REQUEST.getScopedKey(
+	            		CONTEXT_REQUEST_REPOSITORY_ALREADY_MANAGED)); // allowing one RML loop, else InheritedDataTest.testUuidSelectors() fails
 	    		IntelligentSystemTreeService intelligentSystemTreeServiceCache =
 	    		        Framework.getService(IntelligentSystemTreeService.class);
 	    		intelligentSystemTreeServiceCache.handleDocumentModel(documentManager, sourceDocument,
@@ -216,6 +229,8 @@ public class RepositoryManagementListener implements EventListener {
                     logger.warn("RepositoryManagerListener : sourceDocument modified but not dirty ?!?");
                     return;
                 }
+                ///sourceDocument.getContextData().putScopedValue(ScopeType.REQUEST,
+                ///		CONTEXT_REQUEST_REPOSITORY_ALREADY_MANAGED, true); // preventing loop from inherited facets at UPDATE in ex. DiscoveryServiceTest
                 documentManager.saveDocument(sourceDocument);
             }
             //logger.debug("RepositoryManagerListener : Doing final save (for updateParentIdsMetadata ?)");
@@ -242,45 +257,70 @@ public class RepositoryManagementListener implements EventListener {
 	    boolean structureChanged = false;
 		
 		// If a document has been created through the Nuxeo UI, move it to the repository and leave only a proxy
-		String sourceFolderPath = documentService.getSourceFolderPath(documentManager, sourceDocument);
+
 		DocumentModel parentModel = documentManager.getDocument(sourceDocument.getParentRef());
+		String parentRepositoryPath = RepositoryHelper.getRepositoryPath(documentManager, parentModel);
+		// NB. if proxy, may be of a different subproject than parent, but anyway its place is in its parent's
+		String parentSourceFolderPath = documentService.getSourceFolderPathBelowSubprojectRepository(
+				parentRepositoryPath, sourceDocument.getType());
 		
 		SoaNodeId soaNodeId = documentService.createSoaNodeId(sourceDocument);
-		if (!sourceDocument.isProxy() && !parentModel.getPathAsString().equals(sourceFolderPath)
-		        || sourceDocument.isProxy() && parentModel.hasSchema(SoaNode.SCHEMA)
-		        && !sourceDocument.getPathAsString().startsWith(
-		                RepositoryHelper.getRepositoryPath(documentManager,
-		                        (String) parentModel.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT)))) {
-            //&& !sourceDocument.getPathAsString().startsWith(
-            //        RepositoryHelper.getRepositoryPath(documentManager, soaNodeId.getSubprojectId()))) {
+		// if it's not a proxy and it's not at its place in the ITS...
+		if (!sourceDocument.isProxy() && !parentModel.getPathAsString().equals(parentSourceFolderPath)
+				// or if it's a proxy not in the Repository but having just been copied below a proxy of SoaNode (ex. TaggingFolder)...
+		        || sourceDocument.isProxy() && parentModel.hasSchema(SoaNode.SCHEMA) && parentModel.isProxy()
+		        && !sourceDocument.getPathAsString().startsWith(parentRepositoryPath)) {
 		    
 		    documentService.getSourceFolder(documentManager, sourceDocument); // ensuring it exists
 		    
-		    DocumentModel repositoryDocument = documentService.findSoanode(documentManager, soaNodeId);
-		    if (repositoryDocument != null) {
-		    	if (!repositoryDocument.getRef().equals(sourceDocument.getRef())) {
-			        // If the source document already exists, only keep one
-			        repositoryDocument.copyContent(sourceDocument); // Merge
+		    DocumentModel repositoryDocument = documentService.findSoaNode(documentManager, soaNodeId);
+		    if (repositoryDocument != null && repositoryDocument.getPath().toString().startsWith(parentRepositoryPath)) {
+		    	if (!repositoryDocument.getRef().equals(sourceDocument.getRef()) // also equals if one proxies the other ?!?!
+		    			&& !sourceDocument.isProxy()) { // if proxy, no differences and nothing to do
+
+		    		// If there is already a corresponding repositoryDocument, merge and only keep one
+			        repositoryDocument.copyContent(sourceDocument);
+			        documentManager.saveDocument(repositoryDocument); // may trigger a yet unprevented event
 			        documentManager.removeDocument(sourceDocument.getRef());
-			        documentManager.saveDocument(repositoryDocument);
-			        documentManager.save();//TODO required here ?
+				    // Create a proxy at the expected location
+				    if (parentModel.isProxy() && documentService.isSoaNode(documentManager, parentModel.getType())) {
+				    	// make sure parent SOA node is not a proxy (may happen also in the second case)
+				        parentModel = documentService.findSoaNode(documentManager, documentService.createSoaNodeId(parentModel));
+				        // NB. ?? Nuxeo UI requires also a proxy below the parent proxy, but getChild(parent, repositoryDocument.getName()) can't get it ?!
+				        /*try {
+					        if (documentManager.getChild(parentModel.getRef(), repositoryDocument.getName()) != null) { // if none yet
+						        // creating a proxy under the right, non-proxy parent
+						    	sourceDocument = documentManager.createProxy(repositoryDocument.getRef(), parentModel.getRef());
+					        }
+				        } catch (Exception e) {
+				        	// happens if no child
+				        }*/
+				    }
+			        sourceDocument = documentManager.createProxy(repositoryDocument.getRef(), parentModel.getRef());
 			        structureChanged = false;
-			        sourceDocument = repositoryDocument;
-		    	}
+			        
+		    	} else if (sourceDocument.isProxy() && parentModel.isProxy()
+		    			&& documentService.isSoaNode(documentManager, parentModel.getType())) {
+		    		// if both proxies, move child under its parent's repository document (happens ?!?)
+			        DocumentModel actualParentModel = documentService.findSoaNode(documentManager, documentService.createSoaNodeId(parentModel));
+			        sourceDocument = documentManager.move(sourceDocument.getRef(),
+			        		actualParentModel.getRef(), sourceDocument.getName()); // NB. stays the same doc
+		            structureChanged = true;
+		        }
 		    }
 		    else {
 		        // Move to repository otherwise
-		    	sourceDocument = documentManager.move(sourceDocument.getRef(),
-		            new PathRef(sourceFolderPath), sourceDocument.getName());
+		    	repositoryDocument = documentManager.move(sourceDocument.getRef(),
+		            new PathRef(parentSourceFolderPath), sourceDocument.getName()); // NB. stays the same doc
+			    // NB. save required after move before creating proxy (?!)
+			    // Create a proxy at the expected location
+			    if (parentModel.isProxy() && documentService.isSoaNode(documentManager, parentModel.getType())) {
+			    	// make sure parent SOA node is not a proxy (may happen also in the second case)
+			        parentModel = documentService.findSoaNode(documentManager, documentService.createSoaNodeId(parentModel));
+			    }
+		    	sourceDocument = documentManager.createProxy(repositoryDocument.getRef(), parentModel.getRef());
 	            structureChanged = true;
 		    }
-		    
-		    // Create a proxy at the expected location
-		    if (documentService.isSoaNode(documentManager, parentModel.getType())) {
-		        parentModel = documentService.findSoanode(documentManager, documentService.createSoaNodeId(parentModel));
-		    }
-		    documentManager.createProxy(sourceDocument.getRef(), parentModel.getRef());
-		    structureChanged = true;
 		}
 		if (structureChanged) {
 		    documentManager.save();

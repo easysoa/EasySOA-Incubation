@@ -91,7 +91,7 @@ public class EndpointStateController extends EasysoaModuleRoot {
        
         // Get the deployed services
         String query = "SELECT * FROM " + InformationService.DOCTYPE;
-        String subProjectPathCriteria = NXQLQueryHelper.buildSubprojectPathCriteria(session, subProjectId, visibility);
+        String subProjectPathCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subProjectId, visibility);
         if(!"".equals(subProjectPathCriteria)){
             query = query + DocumentService.NXQL_WHERE + subProjectPathCriteria;
         }
@@ -159,9 +159,9 @@ public class EndpointStateController extends EasysoaModuleRoot {
                 subPath = subProjectId.substring(0, subProjectId.lastIndexOf("/"));
             }*/
             // Get the SLA or OLA indicator in the Nuxeo registry
-            slaOrOla = docService.findSoanode(session, new SoaNodeId(slaOrOlaSubprojectId, org.easysoa.registry.types.SlaOrOlaIndicator.SLA_DOCTYPE, indicator.getSlaOrOlaName()), true);
+            slaOrOla = docService.findSoaNode(session, new SoaNodeId(slaOrOlaSubprojectId, org.easysoa.registry.types.SlaOrOlaIndicator.SLA_DOCTYPE, indicator.getSlaOrOlaName()), true);
             if(slaOrOla == null){
-                slaOrOla = docService.findSoanode(session, new SoaNodeId(slaOrOlaSubprojectId, org.easysoa.registry.types.SlaOrOlaIndicator.OLA_DOCTYPE, indicator.getSlaOrOlaName()), true);    
+                slaOrOla = docService.findSoaNode(session, new SoaNodeId(slaOrOlaSubprojectId, org.easysoa.registry.types.SlaOrOlaIndicator.OLA_DOCTYPE, indicator.getSlaOrOlaName()), true);    
             }
             
             // Set additionnal indicator informatons

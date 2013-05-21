@@ -166,25 +166,26 @@ public interface DocumentService {
     DocumentModel findDocument(CoreSession documentManager, String subprojectId, String type, String name, boolean deepSearch) throws ClientException;
 
     /**
-     * Finds any document given its type and name
-     * If a SoaNode, returns the source (non-proxy) from the repository 
+     * Same as findSoaNode(documentManager, SoaNodeId identifier, true)
      * @param documentManager
      * @param identifier
      * @return The document, or null if it doesn't exist
      * @throws ClientException
      */
-    DocumentModel findSoanode(CoreSession documentManager, SoaNodeId identifier)
+    DocumentModel findSoaNode(CoreSession documentManager, SoaNodeId identifier)
             throws ClientException;
 
     /**
-     * 
+     * Finds any SOA document given its id (subproject, type and name)
+     * If a SoaNode, returns the source (non-proxy) from the repository
+     * NB. doesn't check that it's below the Repository (so check it in RepositoryManagementListener when putting it there)
      * @param documentManager
      * @param identifier
      * @param deepSearch
      * @return
      * @throws ClientException 
      */
-    DocumentModel findSoanode(CoreSession documentManager, SoaNodeId identifier, boolean deepSearch)
+    DocumentModel findSoaNode(CoreSession documentManager, SoaNodeId identifier, boolean deepSearch)
             throws ClientException;
     
     /**
@@ -270,6 +271,16 @@ public interface DocumentService {
     String getSourceFolderPath(CoreSession documentManager, String subprojectId, String doctype) throws PropertyException, ClientException;
 
     /**
+     * (helper in case RepositoryHelper.getRepositoryPath() has already been called)
+     * @param subprojectRepositoryPath
+     * @param doctype
+     * @return
+     * @throws ClientException
+     */
+    String getSourceFolderPathBelowSubprojectRepository(
+    		String subprojectRepositoryPath, String doctype) throws ClientException;
+    		
+    /**
      * Get or create source folder for type in subproject
      * Calls ensureSourceFolderExists(CoreSession documentManager, String subprojectId, String doctype)
      * @param documentManager
@@ -312,17 +323,5 @@ public interface DocumentService {
     boolean isSoaNode(CoreSession documentManager, String doctype) throws ClientException;
     
     boolean isTypeOrSubtype(CoreSession documentManager, String doctypeToTest, String expectedDoctype) throws ClientException;
-
-
-    /**
-     * TODO MDU hack
-     * @param documentManager
-     * @param identifier
-     * @return
-     */
-	DocumentModel findEndpoint(CoreSession documentManager,
-			SoaNodeId identifier, Map<String, Object> properties,
-			List<SoaNodeId> suggestedParentIds /*NOT USED*/, List<SoaNodeId> knownComponentIds)
-					throws ClientException;
 
 }

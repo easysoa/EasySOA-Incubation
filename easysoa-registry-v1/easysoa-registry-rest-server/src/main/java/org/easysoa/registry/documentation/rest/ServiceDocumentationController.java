@@ -209,7 +209,7 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
             }
         }
         
-        DocumentModel service = docService.findSoanode(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
+        DocumentModel service = docService.findSoaNode(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
 
         Template view = getView("servicedoc");
         if (service != null) {
@@ -304,7 +304,7 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         		+ InformationService.XPATH_PARENTSIDS + "/* = '" + TaggingFolder.DOCTYPE + ":" + tagName + "'"
         		+ subprojectPathCriteria;
         DocumentModelList tagServices = docService.query(session, query, true, false);
-        DocumentModel tag = docService.findSoanode(session, new SoaNodeId(subprojectId, TaggingFolder.DOCTYPE, tagName));
+        DocumentModel tag = docService.findSoaNode(session, new SoaNodeId(subprojectId, TaggingFolder.DOCTYPE, tagName));
         
         Template view = getView("tagServices");
         return view
@@ -345,7 +345,7 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
             }
         }
         //TODO ?? SubprojectID mandatory to find service ....
-        DocumentModel service = docService.findSoanode(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
+        DocumentModel service = docService.findSoaNode(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
         DocumentModelList tags = session.query(DocumentService.NXQL_SELECT_FROM + TaggingFolder.DOCTYPE
                 + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
         
@@ -378,7 +378,7 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
 
         subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
         
-        DocumentModel service = docService.findSoanode(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
+        DocumentModel service = docService.findSoaNode(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
         DocumentModel tag = session.getDocument(new IdRef(tagId));
         
         if (service != null && tag != null) {

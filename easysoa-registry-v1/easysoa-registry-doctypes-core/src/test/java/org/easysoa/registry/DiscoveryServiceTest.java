@@ -59,7 +59,7 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         documentManager.save();
         
         // Check results
-        foundEndpoint = documentService.findSoanode(documentManager, discoveredEndpointId);
+        foundEndpoint = documentService.findSoaNode(documentManager, discoveredEndpointId);
         Assert.assertNotNull("An endpoint must be created by the discovery processing", foundEndpoint);
         properties.put(Endpoint.XPATH_URL, "http://www.services.com/endpoint"); // URL must be set automatically
         for (Entry<String, Object> property : properties.entrySet()) {
@@ -99,15 +99,15 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         documentManager.save();
         
         // Check results
-        DocumentModel foundSoftComp = documentService.findSoanode(documentManager, softwareCompId);
+        DocumentModel foundSoftComp = documentService.findSoaNode(documentManager, softwareCompId);
         Assert.assertTrue(softwareCompId + " must be linked to " + deliverableId, 
                 documentService.hasChild(documentManager, foundSoftComp, deliverableId));
         
-        DocumentModel foundDeliverable = documentService.findSoanode(documentManager, deliverableId);
+        DocumentModel foundDeliverable = documentService.findSoaNode(documentManager, deliverableId);
         Assert.assertTrue(deliverableId + " must be linked to " + serviceImplId, 
                 documentService.hasChild(documentManager, foundDeliverable, serviceImplId));
         
-        DocumentModel foundServiceImpl = documentService.findSoanode(documentManager, serviceImplId);
+        DocumentModel foundServiceImpl = documentService.findSoaNode(documentManager, serviceImplId);
         Assert.assertTrue(serviceImplId + " must be linked to " + discoveredEndpointId, 
                 documentService.hasChild(documentManager, foundServiceImpl, discoveredEndpointId));
 
@@ -124,7 +124,7 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
         documentManager.save();
         
         // Check that the endpoint has properties from both discoveries
-        DocumentModel foundEndpoint = documentService.findSoanode(documentManager, discoveredEndpointId);
+        DocumentModel foundEndpoint = documentService.findSoaNode(documentManager, discoveredEndpointId);
         
         Assert.assertEquals("http://www.services.com/endpoint", foundEndpoint.getPropertyValue(Endpoint.XPATH_URL));
         Assert.assertEquals("Blahblah", foundEndpoint.getPropertyValue("dc:description"));

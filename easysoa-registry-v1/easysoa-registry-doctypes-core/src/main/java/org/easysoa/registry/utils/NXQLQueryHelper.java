@@ -22,7 +22,6 @@
 package org.easysoa.registry.utils;
 
 import org.easysoa.registry.SubprojectServiceImpl;
-import org.easysoa.registry.types.SubprojectNode;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -50,11 +49,11 @@ public class NXQLQueryHelper {
      * @throws PropertyException
      * @throws ClientException 
      */
-    public static String buildSubprojectPathCriteria(CoreSession session, String subprojectId, boolean deepVisibility) throws PropertyException, ClientException {
+    public static String buildSubprojectCriteria(CoreSession session, String subprojectId, boolean deepVisibility) throws PropertyException, ClientException {
         if(deepVisibility){
-            return buildSubprojectPathCriteria(session, subprojectId, ContextVisibility.DEEP.getValue());
+            return buildSubprojectCriteria(session, subprojectId, ContextVisibility.DEEP.getValue());
         } else {
-            return buildSubprojectPathCriteria(session, subprojectId, ContextVisibility.STRICT.getValue());
+            return buildSubprojectCriteria(session, subprojectId, ContextVisibility.STRICT.getValue());
         }
     }
     
@@ -75,7 +74,7 @@ public class NXQLQueryHelper {
      * @throws PropertyException
      * @throws ClientException 
      */    
-    public static String buildSubprojectPathCriteria(CoreSession session, String subprojectId, String visibility) throws PropertyException, ClientException {
+    public static String buildSubprojectCriteria(CoreSession session, String subprojectId, String visibility) throws PropertyException, ClientException {
     
         String subprojectPathCriteria;
         if (subprojectId == null || subprojectId.length() == 0) {
@@ -86,44 +85,12 @@ public class NXQLQueryHelper {
             	if (subproject == null) {
             		throw new ClientException("No subproject with id " + subprojectId);
             	}
-                subprojectPathCriteria = buildCriteriaSeenFromSubproject(subproject);
+                subprojectPathCriteria = SubprojectServiceImpl.buildCriteriaSeenFromSubproject(subproject);
             } else {
-                subprojectPathCriteria = buildCriteriaInSubproject(subprojectId);                
+                subprojectPathCriteria = SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);                
             }
         }    
         return subprojectPathCriteria;
     }
-    
-    /**
-     * 
-     * @param subprojectId
-     * @return 
-     */
-    public static String buildCriteriaInSubproject(String subprojectId) {
-        return SubprojectNode.XPATH_SUBPROJECT + "='" + subprojectId + "'";
-    }
-    
-    /**
-     * 
-     * @param subprojectNode
-     * @return
-     * @throws PropertyException
-     * @throws ClientException 
-     */
-    public static String buildCriteriaSeenFromSubproject(DocumentModel subprojectNode)
-            throws PropertyException, ClientException {
-        // Filter by subproject
-        String implVisibleSubprojectIds = null;
-        if (subprojectNode.hasFacet(SubprojectNode.FACET)) {
-            implVisibleSubprojectIds = (String) subprojectNode
-                    .getPropertyValue(SubprojectNode.XPATH_VISIBLE_SUBPROJECTS_CSV);
-        }
-        if (implVisibleSubprojectIds == null) {
-            throw new ClientException("visibleSubprojects should not be null on " + subprojectNode);
-        }
-        
-        // ex. "AXXXSpecifications"; // or in 2 pass & get it from subProject ??
-        return SubprojectNode.XPATH_SUBPROJECT + " IN (" + implVisibleSubprojectIds + ")";
-    }    
     
 }

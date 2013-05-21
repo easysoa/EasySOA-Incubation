@@ -1,12 +1,34 @@
+<!--
+Nuxeo Freemarker quick reference :
+(see also )
+
+Available context variables are :
+(as seen in AbstractWebContext and at http://doc.nuxeo.com/pages/viewpage.action?pageId=11044493 )
+
+* Context : the View extending AbstractWebContext, which provides :
+   i18n (module's messages) & locale, logging, cookies, principal (user),
+   properties (context variables shared among scripts),
+   user session, running scripts, loginPath, headers, request, form
+   and everything below (path /url...)
+* Root : the controller. So you can put there (or in the ModuleRoot class it extends)
+   code available here that requires the request.
+* Module : NOT your own module Class. Provides class loading, adapters & resources, validators.
+* Runtime : Framework.getRuntime()
+* Engine : WebEngine
+* basePath : /nuxeo/site
+* skinPath : /nuxeo/site/skin/easysoa
+* contextPath : /nuxeo
+* This : the Web Object if any
+* Document : its (adapted) DocumentModel if any
+* Adapter : the adapter of the first WebEngine resource having one, starting from the controller
+* Session : CoreSession
+* & what's put by controller
+
+-->
+    
     <#-- URL Constants -->
-    
-    <#assign web_discovery_host="owsi-vm-easysoa-axxx-registry.accelance.net"/>
-    <#assign web_discovery_port="8083"/>
-    <#assign web_discovery_url="http://" + web_discovery_host + ":" + web_discovery_port + "/"/>
-    
-    <#assign jasmine_host="owsi-vm-easysoa-axxx-pivotal.accelance.net" />
-    <#assign jasmine_port="9100" />
-    <#assign jasmine_url="http://" + jasmine_host + ":" + jasmine_port + "/jasmine/" />
+    <#assign web_discovery_url= Root.getWebDiscoveryUrl() /><!-- VM : owsi-vm-easysoa-axxx-registry -->
+    <#assign jasmine_url= Root.getJasmineUrl() /><!-- VM : owsi-vm-easysoa-axxx-pivotal -->
     
     <#-- Macros -->
     
@@ -23,12 +45,12 @@
         <#-- NB.  to create a new object, see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html -->
         <#assign providerActorTitle = ""/>
         <#if providerActor?has_content>
-            <#assign providerActor = service['session'].getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', providerActor))/>
+            <#assign providerActor = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', providerActor))/>
             <#assign providerActorTitle = providerActor.title + ' / '/>
         </#if>
         <#assign componentTitle = ""/>
         <#if component?has_content>
-            <#assign component = service['session'].getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['acomp:componentId']))/>
+            <#assign component = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['acomp:componentId']))/>
             <#assign componentTitle = component.title + ' / '/>
         </#if>
         <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">${providerActorTitle} ${componentTitle}</span> <span title="SOA ID: ${service['soan:name']}">${service.title}</span> - <@displayPhase service['spnode:subproject']/> (((${service.versionLabel})))
@@ -338,7 +360,7 @@
     </#macro>
 
     <#macro displayProps props propName>
-        <#-- DEBUG displayProps ${propName}<br/ -->
+        <#-- if Root.isDevModeSet()><@displayProps ${propName}<br/></#if -->
         <#if !props?has_content>
             <#elseif props?is_string || props?is_number || props?is_boolean>${props}
             <#elseif props?is_date>${props?string("yyyy-MM-dd HH:mm:ss zzzz")}
@@ -349,7 +371,7 @@
     </#macro>
 	
     <#macro displayPropsHash props propName propHashNames>
-        DEBUG displayPropsHash ${props?size} ${propName} ${propHashNames?size}<br/>
+        <#if Root.isDevModeSet()>@displayPropsHash ${props?size} ${propName} ${propHashNames?size}<br/></#if>
         <#list propHashNames as itemName><#if props[itemName]?has_content && !props[itemName]?is_method>${itemName} : <#assign subPropName = propName + '/' + itemName/><@displayProps1 props[itemName] subPropName/></#if> ; </#list>
         <#-- NEITHER list propHashNames as itemName><#if props?keys?seq_contains(itemName) && !props[itemName]?is_method>${itemName} : <@displayProps1 props[itemName] itemName/></#if> ; </#list -->
     </#macro>

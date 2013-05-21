@@ -77,7 +77,7 @@ public class WSDLParsingTest extends AbstractRegistryTest {
         blob.setEncoding("UTF-8");
         blob.setFilename("PrecomptePartenaireService.wsdl");
         serviceModel.setPropertyValue("file:content", blob);
-        serviceModel = documentManager.saveDocument(serviceModel);
+        serviceModel = documentManager.saveDocument(serviceModel);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
         // NB. returns same as documentManager.getDocument(serviceModel.getRef()) ; else no extracted metadata
         documentManager.save();
         

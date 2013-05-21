@@ -19,11 +19,10 @@ import org.ow2.easywsdl.wsdl.api.Description;
  * @author mdutoo
  *
  */
-public class WsdlBlob {
+public class WsdlBlob { // TODO implements ResourceBlob ? or better as ResourceAdapter ??
     private Blob blob = null;
     private Description wsdl = null;
     private DocumentModel sourceDocument;
-    private DocumentModel previousDocumentModel;
     private boolean hasWsdlFileChangedIfAny = true; // computed after constructor
     private boolean hasWsdlFileNameChanged = true; // computed after constructor
     private boolean hasWsdlContentChanged = true; // computed after constructor if filename has not changed
@@ -35,21 +34,21 @@ public class WsdlBlob {
      * @param previousDocumentModel
      * @throws ClientException
      */
-    public WsdlBlob(DocumentModel sourceDocument, DocumentModel previousDocumentModel) throws ClientException {
+    public WsdlBlob(DocumentModel sourceDocument) throws ClientException {
         this.sourceDocument = sourceDocument;
-        this.previousDocumentModel = previousDocumentModel;
+        ///this.previousDocumentModel = previousDocumentModel;
         
-        computeHasWsdlFileChanged();
+        computeHasFileChanged();
     }
     
     /**
      * When it's finished, blob is null if and only if none or changed
      * @throws ClientException
      */
-    private void computeHasWsdlFileChanged() throws ClientException {
-        String oldWsdlFileName = (String) sourceDocument.getPropertyValue(WsdlInfoFacet.XPATH_WSDL_FILE_NAME);
+    private void computeHasFileChanged() throws ClientException {
+        String oldWsdlFileName = (String) getSourceDocument().getPropertyValue(WsdlInfoFacet.XPATH_WSDL_FILE_NAME);
         if (oldWsdlFileName != null) {
-            blob = WSDLParsingListener.getBlob(sourceDocument, oldWsdlFileName);
+            blob = WSDLParsingListener.getBlob(getSourceDocument(), oldWsdlFileName);
             if (blob != null) {
                 hasWsdlFileNameChanged = false;
 
@@ -72,15 +71,15 @@ public class WsdlBlob {
         return !newDigest.equals(oldDigest);
     }
 
-    public boolean hasWsdlFileChangedIfAny() {
+    public boolean hasFileChangedIfAny() {
         return hasWsdlFileChangedIfAny;
     }
 
-    public boolean hasWsdlFileNameChanged() {
+    public boolean hasFileNameChanged() {
         return hasWsdlFileNameChanged;
     }
 
-    public boolean hasWsdlContentChanged() throws ClientException {
+    public boolean hasContentChanged() throws ClientException {
         if (hasWsdlFileNameChanged) {
             getWsdl(); // make sure it's computed
         }
@@ -102,7 +101,7 @@ public class WsdlBlob {
             wsdl = WSDLParsingListener.tryParsingWsdlFromBlob(blob);
         }
         if (wsdl == null) {
-            findWsdlBlob(sourceDocument);
+            findWsdlBlob(getSourceDocument());
         }
         
         wsdlAlreadyComputed = true;
@@ -155,7 +154,7 @@ public class WsdlBlob {
         
         // however documentUpdated.previousDocumentModel doesn't give access to the previous blob's VCS Digest
         // so alternative 2 - store it in a business metadata or our own :
-        String oldDigest = (String) sourceDocument.getPropertyValue(WsdlInfoFacet.XPATH_WSDL_DIGEST);
+        String oldDigest = (String) getSourceDocument().getPropertyValue(WsdlInfoFacet.XPATH_WSDL_DIGEST);
         
         return oldDigest;
     }
@@ -185,6 +184,20 @@ public class WsdlBlob {
         // to XML, WSDL (signature) or only on our extracted metadata
         
         return newDigest;
+    }
+
+    /**
+     * @return the sourceDocument
+     */
+    public DocumentModel getSourceDocument() {
+        return sourceDocument;
+    }
+
+    /**
+     * @param sourceDocument the sourceDocument to set
+     */
+    public void setSourceDocument(DocumentModel sourceDocument) {
+        this.sourceDocument = sourceDocument;
     }
     
 }

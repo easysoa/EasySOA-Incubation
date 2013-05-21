@@ -66,7 +66,8 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
         // NB. if url differs, timestamp should change
         String newTimestamp = (String) newRdi.getPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP); // TODO dateTime
         String oldTimestamp = (String) oldRdi.getPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP); // TODO dateTime
-        if(newTimestamp != null && oldTimestamp != null && newTimestamp.equals(oldTimestamp)){
+        if(newTimestamp != null && oldTimestamp != null
+                && newTimestamp.length() != 0 && newTimestamp.equals(oldTimestamp)) { // no date parsing but checking it is not "dumb"
             return false;
         }
         return true;
@@ -86,8 +87,11 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
         // Get the new resource
         String newUrl = (String) newRdi.getPropertyValue(ResourceDownloadInfo.XPATH_URL);
         
-        // For test only, to remove
-        if(newUrl == null){
+        if(newUrl == null || newUrl.length() == 0){
+            // No URL, happens on document without RDI (yet) but with static
+            // RDI facet (ex. iserv/endpoint) (TODO should have been done in resourceListener),
+            // or maybe none known yet (??)
+            // For test only, to remove
             //newUrl = "http://footballpool.dataaccess.eu/data/info.wso?WSDL";
             return;
         }
@@ -104,15 +108,12 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
         
         // Update registry with new resource
         Blob resourceBlob = FileUtils.createSerializableBlob(file, resourceFile.getName(), null);
-        //FileBlob fileBlob = new FileBlob(resourceFile);
-        //fileBlob.setFilename(resourceFile.getName());
-        //fileBlob.setMimeType("text/html");
-        //fileBlob.setEncoding("UTF-8"); // this specifies that content bytes will be stored as UTF-8
         documentToUpdate.setProperty("file", "content", resourceBlob);
         
         //coreSession.saveDocument(documentToUpdate); // updates & triggers events ; TODO now or later ??
         coreSession.save(); // persists ; TODO now or later ??
         
+        // TODO method fireResourceDownloadedEvent()
         // Parse the updated document here or in the listener ?? Not here, just trigger a resourceDownloaded event
         EventProducer eventProducer;
         try {
@@ -128,7 +129,7 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
         try {
             eventProducer.fireEvent(event);
         } catch (ClientException ex) {
-            throw new ClientException("Cannot fire event", ex);            
+            throw new ClientException("Cannot fire event", ex);
         }        
         
     }

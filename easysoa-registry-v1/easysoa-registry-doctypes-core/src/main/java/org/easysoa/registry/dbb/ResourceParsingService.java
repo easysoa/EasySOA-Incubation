@@ -20,19 +20,28 @@
 
 package org.easysoa.registry.dbb;
 
-import org.easysoa.registry.wsdl.WsdlBlob;
-import org.ow2.easywsdl.wsdl.api.Description;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.DocumentModel;
 
 /**
  *
  * @author jguillemotte
  */
-public interface ResourceParsingService {
+public interface ResourceParsingService {  
+
+    /**
+     * 
+     * @param documentType
+     * @return 
+     */
+    public boolean isWsdlDocumentType(String documentType);
     
     /**
-     * Parse WSDL file
-     * @throws Exception 
+     * 
+     * @param sourceDocument
+     * @return
+     * @throws ClientException 
      */
-    public Description parse(WsdlBlob wsdlBlob) throws Exception;
+    public boolean extractMetas(DocumentModel sourceDocument) throws ClientException;
     
 }

@@ -52,7 +52,7 @@
                         <#assign targetDoctypeTitle = "implementation">
                         <#assign unmatched = endpointWithoutImpl>
                         -->
-                        <#assign doctypeTitle = "Service déployé">
+                        <#assign doctypeTitle = "Services déployés">
                         <#assign targetDoctypeTitle = "implémentation">
                         <#assign unmatched = endpointWithoutImpl>                        
                         <#include "/views/dashboard/matching.ftl">
@@ -62,7 +62,7 @@
                         <#assign targetDoctypeTitle = "service">
                         <#assign unmatched = servWithoutSpecs>
                         -->
-                        <#assign doctypeTitle = "Implémentation">
+                        <#assign doctypeTitle = "Implémentations">
                         <#assign targetDoctypeTitle = "service">
                         <#assign unmatched = servWithoutSpecs>                        
                         <#include "/views/dashboard/matching.ftl">

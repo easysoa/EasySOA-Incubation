@@ -21,6 +21,7 @@
 <body>
 
         <#include "/views/EasySOA/macros.ftl">
+        <#include "/views/EasySOA/docMacros.ftl">
 	<div id="header">
 		<div id="headerContents">
 		    <div id="logoLink">&nbsp;</div>

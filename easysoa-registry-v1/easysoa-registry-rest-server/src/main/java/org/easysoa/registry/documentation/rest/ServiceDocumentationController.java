@@ -20,9 +20,7 @@
 
 package org.easysoa.registry.documentation.rest;
 
-import static org.easysoa.registry.utils.NuxeoListUtils.getIds;
 import static org.easysoa.registry.utils.NuxeoListUtils.getProxiedIdLiteralList;
-import static org.easysoa.registry.utils.NuxeoListUtils.toLiteral;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,7 +50,7 @@ import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.types.adapters.SoaNodeAdapter;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ContextData;
-import org.easysoa.registry.utils.ContextVisibility;
+import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -73,7 +71,7 @@ import org.nuxeo.runtime.api.Framework;
 public class ServiceDocumentationController extends EasysoaModuleRoot {
 
     /** properties to be displayed in lists of services */
-    private static final String SERVICE_LIST_PROPS = "*"; // "ecm:title" // TODO is this an optimization worth the hassle ??
+    //private static final String SERVICE_LIST_PROPS = "*"; // "ecm:title" // TODO is this an optimization worth the hassle ??
     
     @SuppressWarnings("unused")
     private static Logger logger = Logger.getLogger(ServiceDocumentationController.class);
@@ -86,41 +84,30 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
     @Produces(MediaType.TEXT_HTML)
     public Object doGetHTML(/*@DefaultValue(null) */@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
+        DocumentService docService = Framework.getService(DocumentService.class);
 
-        // TODO Make a method with this code
-        String subprojectPathCriteria;
-        if (subprojectId == null || subprojectId.length() == 0) {
-            subprojectPathCriteria = "";
-        } else {
-            if(ContextVisibility.DEEP.getValue().equals(visibility)){
-                subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
-            } else {
-                subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);                
-            }
-        }
+        String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
         
         // getting (phase-scoped) services
-        DocumentModelList services = session.query("SELECT " + SERVICE_LIST_PROPS + " FROM " + InformationService.DOCTYPE
-                + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
+        List<DocumentModel> services = docService.getInformationServices(session, subprojectCriteria);
         // getting (phase-scoped) tagging folders
-        DocumentModelList tags = session.query(DocumentService.NXQL_SELECT_FROM + TaggingFolder.DOCTYPE
-                + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
+        List<DocumentModel> tags = docService.getByType(session, TaggingFolder.DOCTYPE, subprojectCriteria);
         // getting (phase-scoped) tagged services
         // WARNING : looking for proxies only work when proxy-containing TaggingFolder are in the same Phase as services
         // (else wrong phase id metadata), and using Path only works for live documents !
-        ///DocumentModelList serviceProxies = session.query(DocumentService.NXQL_SELECT_FROM + InformationService.DOCTYPE
-        ///        + DocumentService.NXQL_WHERE_PROXY + DocumentService.NXQL_AND + DocumentService.NXQL_PATH_STARTSWITH
-        ///        + RepositoryHelper.getRepositoryPath(session, subprojectId) + TaggingFolder.DOCTYPE + "'");
+        ///DocumentModelList serviceProxies = docService.query(session, DocumentService.NXQL_SELECT_FROM
+        ///        + InformationService.DOCTYPE + subprojectCriteria
+        ///        + DocumentService.NXQL_AND + DocumentService.NXQL_PATH_STARTSWITH
+        ///        + RepositoryHelper.getRepositoryPath(session, subprojectId) + TaggingFolder.DOCTYPE + "'", false, true);
         List<DocumentModel> serviceProxies = new ArrayList<DocumentModel>();
         // so rather getting them using getChildren :
         for (DocumentModel tag : tags) {
             DocumentModelList tagChildrenProxies = session.getChildren(tag.getRef());
             serviceProxies.addAll(tagChildrenProxies);
         }
-        //DocumentModelList serviceProxyIds = session.query("SELECT " + "ecm:uuid, ecm:parentid" + " FROM " + Service.DOCTYPE + DocumentService.NXQL_WHERE_PROXY
-        //        + DocumentService.NXQL_AND + DocumentService.NXQL_PATH_STARTSWITH + RepositoryHelper.getRepositoryPath(session, subprojectId) + TaggingFolder.DOCTYPE + "'");
+        //DocumentModelList serviceProxyIds = session.query("SELECT " + "ecm:uuid, ecm:parentid" + " FROM "
+        //        + Service.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
+        //        + DocumentService.NXQL_PATH_STARTSWITH + RepositoryHelper.getRepositoryPath(session, subprojectId) + TaggingFolder.DOCTYPE + "'", false, true);
         
         // TODO id to group / aggregate, use... http://stackoverflow.com/questions/5023743/does-guava-have-an-equivalent-to-pythons-reduce-function
         // collection utils :
@@ -161,8 +148,8 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         String proxiedServicesIdLiteralList = getProxiedIdLiteralList(session, serviceProxies);
         String proxiedServicesCriteria = proxiedServicesIdLiteralList.length() == 2 ? "" :
             DocumentService.NXQL_AND + " NOT ecm:uuid IN " + proxiedServicesIdLiteralList;
-        DocumentModelList untaggedServices = session.query("SELECT " + SERVICE_LIST_PROPS + " FROM " + InformationService.DOCTYPE
-                + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria + proxiedServicesCriteria);
+        DocumentModelList untaggedServices = docService.query(session, DocumentService.NXQL_SELECT_FROM
+        		+ InformationService.DOCTYPE + subprojectCriteria + proxiedServicesCriteria, true, false);
         
         // Indicators
         IndicatorsController indicatorsController = new IndicatorsController();
@@ -196,18 +183,7 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         
         serviceSubprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, serviceSubprojectId);
 
-        String subprojectPathCriteria;
-        if (subprojectId == null || subprojectId.length() == 0) {
-            subprojectPathCriteria = "";
-        } else {
-            if(ContextVisibility.DEEP.getValue().equals(visibility)){
-                subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
-            } else {
-                subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);                
-            }
-        }
+        String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
         
         DocumentModel service = docService.findSoaNode(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
 
@@ -216,15 +192,22 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         	String providerActorId = (String) service.getPropertyValue("iserv:providerActor");
         	DocumentModel providerActor = null;
         	if (providerActorId != null && !providerActorId.isEmpty()) {
-        		providerActor = session.getDocument(new org.nuxeo.ecm.core.api.IdRef(providerActorId));
+        		providerActor = session.getDocument(new IdRef(providerActorId));
         	}
         	String componentId = (String) service.getPropertyValue("acomp:componentId");
         	DocumentModel component = null;
         	if (componentId != null && !componentId.isEmpty()) {
-        		component = session.getDocument(new org.nuxeo.ecm.core.api.IdRef(componentId));
+        		component = session.getDocument(new IdRef(componentId));
         	}
-        	
-            // WARNING IS NULL DOESN'T WORK IN RELEASE BUT IN JUNIT OK
+
+        	// Implementations
+        	// mock impls :
+            List<DocumentModel> mockImpls = docService.query(session, DocumentService.NXQL_SELECT_FROM
+            		+ ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
+                    + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'"
+                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + "='true'", true, false);
+            // WARNING IS NULL DOESN'T WORK IN RELEASE BUT DOES IN JUNIT
+        	// old impl using proxy :
             //List<DocumentModel> actualImpls = new java.util.ArrayList<DocumentModel>();
             /* = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
                     + DocumentService.NXQL_WHERE_NO_PROXY
@@ -234,36 +217,41 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
                     + DocumentService.NXQL_WHERE_PROXY + DocumentService.NXQL_AND
                     + DocumentService.NXQL_PATH_STARTSWITH + RepositoryHelper.getRepositoryPath(session, subprojectId) + InformationService.DOCTYPE + "'"
                     + DocumentService.NXQL_AND + "ecm:parentId='" + service.getId() + "'"
-                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + " IS NULL")));*/ // old impl using proxy
-            List<DocumentModel> actualImpls = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
-                    + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria + DocumentService.NXQL_AND
+                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + " IS NULL")));*/
+            List<DocumentModel> actualImpls = docService.query(session, DocumentService.NXQL_SELECT_FROM
+            		+ ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
                     + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'"
-                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + "<>'true'"); // WARNING 'true' doesn't work in junit
+                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + "<>'true'", true, false); // WARNING 'true' doesn't work in junit
             if (actualImpls.isEmpty()) {
             	// TODO HACK if empty, try using junit-only alternative query, in case we're in tests :
-	            actualImpls = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
-	                    + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria + DocumentService.NXQL_AND
+	            actualImpls = docService.query(session, DocumentService.NXQL_SELECT_FROM
+	            		+ ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
 	                    + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'"
-	                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + " IS NULL"); // WARNING IS NULL works in junit only 
+	                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + " IS NULL", true, false); // WARNING IS NULL works in junit only
+	            // alternate solution using "not mock impl"
+                /*actualImpls = docService.query(session, DocumentService.NXQL_SELECT_FROM
+                        + ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
+                        + DocumentService.NXQL_AND + "ecm:uuid NOT IN " + toLiteral(getIds(mockImpls)), true, false);*/ 
             }
-            List<DocumentModel> mockImpls = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
-                    + DocumentService.NXQL_WHERE_NO_PROXY + DocumentService.NXQL_AND
-                    + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'"
-                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + "='true'");
-            // + *ServiceImplementationDataFacet.XPATH_PROVIDED_INFORMATION_SERVICE* // old impl using proxy
-            if (!mockImpls.isEmpty()) {
-                actualImpls = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
-                        + DocumentService.NXQL_WHERE_NO_PROXY
-                        + DocumentService.NXQL_AND + "ecm:uuid NOT IN "
-                        + toLiteral(getIds(mockImpls))); // WARNING use IS NULL instead of !='true'
+            
+            // Endpoints
+            List<DocumentModel> endpoints = docService.getEndpointsOfService(service, subprojectCriteria);
+            DocumentModel productionEndpoint = docService.getEndpointOfService(service, "Production", subprojectCriteria);
+            DocumentModel productionImpl = null;
+            if (productionEndpoint != null) {
+            	productionImpl = docService.getServiceImplementationFromEndpoint(productionEndpoint);
             }
+            
             view = view
+                    .arg("subproject", serviceSubprojectId)
                     .arg("service", service)
                     .arg("providerActor", providerActor)
                     .arg("component", component)
                     .arg("actualImpls", actualImpls)
                     .arg("mockImpls", mockImpls)
-                    .arg("subproject", serviceSubprojectId)
+                    .arg("endpoints", endpoints)
+                    .arg("productionEndpoint", productionEndpoint)
+                    .arg("productionImpl", productionImpl)
                     .arg("new_f", new freemarker.template.utility.ObjectConstructor())
                     // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
                     // and not "new" else conflicts with Nuxeo's NewMethod helper
@@ -285,19 +273,7 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         
         tagSubprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, tagSubprojectId);
 
-        String subprojectPathCriteria;
-        if (subprojectId == null || subprojectId.length() == 0) {
-            subprojectPathCriteria = "";
-        } else {
-            //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
-            if(ContextVisibility.DEEP.getValue().equals(visibility)){
-                subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
-            } else {
-                subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);                
-            }
-        }
+        String subprojectPathCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
         
         String query = DocumentService.NXQL_SELECT_FROM
         		+ InformationService.DOCTYPE + DocumentService.NXQL_WHERE
@@ -331,23 +307,11 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         
         serviceSubprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, serviceSubprojectId);
 
-        String subprojectPathCriteria;
-        if (subprojectId == null || subprojectId.length() == 0) {
-            subprojectPathCriteria = "";
-        } else {
-            //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
-            if(ContextVisibility.DEEP.getValue().equals(visibility)){
-                subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));                                
-            } else {
-                subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);                
-            }
-        }
+        String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
+        
         //TODO ?? SubprojectID mandatory to find service ....
         DocumentModel service = docService.findSoaNode(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
-        DocumentModelList tags = session.query(DocumentService.NXQL_SELECT_FROM + TaggingFolder.DOCTYPE
-                + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
+        List<DocumentModel> tags = docService.getByType(session, TaggingFolder.DOCTYPE, subprojectCriteria);
         
         Template view = getView("servicetags");
         // TODO problem here : A freemarker arg cannot be null or absent

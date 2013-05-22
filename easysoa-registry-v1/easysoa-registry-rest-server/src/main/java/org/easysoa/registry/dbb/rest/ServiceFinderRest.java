@@ -136,7 +136,7 @@ public class ServiceFinderRest extends EasysoaModuleRoot {
         String callback = null;
         try {
             // Retrieve URL
-        	String restServiceURL = uriInfo.getBaseUri().toString()+"easysoa/servicefinder/find/";
+        	String restServiceURL = uriInfo.getBaseUri().toString() + "easysoa/servicefinder/find/";
         	url = new URL(uriInfo.getRequestUri().toString().substring(restServiceURL.length()));
         	
         	if (url.getQuery() != null && url.getQuery().contains("callback=")) {

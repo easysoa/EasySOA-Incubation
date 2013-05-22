@@ -56,31 +56,43 @@ public class LastCodeDiscoveryIndicatorProvider implements IndicatorProvider {
     @Override
     public Map<String, IndicatorValue> computeIndicators(CoreSession session, String subprojectId, Map<String, IndicatorValue> computedIndicators, String visibility) throws Exception {
         
-        DocumentService documentService = Framework.getService(DocumentService.class);        
+
+    	DocumentService documentService = Framework.getService(DocumentService.class);        
         
         // Init the result map
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
         
         // Select all applications
         StringBuilder query = new StringBuilder();
+        //query.append("SELECT DISTINCT " + Deliverable.XPATH_APPLICATION + " FROM "); // NOO DISTINCT doesn't work here ?!
         query.append(DocumentService.NXQL_SELECT_FROM);
         query.append(Deliverable.DOCTYPE);
         // set the subproject criteria
         String subProjectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
-        if(!"".equals(subProjectCriteria)){
-            query.append(DocumentService.NXQL_AND);
-            query.append(subProjectCriteria);
-        }
-        DocumentModelList appList = documentService.query(session, query.toString(), true, false);
+        query.append(subProjectCriteria);
+        DocumentModelList delList = documentService.query(session, query.toString(), true, false);
+        
+        // get those with latest modified date
+        HashMap<String, Date> appToModifiedMap = new HashMap<String, Date>(delList.size());
         
         // For each app
-        for(DocumentModel app : appList){
-            Date lastModificationDate = app.getProperty("dc:modified").getValue(Date.class);
+        for(DocumentModel del : delList){
+            Date lastModificationDate = del.getProperty("dc:modified").getValue(Date.class);
+            String application = (String) del.getPropertyValue(Deliverable.XPATH_APPLICATION);
             
+            if (!appToModifiedMap.containsKey(application)
+            		|| lastModificationDate.after(appToModifiedMap.get(application))) {
+        		appToModifiedMap.put(application, lastModificationDate);
+            }
+        }
+        
+        for (String application : appToModifiedMap.keySet()) {
+        	Date lastModificationDate = appToModifiedMap.get(application);
             // TODO : modify the IndicatorValue to be able to pass dates as value
-            IndicatorValue iValue = new IndicatorValue("Date de la dernière découverte code/analyse pour l'application " + app.getTitle(), category, -1, -1);
+            IndicatorValue iValue = new IndicatorValue("Date de la dernière découverte code/analyse pour l'application "
+            		+ application, category, -1, -1);
             iValue.setDate(lastModificationDate);
-            indicators.put("Date de la dernière découverte code/analyse pour l'application " + app.getTitle(), iValue);
+            indicators.put("Date de la dernière découverte code/analyse pour l'application " + application, iValue);
         }
         
         return indicators;

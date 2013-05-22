@@ -65,7 +65,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		// Init
 		DocumentService documentService = getDocumentService();
     	boolean anyExactCriteria = false;
-		MatchingQuery query = new MatchingQuery("SELECT * FROM " + ServiceImplementation.DOCTYPE);
+		MatchingQuery query = new MatchingQuery(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE);
 
         // Filter by subproject
         query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(endpoint));

@@ -8,11 +8,10 @@
         </tr>
         <#list unmatched as unmatched>
         <tr>
-            <td class="clickable unmatchedModel" id="${unmatched.id}">
-                <div class="selectedFormInputName"><!--${matchingPrefix}unmatchedModelId--></div>
+            <td class="clickable unmatchedModel" id="${unmatched.id}" selectedFormInputName="${matchingPrefix}unmatchedModelId">
                 <div style="float: right">
-                    <!--<input class="components" type="button" value="Select component" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/components/${unmatched.id}?subprojectId=${subprojectId}&visibility=${visibility}'" />-->
-                    <!--<input class="suggestions" type="button" value="Get suggestions" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/suggest/${unmatched.id}?subprojectId=${subprojectId}&visibility=${visibility}'" />-->
+                    <!-- Select component -->
+                    <!-- Get suggestions -->
                     <input class="components" type="button" value="Selectionner" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/components/${unmatched.id}?subprojectId=${subprojectId}&visibility=${visibility}'" />
                     <input class="suggestions" type="button" value="Obtenir les suggestions" onclick="window.location.href='/nuxeo/site/easysoa/dashboard/suggest/${unmatched.id}?subprojectId=${subprojectId}&visibility=${visibility}'" />
                 </div>
@@ -27,8 +26,7 @@
                     <#if suggestions?has_content>
                     <#list suggestions as suggestion>
                     <tr>
-                        <td class="clickable target">
-                            <div class="selectedFormInputName"><!--${matchingPrefix}targetId--></div>
+                        <td class="clickable target" selectedFormInputName="${matchingPrefix}targetId">
                             <#assign document = suggestion>
                             <#include "/views/dashboard/document.ftl">
                         </td>
@@ -45,8 +43,7 @@
                     <#if anyPlatformSuggestions?has_content>
                     <#list anyPlatformSuggestions as suggestion>
                     <tr>
-                        <td class="clickable target">
-                            <div class="selectedFormInputName"><!--${matchingPrefix}targetId--></div>
+                        <td class="clickable target" selectedFormInputName="${matchingPrefix}targetId">
                             <#assign document = suggestion>
                             <#include "/views/dashboard/document.ftl">
                         </td>
@@ -67,8 +64,7 @@
                     </tr>
                     <#list allFromComponent as suggestion>
                     <tr>
-                        <td class="clickable target">
-                            <div class="selectedFormInputName">${matchingPrefix}targetId</div>
+                        <td class="clickable target" selectedFormInputName="${matchingPrefix}targetId">
                             <#assign document = suggestion>
                             <#include "/views/dashboard/document.ftl">
                         </td>
@@ -100,7 +96,7 @@
         <fieldset style="width: 400px; padding: 10px;">
             <!--Click on an a ${doctypeTitle} and a ${targetDoctypeTitle}, then click:<br />-->
             Cliquez sur un(e) ${doctypeTitle} et sur un(e) ${targetDoctypeTitle}, ensuite cliquez sur :<br />
-            <!--<input type="submit" value="Create a link" />-->
+            <!-- Create a link -->
             <input type="submit" value="Créer un lien" />
             <input id="${matchingPrefix}unmatchedModelId" name="unmatchedModelId" type="hidden" />
             <input id="${matchingPrefix}targetId" name="targetId" type="hidden" />

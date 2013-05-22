@@ -54,7 +54,7 @@ public class ServiceMatchingServiceImpl implements ServiceMatchingService {
  
 		DocumentService documentService = getDocumentService();
         boolean anyExactCriteria = false;
-        MatchingQuery query = new MatchingQuery("SELECT * FROM " + InformationService.DOCTYPE);
+        MatchingQuery query = new MatchingQuery(DocumentService.NXQL_SELECT_FROM + InformationService.DOCTYPE);
 
         // Filter by subproject
         query.addCriteria(SubprojectServiceImpl.buildCriteriaSeenFromSubproject(impl)); // ex. "AXXXSpecifications"; // or in 2 pass & get it from subProject ??

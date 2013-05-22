@@ -9,9 +9,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import org.easysoa.registry.facets.ServiceImplementationDataFacet;
+import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.IntelligentSystem;
+import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
@@ -24,6 +27,7 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
 import org.nuxeo.ecm.core.api.model.PropertyException;
@@ -248,7 +252,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
     @Override
     public DocumentModel findDocument(CoreSession documentManager,
             String subprojectId, String type, String name) throws ClientException {
-        return findDocument(documentManager, subprojectId, type, name, false);
+        return findDocument(documentManager, subprojectId, type, name, false); ///TODO ??!!
     }
     
     @Override
@@ -259,23 +263,13 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
         queryString.append("SELECT * FROM ? WHERE ");
         queryString.append(NXQL.ECM_NAME);
         queryString.append(" = '?' ");
-        queryString.append(DocumentService.NXQL_AND);
-        queryString.append(NXQLQueryHelper.buildSubprojectCriteria(documentManager, SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId), deepSearch));
-        
-        /*
-        queryString.append(" = '?' AND ");
-        queryString.append(SubprojectNode.XPATH_SUBPROJECT);
-        if(deepSearch){
-            queryString.append(" STARTSWITH '?'");
-        } else {
-            queryString.append(" = '?'");
-        }*/
+        queryString.append(NXQLQueryHelper.buildSubprojectCriteria(documentManager,
+        		SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId), deepSearch));
         
         String query = NXQLQueryBuilder.getQuery(queryString.toString(),
-                new Object[] { type, safeName(name)/*,
-                SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId)*/ }, // TODO TODOOOOO spnode
+                new Object[] { type, safeName(name) },
                 false, true);
-        DocumentModelList results = query(documentManager, query, true, false);
+        DocumentModelList results = this.query(documentManager, query, true, false);
         return results.size() > 0 ? results.get(0) : null;
     }
     
@@ -295,7 +289,6 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
         queryString.append(" = '?' ");
         
         // checking subproject :
-        queryString.append(DocumentService.NXQL_AND);
         queryString.append(NXQLQueryHelper.buildSubprojectCriteria(documentManager,
         		SubprojectServiceImpl.setDefaultSubprojectIfNone(documentManager, identifier), deepSearch));
         // NB. not using subproject path because doesn't work on versions
@@ -556,6 +549,143 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
         DocumentModelList results = this.query(documentManager, query, true, false);
         DocumentModel documentModel = results.size() > 0 ? results.get(0) : null;
 		return documentModel;
+	}
+	
+
+
+	@Override
+	public List<DocumentModel> getInformationServices(CoreSession session, String subprojectCriteria) throws ClientException {
+        return getByType(session, InformationService.DOCTYPE, subprojectCriteria);
+	}
+	@Override
+	public List<DocumentModel> getServiceImplementations(CoreSession session, String subprojectCriteria) throws ClientException {
+        return getByType(session, ServiceImplementation.DOCTYPE, subprojectCriteria);
+	}
+	@Override
+	public List<DocumentModel> getEndpoints(CoreSession session, String subprojectCriteria) throws ClientException {
+        return getByType(session, Endpoint.DOCTYPE, subprojectCriteria);
+	}
+	@Override
+	public List<DocumentModel> getByType(CoreSession session, String type, String subprojectCriteria) throws ClientException {
+        String query = DocumentService.NXQL_SELECT_FROM + type + subprojectCriteria;
+        DocumentModelList services = this.query(session, query, true, false);
+        return services;
+	}
+
+	@Override
+	public DocumentModel getServiceImplementationFromEndpoint(DocumentModel endpointModel) throws ClientException {
+		// TODO rather using implId on endpoint
+        //List<DocumentModel> productionImplRes = docService.query(session, DocumentService.NXQL_SELECT_FROM
+        //		+ ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND, false, true);
+    	SoaMetamodelService soaMetamodelService;
+		try {
+			soaMetamodelService = Framework.getService(SoaMetamodelService.class);
+			SoaNode productionEndpointNode = endpointModel.getAdapter(SoaNode.class);
+	    	for (SoaNodeId productionEndpointParentNode : productionEndpointNode.getParentIds()) {
+	    		if (soaMetamodelService.isAssignable(productionEndpointParentNode.getType(), ServiceImplementation.DOCTYPE) ) {
+	    			return this.findSoaNode(endpointModel.getCoreSession(), productionEndpointParentNode);
+	    		}
+	    	}
+		} catch (Exception e) {
+			throw new RuntimeException("Can't get SoaMetamodelService", e);
+		}
+    	return null;
+	}
+
+	@Override
+	public List<DocumentModel> getEndpointsOfService(DocumentModel service, String subprojectCriteria) throws ClientException {
+		return this.query(service.getCoreSession(), DocumentService.NXQL_SELECT_FROM
+            		+ Endpoint.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
+                    + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'", true, false);
+	}
+
+	@Override
+	public DocumentModel getEndpointOfService(DocumentModel service, String environment, String subprojectCriteria) throws ClientException {
+        List<DocumentModel> endpoints = this.query(service.getCoreSession(), DocumentService.NXQL_SELECT_FROM
+        		+ Endpoint.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
+                + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'"
+                + DocumentService.NXQL_AND + Endpoint.XPATH_ENDP_ENVIRONMENT + "='Production'", true, false);
+        if (!endpoints.isEmpty()) {
+        	return endpoints.get(0);
+        }
+        return null;
+	}
+
+	@Override
+	public List<String> getEnvironments(CoreSession session, String subprojectCriteria) throws ClientException {
+        List<String> envs = new ArrayList<String>();
+        
+        // Get the environments
+        DocumentModelList environments = this.query(session, "SELECT DISTINCT " + Endpoint.XPATH_ENDP_ENVIRONMENT
+        		+ " FROM " + Endpoint.DOCTYPE + subprojectCriteria, true, false);
+        // Fill the envs list
+        for(DocumentModel model : environments){
+            envs.add((String) model.getPropertyValue(Endpoint.XPATH_ENDP_ENVIRONMENT));
+        }
+        return envs;
+	}
+
+	@Override
+	public List<DocumentModel> getComponents(CoreSession session, String subprojectCriteria) throws ClientException {
+		return this.query(session, DocumentService.NXQL_SELECT_FROM
+				+ Component.DOCTYPE + subprojectCriteria, true, false);
+	}
+
+	@Override
+	public DocumentRef getParentInformationService(DocumentModel model) throws ClientException {
+		// is it itself an iserv ?
+    	/*SoaMetamodelService soaMetamodelService;
+		try {
+			soaMetamodelService = Framework.getService(SoaMetamodelService.class);
+			if (soaMetamodelService.isAssignable(model.getType(), InformationService.DOCTYPE)) {
+				return model.getRef();
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Can't get SoaMetamodelService", e);
+		}*/
+		String iservId;
+		try {
+			// NB. this prop is defined in ServiceImplementationDataFacet on serviceimpl or endpoint
+			iservId = (String) model.getPropertyValue(ServiceImplementationDataFacet.XPATH_PROVIDED_INFORMATION_SERVICE);
+			if (iservId != null && iservId.length() != 0) {
+				return new IdRef(iservId);	
+			}
+		} catch (PropertyException e) {
+			// not a serviceimpl or endpoint
+		}
+    	return null;
+	}
+
+	@Override
+	public DocumentModel getParentServiceImplementation(DocumentModel model) throws ClientException {
+		SoaNodeId parentServiceImplSoaId = getParentServiceImplementationSoaId(model);
+		if (parentServiceImplSoaId != null) {
+			DocumentModel parentServiceImplModel = this.findSoaNode(model.getCoreSession(), parentServiceImplSoaId);
+			if (parentServiceImplModel != null) {
+				return parentServiceImplModel;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public SoaNodeId getParentServiceImplementationSoaId(DocumentModel model) throws ClientException {
+		// is it itself a serviceimpl ?
+    	/*SoaMetamodelService soaMetamodelService;
+		try {
+			soaMetamodelService = Framework.getService(SoaMetamodelService.class);
+			if (soaMetamodelService.isAssignable(model.getType(), ServiceImplementation.DOCTYPE)) {
+				return model.getRef();
+			}
+		} catch (Exception e) {
+			throw new RuntimeException("Can't get SoaMetamodelService", e);
+		}*/
+		Endpoint endpointAdapter = model.getAdapter(Endpoint.class);
+		try {
+			return endpointAdapter.getParentOfType(ServiceImplementation.DOCTYPE);
+		} catch (Exception e) {
+			throw new ClientException(e);
+		}
 	}
 
 }

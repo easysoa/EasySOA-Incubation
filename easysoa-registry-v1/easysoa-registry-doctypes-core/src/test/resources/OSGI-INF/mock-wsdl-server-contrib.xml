@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component name="org.easysoa.registry.doctypes.core.mock.wsdlMockServer" version="1.0">
+    
+    <implementation class="org.easysoa.registry.mock.MockServer" />
+    
+</component>

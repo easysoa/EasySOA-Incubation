@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-Vendor: EasySOA Consortium
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Bundle-Name: webEngineHelloTest
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.easysoa.registry.mock.webEngineHelloTest;singleton:=true
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;name=webEngineHelloTest;package=org/easysoa/registry/mock

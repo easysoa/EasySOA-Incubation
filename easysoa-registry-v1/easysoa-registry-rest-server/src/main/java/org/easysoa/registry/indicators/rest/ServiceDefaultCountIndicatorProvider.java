@@ -72,10 +72,7 @@ public class ServiceDefaultCountIndicatorProvider implements IndicatorProvider {
         StringBuilder query = new StringBuilder();
         query.append(DocumentService.NXQL_SELECT_FROM);
         query.append(Endpoint.DOCTYPE);
-        if(!"".equals(subProjectPathCriteria)){
-            query.append(DocumentService.NXQL_WHERE);
-            query.append(subProjectPathCriteria);
-        }
+        query.append(subProjectPathCriteria);
         DocumentModelList endpointsList = documentService.query(session, query.toString(), true, false);
         
         // For each endpoint, get the SLA/OLA indicators : check the violation and increase or not the counter

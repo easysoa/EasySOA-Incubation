@@ -20,6 +20,7 @@
 <body>
 
         <#include "/views/EasySOA/macros.ftl">
+        <#include "/views/EasySOA/docMacros.ftl">
     
 	<div id="header">
 		<div id="headerContents">
@@ -36,11 +37,11 @@
                 <#assign subprojectId=subprojectId!"">
                 <@displayContextBar subprojectId contextInfo visibility "false"/>
                 
-		<h1>Services</h1>
+		<h2>Services</h2>
 
 		<@displayServicesShort services subprojectId visibility/>
 
-		<h1>By tags</h1>
+		<h2>By tags</h2>
 
 		<#list tags as tag>
 		<#if tagId2Services?keys?seq_contains(tag.id)>

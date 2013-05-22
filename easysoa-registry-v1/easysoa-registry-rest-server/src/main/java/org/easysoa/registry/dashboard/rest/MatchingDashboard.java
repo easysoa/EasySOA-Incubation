@@ -56,21 +56,17 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 			Template view = getView("index");
 			
 			String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
-                        if(!"".equals(subprojectCriteria)){
-                            subprojectCriteria = " WHERE " + subprojectCriteria;
-                        }
                         
 			// All information services
-			DocumentModelList allInfoServices = docService.query(session, "SELECT * FROM "
-					+ InformationService.DOCTYPE + subprojectCriteria, true, false);
+			List<DocumentModel> allInfoServices = docService.getInformationServices(session, subprojectCriteria);
 			Map<String, DocumentModel> infoServicesById = new HashMap<String, DocumentModel>();
 			for (DocumentModel infoService : allInfoServices) {
 				infoServicesById.put(infoService.getId(), infoService);
 			}
  
 			// Find matched impls & their infoservice
-			DocumentModelList matchedImpls = docService.query(session, "SELECT * FROM "
-					+ ServiceImplementation.DOCTYPE + subprojectCriteria + " AND "
+			DocumentModelList matchedImpls = docService.query(session, DocumentService.NXQL_SELECT_FROM
+					+ ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
 					+ ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + " IS NOT NULL ",
 					 true, false);
 			view.arg("matchedImpls", matchedImpls);
@@ -87,15 +83,15 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 
 			// List endpoints without impls
 			DocumentModelList unmatchedEndpoints = docService.query(session,
-					"SELECT * FROM " + Endpoint.DOCTYPE + subprojectCriteria + " AND "
-					+ Endpoint.XPATH_PARENTSIDS + " NOT LIKE '%"
+					DocumentService.NXQL_SELECT_FROM + Endpoint.DOCTYPE + subprojectCriteria
+					+ DocumentService.NXQL_AND + Endpoint.XPATH_PARENTSIDS + " NOT LIKE '%"
 					+ ServiceImplementation.DOCTYPE + ":%' ", true, false);
 			view.arg("endpointWithoutImpl", unmatchedEndpoints);
 			
 			// List impls without infoservice
 			DocumentModelList servWithoutSpecs = docService.query(session, 
-					 "SELECT * FROM " + ServiceImplementation.DOCTYPE + subprojectCriteria + " AND "
-					 + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE
+					 DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE + subprojectCriteria
+					 + DocumentService.NXQL_AND + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE
 					 + " IS NULL ", true, false);
 			view.arg("servWithoutSpecs", servWithoutSpecs);
 			view.arg("subprojectId", subprojectId);
@@ -192,7 +188,8 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 			// TODO or according to model element type ??
 			// TODO or both subproject criteria intersected ?
 			//		NXQLQueryHelper.buildSubprojectPathCriteria(session, subprojectId, visibility));
-			String infoServicesQuery = NXQLQueryBuilder.getQuery("SELECT * FROM ? WHERE ? = '?'" + subprojectCriteria,
+			String infoServicesQuery = NXQLQueryBuilder.getQuery(DocumentService.NXQL_SELECT_FROM
+					+ "?" + subprojectCriteria + DocumentService.NXQL_AND + "? = '?'",
 					new Object[] {
 						targetDoctype,
 						Component.XPATH_COMPONENT_ID,
@@ -222,6 +219,7 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 				DocumentModel model = session.getDocument(new IdRef(unmatchedModelId));
 				String doctype = model.getType();
 
+				DocumentService docService = Framework.getService(DocumentService.class);
 	    		SoaMetamodelService soaMetamodelService = Framework.getService(SoaMetamodelService.class);
 	    		boolean isServiceImplementation = soaMetamodelService.isAssignable(doctype, ServiceImplementation.DOCTYPE);
 				boolean isEndpoint = soaMetamodelService.isAssignable(doctype, Endpoint.DOCTYPE);
@@ -232,15 +230,16 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 	    			newTargetId = targetId; // Create link
 	    		}
 	    		else {
-					if (isServiceImplementation
-							&& model.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE) == null) {
+	    			// No targetId, meaning it's rather a "delete link" command.
+	    			
+	    			// Checking that there is a parent SOA node to unlink from :
+					if (isServiceImplementation && docService.getParentInformationService(model) == null) {
+						// no parent iserv, meaning it's not a "delete link command" but a UI bug
 			    		throw new Exception("Information Service not selected");
 					}
-					else if (isEndpoint) {
-						Endpoint endpointAdapter = model.getAdapter(Endpoint.class);
-						if (endpointAdapter.getParentOfType(ServiceImplementation.DOCTYPE) != null) {
-				    		throw new Exception("Service Implementation not selected");
-						}
+					else if (isEndpoint && docService.getParentServiceImplementationSoaId(model) == null) {
+						// no parent serviceimpl, meaning it's not a "delete link command" but a UI bug
+			    		throw new Exception("Service Implementation not selected");
 					}
 					newTargetId = null; // Destroy link
 	    		}
@@ -251,7 +250,6 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 					matchingService.linkInformationService(session, model, newTargetId, true);
 				}
 				else { // isEndpoint
-					DocumentService docService = Framework.getService(DocumentService.class);
 		    		EndpointMatchingService matchingService = Framework.getService(EndpointMatchingService.class);
 					matchingService.linkServiceImplementation(session,
 							docService.createSoaNodeId(model),
@@ -273,7 +271,7 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 	@Path("samples")
 	public Object submit(@QueryParam("subprojectId") String subprojectId,
 			@QueryParam("visibility") String visibility) throws Exception {
-		new DashboardMatchingSamples("http://localhost:8080").run();
+		new DashboardMatchingSamples(this.getContext().getBaseURL()).run();
 		return viewDashboard(subprojectId, visibility);
 	}
 	
@@ -288,12 +286,12 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 	private List<DocumentModel> fetchComponents(CoreSession session,
 			DocumentModel modelElement) throws Exception {
 		String modelElementSubprojectId = (String) modelElement.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
-		String subprojectCriteria = " AND " + NXQLQueryHelper.buildSubprojectCriteria(session, modelElementSubprojectId, true);
+		String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, modelElementSubprojectId, true);
 		// TODO or according to model element type ??
 		// TODO or both subproject criteria intersected ?
 		//		NXQLQueryHelper.buildSubprojectPathCriteria(session, subprojectId, visibility));
 		DocumentService docService = Framework.getService(DocumentService.class);
-		return docService.query(session, "SELECT * FROM Component" + subprojectCriteria, true, false);
+		return docService.getComponents(session, subprojectCriteria);
 	}
 	
 	private List<DocumentModel> fetchSuggestions(CoreSession session, DocumentModel model, String componentUuid,

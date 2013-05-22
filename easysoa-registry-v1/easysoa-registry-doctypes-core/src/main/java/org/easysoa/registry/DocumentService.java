@@ -324,4 +324,42 @@ public interface DocumentService {
     
     boolean isTypeOrSubtype(CoreSession documentManager, String doctypeToTest, String expectedDoctype) throws ClientException;
 
+
+	List<DocumentModel> getInformationServices(CoreSession session, String subprojectCriteria) throws ClientException;
+
+	List<DocumentModel> getServiceImplementations(CoreSession session, String subprojectCriteria) throws ClientException;
+
+	List<DocumentModel> getEndpoints(CoreSession session, String subprojectCriteria) throws ClientException;
+
+	List<DocumentModel> getByType(CoreSession session, String type, String subprojectCriteria) throws ClientException;
+    
+	DocumentModel getServiceImplementationFromEndpoint(DocumentModel endpointModel) throws ClientException;
+
+	List<DocumentModel> getEndpointsOfService(DocumentModel service, String subprojectCriteria) throws ClientException;
+
+	DocumentModel getEndpointOfService(DocumentModel service, String environment, String subprojectCriteria) throws ClientException;
+
+	List<String> getEnvironments(CoreSession session, String subprojectId) throws ClientException;
+
+	List<DocumentModel> getComponents(CoreSession session, String subprojectCriteria) throws ClientException;
+
+	DocumentRef getParentInformationService(DocumentModel model) throws ClientException;
+
+	/**
+	 * For now uses getParentServiceImplementationSoaId()
+	 * @param model endpoint
+	 * @return
+	 * @throws ClientException
+	 */
+	DocumentModel getParentServiceImplementation(DocumentModel model)throws ClientException;
+
+	/**
+	 * Does model.getAdapter(Endpoint.class).getParentOfType(ServiceImplementation.DOCTYPE);
+	 * which is for now (as for all proxy parent classified SOA nodes) the fastest way.
+	 * @param model endpoint
+	 * @return
+	 * @throws ClientException
+	 */
+	SoaNodeId getParentServiceImplementationSoaId(DocumentModel model)throws ClientException;
+	
 }

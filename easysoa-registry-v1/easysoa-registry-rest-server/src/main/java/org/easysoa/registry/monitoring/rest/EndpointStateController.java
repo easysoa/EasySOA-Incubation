@@ -20,7 +20,6 @@
 
 package org.easysoa.registry.monitoring.rest;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,15 +37,14 @@ import org.easysoa.registry.integration.EndpointStateServiceImpl;
 import org.easysoa.registry.rest.EasysoaModuleRoot;
 import org.easysoa.registry.rest.integration.EndpointStateService;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
-import org.easysoa.registry.types.Endpoint;
-import org.easysoa.registry.types.InformationService;
+import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ContextData;
 import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -77,52 +75,37 @@ public class EndpointStateController extends EasysoaModuleRoot {
     
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetHTML(@QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) throws Exception {
+    public Object doGetHTML(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
-        List<String> envs = new ArrayList<String>();
+        String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
         
         // Get the environments
-        DocumentModelList environments = session.query("SELECT DISTINCT " + Endpoint.XPATH_ENDP_ENVIRONMENT + " FROM " + Endpoint.DOCTYPE);
-        // Fill the envs list
-        for(DocumentModel model : environments){
-            envs.add((String)model.getPropertyValue(Endpoint.XPATH_ENDP_ENVIRONMENT));
-        }
+        List<String> envs = docService.getEnvironments(session, subprojectCriteria);
        
         // Get the deployed services
-        String query = "SELECT * FROM " + InformationService.DOCTYPE;
-        String subProjectPathCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subProjectId, visibility);
-        if(!"".equals(subProjectPathCriteria)){
-            query = query + DocumentService.NXQL_WHERE + subProjectPathCriteria;
-        }
- 
-        DocumentModelList services = docService.query(session, query, true, false);
-        Map<String, DocumentModelList> endpoints = new HashMap<String, DocumentModelList>();
+        List<DocumentModel> services = docService.getInformationServices(session, subprojectCriteria);
+        
+        Map<String, List<DocumentModel>> endpoints = new HashMap<String, List<DocumentModel>>();
         
         for(DocumentModel service : services){
             // Get the endpoints
-            query = "SELECT * FROM " + Endpoint.DOCTYPE + DocumentService.NXQL_WHERE
-                    + " impl:providedInformationService = '" + service.getId() + "'";
-            if(!"".equals(subProjectPathCriteria)){
-                query = query + DocumentService.NXQL_AND + subProjectPathCriteria;
-            }
-            
-            DocumentModelList endpointsList = docService.query(session, query, true, false);
+        	List<DocumentModel> endpointsList = docService.getEndpointsOfService(service, subprojectCriteria);
             endpoints.put(service.getName(), endpointsList);
         }
         
         return getView("dashboard")
                 .arg("envs", envs) // TODO later by (sub)project
                 .arg("endpoints", endpoints)
-                .arg("subprojectId", subProjectId)
+                .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
-                .arg("contextInfo", ContextData.getVersionData(session, subProjectId));
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
     }
     
     @GET
     @Path("envIndicators/{endpointId:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetByPathHTML(@PathParam("endpointId") String endpointId, @QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) throws Exception {
+    public Object doGetByPathHTML(@PathParam("endpointId") String endpointId, @QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
         
@@ -135,10 +118,10 @@ public class EndpointStateController extends EasysoaModuleRoot {
         //DocumentModelList endpointsModel = session.query("SELECT * FROM " + Endpoint.DOCTYPE + " WHERE " + Endpoint.XPATH_ENDP_ENVIRONMENT + " = " + envName);
 
         // Get the endpoint
-        DocumentModel endpoint = docService.query(session, "SELECT * FROM " + Endpoint.DOCTYPE + " WHERE ecm:uuid = '" + endpointId + "'" , true, false).get(0);
+        DocumentModel endpoint = session.getDocument(new IdRef(endpointId)); ///DocumentModel endpoint = docService.query(session, "SELECT * FROM " + Endpoint.DOCTYPE + " WHERE ecm:uuid = '" + endpointId + "'" , true, false).get(0);
         // Get the service
-        String serviceId = endpoint.getProperty("impl:providedInformationService").getValue(String.class);
-        DocumentModel service = docService.query(session, "SELECT * FROM " + InformationService.DOCTYPE + " WHERE ecm:uuid = '" + serviceId + "'" , true, false).get(0);
+        String serviceId = endpoint.getProperty(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE).getValue(String.class);
+        DocumentModel service = session.getDocument(new IdRef(serviceId)); /// docService.query(session, "SELECT * FROM " + InformationService.DOCTYPE + " WHERE ecm:uuid = '" + serviceId + "'" , true, false).get(0);
         String slaOrOlaSubprojectId = (String) service.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
         
         //String serviceFolder = session.getDocument(service.getParentRef()).getPathAsString();
@@ -175,9 +158,9 @@ public class EndpointStateController extends EasysoaModuleRoot {
         if (indicators != null) {
             view = view.arg("indicators", indicators);
         }
-        view.arg("subprojectId", subProjectId)
+        view.arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
-                .arg("contextInfo", ContextData.getVersionData(session, subProjectId))
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId))
                 .arg("service", service.getName())
                 .arg("servicePath", service.getPathAsString())
                 .arg("endpoint", endpoint);

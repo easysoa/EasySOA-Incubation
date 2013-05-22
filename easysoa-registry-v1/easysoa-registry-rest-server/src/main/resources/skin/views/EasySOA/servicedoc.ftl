@@ -19,6 +19,7 @@
 <body>
 
         <#include "/views/EasySOA/macros.ftl">
+        <#include "/views/EasySOA/docMacros.ftl">
     
 	<div id="header">
 		<div id="headerContents">
@@ -204,18 +205,30 @@
 		et consomme, dépend de (en mode non test)
 
 		<br/><b>Implementations :</b><br/>
-      <#-- @displayDocsShort actualImpls/ -->
-      <@displayDocs actualImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
+        <#-- @displayDocsShort actualImpls/ -->
+        <@displayDocs actualImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
 		<br/>
 		<br/><b>Mocks :</b><br/>
 		<#-- @displayDocsShort mockImpls/ -->
-      <@displayDocs mockImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
+        <@displayDocs mockImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
 		<#-- TODO TEST ismock : ${mockImpls[0]['impl:ismock']} -->
 
-		<h3>Endpoint</h3>
-		Déployé à : URL
-		<br/>Et a déploiements de test :
+		<h3>Endpoints</h3>
+		Déployé en production à : <#if productionEndpoint?has_content>productionEndpoint['endp:url']</#if>
+		<br/>Tous les déploiements :<!-- Et à déploiement de test :-->
+		<#-- @displayDocsShort endpoints/ -->
+        <@displayDocs actualImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
 
+
+        <#if Root.isDevModeSet()>
+
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        <p>&nbsp;</p>
+        
 		<h2>test</h2>
 
 		<h3>Contenu dans</h3>
@@ -243,6 +256,8 @@
         <div id="container">
             <a href="${Root.path}?subprojectId=${subprojectId}&visibility=${visibility}">Back to services</a>
         </div>
+        
+        </#if>
 
 </body>
 

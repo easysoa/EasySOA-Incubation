@@ -20,6 +20,7 @@
 
 package org.easysoa.registry.utils;
 
+import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.types.Project;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -47,7 +48,7 @@ public class ContextData {
         String versionPath = liveVersion.getPathAsString();
         
         // find the project
-        DocumentModelList documentList = session.query("SELECT * FROM " + Project.DOCTYPE);
+        DocumentModelList documentList = session.query(DocumentService.NXQL_SELECT_FROM + Project.DOCTYPE);
         for(DocumentModel project : documentList){
             if(versionPath.startsWith(project.getPathAsString())){
                 versionData.setProject(project.getName());

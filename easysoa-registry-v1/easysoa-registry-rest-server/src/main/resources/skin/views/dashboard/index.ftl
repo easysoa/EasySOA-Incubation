@@ -21,6 +21,7 @@
 
     <body>
         <#include "/views/EasySOA/macros.ftl">
+        <#include "/views/EasySOA/docMacros.ftl"><#-- for displayPhase(subprojectId) -->
         <div id="header">
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
@@ -50,7 +51,6 @@
                         <#--
                         <#assign doctypeTitle = "Endpoint">
                         <#assign targetDoctypeTitle = "implementation">
-                        <#assign unmatched = endpointWithoutImpl>
                         -->
                         <#assign doctypeTitle = "Service déployé">
                         <#assign targetDoctypeTitle = "implémentation">
@@ -60,7 +60,6 @@
                         <#--
                         <#assign doctypeTitle = "Service implementation">
                         <#assign targetDoctypeTitle = "service">
-                        <#assign unmatched = servWithoutSpecs>
                         -->
                         <#assign doctypeTitle = "Implémentation">
                         <#assign targetDoctypeTitle = "service">
@@ -124,8 +123,9 @@
                         return $('.id', $el).html();
                         }
 
+                        // To allow to have simultaneously selections of various kinds (endpoint_to_impl, impl_to_iserv...)
                         function getSelectedFormInputName($el) {
-                        return $('.selectedFormInputName', $el).html();
+                          return $el.attr('selectedFormInputName');
                         }
 
                         $('.clickable').click(function() {
@@ -148,9 +148,7 @@
                         </script>
                     </div>
                 </li>
-                <!--<div id="container">
-                <a href="${Root.path}/../?subprojectId=${subprojectId}&visibility=${visibility}">Retour à l'acceuil</a>
-                </div>-->
+                
                 <@displayReturnToIndexButtonBar/>
             </ul>
         </div>

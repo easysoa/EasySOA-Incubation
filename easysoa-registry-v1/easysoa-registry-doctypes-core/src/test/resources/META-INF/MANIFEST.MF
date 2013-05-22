@@ -4,5 +4,5 @@ Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
 Bundle-Name: webEngineHelloTest
 Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.easysoa.registry.mock.webEngineHelloTest;singleton:=true
-Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;name=webEngineHelloTest;package=org/easysoa/registry/mock
+Bundle-SymbolicName: org.easysoa.registry.mock.webEngineResourceUpdateTest;singleton:=true
+Nuxeo-WebModule: org.nuxeo.ecm.webengine.app.WebEngineModule;name=webEngineResourceUpdateTest;package=org/easysoa/registry/mock

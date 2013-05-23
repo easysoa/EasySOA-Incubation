@@ -31,6 +31,7 @@ import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -64,6 +65,7 @@ public class ResourceListener implements EventListener {
         // Prevent looping on source document changes
         // (maybe ex. setting downloaded resource blob)
         if (context.hasProperty(CONTEXT_REQUEST_RESOURCE_ALREADY_UPDATED)) {
+            sourceDocument.getContextData().remove(ScopeType.REQUEST.getScopedKey(CONTEXT_REQUEST_RESOURCE_ALREADY_UPDATED));
             return;
         }
         sourceDocument.getContextData().putScopedValue(ScopeType.REQUEST,
@@ -142,7 +144,7 @@ public class ResourceListener implements EventListener {
 
         if (Resource.DOCTYPE.equals(docModel.getType())){
             return true;
-        } else if(resourceParsingService.isWsdlDocumentType(docModel.getType())){
+        } else if(resourceParsingService.isWsdlFileResource(docModel)){ //DocumentType(docModel.getType())
             String url = (String)docModel.getPropertyValue(ResourceDownloadInfo.XPATH_URL);
             if(url == null || url.length() == 0){
                 return true;

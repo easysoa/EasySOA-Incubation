@@ -34,6 +34,8 @@ public interface ResourceDownloadInfo {
     
     static final String XPATH_TIMESTAMP = "rdi:timestamp";
     
+    static final String TIMESTAMP_DATETIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
+    
     static final String XPATH_PROBE_TYPE = "rdi:probeType";
     
     static final String XPATH_PROBE_INSTANCEID = "rdi:probeInstanceId";

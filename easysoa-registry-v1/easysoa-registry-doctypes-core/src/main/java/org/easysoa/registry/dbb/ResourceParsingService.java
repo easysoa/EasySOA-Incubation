@@ -34,7 +34,14 @@ public interface ResourceParsingService {
      * @param documentType
      * @return 
      */
-    public boolean isWsdlDocumentType(String documentType);
+    public boolean isWsdlInfo(DocumentModel model);
+    
+    /**
+     * 
+     * @param model
+     * @return 
+     */
+    public boolean isWsdlFileResource(DocumentModel model);
     
     /**
      * 

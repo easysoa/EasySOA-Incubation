@@ -129,6 +129,8 @@ public class WSDLParsingTest extends AbstractRegistryTest {
         blob.setEncoding("UTF-8");
         blob.setFilename("PureAirFlowers.wsdl");// TODO or auto ?
         serviceModel.setPropertyValue("file:content", blob);
+        // TODO : need to remove the resourceAlreadyUpdated context property otherwise, there is no new parsing of the new blob file
+        //serviceModel.getContextData().remove("request/resourceAlreadyUpdated");
         serviceModel = documentManager.saveDocument(serviceModel);
         // NB. returns same as documentManager.getDocument(serviceModel.getRef()) ; else no extracted metadata
         documentManager.save();
@@ -147,6 +149,8 @@ public class WSDLParsingTest extends AbstractRegistryTest {
         blob.setEncoding("UTF-8");
         blob.setFilename("PrecomptePartenaireService.wsdl");// TODO or auto ?
         serviceModel.setPropertyValue("file:content", blob);
+        // TODO : need to remove the resourceAlreadyUpdated context property otherwise, there is no new parsing of the new blob file
+        //serviceModel.getContextData().remove("request/resourceAlreadyUpdated");
         serviceModel = documentManager.saveDocument(serviceModel);
         // NB. returns same as documentManager.getDocument(serviceModel.getRef()) ; else no extracted metadata
         documentManager.save();

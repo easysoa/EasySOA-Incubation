@@ -27,31 +27,24 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
-import org.easysoa.registry.dbb.ResourceUpdateService;
 import org.easysoa.registry.test.AbstractRegistryTest;
-import org.easysoa.registry.test.AbstractWebEngineTest;
-import org.easysoa.registry.test.EasySOAWebEngineFeature;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
-import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
-import org.nuxeo.ecm.automation.test.RestFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.webengine.test.WebEngineFeature;
-import org.nuxeo.runtime.test.runner.LocalDeploy;
+import org.nuxeo.runtime.test.runner.Deploy;
+import org.nuxeo.runtime.test.runner.Features;
+import org.nuxeo.runtime.test.runner.FeaturesRunner;
+import org.nuxeo.runtime.test.runner.Jetty;
 
 /**
  *
@@ -115,9 +108,10 @@ public class ResourceUpdateTest /*extends AbstractWebEngineTest*/ extends Abstra
 
         Assert.assertEquals("http://localhost:18080/mock/wsdl/PureAirFlowers?wsdl", foundEndpoint.getPropertyValue(ResourceDownloadInfo.XPATH_URL));
         Assert.assertNotNull(foundEndpoint.getProperty("file", "content"));
+        Assert.assertNotNull(foundEndpoint.getPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP));
         
         Blob blob = (Blob) foundEndpoint.getPropertyValue("file:content");
-        //Assert.assertEquals("PureAirFlowers.wsdl", blob.getFilename()); // TODO ??? WSDL file registered with name = easysoaHttpDownloader4849292342807998958tmp (better PureAirFlowers.wsdl)
+        Assert.assertEquals("PureAirFlowers.wsdl", blob.getFilename()); // TODO ??? WSDL file registered with name = easysoaHttpDownloader4849292342807998958tmp (better PureAirFlowers.wsdl)
         
         //Assert.assertEquals("UTF-8", blob.getEncoding()); // TODO : encoding not set
         //Assert.assertEquals("text/xml", blob.getMimeType()); // TODO : [application/octet-stream] instead of "text/xml" ?
@@ -125,8 +119,7 @@ public class ResourceUpdateTest /*extends AbstractWebEngineTest*/ extends Abstra
         String blobContent = new String(blob.getByteArray());
         Assert.assertNotNull(blobContent);
         Assert.assertTrue(blobContent.contains("PureAirFlowersServiceService"));
-
-        
+       
     }
 
 }

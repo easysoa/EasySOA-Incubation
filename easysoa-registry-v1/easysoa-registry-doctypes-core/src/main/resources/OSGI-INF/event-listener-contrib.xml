@@ -32,8 +32,8 @@
     <!-- TODO : Refactoring ? modify event for wsdlParsingListener ?? -->
     <listener name="wsdlParsingListener" class="org.easysoa.registry.types.listeners.WSDLParsingListener"
       priority="152">
-      <event>documentCreated</event><!-- TODO rm -->
-      <event>documentModified</event><!-- TODO rm -->
+      <!--<event>documentCreated</event>--><!-- TODO rm -->
+      <!--<event>documentModified</event>--><!-- TODO rm -->
       <event>resourceDownloaded</event><!-- triggered by ResourceUpdateService -->
     </listener>
     

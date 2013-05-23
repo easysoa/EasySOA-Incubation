@@ -195,5 +195,20 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
         //return Response.serverError().build();
         return null;
     }
-*/    
+*/
+    
+    // TODO : Add new method to set the timestamp with a param (new type  implementing the ResourceDownloadInfo)
+
+    
+    
+    // Brancher web disco au moment de l'enregistrment dans le registry
+    // --> Ajout d'un prop disco.web
+    // et test
+    
+    // Retester la dbb et la disco en mode UI et bookmarklet. 
+    
+    // Verifier click sur discovery ramene sur adresse locale
+    
+    // 
+    
 }

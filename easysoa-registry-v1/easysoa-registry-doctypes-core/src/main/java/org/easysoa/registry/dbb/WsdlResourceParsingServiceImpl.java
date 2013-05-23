@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.xml.namespace.QName;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.facets.InformationServiceDataFacet;
@@ -86,9 +87,57 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
      * @return 
      */
     @Override
-    public boolean isWsdlDocumentType(String documentType) {
-        return wsdlDocumentTypes.contains(documentType);
-    }    
+    public boolean isWsdlInfo(DocumentModel model) { // TODO isWsdlInfo()
+        //return wsdlDocumentTypes.contains(model.getType()); // TODO getFacets().contains...
+        Set<String> facets = model.getFacets();
+        return facets.contains(InformationService.DOCTYPE) 
+                || facets.contains(Endpoint.DOCTYPE)
+                || facets.contains(ServiceImplementation.DOCTYPE);
+    }
+    
+    /**
+     * 
+     * @param model
+     * @return 
+     */
+    @Override
+    public boolean isWsdlFileResource(DocumentModel model){
+        /*
+        if((isRDI(model) && isWsdl(model)) || isWsdlHardType(model)){
+            
+            return true;
+        }
+        return false;
+        */
+        
+        return wsdlFileDocumentTypes.contains(model.getType());
+        
+        // isRDI && isWsdl(i.e. isWsdlResource(from type or name of file and / or url) || isWsdlHardType i.e. iserv && endpoint)
+    }
+    
+    /**
+     * 
+     * @param model
+     * @return 
+     */
+    /*private boolean isRDI(DocumentModel model){
+       return 
+    }*/
+    
+    /*private boolean isWsdl(DocumentModel model){
+        
+    }*/
+    
+    /**
+     * 
+     * @param model
+     * @return 
+     */
+    private boolean isWsdlHardType(DocumentModel model){
+        Set<String> facets = model.getFacets();
+        return facets.contains(InformationService.DOCTYPE) 
+                || facets.contains(Endpoint.DOCTYPE);        
+    }
     
     /**
      * 
@@ -116,7 +165,7 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
                 }
 
                 // Try extracting metadata from soaname
-                if (isWsdlDocumentType(sourceDocument.getType())) { // NB. additionally also if serviceimpl
+                if (isWsdlInfo(sourceDocument)) { // NB. additionally also if serviceimpl
                     documentModified = extractMetasFromSoaName(sourceDocument) || documentModified;
                 }
 

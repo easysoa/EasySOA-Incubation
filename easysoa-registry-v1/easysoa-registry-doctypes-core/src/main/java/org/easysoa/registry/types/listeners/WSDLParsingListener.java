@@ -65,7 +65,7 @@ public class WSDLParsingListener implements EventListener {
             throw new ClientException(ex);
         }        
         
-        if (!resourceParsingService.isWsdlDocumentType(sourceDocument.getType())) {
+        if (!resourceParsingService.isWsdlInfo(sourceDocument)) {
             return;
         }
 

@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
@@ -107,8 +109,16 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
         }
         
         // Update registry with new resource
-        Blob resourceBlob = FileUtils.createSerializableBlob(file, resourceFile.getName(), null);
+        // TODO : replace resourceFile.getName by a method computing the name from the url
+        //Blob resourceBlob = FileUtils.createSerializableBlob(file, resourceFile.getName(), null);
+        Blob resourceBlob = FileUtils.createSerializableBlob(file, getWsdlFileName(newUrl), null);
         documentToUpdate.setProperty("file", "content", resourceBlob);
+        
+        // Compute timestamp
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat(ResourceDownloadInfo.TIMESTAMP_DATETIME_PATTERN);
+        String formattedDate = sdf.format(date);
+        documentToUpdate.setPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP, formattedDate);
         
         //coreSession.saveDocument(documentToUpdate); // updates & triggers events ; TODO now or later ??
         coreSession.save(); // persists ; TODO now or later ??
@@ -118,6 +128,17 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
 
     }
 
+    // TODO : complete, improve this method !!
+    /**
+     * Build a file name for WSDL file from the URL
+     * @param url The url
+     * @return The file name
+     */
+    private String getWsdlFileName(String url){
+        String fileName = url.substring(url.lastIndexOf("/")).replace("?", ".");
+        return fileName;
+    }
+    
     @Override
     public void fireResourceDownloadedEvent(DocumentModel document) throws ClientException {
         // Trigger a resourceDownloaded event

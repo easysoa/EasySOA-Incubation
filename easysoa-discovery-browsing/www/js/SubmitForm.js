@@ -3,7 +3,7 @@ $(function() {
 	window.SubmitFormModel = Backbone.Model.extend({
 
 		HTTP: "http://",
-		
+
 		initialize: function() {
 			this.set({
 				"url": "",
@@ -11,26 +11,26 @@ $(function() {
 				"serviceName": ""
 			});
 		},
-		
+
 		getURL: function() {
 			var url = this.get("url");
 			return (url.indexOf(this.HTTP) != -1) ? url : this.HTTP+url;
 		},
-		
+
 		getApplicationName: function() {
 			return this.get("applicationName");
 		},
-		
+
 		getServiceName: function() {
 			return this.get("serviceName");
 		},
-		
+
 		submit: function() {
 			if (this.getURL() != '') {
           this.view.info("Sending request...");
           var environmentName = $('#environmentSelect option').filter(":selected").attr('value');
           var context = $('#easysoa-context').attr('value');
-          
+
           var url = this.getURL();
 			    jQuery.ajax({
 			        url: '/dbb/send?token=' + Math.random(), // avoids caching
@@ -44,7 +44,8 @@ $(function() {
                                       'spnode:subproject':context,
 			              'endp:url': url,
 			              'env:environment': environmentName,
-			              'dc:title': environmentName + ': ' + $('#submitService').attr('value') //FIXME Better property sync with getServiceName()
+			              'dc:title': environmentName + ': ' + $('#submitService').attr('value'), //FIXME Better property sync with getServiceName()
+                                      'rdi:url':url
 			              // TODO v1 LATER component / platform, probe
 			            }
 			          },
@@ -62,7 +63,7 @@ $(function() {
 			      });
 			}
 		},
-		
+
 		select: function(descriptor) {
 			this.set({
 				"url": descriptor.url,
@@ -70,13 +71,13 @@ $(function() {
 				"applicationName": descriptor.applicationName
 			});
 		}
-		
+
 	});
 
 	window.SubmitForm = new SubmitFormModel;
-		
+
 	window.SubmitFormView = Backbone.View.extend({
-		
+
 		el: $('#menuSubmitForm'),
 
 		selectedWSDL: $('#submitSelectedWSDL'),
@@ -86,17 +87,17 @@ $(function() {
 		messageSuccess: $('#messageSuccess'),
 		messageFailure: $('#messageFailure'),
 		environmentSelect: $('#environmentSelect'),
-		
+
 		events: {
 			"click #submit": "submit",
 			"click #newEnvironment": "newEnvironment"
 		},
-		
+
 		initialize: function() {
 			_.bindAll(this, 'render', 'newEnvironment');
 			SubmitForm.view = this;
 			SubmitForm.bind('change', this.render);
-			
+
       // Init environment list
       this.environmentSelect.append('<option value="Production">Production</option>');
       var view = this;
@@ -110,7 +111,7 @@ $(function() {
             }
         });
 		},
-	
+
 		render: function() {
 			this.selectedWSDL.html(SubmitForm.getURL());
 			this.submitApp.attr("value", SubmitForm.getApplicationName());
@@ -121,13 +122,13 @@ $(function() {
 		submit: function() {
 			SubmitForm.submit();
 		},
-		
+
 		hideAllMessages: function() {
 			this.messageInfo.hide();
 			this.messageSuccess.hide();
 			this.messageFailure.hide();
 		},
-		
+
 		info: function(msg) {
 			this.hideAllMessages();
 			this.messageInfo.html(msg);
@@ -137,7 +138,7 @@ $(function() {
 					}, 3000);
 				});
 		},
-		
+
 		success: function() {
 			this.hideAllMessages();
 			this.messageSuccess.html('<img src="img/ok.png" height="15" /> WSDL registered');
@@ -147,7 +148,7 @@ $(function() {
 					}, 3000);
 				});
 		},
-		
+
 		failure: function(error) {
 			this.hideAllMessages();
 			this.messageFailure.html(error);
@@ -157,16 +158,16 @@ $(function() {
 					}, 5000);
 				});
 		},
-		
+
 		newEnvironment: function() {
 		  var newEnvName = prompt('New environment name');
 		  if (newEnvName != null) {
-		    this.environmentSelect.append('<option value="' + newEnvName + '">' 
+		    this.environmentSelect.append('<option value="' + newEnvName + '">'
 		      + newEnvName + '</option>');
 		    $('option[value='+newEnvName+']', this.environmentSelect).attr('selected', 'selected');
 		  }
 		}
-		
+
 	});
-	
+
 });

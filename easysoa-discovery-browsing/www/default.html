@@ -64,7 +64,7 @@ function getUrlVars() {
     }
     return vars;
 }
-    
+
 $(document).ready(function() {
 
   // Display the current context
@@ -75,8 +75,8 @@ $(document).ready(function() {
   /**
    * Load bookmarklet script
    */
-  
-  ///alert('ajax url : /js/bookmarklet/bookmarklet-min.js?subprojectId=' + decodeURI(getUrlVars()["subprojectId"])); // OK
+
+  //alert('ajax url : /js/bookmarklet/bookmarklet-min.js?subprojectId=' + decodeURI(getUrlVars()["subprojectId"])); // OK
   $.ajax({
     url: '/js/bookmarklet/bookmarklet-min.js?subprojectId=' + decodeURI(getUrlVars()["subprojectId"]),
     dataType: 'text', // Prevents JS execution
@@ -90,9 +90,9 @@ $(document).ready(function() {
       //alert('encoded : ' + encodeURI(xhr.responseText));
       //$('#bookmarklet').html('<a href="' + js + '">Find WSDLs</a>');
       $('#bookmarklet').html('<a class="button" href="' + js + '" title="Glissez moi dans les favoris de votre navigateur">Notifier EasySOA</a>');
-      
+
       //$('#bookmarklet').html('<a class="button" ondragend="this.click();" href="javascript:if(top[\'webDiscoveryBookmarklet@easysoa.org\']){top[\'webDiscoveryBookmarklet@easysoa.org\'];}else{' + js + '}" title="Glissez moi dans les favoris de votre navigateur">Notifier EasySOA</a>');
-      
+
     }
   });
 
@@ -104,10 +104,10 @@ $(document).ready(function() {
 <body style="font-family: Arial, sans-serif; color: #002244;">
 
 <!--Perspective : <span id="context"></span>-->
-    
-<h2>Démarrage rapide</h2>    
+
+<h2>Démarrage rapide</h2>
 <p>
-    La découverte web vous permet, tout en naviguant, de découvrir les services Web liés depuis les pages web visitées. 
+    La découverte web vous permet, tout en naviguant, de découvrir les services Web liés depuis les pages web visitées.
 
     Pour l'utiliser :
     <ol>
@@ -116,7 +116,7 @@ $(document).ready(function() {
     </ol>
 
     <strong>ATTENTION !</strong> Ne s'applique pas aux sites sécurisés (protocole https), pour lesquels il est nécessaire de passer en mode notification <a href="#notifier">avec le bouton Notifier EasySOA</a>.
-</p>  
+</p>
 
 <hr/>
 <hr/>
@@ -144,7 +144,7 @@ Pour naviguer, entrez simplement une adresse (correspondant avotre application m
 <h2><a id="proxyConfig">Comment configurer votre navigateur pour utiliser la découverte web ?</a></h2>
 
     <!--The proxy will be launched on http://localhost:8081, so you will have to edit your browser's options to set the proxy to this address. Please make sure to remove any proxy exceptions (like localhost/127.0.0.1).
-    
+
     If you are in Chrome browser and you don't discover any services or some authentication problems because of proxy configuration problems. Run :
 
     chromium-browser --proxy-server="127.0.0.1:8081" --proxy-bypass-list=""
@@ -160,7 +160,7 @@ Pour naviguer, entrez simplement une adresse (correspondant avotre application m
     chromium-browser --proxy-server="127.0.0.1:8081" --proxy-bypass-list=""
 
     It will launch the browser with the good configuration.-->
-    
+
 <!--<h2>Getting started</h2>-->
 <h2>Exemples</h2>
 <!--<h2>Examples</h2>-->

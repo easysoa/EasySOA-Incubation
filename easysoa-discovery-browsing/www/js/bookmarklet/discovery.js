@@ -136,7 +136,7 @@ function runServiceFinder(theUrl, localScrapingLinks, localScrapingIndex) {
 					console.log("EasySOA link parsing ERROR: ", data.errors[errorKey]);
 				}
 			}
-			
+
 			// local scraping loop using recursive callback
 			runLocalScrapingServiceFinder(localScrapingLinks, localScrapingIndex);
 		},
@@ -156,7 +156,7 @@ function appendWSDLs(data) {
 			serviceName: key,
 			serviceURL: data.foundLinks[key]
 		};
-		
+
 		// avoiding to display twice the same service (happens when local scraping
 		// sends a link to this same HTML page, therefore containing the same WSDL URLs)
 		if (!wsdlMap[newWSDL.serviceURL]) {
@@ -178,7 +178,7 @@ function runLocalScrapingServiceFinder(links, i) {
 		var links = jQuery('a');
 		var i = 0;
 	}
-	
+
 	// loop end condition
 	if (i < links.length) {
 
@@ -199,7 +199,7 @@ function runLocalScrapingServiceFinder(links, i) {
 function sendWSDL(domElement) {
 	var $domElement = jQuery(domElement);
 	var wsdlToSend = wsdls[$domElement.attr('id')];
-        
+
 	  var environmentName = jQuery('#easysoa-environment').attr('value');
           var context = jQuery('#easysoa-context').attr('value');
 		jQuery.ajax({
@@ -224,7 +224,8 @@ function sendWSDL(domElement) {
           'spnode:subproject':context,
           'endp:url': wsdlToSend.serviceURL,
           'env:environment': environmentName,
-          'dc:title': environmentName + ': ' + wsdlToSend.serviceName
+          'dc:title': environmentName + ': ' + wsdlToSend.serviceName,
+          'rdi:url' : wsdlToSend.serviceURL
           // TODO v1 LATER component / platform, probe
         }
       },
@@ -241,7 +242,7 @@ function sendWSDL(domElement) {
                             console.warn("EasySOA ERROR: Request failure - ", xhr.responseText);
 			}
 		});
-        
+
 	$domElement.animate({opacity:0.5}, 'fast', function() {
 	});
 }
@@ -259,14 +260,14 @@ function exit() {
  */
 
 function initTemplates() {
-	
+
 	templates['results'] = underscore.template(
 	'<div class="easysoa-frame" id="easysoa-tpl-results">\
 	  <div class="easysoa-exit" onclick="exit()"></div>\
 	  <div class="easysoa-title">Found WSDLs:</div>\
 	  <span class="easysoa-doc">(click on those you want to submit)</span>\
     </div>');
-	
+
 	templates['login'] = underscore.template(
 	'<div class="easysoa-frame" id="easysoa-tpl-login">\
 	  <div class="easysoa-exit" onclick="exit()"></div>\
@@ -276,15 +277,15 @@ function initTemplates() {
       <input type="submit" id="easysoa-submit" />\
 	  <div id="easysoa-login-error"></div>\
     </div>');
-	
+
 	templates['wsdl'] = underscore.template(
 	'<div class="easysoa-wsdl-result" onclick="sendWSDL(this)" id="<%= id %>">\
       <span class="easysoa-wsdl-name"><%= serviceName %></span><br />\
 	  <a href="<%= serviceURL %>" onclick="return false;" class="easysoa-wsdl-link"><%= serviceURL %></a>\
     </div>');
-    
+
 	templates['afterWsdls'] = underscore.template(
-	'<div class="easysoa-doc">Environment name: <input type="text" id="easysoa-environment" value="Production" /></div>' + 
+	'<div class="easysoa-doc">Environment name: <input type="text" id="easysoa-environment" value="Production" /></div>' +
         '<div class="easysoa-doc">Phase: #{context-display}<input type="hidden" id="easysoa-context" value="#{context}"/></div>'
 	);
 }
@@ -311,7 +312,7 @@ function runTemplate(name, data) {
 			frameDragged = false;
 		});
 	}
-	
+
 	// Login template handler
 	if (name == 'login') {
 		jQuery('#easysoa-submit').click(function() {

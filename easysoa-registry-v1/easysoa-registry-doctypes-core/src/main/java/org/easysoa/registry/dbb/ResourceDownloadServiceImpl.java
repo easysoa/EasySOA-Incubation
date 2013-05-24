@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.easysoa.registry.dbb;
 
@@ -22,27 +22,27 @@ import org.easysoa.registry.types.ResourceDownloadInfo;
 
 /**
  * Impl of ResourceDownloadService for Nuxeo components.
- * 
+ *
  * Makes the global ResourceDownloadService available in Nuxeo,
  * but if not available or timeout at activation, disables it and does instead
  * a local synchronous download (using HttpDownloaderServiceImpl).
- * 
+ *
  * Default configuration (change it in nxserver/config/easysoa.properties ) :
  * * ResourceDownloadServiceImpl.delegateResourceDownloadServiceUrl = http://localhost:7080/get
- * 
+ *
  * Reuses a single Jersey client (rather than creating one per download which costs too much).
- * 
+ *
  * TODO LATER better :
  * test delegate async at start
  * called by ResourceUpdate within async using Nuxeo Work
- * 
+ *
  * @author jguillemotte, mdutoo
  *
  */
 public class ResourceDownloadServiceImpl extends DefaultComponent implements ResourceDownloadService {
 
     private String delegateResourceDownloadServiceUrl;
-    
+
     // caches
     private Client client = null;
     private boolean isDelegatedDownloadDisabled = false;
@@ -50,7 +50,7 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
     @Override
     public void activate(ComponentContext context) throws Exception {
         super.activate(context);
-        
+
         // Configuration (following ex. SchedulerImpl)
         // TODO LATER maybe rather as an extension point / contribution ??
     	try {
@@ -69,7 +69,7 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
         // TODO LATER better : called by ResourceUpdate within async using Nuxeo Work
 		client = Client.create();
         client.setConnectTimeout(3000); // Set timeout to 3 seconds TODO LATER make it configurable
-        
+
         // TODO LATER start async Work that tests delegated download and sets isDelegatedDownloadDisabled
     }
 
@@ -78,7 +78,7 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
         client = null;
         super.deactivate(context);
     }
-    
+
     @Override
     public ResourceDownloadInfo get(URL url) throws Exception {
 
@@ -94,11 +94,12 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
 	            // Error or timeout, try the second donwload method
                     isDelegatedDownloadDisabled = true;
 	        }
-    	} else {
-            // If no response : Use local downloader service                    
+        }
+        if(file == null){
+            // If no response : Use local downloader service
             file = localDownload(url);
         }
-        
+
         // Compute timestamp
         if(file != null){
             Date date = new Date();
@@ -110,30 +111,30 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
     }
 
     /**
-     * 
+     *
      * @param url
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     private File delegatedDownload(URL url) throws Exception {
         WebResource webResource = client.resource(delegateResourceDownloadServiceUrl);
         // NB. reuses Jersey client rather than creating one per download else costs too much
         // (ex. lots of threads at SignatureParser l. 79 within annotation parsing)
         // TODO LATER better : called by ResourceUpdate within async using Nuxeo Work
-        
+
         // TODO for frascati service side : Add a parameter to pass the url
         webResource.setProperty("fileURL", url.toURI().toString());
-        
+
         // Get the resource
         File resourceFile = webResource.get(File.class);
         return resourceFile;
     }
 
     /**
-     * 
+     *
      * @param url
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
     private File localDownload(URL url) throws Exception{
         HttpDownloaderService httpDownloaderService = new HttpDownloaderServiceImpl();
@@ -145,7 +146,7 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
     /**
      * Read data from File
      * @param file
-     * @return 
+     * @return
      */
     @Override
     public String getData(File file) throws Exception {
@@ -154,7 +155,7 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
         try {
             if (file == null) {
                 // ex. if site root url returns something else than 200 (ex. 403)
-                return ""; // else cleaner.clean(siteRootFile) throws NullPointerException 
+                return ""; // else cleaner.clean(siteRootFile) throws NullPointerException
             }
             fis = new FileInputStream(file);
             StringBuilder dataBuffer = new StringBuilder();
@@ -174,10 +175,10 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
         }
         return data;
     }
-    
+
     //@Reference
     //protected List<UrlPatternWebResourceDownloadService> downloadServices;
-    
+
     /* (non-Javadoc)
      * @see org.easysoa.registry.rest.integration.resources.RoutingWebResourceDownloadService#get(java.net.URL)
      */
@@ -189,7 +190,7 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
         // - Sort the list, to have the webResourceDownloadServices in the specified order
         // Need to be sorted manually because FraSCAti doesn't provide a native way to specify an execution order
         Collections.sort(downloadServices, new DownloadServicesComparator());
-        
+
         for(UrlPatternWebResourceDownloadService service : downloadServices){
             if(service.matchUrl(url)){
                 // file type is always WSDL ??
@@ -211,5 +212,5 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
         return null;
     }
 */
-    
+
 }

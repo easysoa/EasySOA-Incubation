@@ -109,7 +109,8 @@ public class ResourceUpdateTest extends AbstractWebEngineTest {
         Assert.assertNotNull(foundEndpoint.getPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP));
         
         Blob blob = (Blob) foundEndpoint.getPropertyValue("file:content");
-        Assert.assertEquals("PureAirFlowers.wsdl", blob.getFilename()); // TODO ??? WSDL file registered with name = easysoaHttpDownloader4849292342807998958tmp (better PureAirFlowers.wsdl)
+
+        Assert.assertEquals("PureAirFlowers.wsdl", blob.getFilename());
         
         //Assert.assertEquals("UTF-8", blob.getEncoding()); // TODO : encoding not set
         //Assert.assertEquals("text/xml", blob.getMimeType()); // TODO : [application/octet-stream] instead of "text/xml" ?

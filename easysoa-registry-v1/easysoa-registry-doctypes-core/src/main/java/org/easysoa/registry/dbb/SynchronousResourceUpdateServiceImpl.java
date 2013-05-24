@@ -95,11 +95,11 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
             //newUrl = "http://footballpool.dataaccess.eu/data/info.wso?WSDL";
             return;
         }
-        File resourceFile;
+        ResourceDownloadInfo resource;
         InputStream file;
         try {
-            resourceFile = resourceDownloadService.get(new URL(newUrl));
-            file = new FileInputStream(resourceFile);
+            resource = resourceDownloadService.get(new URL(newUrl));
+            file = new FileInputStream(resource.getFile());
         } catch (MalformedURLException ex) {
             throw new ClientException("Bad URL : " + newUrl, ex);
         } catch (Exception ex) {
@@ -107,17 +107,9 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
         }
         
         // Update registry with new resource
-        // TODO : replace resourceFile.getName by a method computing the name from the url
-        //Blob resourceBlob = FileUtils.createSerializableBlob(file, resourceFile.getName(), null);
         Blob resourceBlob = FileUtils.createSerializableBlob(file, getWsdlFileName(newUrl), null);
         documentToUpdate.setProperty("file", "content", resourceBlob);
-        
-        // Compute timestamp
-        /*Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(ResourceDownloadInfo.TIMESTAMP_DATETIME_PATTERN);
-        String formattedDate = sdf.format(date);*/
-        //documentToUpdate.setPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP, formattedDate);
-        
+        documentToUpdate.setPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP, resource.getTimestamp());
         //coreSession.saveDocument(documentToUpdate); // updates & triggers events ; TODO now or later ??
         coreSession.save(); // persists ; TODO now or later ??
         
@@ -126,14 +118,16 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
 
     }
 
-    // TODO : complete, improve this method !!
     /**
      * Build a file name for WSDL file from the URL
      * @param url The url
      * @return The file name
      */
     private String getWsdlFileName(String url){
-        String fileName = url.substring(url.lastIndexOf("/")).replace("?", ".");
+        String fileName = url.substring(url.lastIndexOf("/")+1).replace("?", ".");
+        if(!fileName.toLowerCase().endsWith(".wsdl")){
+            fileName = fileName.concat(".wsdl");
+        }
         return fileName;
     }
     

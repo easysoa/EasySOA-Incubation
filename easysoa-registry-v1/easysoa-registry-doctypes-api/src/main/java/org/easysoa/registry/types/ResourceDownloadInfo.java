@@ -20,6 +20,8 @@
 
 package org.easysoa.registry.types;
 
+import java.io.File;
+
 /**
  * TODO move to facets package
  * @author jguillemotte
@@ -39,5 +41,29 @@ public interface ResourceDownloadInfo {
     static final String XPATH_PROBE_TYPE = "rdi:probeType";
     
     static final String XPATH_PROBE_INSTANCEID = "rdi:probeInstanceId";
+    
+    /**
+     * Setter for File
+     * @param file 
+     */
+    public void setFile(File file);
+    
+    /**
+     * Setter for timestamp
+     * @param timestamp 
+     */
+    public void setTimestamp(String timestamp);
+    
+    /**
+     * Return the file (can be null)
+     * @return A File
+     */
+    public File getFile();
+    
+    /**
+     * Return the download timestamp
+     * @return A String representing the download timestamp
+     */
+    public String getTimestamp();
     
 }

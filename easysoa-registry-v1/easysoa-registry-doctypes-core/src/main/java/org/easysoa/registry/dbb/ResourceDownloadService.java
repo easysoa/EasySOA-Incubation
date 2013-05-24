@@ -2,6 +2,7 @@ package org.easysoa.registry.dbb;
 
 import java.io.File;
 import java.net.URL;
+import org.easysoa.registry.types.ResourceDownloadInfo;
 
 /**
  * 
@@ -15,7 +16,7 @@ public interface ResourceDownloadService {
      * @return
      * @throws Exception If a problem occurs
      */
-    public File get(URL url) throws Exception;
+    public ResourceDownloadInfo get(URL url) throws Exception;
 
     /**
      * Get the data contained in the given file

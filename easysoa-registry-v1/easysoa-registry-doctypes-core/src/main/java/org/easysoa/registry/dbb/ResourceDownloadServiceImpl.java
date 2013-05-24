@@ -16,6 +16,9 @@ import org.nuxeo.runtime.model.DefaultComponent;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import org.easysoa.registry.types.ResourceDownloadInfo;
 
 /**
  * Impl of ResourceDownloadService for Nuxeo components.
@@ -77,21 +80,31 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
     }
     
     @Override
-    public File get(URL url) throws Exception {
+    public ResourceDownloadInfo get(URL url) throws Exception {
 
+        ResourceDownloadInfoImpl resourceDownloadInfo = new ResourceDownloadInfoImpl();
+        File file = null;
     	if (!isDelegatedDownloadDisabled) {
 	        // First try : Connect to FraSCAti studio download service (TODO : this service must be exposed as REST service ...)
 	        try {
-	            return delegatedDownload(url);
+	            //return delegatedDownload(url);
+                    file = delegatedDownload(url);
 	        }
 	        catch(Exception ex){
 	            // Error or timeout, try the second donwload method
-	        	isDelegatedDownloadDisabled = true;
+                    isDelegatedDownloadDisabled = true;
+                    // If no response : Use local downloader service                    
+                    file = localDownload(url);                        
 	        }
     	}
+        //return localDownload(url);
         
-        // If no response : Use local downloader service
-        return localDownload(url);
+        // Compute timestamp
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat(ResourceDownloadInfo.TIMESTAMP_DATETIME_PATTERN);
+        resourceDownloadInfo.setTimestamp(sdf.format(date));
+        resourceDownloadInfo.setFile(file);
+        return resourceDownloadInfo;
     }
 
     /**
@@ -196,19 +209,5 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
         return null;
     }
 */
-    
-    // TODO : Add new method to set the timestamp with a param (new type  implementing the ResourceDownloadInfo)
-
-    
-    
-    // Brancher web disco au moment de l'enregistrment dans le registry
-    // --> Ajout d'un prop disco.web
-    // et test
-    
-    // Retester la dbb et la disco en mode UI et bookmarklet. 
-    
-    // Verifier click sur discovery ramene sur adresse locale
-    
-    // 
     
 }

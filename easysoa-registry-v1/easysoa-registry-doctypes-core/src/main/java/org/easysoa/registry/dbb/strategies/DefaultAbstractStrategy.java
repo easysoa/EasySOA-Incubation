@@ -66,7 +66,7 @@ public abstract class DefaultAbstractStrategy implements ServiceFinderStrategy {
     
     private static String extractApplicationNameFromUrl(URL url) throws Exception {
         ResourceDownloadService resourceDownloadService = Framework.getService(ResourceDownloadService.class); 
-        java.io.File siteRootFile = resourceDownloadService.get(url);
+        java.io.File siteRootFile = resourceDownloadService.get(url).getFile();
         if (siteRootFile == null) {
         	// ex. if site root url returns something else than 200 (ex. 403)
         	return null; // else cleaner.clean(siteRootFile) throws NullPointerException 

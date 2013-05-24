@@ -51,7 +51,7 @@ public class BrowsingContext {
 	    	//HttpDownloaderService httpDownloaderService = new HttpDownloaderServiceImpl();
 	        //HttpDownloader fileDownloader = httpDownloaderService.createHttpDownloader(url);
                 ResourceDownloadService resourceDownloadService = Framework.getService(ResourceDownloadService.class);     
-                this.data = resourceDownloadService.getData(resourceDownloadService.get(url));
+                this.data = resourceDownloadService.getData(resourceDownloadService.get(url).getFile());
 	        /*FileInputStream fis = null;
 	        try {
 	        	fileDownloader.download();

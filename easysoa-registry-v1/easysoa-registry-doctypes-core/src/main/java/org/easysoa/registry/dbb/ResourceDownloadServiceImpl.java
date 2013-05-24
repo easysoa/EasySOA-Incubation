@@ -93,17 +93,19 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
 	        catch(Exception ex){
 	            // Error or timeout, try the second donwload method
                     isDelegatedDownloadDisabled = true;
-                    // If no response : Use local downloader service                    
-                    file = localDownload(url);                        
 	        }
-    	}
-        //return localDownload(url);
+    	} else {
+            // If no response : Use local downloader service                    
+            file = localDownload(url);
+        }
         
         // Compute timestamp
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat(ResourceDownloadInfo.TIMESTAMP_DATETIME_PATTERN);
-        resourceDownloadInfo.setTimestamp(sdf.format(date));
-        resourceDownloadInfo.setFile(file);
+        if(file != null){
+            Date date = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat(ResourceDownloadInfo.TIMESTAMP_DATETIME_PATTERN);
+            resourceDownloadInfo.setTimestamp(sdf.format(date));
+            resourceDownloadInfo.setFile(file);
+        }
         return resourceDownloadInfo;
     }
 

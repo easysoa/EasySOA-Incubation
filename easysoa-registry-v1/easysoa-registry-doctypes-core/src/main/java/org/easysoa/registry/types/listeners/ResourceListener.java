@@ -31,7 +31,6 @@ import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
@@ -65,7 +64,6 @@ public class ResourceListener implements EventListener {
         // Prevent looping on source document changes
         // (maybe ex. setting downloaded resource blob)
         if (context.hasProperty(CONTEXT_REQUEST_RESOURCE_ALREADY_UPDATED)) {
-            sourceDocument.getContextData().remove(ScopeType.REQUEST.getScopedKey(CONTEXT_REQUEST_RESOURCE_ALREADY_UPDATED));
             return;
         }
         sourceDocument.getContextData().putScopedValue(ScopeType.REQUEST,
@@ -78,7 +76,7 @@ public class ResourceListener implements EventListener {
             resourceUpdateService = Framework.getService(ResourceUpdateService.class);
         }
         catch(Exception ex){
-            throw new ClientException("Error during the update", ex);
+            throw new ClientException("Can't get ResourceUpdateService", ex);
         }
         
         // if is an RDI (external, to be downloaded resource), update it
@@ -103,11 +101,6 @@ public class ResourceListener implements EventListener {
             // Trigger event to call (WSDL) parsing listener
             resourceUpdateService.fireResourceDownloadedEvent(sourceDocument);
         }
-
-        // TODO test it
-        // TODO copy this file to ResourceListener & replace it in *listener.xml conf,
-        // remove the following code from it, hook WsdlParsingListener rather on resourceDownloaded event in xml conf,
-        // trigger resourceDownloaded event in ResourceUpdateService impl
     }
 
     /**
@@ -131,18 +124,17 @@ public class ResourceListener implements EventListener {
      * @return true if Resource subtype or (HACK) iserv/endpoint (isWsdlDocumentType) with empty url
      */
     private boolean isResource(DocumentModel docModel) throws ClientException {
-        //SoaMetamodelService soaMetaModelService = Framework.getService(SoaMetamodelService.class);
-        //return soaMetaModelService.
-        
+        SoaMetamodelService soaMetaModelService;
         ResourceParsingService resourceParsingService;
         try {
+            soaMetaModelService = Framework.getService(SoaMetamodelService.class);
             resourceParsingService = Framework.getService(ResourceParsingService.class);
         }
         catch(Exception ex){
-            throw new ClientException(ex);
+            throw new ClientException("Can't get SoaMetamodelService & ResourceParsingService", ex);
         }
 
-        if (Resource.DOCTYPE.equals(docModel.getType())){
+        if (soaMetaModelService.isAssignable(docModel.getType(), Resource.DOCTYPE)) {
             return true;
         } else if(resourceParsingService.isWsdlFileResource(docModel)){ //DocumentType(docModel.getType())
             String url = (String)docModel.getPropertyValue(ResourceDownloadInfo.XPATH_URL);

@@ -20,42 +20,40 @@
 
 package org.easysoa.registry;
 
-import com.google.inject.Inject;
 import java.io.IOException;
 import java.util.HashMap;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
-import org.easysoa.registry.test.AbstractRegistryTest;
+import org.easysoa.registry.test.AbstractWebEngineTest;
+import org.easysoa.registry.test.EasySOAWebEngineFeature;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
-import org.nuxeo.ecm.webengine.test.WebEngineFeature;
 import org.nuxeo.runtime.test.runner.Deploy;
-import org.nuxeo.runtime.test.runner.Features;
-import org.nuxeo.runtime.test.runner.FeaturesRunner;
-import org.nuxeo.runtime.test.runner.Jetty;
+
+import com.google.inject.Inject;
 
 /**
  *
  * @author jguillemotte
  */
-@RunWith(FeaturesRunner.class)
-@Features(WebEngineFeature.class)
-@Jetty(port = 18080)
 @Deploy("org.easysoa.registry.mock.webEngineResourceUpdateTest")
 @RepositoryConfig(cleanup = Granularity.CLASS)
-public class ResourceUpdateTest /*extends AbstractWebEngineTest*/ extends AbstractRegistryTest {
+public class ResourceUpdateTest extends AbstractWebEngineTest {
+	
+	public static final String MOCK_SERVER_ENDPOINT_WSDL_URL = "http://localhost:"
+			+ EasySOAWebEngineFeature.PORT + "/mock/wsdl/PureAirFlowers";
+	public static final String MOCK_SERVER_ENDPOINT_URL = MOCK_SERVER_ENDPOINT_WSDL_URL + "?wsdl";
     
     @SuppressWarnings("unused")
     private static Logger logger = Logger.getLogger(ResourceUpdateTest.class);
@@ -80,7 +78,7 @@ public class ResourceUpdateTest /*extends AbstractWebEngineTest*/ extends Abstra
     @Test
     public void testMock() throws HttpException, IOException {
         HttpClient httpClient = new HttpClient();
-        GetMethod get = new GetMethod("http://localhost:18080/mock/wsdl/PureAirFlowers?wsdl");
+        GetMethod get = new GetMethod(MOCK_SERVER_ENDPOINT_WSDL_URL);
         int statusCode = httpClient.executeMethod(get);
         Assert.assertEquals(200, statusCode);
         String response = get.getResponseBodyAsString();
@@ -92,10 +90,10 @@ public class ResourceUpdateTest /*extends AbstractWebEngineTest*/ extends Abstra
     @Test
     public void resourceUpdateTest() throws Exception {
         
-        SoaNodeId discoveredEndpointId = new EndpointId("Production", "http://localhost:18080/mock/wsdl/PureAirFlowers");
+        SoaNodeId discoveredEndpointId = new EndpointId("Production", MOCK_SERVER_ENDPOINT_URL);
         HashMap<String, Object> properties = new HashMap<String, Object>();
         properties.put(Endpoint.XPATH_TITLE, "My Endpoint");        
-        properties.put(ResourceDownloadInfo.XPATH_URL, "http://localhost:18080/mock/wsdl/PureAirFlowers?wsdl");
+        properties.put(ResourceDownloadInfo.XPATH_URL, MOCK_SERVER_ENDPOINT_WSDL_URL);
         
         // Trigger a discovery on a wsdl mock file
         DocumentModel doc = discoveryService.runDiscovery(documentManager, discoveredEndpointId, properties, null);
@@ -106,7 +104,7 @@ public class ResourceUpdateTest /*extends AbstractWebEngineTest*/ extends Abstra
         DocumentModel foundEndpoint = documentService.findSoaNode(documentManager, discoveredEndpointId);
         Assert.assertNotNull(foundEndpoint);
 
-        Assert.assertEquals("http://localhost:18080/mock/wsdl/PureAirFlowers?wsdl", foundEndpoint.getPropertyValue(ResourceDownloadInfo.XPATH_URL));
+        Assert.assertEquals(MOCK_SERVER_ENDPOINT_WSDL_URL, foundEndpoint.getPropertyValue(ResourceDownloadInfo.XPATH_URL));
         Assert.assertNotNull(foundEndpoint.getProperty("file", "content"));
         Assert.assertNotNull(foundEndpoint.getPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP));
         

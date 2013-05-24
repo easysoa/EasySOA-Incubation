@@ -88,12 +88,8 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
      * @return 
      */
     @Override
-    public boolean isWsdlInfo(DocumentModel model) { // TODO isWsdlInfo()
-        return wsdlDocumentTypes.contains(model.getType()); // TODO getFacets().contains...
-        /*Set<String> facets = model.getFacets();
-        return facets.contains(InformationService.DOCTYPE) 
-                || facets.contains(Endpoint.DOCTYPE)
-                || facets.contains(ServiceImplementation.DOCTYPE);*/
+    public boolean isWsdlInfo(DocumentModel soaNodeDocModel) { // TODO isWsdlInfo()
+    	return soaNodeDocModel.getFacets().contains(WsdlInfoFacet.FACET_WSDLINFO); // rather than wsdlDocumentTypes.contains(model.getType())
     }
     
     /**
@@ -102,12 +98,12 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
      * @return 
      */
     @Override
-    public boolean isWsdlFileResource(DocumentModel model){
-        /*if((isRDI(model) && isWsdl(model)) || isWsdlHardType(model)){
+    public boolean isWsdlFileResource(DocumentModel soaNodeDocModel){
+        /*if((isRDI(soaNodeDocModel) && isWsdl(soaNodeDocModel)) || isWsdlHardType(soaNodeDocModel)){
             return true;
         }
         return false;*/
-        return wsdlFileDocumentTypes.contains(model.getType());
+        return wsdlFileDocumentTypes.contains(soaNodeDocModel.getType());
         // isRDI && isWsdl(i.e. isWsdlResource(from type or name of file and / or url) || isWsdlHardType i.e. iserv && endpoint)
     }
     

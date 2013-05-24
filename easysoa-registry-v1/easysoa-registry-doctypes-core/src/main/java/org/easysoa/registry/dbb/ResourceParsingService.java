@@ -31,20 +31,26 @@ public interface ResourceParsingService {
 
     /**
      * 
-     * @param documentType
-     * @return 
+     * @param soaNodeDocModel an SOA node
+     * @return whether this document can store WsdlInfo metas (i.e. wsdlPortTypeName...)
+     * NB. WsdlInfo can be filled from various sources :
+     * * WSDL files (ex. provided as content of the same Resource SOA node document) from various disco
+     * * JAXWS implementations from source probe
+     * 
+     * TODO LATER maybe store or copy WsdlInfo in separate metas across types, so
+     * an iserv's WsdlInfo can coexist on one of its endpoint with this endpoint's wsdlInfo ??
      */
-    public boolean isWsdlInfo(DocumentModel model);
+    public boolean isWsdlInfo(DocumentModel soaNodeDocModel);
     
     /**
      * 
-     * @param model
-     * @return 
+     * @param soaNodeDocModel an SOA node
+     * @return whether this document is a Resource that holds a WSDL XML file
      */
-    public boolean isWsdlFileResource(DocumentModel model);
+    public boolean isWsdlFileResource(DocumentModel soaNodeDocModel);
     
     /**
-     * 
+     * Parses Resource file, extracts and sets metas
      * @param sourceDocument
      * @return
      * @throws ClientException 

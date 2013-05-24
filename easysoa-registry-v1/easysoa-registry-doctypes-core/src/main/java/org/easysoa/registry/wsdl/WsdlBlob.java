@@ -66,7 +66,7 @@ public class WsdlBlob { // TODO implements ResourceBlob ? or better as ResourceA
     private boolean isNewFileDifferent() throws ClientException {
         // comparing digests
         String oldDigest = getOldDigest();
-        String newDigest = getNewDigest();
+        String newDigest = getContentDigest();
         // blob is not null, therefore newDigest is not null either
         return !newDigest.equals(oldDigest);
     }
@@ -159,7 +159,7 @@ public class WsdlBlob { // TODO implements ResourceBlob ? or better as ResourceA
         return oldDigest;
     }
 
-    private String getNewDigest() {
+    public String getContentDigest() {
         String newDigest = null;
         
         // getting VCS' digest since already computed (in documentUpdated, but not beforeDocumentModification event)

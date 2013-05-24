@@ -33,6 +33,7 @@ import org.easysoa.registry.facets.WsdlInfoFacet;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.OperationInformation;
+import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaModelSerializationUtil;
 import org.easysoa.registry.types.ids.InformationServiceName;
@@ -88,11 +89,11 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
      */
     @Override
     public boolean isWsdlInfo(DocumentModel model) { // TODO isWsdlInfo()
-        //return wsdlDocumentTypes.contains(model.getType()); // TODO getFacets().contains...
-        Set<String> facets = model.getFacets();
+        return wsdlDocumentTypes.contains(model.getType()); // TODO getFacets().contains...
+        /*Set<String> facets = model.getFacets();
         return facets.contains(InformationService.DOCTYPE) 
                 || facets.contains(Endpoint.DOCTYPE)
-                || facets.contains(ServiceImplementation.DOCTYPE);
+                || facets.contains(ServiceImplementation.DOCTYPE);*/
     }
     
     /**
@@ -102,16 +103,11 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
      */
     @Override
     public boolean isWsdlFileResource(DocumentModel model){
-        /*
-        if((isRDI(model) && isWsdl(model)) || isWsdlHardType(model)){
-            
+        /*if((isRDI(model) && isWsdl(model)) || isWsdlHardType(model)){
             return true;
         }
-        return false;
-        */
-        
+        return false;*/
         return wsdlFileDocumentTypes.contains(model.getType());
-        
         // isRDI && isWsdl(i.e. isWsdlResource(from type or name of file and / or url) || isWsdlHardType i.e. iserv && endpoint)
     }
     
@@ -120,13 +116,39 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
      * @param model
      * @return 
      */
-    /*private boolean isRDI(DocumentModel model){
-       return 
-    }*/
+    private boolean isRDI(DocumentModel model){
+        return model.getFacets().contains(ResourceDownloadInfo.FACET_RESOURCEDOWNLOADINFO);
+    }
     
-    /*private boolean isWsdl(DocumentModel model){
-        
-    }*/
+    /**
+     * 
+     * @param model
+     * @return 
+     */
+    private boolean isWsdl(DocumentModel model){
+        // get the file
+        // or get the url
+        try {
+            String url = (String)model.getPropertyValue(ResourceDownloadInfo.XPATH_URL);
+            Blob blob = (Blob)model.getPropertyValue("file:content");
+            // Check not null
+            if(blob == null){
+                return false;
+            }
+            if(url == null || url.length() == 0){
+                return false;
+            }
+            // Check wsdl
+            if(blob.getFilename().toLowerCase().endsWith(".wsdl") || url.toLowerCase().contains("?wsdl")){
+                return true;
+            }
+            return false;
+        }
+        catch(Exception ex){
+
+        }
+        return false;        
+    }
     
     /**
      * 

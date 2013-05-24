@@ -115,10 +115,10 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
         documentToUpdate.setProperty("file", "content", resourceBlob);
         
         // Compute timestamp
-        Date date = new Date();
+        /*Date date = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat(ResourceDownloadInfo.TIMESTAMP_DATETIME_PATTERN);
-        String formattedDate = sdf.format(date);
-        documentToUpdate.setPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP, formattedDate);
+        String formattedDate = sdf.format(date);*/
+        //documentToUpdate.setPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP, formattedDate);
         
         //coreSession.saveDocument(documentToUpdate); // updates & triggers events ; TODO now or later ??
         coreSession.save(); // persists ; TODO now or later ??

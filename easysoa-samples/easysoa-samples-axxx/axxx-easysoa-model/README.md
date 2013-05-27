@@ -43,8 +43,15 @@ Running :
  * * Exploitation : creates an SOA monitoring indicator for it (by calling EndpointStateService)
  * 
  * B. properties, in [key]=[value] syntax
- * * username (default : Administrator
- * * password (default : Administrator
+ * * username (default : Administrator)
+ * * password (default : Administrator)
+ * * username (default : Administrator)
+ * * password (default : Administrator)
+ * * apvHost (default : localhost)
+ * * pivotalHost (default : localhost)
+ * * registryHost (default : localhost)
+ * * hostMode
+ * * uploadUsingResourceUpdate (default : true) : uploads using rdi:url, else using automation
  * 
  * For instance, if you which to wipe the registry out, then fill Specifications and
  * create Realisation subproject, do :

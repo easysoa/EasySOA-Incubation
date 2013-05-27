@@ -1,6 +1,7 @@
 package com.axxx.dps.demo;
 
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -21,6 +22,7 @@ import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.Project;
 import org.easysoa.registry.types.Repository;
+import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.easysoa.registry.types.Subproject;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
@@ -54,11 +56,13 @@ import com.sun.jersey.api.client.UniformInterfaceException;
  * * Exploitation : creates an SOA monitoring indicator for it (by calling EndpointStateService)
  * 
  * B. properties, in [key]=[value] syntax
- * * username (default : Administrator
- * * password (default : Administrator
- * * apvHost (default : localhost
- * * pivotalHost (default : localhost
- * * registryHost (default : localhost
+ * * username (default : Administrator)
+ * * password (default : Administrator)
+ * * apvHost (default : localhost)
+ * * pivotalHost (default : localhost)
+ * * registryHost (default : localhost)
+ * * hostMode
+ * * uploadUsingResourceUpdate (default : true) : uploads using rdi:url, else using automation
  * 
  * For instance, if you which to wipe the registry out, then fill Specifications and
  * create Realisation subproject, do :
@@ -73,6 +77,7 @@ import com.sun.jersey.api.client.UniformInterfaceException;
  */
 public class RemoteRepositoryInit {
 
+	// API constants of document types that are not (yet) in doctypes-api :
 	public static final String ACTOR_DOCTYPE = "Actor";
 	public static final String BUSINESS_SERVICE_DOCTYPE = "BusinessService";
 	public static final String BUSINESS_SERVICE_PROVIDER_ACTOR = "businessservice:providerActor";
@@ -99,6 +104,7 @@ public class RemoteRepositoryInit {
     private static String apvHost = null;
     private static String pivotalHost = null;
     private static String registryHost = null;
+    private static boolean uploadUsingResourceUpdate = true;
 
 	public static final void main(String[] args) throws Exception {
 	    String url = "http://localhost:8080/nuxeo/site";
@@ -128,6 +134,8 @@ public class RemoteRepositoryInit {
                             apvHost = "owsi-vm-easysoa-axxx-apv.accelance.net";
                             registryHost = "owsi-vm-easysoa-axxx-registry.accelance.net";
                         }
+                    } else if ("uploadUsingResourceUpdate".equals(key)) {
+                    	uploadUsingResourceUpdate = Boolean.valueOf(value);
                     } else {
                         System.err.println("Unknown key value argument " + keyValueArg);
                     }
@@ -432,37 +440,18 @@ public class RemoteRepositoryInit {
             deploiementSubprojectDoc = getDocByPath(deploiementPath);
         }
         String deploiementSubprojectId = (String) deploiementSubprojectDoc.getProperties().get(SubprojectNode.XPATH_SUBPROJECT);
-        
-        SoaNodeId precomptePartenaireServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService");//TODO host
-        SoaNodeId checkAddressProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:" + fromEnc("iuuq;00xxx/ebub.rvbmjuz.tfswjdf/dpn0npdlxtr5220tfswjdft0JoufsobujpobmQptubmWbmjebujpo/JoufsobujpobmQptubmWbmjebujpoIuuqTpbq22Foeqpjou0"));//checkAddressProdEndpoint
-        SoaNodeId informationAPVProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getPivotalHost() + ":7080/WS/ContactSvc.asmx");//TODO host // 18000
 
 		// manually : do a web discovery
-		// TODO web discovery : upload wsdl
 		    
-        String precomptePartenaireServiceProdEndpointPath = createSoaNode(precomptePartenaireServiceProdEndpointId, (String) null,
-                Endpoint.XPATH_ENDP_ENVIRONMENT + "=Prod", // required even with soaname else integrity check fails
-                Endpoint.XPATH_URL + "=http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService"/*, // required even with soaname else integrity check fails
-                Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService"*/);
-        uploadWsdl(precomptePartenaireServiceProdEndpointPath, "../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
-            // or do a web discovery
-            // TODO web discovery : upload wsdl (for now manually upload WSDL on it)
-
-        String checkAddressProdEndpointPath = createSoaNode(checkAddressProdEndpointId, (String) null,
-                Endpoint.XPATH_ENDP_ENVIRONMENT + "=Prod", // required even with soaname else integrity check fails
-                Endpoint.XPATH_URL + "=" + fromEnc("iuuq;00xxx/ebub.rvbmjuz.tfswjdf/dpn0npdlxtr5220tfswjdft0JoufsobujpobmQptubmWbmjebujpo/JoufsobujpobmQptubmWbmjebujpoIuuqTpbq22Foeqpjou0")/*, // required even with soaname else integrity check fails
-                Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://ipf.webservice.rt.saas.uniserv.com}InternationalPostalValidationPortType"*/);
-        uploadWsdl(checkAddressProdEndpointPath, "../axxx-easysoa-model/src/main/resources/InternationalPostalValidation_nourl.wsdl");
-            // or do a web discovery
-            // TODO web discovery : upload wsdl (for now manually upload WSDL on it)
-
-        String informationAPVProdEndpointPath = createSoaNode(informationAPVProdEndpointId, (String) null,
-                Endpoint.XPATH_ENDP_ENVIRONMENT + "=Prod", // required even with soaname else integrity check fails
-                Endpoint.XPATH_URL + "=http://" + getPivotalHost() + ":7080/WS/ContactSvc.asmx"/*, // required even with soaname else integrity check fails
-                Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://ipf.webservice.rt.saas.uniserv.com}InternationalPostalValidationPortType"*/);
-        uploadWsdl(informationAPVProdEndpointPath, "../axxx-dcv-pivotal/src/main/resources/api/ContactSvc.asmx.wsdl");
-            // or do a web discovery
-            // TODO web discovery : upload wsdl (for now manually upload WSDL on it)
+        createEndpoint(deploiementSubprojectId, Endpoint.ENV_PRODUCTION,
+        		"http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService",
+        		"../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
+        createEndpoint(deploiementSubprojectId, Endpoint.ENV_PRODUCTION,
+        		fromEnc("iuuq;00xxx/ebub.rvbmjuz.tfswjdf/dpn0npdlxtr5220tfswjdft0JoufsobujpobmQptubmWbmjebujpo/JoufsobujpobmQptubmWbmjebujpoIuuqTpbq22Foeqpjou0"), //checkAddressProdEndpoint
+        		"../axxx-easysoa-model/src/main/resources/InternationalPostalValidation_nourl.wsdl");
+        createEndpoint(deploiementSubprojectId, Endpoint.ENV_PRODUCTION,
+        		"http://" + getPivotalHost() + ":7080/WS/ContactSvc.asmx",
+        		"../axxx-dcv-pivotal/src/main/resources/api/ContactSvc.asmx.wsdl");
         
         // TODO Cré_Précpte, Projet_Vacances with component / platform
         
@@ -487,7 +476,8 @@ public class RemoteRepositoryInit {
 	        createSoaNode(olaPrecomptePartenaireServiceId);
 	        
 	        // copied from Deploiement
-	        SoaNodeId precomptePartenaireServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE, "Prod:http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService");//TODO host
+	        SoaNodeId precomptePartenaireServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE,
+	        		Endpoint.ENV_PRODUCTION + ":http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService");//TODO host
 	        String precomptePartenaireServiceProdEndpointPath = createSoaNode(precomptePartenaireServiceProdEndpointId);
 	        //String precomptePartenaireServiceProdEndpointNuxeoId = getIdRef(precomptePartenaireServiceProdEndpointId); // alt, does not work in jasmine
 	        String precomptePartenaireServiceProdEndpointNuxeoId = registryApi.get(precomptePartenaireServiceProdEndpointId.getSubprojectId(),
@@ -707,6 +697,28 @@ public class RemoteRepositoryInit {
 		registryApi.post(soaNode);
 		return getPath(soaNodeId);
 	}
+
+	public static SoaNodeId createEndpoint(String subprojectId,
+			String environment, String endpointUrl, String wsdlPath) throws Exception {
+		new URL(endpointUrl).toString(); // checking url
+        SoaNodeId endpointId = new SoaNodeId(subprojectId, Endpoint.DOCTYPE,
+        		environment + ":" + endpointUrl);
+        
+        ArrayList<String> props = new ArrayList<String>();
+        props.add(Endpoint.XPATH_ENDP_ENVIRONMENT + "=" + environment); // required even with soaname else integrity check fails
+        props.add(Endpoint.XPATH_URL + "=" + endpointUrl); // required even with soaname else integrity check fails
+        //props.add(Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService");
+        if (uploadUsingResourceUpdate) {
+            URL wsdlUrl = new URL("file://" + new File(wsdlPath).getAbsolutePath());
+        	props.add(ResourceDownloadInfo.XPATH_URL + "=" + wsdlUrl);
+        }
+        
+        String endpointPath = createSoaNode(endpointId, (String) null, props.toArray(new String[0]));
+		if (!uploadUsingResourceUpdate) {
+            uploadWsdl(endpointPath, wsdlPath);
+        }
+		return endpointId;
+    }
 
     public static void uploadWsdl(String path, String wsdlFilePath) throws Exception {
         // see http://doc.nuxeo.com/display/NXDOC/Using+Nuxeo+Automation+Client

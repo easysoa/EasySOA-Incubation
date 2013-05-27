@@ -1,8 +1,9 @@
 
 ##############################
 ## [EasySOA AXXX]
-## to be appended to your development computerr's hosts file
-#(to be found on Linux at /etc/hosts and on Windows at C:\Windows\System32\drivers\etc\hosts)
+## to be appended to your development computer's hosts file
+## (to be found on Linux at /etc/hosts and on Windows at C:\Windows\System32\drivers\etc\hosts)
+## for instance on Linux using commands : su ; cat hosts >> /etc/hosts
 
 ## AXXX Test :
 127.0.0.1	vmpivotal

@@ -275,7 +275,9 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
     
     @Override
     public DocumentModel findSoaNode(CoreSession documentManager, SoaNodeId identifier) throws ClientException {
-        return findSoaNode(documentManager, identifier, true);
+        return findSoaNode(documentManager, identifier, false); // TODO true not supported in discovery
+        // for now, else allowing several SOA IDs (in different subproject / Phase) for a single node ;
+        // at worse it should create an "inheriting" one 
     }
     
     @Override

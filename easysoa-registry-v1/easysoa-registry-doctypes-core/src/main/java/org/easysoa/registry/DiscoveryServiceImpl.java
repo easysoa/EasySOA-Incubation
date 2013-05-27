@@ -25,6 +25,13 @@ import org.nuxeo.runtime.api.Framework;
 /**
  * Computes...
  * 
+ * Steps :
+ * * matchingFirst : if soaname is prefixed with "matchingFirst:", looks up the discovered node
+ * using the matching algorithm (ex. on wsdlPortTypeName & platform metas)
+ * * findSoaNode : if none yet, finds it using SOA node ID (exact match)
+ * * createOrUpdate : 
+ * * linkToParentDocuments :
+ * 
  * still TODO (see FIXMEs) :
  * if needed soaMetamodel performances
  * special cases (see FIXMEs)
@@ -105,6 +112,8 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         
         if (foundDocumentModel == null) { // not matchFirst or no (or too many) match found
             // finding existing using SOA node ID :
+        	// (search in exact subproject / Phase, else allowing  several SOA IDs (in different
+        	// subprojects / Phases) for a single node ; at worse it should create an "inheriting" one)
             foundDocumentModel = documentService.findSoaNode(documentManager, identifier);
         }
         

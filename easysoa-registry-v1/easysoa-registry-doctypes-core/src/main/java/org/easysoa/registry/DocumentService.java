@@ -166,7 +166,7 @@ public interface DocumentService {
     DocumentModel findDocument(CoreSession documentManager, String subprojectId, String type, String name, boolean deepSearch) throws ClientException;
 
     /**
-     * Same as findSoaNode(documentManager, SoaNodeId identifier, true)
+     * Same as findSoaNode(documentManager, SoaNodeId identifier, false)
      * @param documentManager
      * @param identifier
      * @return The document, or null if it doesn't exist
@@ -181,7 +181,9 @@ public interface DocumentService {
      * NB. doesn't check that it's below the Repository (so check it in RepositoryManagementListener when putting it there)
      * @param documentManager
      * @param identifier
-     * @param deepSearch
+     * @param deepSearch TODO true not supported in discovery for now, else allowing
+     * several SOA IDs (in different subproject / Phase) for a single node ;
+     * at worse it should create an "inheriting" one
      * @return
      * @throws ClientException 
      */

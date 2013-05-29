@@ -6,6 +6,7 @@ package org.easysoa.registry.dbb;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Properties;
 
@@ -137,6 +138,16 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
      * @throws Exception
      */
     private File localDownload(URL url) throws Exception{
+    	if ("file".equals(url.getProtocol())) {
+    		// workaround to accept local file URLs
+    		// TODO also in actual ResourceDownloadService impl (HTTP Proxy, FraSCAti Studio...)
+    		try {
+    		  return new File(url.toURI());
+    		} catch(URISyntaxException usex) {
+    		  return new File(url.getPath()); // to accept Windows URLs, see https://weblogs.java.net/blog/kohsuke/archive/2007/04/how_to_convert.html
+    		}
+    	}
+    	
         HttpDownloaderService httpDownloaderService = new HttpDownloaderServiceImpl();
         HttpDownloader fileDownloader = httpDownloaderService.createHttpDownloader(url);
         fileDownloader.download();

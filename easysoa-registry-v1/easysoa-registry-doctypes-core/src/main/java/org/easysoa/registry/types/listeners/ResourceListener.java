@@ -45,7 +45,7 @@ import org.nuxeo.runtime.api.Framework;
  * 
  * @author jguillemotte
  */
-public class ResourceListener implements EventListener {
+public class ResourceListener extends EventListenerBase implements EventListener {
 	
     private static final String CONTEXT_REQUEST_RESOURCE_ALREADY_UPDATED = "resourceAlreadyUpdated";
 
@@ -63,7 +63,8 @@ public class ResourceListener implements EventListener {
         
         // Prevent looping on source document changes
         // (maybe ex. setting downloaded resource blob)
-        if (context.hasProperty(CONTEXT_REQUEST_RESOURCE_ALREADY_UPDATED)) {
+        if (context.hasProperty(CONTEXT_REQUEST_RESOURCE_ALREADY_UPDATED)
+        		|| areListenersDisabled(context)) {
             return;
         }
         sourceDocument.getContextData().putScopedValue(ScopeType.REQUEST,
@@ -134,11 +135,15 @@ public class ResourceListener implements EventListener {
             throw new ClientException("Can't get SoaMetamodelService & ResourceParsingService", ex);
         }
 
-        if (soaMetaModelService.isAssignable(docModel.getType(), Resource.DOCTYPE)) {
+        if (this.isResourceDownloadInfo(docModel)) {
+        	return false;
+        	
+        } else if (soaMetaModelService.isAssignable(docModel.getType(), Resource.DOCTYPE)) {
             return true;
-        } else if(resourceParsingService.isWsdlFileResource(docModel)){ //DocumentType(docModel.getType())
-            String url = (String)docModel.getPropertyValue(ResourceDownloadInfo.XPATH_URL);
-            if(url == null || url.length() == 0){
+            
+        } else if (resourceParsingService.isWsdlFileResource(docModel)) { //DocumentType(docModel.getType())
+            String resourceUrl = (String)docModel.getPropertyValue(ResourceDownloadInfo.XPATH_URL);
+            if (resourceUrl == null || resourceUrl.length() == 0) {
                 return true;
             }
         }    

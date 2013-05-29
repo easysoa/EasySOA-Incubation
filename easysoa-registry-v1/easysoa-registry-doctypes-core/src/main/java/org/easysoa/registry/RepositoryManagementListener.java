@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.systems.IntelligentSystemTreeService;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
+import org.easysoa.registry.types.listeners.EventListenerBase;
 import org.easysoa.registry.utils.RepositoryHelper;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -28,9 +29,10 @@ import org.nuxeo.runtime.api.Framework;
  * @author mkalam-alami
  *
  */
-public class RepositoryManagementListener implements EventListener {
+public class RepositoryManagementListener extends EventListenerBase implements EventListener {
 	
 	private static final String CONTEXT_REQUEST_REPOSITORY_ALREADY_MANAGED = "repositoryAlreadyManaged";
+
 
     private static Logger logger = Logger.getLogger(RepositoryManagementListener.class);
     
@@ -47,7 +49,8 @@ public class RepositoryManagementListener implements EventListener {
         
         // Prevent looping on source document changes
         // (required at least when changing SOA name)
-        if (context.hasProperty(CONTEXT_REQUEST_REPOSITORY_ALREADY_MANAGED)) {
+        if (context.hasProperty(CONTEXT_REQUEST_REPOSITORY_ALREADY_MANAGED)
+        		|| areListenersDisabled(context)) {
             return;
         }
         sourceDocument.getContextData().putScopedValue(ScopeType.REQUEST,

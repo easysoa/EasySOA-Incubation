@@ -20,14 +20,15 @@
 
 package org.easysoa.registry.dbb;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.GregorianCalendar;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.types.ResourceDownloadInfo;
+import org.easysoa.registry.types.listeners.EventListenerBase;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -64,10 +65,10 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
         // Check if the rdi.timestamp is not null and doesn't differ ??
         //String url = (String) newRdi.getProperty(ResourceDownloadInfo.XPATH_ACTUAL_URL);
         // NB. if url differs, timestamp should change
-        String newTimestamp = (String) newRdi.getPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP); // TODO dateTime
-        String oldTimestamp = (String) oldRdi.getPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP); // TODO dateTime
+        GregorianCalendar newTimestamp = (GregorianCalendar) newRdi.getPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP);
+        GregorianCalendar oldTimestamp = (GregorianCalendar) oldRdi.getPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP);
         if(newTimestamp != null && oldTimestamp != null
-                && newTimestamp.length() != 0 && newTimestamp.equals(oldTimestamp)) { // no date parsing but checking it is not "dumb"
+                && newTimestamp.equals(oldTimestamp)) { // no date parsing but checking it is not "dumb"
             return false;
         }
         return true;
@@ -109,9 +110,18 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
         // Update registry with new resource
         Blob resourceBlob = FileUtils.createSerializableBlob(file, getWsdlFileName(newUrl), null);
         documentToUpdate.setProperty("file", "content", resourceBlob);
-        documentToUpdate.setPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP, resource.getTimestamp());
-        //coreSession.saveDocument(documentToUpdate); // updates & triggers events ; TODO now or later ??
-        coreSession.save(); // persists ; TODO now or later ??
+        documentToUpdate.setPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP,
+        		resource.getTimestamp()); // NB. nuxeo auto-converts it to GregorianCalendar (xs:dateTime)
+        
+        // saving :
+        // first disabling events (the only one to be triggered is resourceDownloaded event,
+        // but it's fired explicitly below)
+        EventListenerBase.disableListeners(documentToUpdate);
+        documentToUpdate = coreSession.saveDocument(documentToUpdate); // updates (& triggers events),
+        // else Blob stays a StreamingBlob instead of becoming an SQLBlob and can't compute the new digest
+        EventListenerBase.enableListeners(documentToUpdate); // reenabling them for resourceDownloaded event
+        
+        //coreSession.save(); // persists ; TODO now or later ??
         
         // Fire event
         fireResourceDownloadedEvent(documentToUpdate);
@@ -141,7 +151,8 @@ public class SynchronousResourceUpdateServiceImpl implements ResourceUpdateServi
             throw new ClientException("Cannot get EventProducer", ex);
         }
  
-        DocumentEventContext ctx = new DocumentEventContext(document.getCoreSession(), document.getCoreSession().getPrincipal(), document);
+        DocumentEventContext ctx = new DocumentEventContext(document.getCoreSession(),
+        		document.getCoreSession().getPrincipal(), document);
         //ctx.setProperty("myprop", "something"); // TODO any property to set ???
  
         Event event = ctx.newEvent("resourceDownloaded");

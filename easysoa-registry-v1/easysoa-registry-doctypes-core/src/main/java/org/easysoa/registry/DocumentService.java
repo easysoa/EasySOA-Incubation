@@ -227,6 +227,29 @@ public interface DocumentService {
             throws Exception;
 
     /**
+     * Does model.getAdapter(Endpoint.class).getParentOfType(type)
+	 * (which is for now, as for all proxy parent classified SOA nodes, the fastest way)
+     * then resolves SOA id to DocumentModel
+     * @param soaNodeModel
+     * @param type
+     * @return
+     * @throws ClientException
+     */
+	DocumentModel getSoaNodeParent(DocumentModel soaNodeModel, String type)
+			throws ClientException;
+
+	/**
+	 * Gets actual (non-proxy) model then does getChildren(type)
+	 * @param soaNodeModel
+	 * @param type
+	 * @return
+	 * @throws ClientException
+	 */
+	List<DocumentModel> getSoaNodeChildren(DocumentModel soaNodeModel, String type)
+			throws ClientException;
+	
+
+    /**
      * NB. doesn't filter out versions because of Phase/subproject
      * @param documentManager
      * @param query
@@ -348,20 +371,11 @@ public interface DocumentService {
 	DocumentRef getParentInformationService(DocumentModel model) throws ClientException;
 
 	/**
-	 * For now uses getParentServiceImplementationSoaId()
+	 * For now uses getSoaNodeParent()
 	 * @param model endpoint
 	 * @return
 	 * @throws ClientException
 	 */
 	DocumentModel getParentServiceImplementation(DocumentModel model)throws ClientException;
-
-	/**
-	 * Does model.getAdapter(Endpoint.class).getParentOfType(ServiceImplementation.DOCTYPE);
-	 * which is for now (as for all proxy parent classified SOA nodes) the fastest way.
-	 * @param model endpoint
-	 * @return
-	 * @throws ClientException
-	 */
-	SoaNodeId getParentServiceImplementationSoaId(DocumentModel model)throws ClientException;
 	
 }

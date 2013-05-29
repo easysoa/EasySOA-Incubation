@@ -40,10 +40,12 @@
 
 		Vous voulez :
 		<ul>
-			<li>vous en servir par une application</li>
-			<li>(prototyper)</li>
-			<li>développer avec[doc,essai en ligne, test endpoint, simulation]</li>
-			<li>le développer(specs, protos(mocks))</li>
+			<li>vous en servir par une application (applications et leurs IHMs, notamment web)</li>
+			<li>(prototyper (créer des implémentations de test, des clients de test)</li>
+			<li>développer avec (interface, documentation d'utilisation, exemples, essai en ligne, test endpoint, simulation)</li>
+			<li>le développer(specs, protos(mocks) / générer client de test)</li>
+            <li>le découvrir (découverte web/monit(/source/OPTimport) OPT scopée sur ce service/impl/endpoint)</li>
+            <li>le définir (fournir l'interface, la prendre de l'impl/endpoint, LATER l'extraire d'échanges, OPT importer l'architecture)</li>
 		</ul>
 
 		<h3>(description)</h3>
@@ -134,7 +136,7 @@
         </table>
 		<p/>
 		
-		TODO LATER OPT du WSDL de l'endpoint :<p/>
+		TODO LATER OPT du WSDL de l'endpoint OR BELOW ON ENDPOINT :<p/>
 		
 		<h4>Documentation - manuelle :</h4>
 		TODO lister les non-SoaNodes fils du InformationService NON les fichiers joints, ou sinon du BusinessService<p/>
@@ -164,6 +166,7 @@
             <#-- TODO LATER also children documents -->
         </table>
 		<p/>
+
 
 		<h3>Usages</h3>
 		oé (applications : le déployant ; architecture : le consommant)<p/>
@@ -198,26 +201,99 @@
 
 		<br/>(autres tags)
 
+
 		<h3>Interface(s)</h3>
-		WSDL, JAXRS...
+		<!-- TODO LATER resource -->
+        <#assign interfaceFile=service['file:content']/><!-- TODO using WsdlBlob -->
+		<#if service.facets?seq_contains('WsdlInfo') && service['wsdlinfo:wsdlPortTypeName']?has_content>
+		SOAP Web Service ${service['wsdlinfo:wsdlPortTypeName']} ${service['wsdlinfo:wsdlServiceName']} ${service['wsdlinfo:transport']}
+        <#if interfaceFile?has_content && interfaceFile['filename']?has_content
+              && interfaceFile['filename']?ends_with('.wsdl')>
+        WSDL XML ${interfaceFile['filename']}
+        </#if>
+		</#if>
+        <#if service.facets?seq_contains('RestInfo') && service['restinfo:path']?has_content>
+        REST
+        <#if interfaceFile?has_content && interfaceFile['filename']?has_content
+              && interfaceFile['filename']?ends_with('.jar')>
+        JAXRS Java ${interfaceFile['filename']}
+        </#if>
+        </#if>
+        <br/>
+		<a href="<@urlToLocalNuxeoPreview service/>">preview</a>, <a href="<@urlToLocalNuxeoDownload service/>">download</a>, <a href="<@urlToLocalNuxeoDocumentsUi service/>">edit</a>, <a href="<@urlToLocalNuxeoPrint service/>">print</a>
+        <br/>
+        <#if fstudio_enabled>Mock impl client in FraSCAti Studio</#if>
+        <br/>
+        Resource : 
+        <#if service['rdi:url']?has_content>
+           external at <a href="${service['rdi:url']}">${service['rdi:url']}</a><!-- TODO shortened url display -->
+           from <#if service['rdi:probeType']?has_content>${service['rdi:probeType']}<#else>IHM</#if>
+           (<#if service['rdi:timestamp']?has_content>${service['rdi:timestamp']}</#if>)
+        <#else>
+           internal
+        </#if>
+		
 		
 		<h3>Implementation(test)</h3>
 		et consomme, dépend de (en mode non test)
-
+		
 		<br/><b>Implementations :</b><br/>
+		<#list actualImpls as actualImpl>
+		   <#assign deliverable = Root.getDocumentService().getSoaNodeParent(actualImpl, 'Deliverable')/>
+		   <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">
+		   ${deliverable['del:application']} / ${deliverable['soan:name']} / </span> <span title="SOA ID: ${service['soan:name']}">
+		   <#-- ${actualImpl['soan:name']} -->${actualImpl['title']}
+		   </span> - <@displayPhase actualImpl['spnode:subproject']/> (((${actualImpl.versionLabel})))
+           <br/>
+		</#list>
         <#-- @displayDocsShort actualImpls/ -->
         <@displayDocs actualImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
 		<br/>
+		Découverte :
+        <a href="${Root.path + '/cartography/sourceDiscovery'}">Source</a>
+		<br/>
+		
 		<br/><b>Mocks :</b><br/>
 		<#-- @displayDocsShort mockImpls/ -->
         <@displayDocs mockImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
 		<#-- TODO TEST ismock : ${mockImpls[0]['impl:ismock']} -->
 
+
 		<h3>Endpoints</h3>
-		Déployé en production à : <#if productionEndpoint?has_content>productionEndpoint['endp:url']</#if>
-		<br/>Tous les déploiements :<!-- Et à déploiement de test :-->
+		Déployé en Production à :
+		<#if productionEndpoint?has_content>
+		<a href="${productionEndpoint['endp:url']}">${productionEndpoint['endp:url']}</a>
+        <br/>
+        Resource : 
+        <#if productionEndpoint['rdi:url']?has_content>
+           external at <a href="${productionEndpoint['rdi:url']}">${productionEndpoint['rdi:url']}</a><!-- TODO shortened url display -->
+           from <#if productionEndpoint['rdi:probeType']?has_content>${productionEndpoint['rdi:probeType']}<#else>IHM</#if>
+           (<#if productionEndpoint['rdi:timestamp']?has_content>${productionEndpoint['rdi:timestamp']}</#if>)
+        <#else>
+           internal
+        </#if>
+		<br/>
+		Découverte :
+		<a href="${web_discovery_url}?subprojectId=${subprojectId}&visibility=${visibility}">Web</a>, <!-- TODO pass as probe params : Environment (, iserv/endpoint (, user, component)) -->
+        <a href="${httpproxy_app_instance_factory_url}?subprojectId=${subprojectId}&visibility=${visibility}&user=${Root.currentUser}&environment=Production'}">Monitoring</a>,  <!-- TODO HTTP Proxy host prop, url to probe IHM, pass as probe params : subproject / Phase, Environment (, iserv/endpoint (, component)) -->
+        (<a href="${Root.path}/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Source</a>)
+		<br/>
+		Monitoring :
+		<a href="${Root.path}/../monitoring/envIndicators/${productionEndpoint.id}?subprojectId=${subprojectId}&visibility=${visibility}">Usage</a>, 
+		<a href="${Root.path}/../monitoring/jasmine/?subprojectId=${subprojectId}&visibility=${visibility}">Statistiques</a>
+		<br/>
+		Test it using :
+        <a href="${web_discovery_url + '/scaffoldingProxy/?wsdlUrl=' + productionEndpoint['rdi:url']}">Service Scaffolder</a>, <!-- TODO light.js, or function, rather endpointUrl?wsdl ?? -->
+        <a href="">SOAPUI</a>,
+        <a href="">FraSCAti Studio new application</a>
+        <!-- a href="">FraSCAti Studio application A</a -->
+		</#if>
+		<br/>
+		<br/>Tous les déploiements :<!-- Et à déploiement de test : -->
 		<#-- @displayDocsShort endpoints/ -->
         <@displayDocs actualImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
+
+
 
 
         <#if Root.isDevModeSet()>

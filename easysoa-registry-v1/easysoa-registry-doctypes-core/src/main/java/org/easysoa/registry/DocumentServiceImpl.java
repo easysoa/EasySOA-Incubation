@@ -465,7 +465,8 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
             return sourceFolderModel;
         }
     }
-    
+
+    @Override
     public SoaNodeId createSoaNodeId(DocumentModel model) throws ClientException {
         try {
             return new SoaNodeId((String) model.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT),
@@ -478,7 +479,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 
     @Override
     public List<SoaNodeId> createSoaNodeIds(DocumentModel... models) throws PropertyException, ClientException {
-        List<SoaNodeId> soaNodeIds = new ArrayList<SoaNodeId>();
+        List<SoaNodeId> soaNodeIds = new ArrayList<SoaNodeId>(models.length);
         for (DocumentModel model : models) {
             soaNodeIds.add(createSoaNodeId(model));
         }
@@ -553,6 +554,34 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 		return documentModel;
 	}
 	
+	
+
+	@Override
+	public List<DocumentModel> getByType(CoreSession session, String type, String subprojectCriteria) throws ClientException {
+        String query = DocumentService.NXQL_SELECT_FROM + type + subprojectCriteria;
+        DocumentModelList services = this.query(session, query, true, false);
+        return services;
+	}
+	@Override
+	public DocumentModel getSoaNodeParent(DocumentModel soaNodeModel, String type) throws ClientException {
+		Endpoint endpointAdapter = soaNodeModel.getAdapter(Endpoint.class);
+		try {
+			SoaNodeId parentSoaNodeId = endpointAdapter.getParentOfType(type);
+			if (parentSoaNodeId != null) {
+				return this.findSoaNode(soaNodeModel.getCoreSession(), parentSoaNodeId);
+			}
+		} catch (Exception e) {
+			throw new ClientException(e);
+		}
+		return null;
+	}
+	@Override
+	public List<DocumentModel> getSoaNodeChildren(DocumentModel soaNodeModel, String type) throws ClientException {
+		if (soaNodeModel.isProxy()) {
+			soaNodeModel = findSoaNode(soaNodeModel.getCoreSession(), this.createSoaNodeId(soaNodeModel));
+		}
+		return soaNodeModel.getCoreSession().getChildren(soaNodeModel.getRef(), type);
+	}
 
 
 	@Override
@@ -567,19 +596,13 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 	public List<DocumentModel> getEndpoints(CoreSession session, String subprojectCriteria) throws ClientException {
         return getByType(session, Endpoint.DOCTYPE, subprojectCriteria);
 	}
-	@Override
-	public List<DocumentModel> getByType(CoreSession session, String type, String subprojectCriteria) throws ClientException {
-        String query = DocumentService.NXQL_SELECT_FROM + type + subprojectCriteria;
-        DocumentModelList services = this.query(session, query, true, false);
-        return services;
-	}
 
 	@Override
 	public DocumentModel getServiceImplementationFromEndpoint(DocumentModel endpointModel) throws ClientException {
 		// TODO rather using implId on endpoint
         //List<DocumentModel> productionImplRes = docService.query(session, DocumentService.NXQL_SELECT_FROM
         //		+ ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND, false, true);
-    	SoaMetamodelService soaMetamodelService;
+    	/*SoaMetamodelService soaMetamodelService;
 		try {
 			soaMetamodelService = Framework.getService(SoaMetamodelService.class);
 			SoaNode productionEndpointNode = endpointModel.getAdapter(SoaNode.class);
@@ -590,8 +613,8 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 	    	}
 		} catch (Exception e) {
 			throw new RuntimeException("Can't get SoaMetamodelService", e);
-		}
-    	return null;
+		}*/
+		return getSoaNodeParent(endpointModel, ServiceImplementation.DOCTYPE);
 	}
 
 	@Override
@@ -660,18 +683,6 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 
 	@Override
 	public DocumentModel getParentServiceImplementation(DocumentModel model) throws ClientException {
-		SoaNodeId parentServiceImplSoaId = getParentServiceImplementationSoaId(model);
-		if (parentServiceImplSoaId != null) {
-			DocumentModel parentServiceImplModel = this.findSoaNode(model.getCoreSession(), parentServiceImplSoaId);
-			if (parentServiceImplModel != null) {
-				return parentServiceImplModel;
-			}
-		}
-		return null;
-	}
-
-	@Override
-	public SoaNodeId getParentServiceImplementationSoaId(DocumentModel model) throws ClientException {
 		// is it itself a serviceimpl ?
     	/*SoaMetamodelService soaMetamodelService;
 		try {
@@ -682,12 +693,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 		} catch (Exception e) {
 			throw new RuntimeException("Can't get SoaMetamodelService", e);
 		}*/
-		Endpoint endpointAdapter = model.getAdapter(Endpoint.class);
-		try {
-			return endpointAdapter.getParentOfType(ServiceImplementation.DOCTYPE);
-		} catch (Exception e) {
-			throw new ClientException(e);
-		}
+		return getSoaNodeParent(model, ServiceImplementation.DOCTYPE);
 	}
 
 }

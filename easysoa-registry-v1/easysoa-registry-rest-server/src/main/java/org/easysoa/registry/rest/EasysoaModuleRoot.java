@@ -120,4 +120,8 @@ public class EasysoaModuleRoot extends ModuleRoot {
 		}
     }
     
+    public DocumentService getDocumentService() throws Exception {
+    	return Framework.getService(DocumentService.class);
+    }
+    
 }

@@ -237,7 +237,7 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 						// no parent iserv, meaning it's not a "delete link command" but a UI bug
 			    		throw new Exception("Information Service not selected");
 					}
-					else if (isEndpoint && docService.getParentServiceImplementationSoaId(model) == null) {
+					else if (isEndpoint && docService.getParentServiceImplementation(model) == null) {
 						// no parent serviceimpl, meaning it's not a "delete link command" but a UI bug
 			    		throw new Exception("Service Implementation not selected");
 					}

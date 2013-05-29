@@ -1,34 +1,5 @@
-<!--
-Nuxeo Freemarker quick reference :
-(see also )
-
-Available context variables are :
-(as seen in AbstractWebContext and at http://doc.nuxeo.com/pages/viewpage.action?pageId=11044493 )
-
-* Context : the View extending AbstractWebContext, which provides :
-   i18n (module's messages) & locale, logging, cookies, principal (user),
-   properties (context variables shared among scripts),
-   user session, running scripts, loginPath, headers, request, form
-   and everything below (path /url...)
-* Root : the controller. So you can put there (or in the ModuleRoot class it extends)
-   code available here that requires the request.
-* Module : NOT your own module Class. Provides class loading, adapters & resources, validators.
-* Runtime : Framework.getRuntime()
-* Engine : WebEngine
-* basePath : /nuxeo/site
-* skinPath : /nuxeo/site/skin/easysoa
-* contextPath : /nuxeo
-* This : the Web Object if any
-* Document : its (adapted) DocumentModel if any
-* Adapter : the adapter of the first WebEngine resource having one, starting from the controller
-* Session : CoreSession
-* & what's put by controller
-
--->
     
-    <#-- URL Constants -->
-    <#assign web_discovery_url= Root.getWebDiscoveryUrl() /><!-- VM : owsi-vm-easysoa-axxx-registry -->
-    <#assign jasmine_url= Root.getJasmineUrl() /><!-- VM : owsi-vm-easysoa-axxx-pivotal -->
+    <#include "/views/EasySOA/macros.ftl">
     
     <#-- Document Macros -->
     
@@ -53,7 +24,9 @@ Available context variables are :
             <#assign component = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['acomp:componentId']))/>
             <#assign componentTitle = component.title + ' / '/>
         </#if>
-        <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">${providerActorTitle} ${componentTitle}</span> <span title="SOA ID: ${service['soan:name']}">${service.title}</span> - <@displayPhase service['spnode:subproject']/> (((${service.versionLabel})))
+        <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">
+        ${providerActorTitle} ${componentTitle}</span> <span title="SOA ID: ${service['soan:name']}">${service.title}
+        </span> - <@displayPhase service['spnode:subproject']/> (((${service.versionLabel})))
     </#macro>
     
     <#macro displayServiceShort service subprojectId visibility>
@@ -172,18 +145,6 @@ Available context variables are :
     </#macro>
 
 
-    <#macro escapeUrl path>${path?replace('/', '____')?url?replace('____', '/')}</#macro>
-    
-    <#--
-        see http://doc.nuxeo.com/display/NXDOC/Navigation+URLs , http://answers.nuxeo.com/questions/3203/how-to-buildrequest-a-previewdownload-url-for-a-document
-    -->
-    <#macro urlToLocalNuxeoDocumentsUi doc>
-        <@urlToLocalNuxeoDocumentsUiShort doc['path']/>
-    </#macro>
-    <#macro urlToLocalNuxeoDocumentsUiShort doc>/nuxeo/nxpath/default<@escapeUrl doc/>@view_documents</#macro>
-    <#macro urlToLocalNuxeoPreview doc>/nuxeo/nxdoc/default/${doc.id}/preview_popup</#macro>
-    <#macro urlToLocalNuxeoPrint doc>/nuxeo/site/admin/repository<@escapeUrl doc['path']/>/@views/print</#macro>
-    
     
     <#macro displayDoc doc propNames=documentPropNames>
         <@displayDocShort doc/>

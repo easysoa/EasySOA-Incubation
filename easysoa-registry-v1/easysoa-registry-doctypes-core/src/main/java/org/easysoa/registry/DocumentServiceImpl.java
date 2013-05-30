@@ -557,7 +557,12 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 	
 
 	@Override
-	public List<DocumentModel> getByType(CoreSession session, String type, String subprojectCriteria) throws ClientException {
+	public List<DocumentModel> getByType(CoreSession session, String type, String subprojectId) throws ClientException {
+		return getByTypeInCriteria(session, type, NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, true));
+	}
+	@Override
+	public List<DocumentModel> getByTypeInCriteria(CoreSession session, String type,
+			String subprojectCriteria) throws ClientException {
         String query = DocumentService.NXQL_SELECT_FROM + type + subprojectCriteria;
         DocumentModelList services = this.query(session, query, true, false);
         return services;
@@ -580,22 +585,40 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 		if (soaNodeModel.isProxy()) {
 			soaNodeModel = findSoaNode(soaNodeModel.getCoreSession(), this.createSoaNodeId(soaNodeModel));
 		}
-		return soaNodeModel.getCoreSession().getChildren(soaNodeModel.getRef(), type);
+		//return soaNodeModel.getCoreSession().getChildren(soaNodeModel.getRef(), type); // NO doesn't handle subtypes
+		return soaNodeModel.getCoreSession().query(NXQL_SELECT_FROM + type + NXQL_WHERE
+				+ "ecm:parentId='" + soaNodeModel.getRef().toString() + "'");
 	}
 
 
 	@Override
-	public List<DocumentModel> getInformationServices(CoreSession session, String subprojectCriteria) throws ClientException {
-        return getByType(session, InformationService.DOCTYPE, subprojectCriteria);
+	public List<DocumentModel> getInformationServices(CoreSession session, String subprojectId) throws ClientException {
+        return getInformationServicesInCriteria(session,
+        		NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, true));
 	}
 	@Override
-	public List<DocumentModel> getServiceImplementations(CoreSession session, String subprojectCriteria) throws ClientException {
-        return getByType(session, ServiceImplementation.DOCTYPE, subprojectCriteria);
+	public List<DocumentModel> getInformationServicesInCriteria(CoreSession session, String subprojectCriteria) throws ClientException {
+        return getByTypeInCriteria(session, InformationService.DOCTYPE, subprojectCriteria);
 	}
 	@Override
-	public List<DocumentModel> getEndpoints(CoreSession session, String subprojectCriteria) throws ClientException {
-        return getByType(session, Endpoint.DOCTYPE, subprojectCriteria);
+	public List<DocumentModel> getServiceImplementations(CoreSession session, String subprojectId) throws ClientException {
+        return getServiceImplementationsInCriteria(session,
+        		NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, true));
 	}
+	@Override
+	public List<DocumentModel> getServiceImplementationsInCriteria(CoreSession session, String subprojectCriteria) throws ClientException {
+        return getByTypeInCriteria(session, ServiceImplementation.DOCTYPE, subprojectCriteria);
+	}
+	@Override
+	public List<DocumentModel> getEndpoints(CoreSession session, String subprojectId) throws ClientException {
+		return getEndpointsInCriteria(session,
+        		NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, true));
+	}
+	@Override
+	public List<DocumentModel> getEndpointsInCriteria(CoreSession session, String subprojectCriteria) throws ClientException {
+		return getByTypeInCriteria(session, Endpoint.DOCTYPE, subprojectCriteria);
+	}
+
 
 	@Override
 	public DocumentModel getServiceImplementationFromEndpoint(DocumentModel endpointModel) throws ClientException {
@@ -618,14 +641,24 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 	}
 
 	@Override
-	public List<DocumentModel> getEndpointsOfService(DocumentModel service, String subprojectCriteria) throws ClientException {
+	public List<DocumentModel> getEndpointsOfService(DocumentModel service, String subprojectId) throws ClientException {
+		return this.getEndpointsOfServiceInCriteria(service,
+				NXQLQueryHelper.buildSubprojectCriteria(service.getCoreSession(), subprojectId, true));
+	}
+	@Override
+	public List<DocumentModel> getEndpointsOfServiceInCriteria(DocumentModel service, String subprojectCriteria) throws ClientException {
 		return this.query(service.getCoreSession(), DocumentService.NXQL_SELECT_FROM
-            		+ Endpoint.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
-                    + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'", true, false);
+        		+ Endpoint.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
+                + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'", true, false);
 	}
 
 	@Override
-	public DocumentModel getEndpointOfService(DocumentModel service, String environment, String subprojectCriteria) throws ClientException {
+	public DocumentModel getEndpointOfService(DocumentModel service, String environment, String subprojectId) throws ClientException {
+        return getEndpointOfServiceInCriteria(service, environment,
+        		NXQLQueryHelper.buildSubprojectCriteria(service.getCoreSession(), subprojectId, true));
+	}
+	@Override
+	public DocumentModel getEndpointOfServiceInCriteria(DocumentModel service, String environment, String subprojectCriteria) throws ClientException {
         List<DocumentModel> endpoints = this.query(service.getCoreSession(), DocumentService.NXQL_SELECT_FROM
         		+ Endpoint.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
                 + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'"
@@ -637,7 +670,12 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 	}
 
 	@Override
-	public List<String> getEnvironments(CoreSession session, String subprojectCriteria) throws ClientException {
+	public List<String> getEnvironments(CoreSession session, String subprojectId) throws ClientException {
+		return getEnvironmentsInCriteria(session,
+				NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, true));
+	}
+	@Override
+	public List<String> getEnvironmentsInCriteria(CoreSession session, String subprojectCriteria) throws ClientException {
         List<String> envs = new ArrayList<String>();
         
         // Get the environments
@@ -651,7 +689,12 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 	}
 
 	@Override
-	public List<DocumentModel> getComponents(CoreSession session, String subprojectCriteria) throws ClientException {
+	public List<DocumentModel> getComponents(CoreSession session, String subprojectId) throws ClientException {
+		return getComponentsInCriteria(session,
+				NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, true));
+	}
+	@Override
+	public List<DocumentModel> getComponentsInCriteria(CoreSession session, String subprojectCriteria) throws ClientException {
 		return this.query(session, DocumentService.NXQL_SELECT_FROM
 				+ Component.DOCTYPE + subprojectCriteria, true, false);
 	}

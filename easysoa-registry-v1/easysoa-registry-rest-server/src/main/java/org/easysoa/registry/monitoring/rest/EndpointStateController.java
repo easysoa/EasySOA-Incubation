@@ -81,16 +81,16 @@ public class EndpointStateController extends EasysoaModuleRoot {
         String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
         
         // Get the environments
-        List<String> envs = docService.getEnvironments(session, subprojectCriteria);
+        List<String> envs = docService.getEnvironmentsInCriteria(session, subprojectCriteria);
        
         // Get the deployed services
-        List<DocumentModel> services = docService.getInformationServices(session, subprojectCriteria);
+        List<DocumentModel> services = docService.getInformationServicesInCriteria(session, subprojectCriteria);
         
         Map<String, List<DocumentModel>> endpoints = new HashMap<String, List<DocumentModel>>();
         
         for(DocumentModel service : services){
             // Get the endpoints
-        	List<DocumentModel> endpointsList = docService.getEndpointsOfService(service, subprojectCriteria);
+        	List<DocumentModel> endpointsList = docService.getEndpointsOfServiceInCriteria(service, subprojectCriteria);
             endpoints.put(service.getName(), endpointsList);
         }
         

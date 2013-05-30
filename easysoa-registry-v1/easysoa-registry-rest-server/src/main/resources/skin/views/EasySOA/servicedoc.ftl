@@ -47,6 +47,37 @@
             <li>le découvrir (découverte web/monit(/source/OPTimport) OPT scopée sur ce service/impl/endpoint)</li>
             <li>le définir (fournir l'interface, la prendre de l'impl/endpoint, LATER l'extraire d'échanges, OPT importer l'architecture)</li>
 		</ul>
+		
+        Vous êtes Concepteur et vous voulez (ce service) :
+        <ul>
+            <li>(prototyper (créer des implémentations de test, des clients de test)</li>
+            <li>le découvrir (découverte web/monit(/source/OPTimport) OPT scopée sur ce service/impl/endpoint)</li>
+            <li>le définir (fournir l'interface, la prendre de l'impl/endpoint, LATER l'extraire d'échanges, OPT importer l'architecture)</li>
+            <li>voir ses statistiques d'usage métier (répond-il aux attentes ?)</li>
+        </ul>
+		
+        Vous êtes Développeur et vous voulez (cette serviceimpl) :
+        <ul>
+            <li>développer avec (interface, documentation d'utilisation, exemples, essai en ligne, test endpoint, simulation)</li>
+            <li>(rôle consommateur) réutiliser / instancier l'impl (doc d'impl, deliverable et dépendances / application)</li>
+            <li>(rôle fournisseur) le développer(specs, protos(mocks) / générer client de test)</li>
+            <li>le découvrir (découverte source)</li>
+            <li>(tous les autres, "ouvrables")</li>
+        </ul>
+        
+        Vous êtes Exploitant et vous voulez (cet endpoint) :
+        <ul>
+            <li>le déployer : appli et services dépendants</li>
+            <li>(vous en servir par une application (applications et leurs IHMs, notamment web))</li>
+            <li>le découvrir (découverte web/monit(/source/OPTimport) OPT scopée sur ce service/impl/endpoint)</li>
+            <li>voir ses statistiques d'usage techniques</li>
+            <li>LATER gérer sa configuration (politiques)</li>
+        </ul>
+        
+        Vous êtes Utilisateur et vous voulez (ce service) :
+        <ul>
+            <li>vous en servir par une application (applications et leurs IHMs, notamment web) TODO appli:urlUiWeb</li>
+        </ul>
 
 		<h3>(description)</h3>
 		${service['dc:description']}
@@ -83,79 +114,106 @@
 		</#if>
 		<p/>
 		
-		<#assign iserv_operations=service['iserv:operations']>
+		<#macro displayOperationParameters params>
+		   <#if params?has_content && params?length != 0>
+		      <br/>
+		      <div style="margin-left:10px; font-size:90%; color:grey;">${params?replace(', ', ')</span><br/>')?replace('=', ' <span style="font-size:90%">(')})</div
+		      <br/>
+		   </#if>
+		</#macro>
+
 		<#if actualImpls?size != 0><#assign impl_operations=actualImpls[0]['impl:operations']></#if>
-		<table style="width: 600px;">
-            <#if iserv_operations?size != 0>
-                <#-- title (for RPC style operation display) NOT REQUIRED -->
-		        <#-- tr>
-		            <th style="font-weight: bold;">Name</th>
-		            <th style="font-weight: bold;">Parameters</th>
-		            <th style="font-weight: bold;">Returns</th>
-		            <th style="font-weight: bold;">Documentation</th>
-		        </tr -->
-                <#list iserv_operations as iserv_operation>
-                <tr><td>
-                <table style="border-spacing: 0px 10px;">
-                    <#-- RPC style operation display : -->
-                    <#-- tr>
-                        <td><h:outputText value="${entry.get('operationName').getValue()}" /></td>
-                        <td><h:outputText value="${entry.get('operationParameters').getValue()}" /></td>
-                        <td><h:outputText value="${entry.get('operationReturnParameters').getValue()}" /></td>
-                        <td><h:outputText value="${entry.get('operationDocumentation').getValue()}" /></td>
-                    </tr -->
-                    <#-- in/out (message) style operation display : -->
-                    <#-- finding corresponding operation in (first) non mock impl : -->
-                    <#assign impl_operation = {}>
-                    <#list impl_operations as impl_operation_cur>
-                        <#if impl_operation_cur['operationName'] = iserv_operation['operationName']>
-                            <#assign impl_operation = impl_operation_cur>
-                        </#if>
+        <@displayOperations service['iserv:operations'] impl_operations/>
+        
+        <#macro displayOperations iserv_operations impl_operations>        
+    		<table style="width: 600px;">
+                <#if iserv_operations?size != 0>
+                    <#-- title (for RPC style operation display) NOT REQUIRED -->
+    		        <#-- tr>
+    		            <th style="font-weight: bold;">Name</th>
+    		            <th style="font-weight: bold;">Parameters</th>
+    		            <th style="font-weight: bold;">Returns</th>
+    		            <th style="font-weight: bold;">Documentation</th>
+    		        </tr -->
+                    <#list iserv_operations as iserv_operation>
+                    <tr><td>
+                    <table style="border-spacing: 0px 10px;">
+                        <#-- RPC style operation display : -->
+                        <#-- tr>
+                            <td><h:outputText value="${entry.get('operationName').getValue()}" /></td>
+                            <td><h:outputText value="${entry.get('operationParameters').getValue()}/>" /></td>
+                            <td><h:outputText value="${entry.get('operationReturnParameters').getValue()}" /></td>
+                            <td><h:outputText value="${entry.get('operationDocumentation').getValue()}" /></td>
+                        </tr -->
+                        <#-- in/out (message) style operation display : -->
+                        <#-- finding corresponding operation in (first) non mock impl : -->
+                        <#assign impl_operation = {}>
+                        <#list impl_operations as impl_operation_cur>
+                            <#if impl_operation_cur['operationName'] = iserv_operation['operationName']>
+                                <#assign impl_operation = impl_operation_cur>
+                            </#if>
+                        </#list>
+                        <#-- displaying mashupped iserv & impl operation, with pretty display of enum values : -->
+                        <tr>
+                            <td colspan="2" style="font-weight: bold; text-decoration: underline;">${iserv_operation['operationName']}</td>
+                            <td style="font-style: italic;">${iserv_operation['operationDocumentation']}<#if impl_operations?has_content> (${impl_operation['operationDocumentation']})</#if></td>
+                        </tr>
+                        <tr>
+                            <td title="${iserv_operation['operationInContentType']}">  <b>In</b> <span style="color:grey"><@displayMimeType iserv_operation['operationInContentType']/></span></td>
+                            <td colspan="2">${iserv_operation['operationParameters']}<#if impl_operations?has_content> [<@displayOperationParameters impl_operation['operationParameters']/>]</#if></td>
+                        </tr>
+                        <tr>
+                            <td title="${iserv_operation['operationOutContentType']}">  <b>Out</b> <span style="color:grey"><@displayMimeType iserv_operation['operationOutContentType']/></span></td>
+                            <td colspan="2">${iserv_operation['operationReturnParameters']}<#if impl_operations?has_content> [<@displayOperationParameters impl_operation['operationReturnParameters']/>]</#if></td>
+                        </tr>
+                    </table>
+                    </td></tr>
                     </#list>
-                    <#-- displaying mashupped iserv & impl operation, with pretty display of enum values : -->
+                <#else>
                     <tr>
-                        <td colspan="2" style="font-weight: bold; text-decoration: underline;">${iserv_operation['operationName']}</td>
-                        <td style="font-style: italic;">${iserv_operation['operationDocumentation']}<#if actualImpls?size != 0> (${impl_operation['operationDocumentation']})</#if></td>
+                        <td colspan="3" style="text-align: center">No operations.</td>
                     </tr>
-                    <tr>
-                        <td title="${iserv_operation['operationInContentType']}">  <b>In</b> <span style="color:grey">${mimeTypePrettyNames[iserv_operation['operationInContentType']]}</span></td>
-                        <td colspan="2">${iserv_operation['operationParameters']}<#if actualImpls?size != 0> (${impl_operation['operationParameters']})</#if></td>
-                    </tr>
-                    <tr>
-                        <td title="${iserv_operation['operationOutContentType']}">  <b>Out</b> <span style="color:grey">${mimeTypePrettyNames[iserv_operation['operationOutContentType']]}</span></td>
-                        <td colspan="2">${iserv_operation['operationReturnParameters']}<#if actualImpls?size != 0> (${impl_operation['operationReturnParameters']})</#if></td>
-                    </tr>
-                </table>
-                </td></tr>
-                </#list>
-            <#else>
-                <tr>
-                    <td colspan="3" style="text-align: center">No operations.</td>
-                </tr>
-            </#if>
-        </table>
+                </#if>
+            </table>
+        </#macro>
 		<p/>
 		
 		TODO LATER OPT du WSDL de l'endpoint OR BELOW ON ENDPOINT :<p/>
 		
 		<h4>Documentation - manuelle :</h4>
 		TODO lister les non-SoaNodes fils du InformationService NON les fichiers joints, ou sinon du BusinessService<p/>
-		<@displayProp service 'files:files'/>
-		<p/>
+		<#-- @displayProp service 'files:files'/><p/ -->
 		
-		<#assign service_files_files=service['files:files']>
-		<#assign service_children=service['children']><#-- TODO LATER -->
-		<table style="width: 600px;">
+		<#macro displayMimeType mimeType>
+		   <#assign mimeTypePrettyName = mimeTypePrettyNames[mimeType]/>
+		   <#if !mimeTypePrettyName?has_content>
+		      <#assign mimeTypePrettyName = mimeType/>
+		   </#if>
+		   <span title="${mimeType}">${mimeTypePrettyName}</span>
+		</#macro>
+        <#macro displayFile service_files_file downloadUrlPrefix>
+                <tr>
+                    <#-- <@urlToLocalNuxeoDownloadAttachment service service_files_file_index/>" -->
+                    <td colspan="3"><a href="${downloadUrlPrefix}${service_files_file['filename']}">${service_files_file['filename']}
+                    <#if service_files_file['file']['mimeType']?has_content && service_files_file['file']['mimeType']?starts_with('image/')>
+                       <img src="${downloadUrlPrefix}${service_files_file['filename']}" height="35" width="35"/>
+                    </#if>
+                    </a></td>
+                    <td><@displayMimeType service_files_file['file']['mimeType']/></td>
+                    <td>${service_files_file['file']['length']}</td>
+                    <td><span style="color:grey" title="${service_files_file['file']['digest']}">digest</td>
+                </tr>
+        </#macro>
+		<#macro displayFiles service_files_files>
+            <#-- assign service_files_files=service['files:files']>
+            <#assign service_children=service['children'] --><#-- TODO LATER docs, Resources ?! -->
+            <table style="width: 600px;">
             <#if service_files_files?size != 0>
                 <tr><td>
                 <table style="border-spacing: 0px 10px;">
-                    <#list service_files_files as service_files_file>
-                    <tr>
-                        <td colspan="3"><a href="/nuxeo/nxfile/default/${service.id}/files:files/${service_files_file_index}/file/${service_files_file['filename']}">${service_files_file['filename']}</a></td>
-                        <td title="${service_files_file['file']['mimeType']}">${mimeTypePrettyNames[service_files_file['file']['mimeType']]}</td>
-                        <td>${service_files_file['file']['length']}</td>
-                    </tr>
-                    </#list>
+                <#list service_files_files as service_files_file>
+                    <@displayFile service_files_file '/nuxeo/nxfile/default/${service.id}/files:files/${service_files_file_index}/file/'/>
+                </#list>
                 </table>
                 </td></tr>
             <#else>
@@ -164,7 +222,9 @@
                 </tr>
             </#if>
             <#-- TODO LATER also children documents -->
-        </table>
+            </table>
+		</#macro>
+		<@displayFiles service['files:files']/>
 		<p/>
 
 
@@ -238,19 +298,40 @@
 		et consomme, dépend de (en mode non test)
 		
 		<br/><b>Implementations :</b><br/>
+        <#macro displayTested serviceimpl>
+           <#assign deliverable = Root.getDocumentService().getSoaNodeParent(serviceimpl, 'Deliverable')/>
+           <#list Root.getDocumentService().getSoaNodeChildren(deliverable, 'ServiceConsumption') as servicecons>
+              <#-- ${servicecons['javasc:consumedInterface']} ?= ${serviceimpl['javasi:implementedInterface']}; -->
+              <#if servicecons['javasc:consumedInterface'] = serviceimpl['javasi:implementedInterface']
+                    && servicecons['javasc:consumerClass']?ends_with('Test')>
+                 <#-- && serviceimpl['serviceimpl:ismock'] = 'false' -->
+                 <#assign foundTestServiceCons = servicecons/>
+                 <!-- TODO + location -->
+              </#if>
+           </#list>
+           <#if foundTestServiceCons?has_content>
+              <li><span title="${deliverable['title']} / ${foundTestServiceCons['javasc:consumerClass']}">TESTED
+              (${foundTestServiceCons['javasc:consumerClass']?substring(foundTestServiceCons['javasc:consumerClass']?last_index_of('.') + 1, foundTestServiceCons['javasc:consumerClass']?length)})</span></li> 
+           <#else>
+              <li>not tested</li>
+           </#if>
+        </#macro>
 		<#list actualImpls as actualImpl>
 		   <#assign deliverable = Root.getDocumentService().getSoaNodeParent(actualImpl, 'Deliverable')/>
 		   <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">
-		   ${deliverable['del:application']} / ${deliverable['soan:name']} / </span> <span title="SOA ID: ${service['soan:name']}">
+		   ${componentTitle} / ${deliverable['del:application']} / ${deliverable['soan:name']} / </span> <span title="SOA ID: ${service['soan:name']}">
 		   <#-- ${actualImpl['soan:name']} -->${actualImpl['title']}
 		   </span> - <@displayPhase actualImpl['spnode:subproject']/> (((${actualImpl.versionLabel})))
-           <br/>
+		   <br/>
+           <@displayTested productionImpl/><br/>
+		   Dépend de : <#list deliverable['del:dependencies'] as dependency>${dependency}, </#list>
+           <p/>
 		</#list>
         <#-- @displayDocsShort actualImpls/ -->
         <@displayDocs actualImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
 		<br/>
 		Découverte :
-        <a href="${Root.path + '/cartography/sourceDiscovery'}">Source</a>
+        <a href="${Root.path}/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Source</a>
 		<br/>
 		
 		<br/><b>Mocks :</b><br/>
@@ -264,6 +345,11 @@
 		<#if productionEndpoint?has_content>
 		<a href="${productionEndpoint['endp:url']}">${productionEndpoint['endp:url']}</a>
         <br/>
+           <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">
+           ${productionEndpoint['env:environment']} / </span> <span title="SOA ID: ${productionEndpoint['soan:name']}">
+           <#-- ${productionEndpoint['soan:name']} -->${productionEndpoint['endp:url']}
+           </span> - <@displayPhase productionEndpoint['spnode:subproject']/> (((${productionEndpoint.versionLabel})))
+           <br/>
         Resource : 
         <#if productionEndpoint['rdi:url']?has_content>
            external at <a href="${productionEndpoint['rdi:url']}">${productionEndpoint['rdi:url']}</a><!-- TODO shortened url display -->
@@ -289,6 +375,26 @@
         <!-- a href="">FraSCAti Studio application A</a -->
 		</#if>
 		<br/>
+		<#assign productionImpl = Root.getDocumentService().getSoaNodeParent(productionEndpoint, 'ServiceImplementation')/>
+        <#assign productionDeliverable = Root.getDocumentService().getSoaNodeParent(productionImpl, 'Deliverable')/>
+		Fournit par l'Application ${actorTitle} / ${componentTitle} / ${productionDeliverable['del:application']} (JARS)
+		<br/>
+		nécessitant les services
+		<!-- TODO list deliverables by application -->
+		<#list Root.getDocumentService().getSoaNodeChildren(productionDeliverable, 'ServiceConsumption') as servicecons>
+		   <#list Root.getDocumentService().getSoaNodeChildren(productionDeliverable, 'ServiceImplementation') as serviceimpl>
+		      <#if servicecons['javasc:consumedInterface'] = serviceimpl['javasi:implementedInterface'] && serviceimpl['serviceimpl:ismock'] = 'false'>
+		         <#assign foundServiceimpl = serviceimpl/>
+		         <!-- TODO + location -->
+		      </#if>
+		   </#list>
+		   <#if !foundServiceimpl?has_content>
+              <li>external ${servicecons['title']} through ${servicecons['javasc:consumedInterface']} (test ?)</li> 
+           <#else>
+              <li>(internal ${servicecons['title']} by ${foundServiceimpl['title']} through ${servicecons['javasc:consumedInterface']})</li>
+           </#if>
+		</#list>
+		<p/>
 		<br/>Tous les déploiements :<!-- Et à déploiement de test : -->
 		<#-- @displayDocsShort endpoints/ -->
         <@displayDocs actualImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>

@@ -1,31 +1,29 @@
 /**
  * EasySOA Proxy
  * Copyright 2011-2013 Open Wide
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * Contact : easysoa-dev@googlegroups.com
  */
 
 package org.easysoa.registry.dbb;
 
-import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import javax.xml.namespace.QName;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.facets.InformationServiceDataFacet;
@@ -45,81 +43,69 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.ow2.easywsdl.schema.api.Element;
-import org.ow2.easywsdl.wsdl.WSDLFactory;
 import org.ow2.easywsdl.wsdl.api.Description;
 import org.ow2.easywsdl.wsdl.api.Operation;
 import org.ow2.easywsdl.wsdl.api.Part;
-import org.ow2.easywsdl.wsdl.api.WSDLException;
-import org.ow2.easywsdl.wsdl.api.WSDLReader;
 import org.ow2.easywsdl.wsdl.api.abstractItf.AbsItfParam;
 
 /**
  * Extracts and sets metadata from WSDL. Tries to do it only if (doc, file name, content) actually changed.
- * 
+ *
  * NB. if called on event, can't be on beforeDocumentModification because digest not yet computed at storage level.
- * 
+ *
  * About WSDL parsing implementation architecture :
  * see Thumbnail https://github.com/ldoguin/nuxeo-thumbnail http://www.nuxeo.com/blog/development/2012/06/monday-dev-heaven-adding-thumbnail-preview-document-content-nuxeo/
- * 
+ *
  * @author jguillemotte
  */
 public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
 
     private static Logger logger = Logger.getLogger(WsdlResourceParsingServiceImpl.class);
 
-    public static final String SOAP_CONTENT_TYPE = "application/soap+xml"; // ; charset=utf-8 http://www.w3schools.com/soap/soap_httpbinding.asp    
-    
-    private HashSet<String> wsdlDocumentTypes;
-    private HashSet<String> wsdlFileDocumentTypes;
-    
-    public WsdlResourceParsingServiceImpl(){
-        wsdlFileDocumentTypes = new HashSet<String>(3);
-        wsdlFileDocumentTypes.add(InformationService.DOCTYPE);
-        wsdlFileDocumentTypes.add(Endpoint.DOCTYPE);
+    public static final String SOAP_CONTENT_TYPE = "application/soap+xml"; // ; charset=utf-8 http://www.w3schools.com/soap/soap_httpbinding.asp
 
-        wsdlDocumentTypes = new HashSet<String>(3);
-        wsdlDocumentTypes.addAll(wsdlFileDocumentTypes);
-        wsdlDocumentTypes.add(ServiceImplementation.DOCTYPE);        
-    }
-    
     /**
-     * 
+     * Default constructor
+     */
+    public WsdlResourceParsingServiceImpl(){}
+
+    /**
+     *
      * @param documentType
-     * @return 
+     * @return
      */
     @Override
-    public boolean isWsdlInfo(DocumentModel soaNodeDocModel) { // TODO isWsdlInfo()
+    public boolean isWsdlInfo(DocumentModel soaNodeDocModel) {
     	return soaNodeDocModel.getFacets().contains(WsdlInfoFacet.FACET_WSDLINFO); // rather than wsdlDocumentTypes.contains(model.getType())
     }
-    
+
     /**
-     * 
+     * check if the document model is a WSDL resource
      * @param model
-     * @return 
+     * @return
      */
     @Override
     public boolean isWsdlFileResource(DocumentModel soaNodeDocModel){
-        /*if((isRDI(soaNodeDocModel) && isWsdl(soaNodeDocModel)) || isWsdlHardType(soaNodeDocModel)){
+        // isRDI && isWsdl(i.e. isWsdlResource(from type or name of file and / or url) || isWsdlHardType i.e. iserv && endpoint)
+        if((isRDI(soaNodeDocModel) && isWsdl(soaNodeDocModel)) || isWsdlHardType(soaNodeDocModel)){
             return true;
         }
-        return false;*/
-        return wsdlFileDocumentTypes.contains(soaNodeDocModel.getType());
-        // isRDI && isWsdl(i.e. isWsdlResource(from type or name of file and / or url) || isWsdlHardType i.e. iserv && endpoint)
+        return false;
     }
-    
+
     /**
-     * 
-     * @param model
-     * @return 
+     * Check if the document is a RDI (ResourceDownloadInfo) document
+     * @param model The model to check
+     * @return true if the model is a RDI document
      */
     private boolean isRDI(DocumentModel model){
         return model.getFacets().contains(ResourceDownloadInfo.FACET_RESOURCEDOWNLOADINFO);
     }
-    
+
     /**
-     * 
-     * @param model
-     * @return 
+     * Check if the model is a WSDL document
+     * @param model The model to check
+     * @return true if the model is a wsdl document
      */
     private boolean isWsdl(DocumentModel model){
         // get the file
@@ -143,34 +129,35 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
         catch(Exception ex){
 
         }
-        return false;        
+        return false;
     }
-    
+
     /**
-     * 
-     * @param model
-     * @return 
+     * Return tru if the model is an InformationService or an Endpoint
+     * @param model The model to check
+     * @return true if the model is an InformationService or an Endpoint
      */
     private boolean isWsdlHardType(DocumentModel model){
-        Set<String> facets = model.getFacets();
-        return facets.contains(InformationService.DOCTYPE) 
-                || facets.contains(Endpoint.DOCTYPE);        
+        HashSet<String> wsdlFileDocumentTypes = new HashSet<String>(3);
+        wsdlFileDocumentTypes.add(InformationService.DOCTYPE);
+        wsdlFileDocumentTypes.add(Endpoint.DOCTYPE);
+        return wsdlFileDocumentTypes.contains(model.getType());
     }
-    
+
     /**
-     * 
+     *
      * @param sourceDocument
      * @return
-     * @throws ClientException 
+     * @throws ClientException
      */
     @Override
     public boolean extractMetas(DocumentModel sourceDocument) throws ClientException {
         boolean documentModified = false;
-        
+
         // getting new info :
         WsdlBlob wsdlBlob = new WsdlBlob(sourceDocument); // NB. previousDocumentModel can't be used to get old digest
         if (wsdlBlob.hasFileChangedIfAny()) {
-            
+
             if (wsdlBlob.getWsdl() != null) {
                 // try extracting from parsing
                 documentModified = parseResourceAndSetMetas(wsdlBlob);
@@ -191,12 +178,12 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
         }
         return documentModified;
     }
-    
+
     /**
      * TODO in AbstractResourceService ?!
      * @param wsdlBlob
      * @return
-     * @throws ClientException 
+     * @throws ClientException
      */
     protected boolean parseResourceAndSetMetas(WsdlBlob wsdlBlob) throws ClientException {
         boolean documentModified = false;
@@ -211,8 +198,8 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
             //sourceDocument.setPropertyValue("wsdl:wsdlFileDigest", newDigest);
         }
         return documentModified;
-    }    
-    
+    }
+
     /**
      * Extracts relevant metadata
      * @param wsdl
@@ -231,33 +218,33 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
             QName serviceName = wsdl.getServices().get(0).getQName(); // TODO better : make sure is is of the interface above
             String wsdlVersion = wsdl.getVersion().name();
 
-            List<OperationInformation> operationInfos = new ArrayList<OperationInformation>(); 
+            List<OperationInformation> operationInfos = new ArrayList<OperationInformation>();
             for (Operation wsdlOperation : wsdl.getInterfaces().get(0).getOperations()) {
                 StringBuffer docBuf = new StringBuffer();
                 if (wsdlOperation.getDocumentation() != null) {
                     docBuf.append("\n");
                     docBuf.append(wsdlOperation.getDocumentation().getContent());
                 }
-                
+
                 String inParameters = getParameters(wsdlOperation.getInput(), docBuf);
-                String outParameters = getParameters(wsdlOperation.getOutput(), docBuf); 
+                String outParameters = getParameters(wsdlOperation.getOutput(), docBuf);
                 //TODO LATER also error message
-                
+
                 OperationInformation operationInfo = new OperationInformation(
                         wsdlOperation.getQName().getLocalPart(),//TODO LATER rather toString() and only display localPart
                         inParameters, outParameters,
                         docBuf.toString(), SOAP_CONTENT_TYPE, SOAP_CONTENT_TYPE);
                 operationInfos.add(operationInfo);
             }
-            
+
             boolean changed = setWsdlMetadataIfChanged(sourceDocument, wsdlVersion, portTypeName, serviceName, operationInfos);
             return changed;
         }
         return false;
-    }    
-    
+    }
+
     /**
-     * 
+     *
      * @param itfParam input, output or fault
      * @return
      */
@@ -322,7 +309,7 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
      * TODO in AbstractResourceService ?!
      * @param sourceDocument
      * @return
-     * @throws ClientException 
+     * @throws ClientException
      */
     protected boolean resetMetasIfChanged(DocumentModel sourceDocument) throws ClientException {
         boolean changed = setWsdlMetadataIfChanged(sourceDocument, null, null, null, null);
@@ -353,14 +340,14 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
      * TODO in AbstractResourceService ?!
      * @param sourceDocument
      * @return
-     * @throws ClientException 
+     * @throws ClientException
      */
     private boolean extractMetasFromSoaName(DocumentModel sourceDocument) throws ClientException {
         boolean documentModified = false;
         if (InformationService.DOCTYPE.equals(sourceDocument.getType())) {
             if (sourceDocument.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME) == null) {
                     InformationServiceName parsedSoaName = InformationServiceName.fromName(
-                                    (String) sourceDocument.getPropertyValue(InformationService.XPATH_SOANAME)); 
+                                    (String) sourceDocument.getPropertyValue(InformationService.XPATH_SOANAME));
                     if (parsedSoaName != null) { // not null only if in format ws/java:ns:name
                             String portTypeName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getInterfaceName();
                             sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName);

@@ -40,7 +40,7 @@ public class ContextData {
      * @param subprojectId
      * @return
      */
-    public final static ContextData getVersionData(CoreSession session, String subprojectId) throws ClientException {
+    public static ContextData getVersionData(CoreSession session, String subprojectId) throws ClientException {
         ContextData versionData = new ContextData();
         // Get the project, phase and version with the subproject ID
         DocumentModel contextInfo = SubprojectServiceImpl.getSubprojectById(session, subprojectId);
@@ -59,7 +59,6 @@ public class ContextData {
             }
         }
 
-        //versionData.setPhase(contextInfo.getName());
         versionData.setPhase(contextInfo.getTitle());
         if(contextInfo.isVersion()){
             versionData.setVersion(contextInfo.getProperty("major_version").getValue() + "." + contextInfo.getProperty("minor_version").getValue());
@@ -73,14 +72,22 @@ public class ContextData {
     private String project;
     private String phase;
     private String version;
-    //private String projectId;
 
+    /**
+     * Default constructor, project, phase and version are set to ""
+     */
     public ContextData(){
         this.project = "";
         this.phase = "";
         this.version = "";
     }
 
+    /**
+     * Constructor
+     * @param project
+     * @param phase
+     * @param version
+     */
     public ContextData(String project, String phase, String version){
         setProject(project);
         setPhase(phase);

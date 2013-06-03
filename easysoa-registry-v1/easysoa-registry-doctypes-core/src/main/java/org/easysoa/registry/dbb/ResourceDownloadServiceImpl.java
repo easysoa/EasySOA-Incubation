@@ -111,6 +111,11 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
         return resourceDownloadInfo;
     }
 
+    @Override
+    public ResourceDownloadInfo get(ResourceDownloadInfo rdi) throws Exception {
+        return get(new URL(rdi.getDownloadableUrl()));
+    }
+
     /**
      *
      * @param url
@@ -147,7 +152,7 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
     		  return new File(url.getPath()); // to accept Windows URLs, see https://weblogs.java.net/blog/kohsuke/archive/2007/04/how_to_convert.html
     		}
     	}
-    	
+
         HttpDownloaderService httpDownloaderService = new HttpDownloaderServiceImpl();
         HttpDownloader fileDownloader = httpDownloaderService.createHttpDownloader(url);
         fileDownloader.download();

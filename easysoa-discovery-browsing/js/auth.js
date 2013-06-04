@@ -1,8 +1,8 @@
 // EasySOA Web
 // Copyright (c) 2011 -2012 Open Wide and others
-// 
+//
 // MIT licensed
-// 
+//
 // Contact : easysoa-dev@googlegroups.com
 
 var settings = require('./settings');
@@ -11,7 +11,7 @@ var utils = require('./utils');
 
 /**
  * Authentication components, service both the authentication service & filter.
- * 
+ *
  * Author: Marwane Kalam-Alami
  */
 
@@ -73,7 +73,7 @@ login = function(request, response, next) {
                                                         } else {
                                                             clientAddressToSessionMap[request.connection.remoteAddress] = request.session; // Connexion without proxy
                                                         }
-                                                        
+
 							console.log("[INFO] Session created for: " + params.username);
                                                         console.log("[DEBUG] subprojectId: " + request.query.subprojectId);
                                                         console.log("[DEBUG] visibility: " + request.query.visibility);
@@ -82,8 +82,8 @@ login = function(request, response, next) {
 								response.writeHead(200, JSONP_HEADERS);
 								response.end(params.callback + '({result: "ok"})');
 							} else {
-                                                                console.log("[DEBUG] prev : " + params.prev);    
-								response.redirect(params.prev || '/easysoa?subprojectId=' + request.query.subprojectId + "&visibility=" + request.query.visibility); // TODO add params from Easysoa registry
+                                                                console.log("[DEBUG] prev : " + params.prev);
+								response.redirect(params.prev + "&visibility=" + request.query.visibility || '/easysoa?subprojectId=' + request.query.subprojectId + "&visibility=" + request.query.visibility);
 							}
 						} else {
 							redirectToLoginForm(request, response, true);
@@ -110,14 +110,14 @@ login = function(request, response, next) {
 logout = function(request, response, next) {
 	var username = request.session.username;
 	request.session.destroy();
-        
+
         // remove ip/session
         if(request.headers['x-easysoa-orig-ip']){
             delete clientAddressToSessionMap[request.headers['x-easysoa-orig-ip']]; // Connexion with proxy
         } else {
             delete clientAddressToSessionMap[request.connection.remoteAddress]; // Connexion without proxy
-        }        
-       
+        }
+
 	console.log("[INFO] Session destroyed for: " + username);
 	if (request.query && request.query.callback) {
 		response.end(request.query.callback + '({result: "ok"})');
@@ -131,7 +131,7 @@ getUserdata = function(request, response, next) {
 		var responseData = {};
 		responseData.username = request.session.username;
 		if (request.query && request.query.callback) { // JSONP support
-			response.write(request.query.callback + '(' 
+			response.write(request.query.callback + '('
 					+ JSON.stringify(responseData) + ')');
 		} else {
 			response.write(JSON.stringify(responseData));
@@ -182,7 +182,8 @@ redirectToLoginForm = function(request, response, error, nuxeoNotReady) {
 	} else {
 		var prevPage = request.body.prev || request.query.prev || request.url;
 		var destinationUrl = LOGIN_FORM_PATH + '?'
-				+ ((prevPage) ? 'prev=' + prevPage + '&' : '')
+				//+ ((prevPage) ? 'prev=' + prevPage + '&' : '')
+                                + ((prevPage) ? 'prev=' + prevPage : '')
 				+ ((error) ? 'error=true&' : '')
 				+ ((nuxeoNotReady) ? 'nuxeoNotReady=true' : '');
 		response.redirect(destinationUrl);

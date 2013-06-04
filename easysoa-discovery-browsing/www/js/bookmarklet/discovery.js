@@ -286,7 +286,8 @@ function initTemplates() {
 
 	templates['afterWsdls'] = underscore.template(
 	'<div class="easysoa-doc">Environment name: <input type="text" id="easysoa-environment" value="Production" /></div>' +
-        '<div class="easysoa-doc">Phase: #{context-display}<input type="hidden" id="easysoa-context" value="#{context}"/></div>'
+        '<div class="easysoa-doc">Phase: #{context-display}<input type="hidden" id="easysoa-context" value="#{context}"/></div>' +
+        '<div class="easysoa-doc"><a href="#{nuxeoUrl}/site/easysoa/dashboard/?subprojectId=#{context}&visibility=#{visibility}" target="_blank" title="Une fois enregistrés, vous pouvez regler la correspondance entre les services et leurs implémentations et définitions dans l\'outil de réconciliation">Mise en correspondance</a></div>'
 	);
 }
 

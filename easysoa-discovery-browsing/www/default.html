@@ -78,7 +78,7 @@ $(document).ready(function() {
 
   //alert('ajax url : /js/bookmarklet/bookmarklet-min.js?subprojectId=' + decodeURI(getUrlVars()["subprojectId"])); // OK
   $.ajax({
-    url: '/js/bookmarklet/bookmarklet-min.js?subprojectId=' + decodeURI(getUrlVars()["subprojectId"]),
+    url: '/js/bookmarklet/bookmarklet-min.js?subprojectId=' + decodeURI(getUrlVars()["subprojectId"]) + "&visibility=" + getUrlVars()["visibility"],
     dataType: 'text', // Prevents JS execution
     success: function(data, status, xhr) {
       ///alert('ajax response : ' + xhr.responseText); // OK

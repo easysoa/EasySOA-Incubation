@@ -1,9 +1,9 @@
 // EasySOA Web
-// 
+//
 // Copyright (c) 2011-2012 Open Wide and others
-// 
+//
 // MIT licensed
-// 
+//
 // Contact : easysoa-dev@googlegroups.com
 
 require('longjohn');
@@ -43,7 +43,7 @@ var networkIPAddress;
 // * execute & parse output of programs like ifconfig & ipconfig
 // http://stackoverflow.com/questions/3653065/get-local-ip-address-in-node-js
 exports.getNetworkIP = getNetworkIP = function(callback) {
-   
+
     var socket = net.createConnection(80, 'www.google.com');
     socket.on('connect', function() {
         callback(undefined, socket.address().address);
@@ -78,49 +78,65 @@ app.configure(function(){
   app.use(express.cookieParser());
   app.use(express.session({ secret: 'easysoa-web' }));
   app.use(express.bodyParser());
-  
+
   // Components routing & middleware configuration
   authComponent.configure(app);
   dbbComponent.configure(app, webServer);
   lightComponent.configure(app);
   nuxeoComponent.configure(app);
-  
+
   // Router
   app.use(app.router);
-  
+
   // Static file server
   app.use(express.favicon(settings.WWW_PATH + '/favicon.ico'));
   app.use(express.static(settings.WWW_PATH));
   app.use(express.directory(settings.WWW_PATH));
 
-  // To set dynamically the host and port in the bookmarklet template to generate the bookmarklet script  
+  // To set dynamically the host and port in the bookmarklet template to generate the bookmarklet script
   app.get('/js/bookmarklet/bookmarklet-min.js', function(req, res) {
     var context = unescape(req.param('subprojectId', ''));
+    var visibility = unescape(req.param('visibility', ''));
     var jsFile = fs.readFileSync("../www/js/bookmarklet/bookmarklet-min.js","utf8");
     //jsFile = jsFile.replace("#{host}", webServer.address().address); // this method webServer.address().address is useless, return always local loopback 0.0.0.0
     jsFile = jsFile.replace("#{host}", getClientHost(req)); // better than networkIPAddress because works offline
     jsFile = jsFile.replace("#{port}", webServer.address().port);
     jsFile = jsFile.replace("#{context}", context);
+    jsFile = jsFile.replace("#{visibility}", visibility);
     res.writeHead(200);
     res.end(jsFile);
   });
 
-  // To set dynamically the host and port in the discovery.js file  
+  // To set dynamically the host and port in the discovery.js file
   app.get('/js/bookmarklet/discovery.js*', function(req, res) {
     console.log("[DEBUG] ", "passing in discovery.js template function");
     var context = unescape(req.param('subprojectId', ''));
+    var visibility = unescape(req.param('visibility', ''));
     var jsFile = fs.readFileSync("../www/js/bookmarklet/discovery.js","utf8");
     //jsFile = jsFile.replace("#{host}", webServer.address().address); // this method webServer.address().address is useless, return always local loopback 0.0.0.0
     jsFile = jsFile.replace("#{host}", getClientHost(req)); // better than networkIPAddress because works offline
     jsFile = jsFile.replace("#{port}", webServer.address().port);
     jsFile = jsFile.replace("#{context-display}", utils.formatPhaseForDisplay(context)); // For display
     jsFile = jsFile.replace("#{context}", context); // For input field
+    // 3 following replace for matching dashboard link
+    jsFile = jsFile.replace("#{nuxeoUrl}", NUXEO_URL);
+    jsFile = jsFile.replace("#{context}", context);
+    jsFile = jsFile.replace("#{visibility}", visibility);
     res.writeHead(200);
     console.log("[DEBUG] ", "End of discovery.js template function");
     res.end(jsFile);
   });
 
-    
+  // To set dynamically the host and port in the bookmarklet template to generate the bookmarklet script
+  /*app.get('/index.html', function(req, res) {
+    var jsFile = fs.readFileSync("../www/index.html","utf8");
+    jsFile = jsFile.replace("#{nuxeoHost}", EASYSOA_ROOT_URL);
+    jsFile = jsFile.replace("#{nuxeoUrl}", NUXEO_URL);
+    res.writeHead(200);
+    res.end(jsFile);
+  });*/
+
+
 });
 webServer.listen(settings.WEB_PORT);
 
@@ -130,15 +146,15 @@ nuxeoComponent.startConnectionChecker();
  * Set up proxy server
  */
 var proxyServer = http.createServer(function(request, response) {
-		
+
   // Service finder
   dbbComponent.handleProxyRequest(request, response);
-  
+
   request.headers['X-EasySOA-Orig-IP'] = request.connection.remoteAddress;
-  
+
   // Proxy
   proxyComponent.handleProxyRequest(request, response);
-  
+
 });
 proxyServer.listen(settings.PROXY_PORT);
 

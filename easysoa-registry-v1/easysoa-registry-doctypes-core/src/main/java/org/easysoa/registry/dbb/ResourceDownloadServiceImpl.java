@@ -110,14 +110,20 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
             SimpleDateFormat sdf = new SimpleDateFormat(ResourceDownloadInfo.TIMESTAMP_DATETIME_PATTERN);
             resourceDownloadInfo.setTimestamp(sdf.format(date));
             resourceDownloadInfo.setFile(file);
-            resourceDownloadInfo.setUrl(url.toString().substring(0, url.toString().indexOf("?callback")));
+            String urlString = url.toString();
+            if(urlString.contains("?callback")){
+                resourceDownloadInfo.setUrl(urlString.substring(0, urlString.indexOf("?callback")));
+            } else {
+                resourceDownloadInfo.setUrl(urlString);
+            }
         }
         return resourceDownloadInfo;
     }
 
     @Override
     public ResourceDownloadInfo get(ResourceDownloadInfo rdi) throws Exception {
-        return get(new URL(rdi.getDownloadableUrl()));
+        rdi = get(new URL(rdi.getDownloadableUrl()));
+        return rdi;
     }
 
     /**
@@ -134,8 +140,12 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
         // TODO LATER better : called by ResourceUpdate within async using Nuxeo Work
 
         // TODO for frascati service side : Add a parameter to pass the url
-        String callback = url.toString().substring(url.toString().indexOf("?callback"));
-        String urlWithoutCallback = url.toString().substring(0, url.toString().indexOf("?callback"));
+        String urlString = url.toString();
+        String urlWithoutCallback = urlString;
+        if(urlString.contains("?callback")){
+            //String callback = urlString.substring(urlString.indexOf("?callback"));
+            urlWithoutCallback = urlString.substring(0, urlString.indexOf("?callback"));
+        }
 
         //webResource.setProperty("fileURL", urlWithoutCallback);
         webResource = webResource.queryParam("fileURL", URLEncoder.encode(urlWithoutCallback, "UTF-8"));

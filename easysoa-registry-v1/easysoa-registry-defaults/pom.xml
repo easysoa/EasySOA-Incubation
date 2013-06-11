@@ -11,6 +11,7 @@
   
   <artifactId>easysoa-registry-defaults</artifactId>
   <name>EasySOA Registry Default Contents</name>
+  <description>Provides Intelligent System Tree and classifiers</description>
   
   <dependencies>
     <!-- EasySOA -->

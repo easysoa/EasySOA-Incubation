@@ -333,7 +333,7 @@ public interface DocumentService {
     List<SoaNodeId> createSoaNodeIds(DocumentModel... models) throws PropertyException, ClientException;
 
     /**
-     * Proxy-compliant alternative to CoreSession.getChildren():
+     * Adds proxy compliance to CoreSession.getChildren():
      * If ref is a proxy, gets the children of its actual target.
      * @param session
      * @param ref
@@ -343,6 +343,15 @@ public interface DocumentService {
      */
     DocumentModelList getChildren(CoreSession session, DocumentRef ref,
             String doctype) throws ClientException;
+    /**
+     * Proxy AND SUBTYPE-compliant alternative to CoreSession.getChildren() USING NXQL:
+     * If ref is a proxy, gets the children of its actual target.
+     * @param docModel
+     * @param type
+     * @return
+     * @throws ClientException
+     */
+    DocumentModelList getChildren(DocumentModel docModel, String type) throws ClientException;
 
 
     boolean isSoaNode(CoreSession documentManager, String doctype) throws ClientException;
@@ -350,23 +359,31 @@ public interface DocumentService {
     boolean isTypeOrSubtype(CoreSession documentManager, String doctypeToTest, String expectedDoctype) throws ClientException;
 
 
-	List<DocumentModel> getInformationServices(CoreSession session, String subprojectCriteria) throws ClientException;
+	List<DocumentModel> getInformationServices(CoreSession session, String subprojectId) throws ClientException;
+	List<DocumentModel> getInformationServicesInCriteria(CoreSession session, String subprojectCriteria) throws ClientException;
 
-	List<DocumentModel> getServiceImplementations(CoreSession session, String subprojectCriteria) throws ClientException;
+	List<DocumentModel> getServiceImplementations(CoreSession session, String subprojectId) throws ClientException;
+	List<DocumentModel> getServiceImplementationsInCriteria(CoreSession session, String subprojectCriteria) throws ClientException;
 
-	List<DocumentModel> getEndpoints(CoreSession session, String subprojectCriteria) throws ClientException;
+	List<DocumentModel> getEndpoints(CoreSession session, String subprojectId) throws ClientException;
+	List<DocumentModel> getEndpointsInCriteria(CoreSession session, String subprojectCriteria) throws ClientException;
 
-	List<DocumentModel> getByType(CoreSession session, String type, String subprojectCriteria) throws ClientException;
+	List<DocumentModel> getByType(CoreSession session, String type, String subprojectId) throws ClientException;
+	List<DocumentModel> getByTypeInCriteria(CoreSession session, String type, String subprojectCriteria) throws ClientException;
     
 	DocumentModel getServiceImplementationFromEndpoint(DocumentModel endpointModel) throws ClientException;
 
-	List<DocumentModel> getEndpointsOfService(DocumentModel service, String subprojectCriteria) throws ClientException;
+	List<DocumentModel> getEndpointsOfService(DocumentModel service, String subprojectId) throws ClientException;
+	List<DocumentModel> getEndpointsOfServiceInCriteria(DocumentModel service, String subprojectCriteria) throws ClientException;
 
-	DocumentModel getEndpointOfService(DocumentModel service, String environment, String subprojectCriteria) throws ClientException;
+	DocumentModel getEndpointOfService(DocumentModel service, String environment, String subprojectId) throws ClientException;
+	DocumentModel getEndpointOfServiceInCriteria(DocumentModel service, String environment, String subprojectCriteria) throws ClientException;
 
 	List<String> getEnvironments(CoreSession session, String subprojectId) throws ClientException;
+	List<String> getEnvironmentsInCriteria(CoreSession session, String subprojectCriteria) throws ClientException;
 
-	List<DocumentModel> getComponents(CoreSession session, String subprojectCriteria) throws ClientException;
+	List<DocumentModel> getComponents(CoreSession session, String subprojectId) throws ClientException;
+	List<DocumentModel> getComponentsInCriteria(CoreSession session, String subprojectCriteria) throws ClientException;
 
 	DocumentRef getParentInformationService(DocumentModel model) throws ClientException;
 

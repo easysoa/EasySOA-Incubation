@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.easysoa.registry.InvalidDoctypeException;
+import org.easysoa.registry.SoaMetamodelService;
+import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
@@ -12,6 +14,7 @@ import org.easysoa.registry.utils.ListUtils;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  * 
@@ -65,10 +68,17 @@ public class SoaNodeAdapter extends AbstractDocumentAdapter implements SoaNode {
     }
 
 	public SoaNodeId getParentOfType(String doctype) throws ClientException {
+    	SoaMetamodelService soaMetamodelService;
+		try {
+			soaMetamodelService = Framework.getService(SoaMetamodelService.class);
+		} catch (Exception e) {
+			throw new ClientException("Can't get SoaMetamodelService", e);
+		}
+		
 		Serializable[] parentsIdsArray = (Serializable[]) documentModel.getPropertyValue(XPATH_PARENTSIDS);
 		for (Serializable parentIdString : parentsIdsArray) {
 			 SoaNodeId parentId = SoaNodeId.fromString((String) parentIdString);
-			if (parentId.getType().equals(doctype)) {
+			if (soaMetamodelService.isAssignable(parentId.getType(), doctype)) {
 				return parentId;
 			}
 		}

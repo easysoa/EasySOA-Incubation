@@ -89,9 +89,9 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
         
         // getting (phase-scoped) services
-        List<DocumentModel> services = docService.getInformationServices(session, subprojectCriteria);
+        List<DocumentModel> services = docService.getInformationServicesInCriteria(session, subprojectCriteria);
         // getting (phase-scoped) tagging folders
-        List<DocumentModel> tags = docService.getByType(session, TaggingFolder.DOCTYPE, subprojectCriteria);
+        List<DocumentModel> tags = docService.getByTypeInCriteria(session, TaggingFolder.DOCTYPE, subprojectCriteria);
         // getting (phase-scoped) tagged services
         // WARNING : looking for proxies only work when proxy-containing TaggingFolder are in the same Phase as services
         // (else wrong phase id metadata), and using Path only works for live documents !
@@ -235,8 +235,8 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
             }
             
             // Endpoints
-            List<DocumentModel> endpoints = docService.getEndpointsOfService(service, subprojectCriteria);
-            DocumentModel productionEndpoint = docService.getEndpointOfService(service, "Production", subprojectCriteria);
+            List<DocumentModel> endpoints = docService.getEndpointsOfServiceInCriteria(service, subprojectCriteria);
+            DocumentModel productionEndpoint = docService.getEndpointOfServiceInCriteria(service, "Production", subprojectCriteria);
             DocumentModel productionImpl = null;
             if (productionEndpoint != null) {
             	productionImpl = docService.getServiceImplementationFromEndpoint(productionEndpoint);
@@ -311,7 +311,7 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         
         //TODO ?? SubprojectID mandatory to find service ....
         DocumentModel service = docService.findSoaNode(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
-        List<DocumentModel> tags = docService.getByType(session, TaggingFolder.DOCTYPE, subprojectCriteria);
+        List<DocumentModel> tags = docService.getByTypeInCriteria(session, TaggingFolder.DOCTYPE, subprojectCriteria);
         
         Template view = getView("servicetags");
         // TODO problem here : A freemarker arg cannot be null or absent

@@ -26,9 +26,11 @@ import java.security.Principal;
 import java.util.Properties;
 
 import org.easysoa.registry.DocumentService;
+import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
@@ -109,19 +111,16 @@ public class EasysoaModuleRoot extends ModuleRoot {
     	return getProperties().getProperty("jasmine.url", "http://" + getServerHost() + ":9100/jasmine/");
     }
     
-    public DocumentModel getProductionEndpoint(DocumentModel serviceDoc, String subprojectId) throws ClientException {
-    	String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(
-    			serviceDoc.getCoreSession(), subprojectId, true);
-    	try {
-	    	DocumentService documentService = Framework.getService(DocumentService.class);
-			return documentService.getEndpointOfService(serviceDoc, "production", subprojectCriteria); // TODO
-		} catch (Exception e) {
-			throw new RuntimeException("Unable to get DocumentService", e);
-		}
-    }
+    //protected String subprojectCriteria = // TODO cache
     
     public DocumentService getDocumentService() throws Exception {
     	return Framework.getService(DocumentService.class);
+    }
+    
+    public String buildSubprojectCriteria(DocumentModel soaNodeDocModel,
+    		String subprojectId) throws PropertyException, ClientException {
+    	return NXQLQueryHelper.buildSubprojectCriteria(
+    			soaNodeDocModel.getCoreSession(), subprojectId, true);
     }
     
 }

@@ -58,7 +58,7 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 			String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
                         
 			// All information services
-			List<DocumentModel> allInfoServices = docService.getInformationServices(session, subprojectCriteria);
+			List<DocumentModel> allInfoServices = docService.getInformationServicesInCriteria(session, subprojectCriteria);
 			Map<String, DocumentModel> infoServicesById = new HashMap<String, DocumentModel>();
 			for (DocumentModel infoService : allInfoServices) {
 				infoServicesById.put(infoService.getId(), infoService);
@@ -291,7 +291,7 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 		// TODO or both subproject criteria intersected ?
 		//		NXQLQueryHelper.buildSubprojectPathCriteria(session, subprojectId, visibility));
 		DocumentService docService = Framework.getService(DocumentService.class);
-		return docService.getComponents(session, subprojectCriteria);
+		return docService.getComponentsInCriteria(session, subprojectCriteria);
 	}
 	
 	private List<DocumentModel> fetchSuggestions(CoreSession session, DocumentModel model, String componentUuid,

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.easysoa.registry.dbb.ResourceUpdateService" version="1.0">
+<component name="org.easysoa.registry.dbb.SyncResourceUpdateService" version="1.0">
 
   <implementation class="org.easysoa.registry.dbb.SynchronousResourceUpdateServiceImpl" />
 

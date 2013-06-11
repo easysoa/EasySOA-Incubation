@@ -22,24 +22,24 @@ import org.ow2.easywsdl.wsdl.api.WSDLReader;
 
 /**
  * Extracts metadata from WSDL if changed.
- * 
+ *
  * Should be registered on events : documentCreated, documentModified
  * (and not beforeDocumentModification because digest not yet computed at storage level)
- * 
+ *
  * @author mdutoo
  *
  */
 public class WSDLParsingListener implements EventListener {
 
     public static final String SOAP_CONTENT_TYPE = "application/soap+xml"; // ; charset=utf-8 http://www.w3schools.com/soap/soap_httpbinding.asp
-    
+
     private static Logger logger = Logger.getLogger(WSDLParsingListener.class);
-    
+
     public WSDLParsingListener() {}
-    
+
     @Override
     public void handleEvent(Event event) throws ClientException {
-		// Ensure event nature
+        // Ensure event nature
         EventContext context = event.getContext();
         if (!(context instanceof DocumentEventContext)) {
             return;
@@ -47,14 +47,14 @@ public class WSDLParsingListener implements EventListener {
         DocumentEventContext documentContext = (DocumentEventContext) context;
         DocumentModel sourceDocument = documentContext.getSourceDocument();
         CoreSession documentManager = documentContext.getCoreSession();
-        
+
         //if (DocumentEventTypes.BEFORE_DOC_UPDATE.equals(event.getName()) && !sourceDocument.isDirty()) {
-        //    return;
+        //  return;
         //}
-        
+
         //if (!sourceDocument.hasSchema(SoaNode.SCHEMA)
-        //		|| sourceDocument.getPropertyValue(InformationService.XPATH_SOANAME) == null) {
-		//	return;
+        //	|| sourceDocument.getPropertyValue(InformationService.XPATH_SOANAME) == null) {
+	//  return;
         //}
 
         ResourceParsingService resourceParsingService;
@@ -63,21 +63,21 @@ public class WSDLParsingListener implements EventListener {
         }
         catch(Exception ex){
             throw new ClientException(ex);
-        }        
-        
+        }
+
         if (!resourceParsingService.isWsdlFileResource(sourceDocument)) {
             return;
         }
 
         // NB. available if beforeDocumentModification event (so useless for digest which comes on documentModified)
         //DocumentModel previousDocumentModel = (DocumentModel) context.getProperty("previousDocumentModel");
-        
+
         // TODO test it
         // TODO copy this file to ResourceListener & replace it in *listener.xml conf,
         // remove the following code from it, hook WsdlParsingListener rather on resourceDownloaded event in xml conf,
         // trigger resourceDownloaded event in ResourceUpdateService impl
         boolean documentModified = resourceParsingService.extractMetas(sourceDocument);
-		
+
         // Save according to event type
         if (documentModified && !DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())) {
                 documentManager.saveDocument(sourceDocument);
@@ -103,14 +103,14 @@ public class WSDLParsingListener implements EventListener {
             wsdlBlob = tryParsingWsdlFromBlob(blob);
         }
         if (wsdlBlob == null) {
-            wsdlBlob = findWsdlBlob(sourceDocument);   
+            wsdlBlob = findWsdlBlob(sourceDocument);
         }
         return wsdlBlob;
     }*/
-	
+
 	/**
 	 * TODO LATER maybe rather sourceDocument.getAdapter(BlobHolder.class) but doesn't handle file:files
-	 * 
+	 *
 	 * @param sourceDocument
 	 * @param fileName file name of the blob to be returned, must no be null
 	 * @return
@@ -120,7 +120,7 @@ public class WSDLParsingListener implements EventListener {
         // Look for first WSDL
         Blob fileBlob = null;
         Description wsdl = null;
-        
+
         // look in attached files
         List<?> filesInfos = (List<?>) sourceDocument.getPropertyValue("files:files");
         if (filesInfos != null && !filesInfos.isEmpty()) {
@@ -132,7 +132,7 @@ public class WSDLParsingListener implements EventListener {
                 }
             }
         }
-        
+
         if (wsdl == null) {
             // look in document content
             fileBlob = (Blob) sourceDocument.getPropertyValue("file:content");
@@ -142,7 +142,7 @@ public class WSDLParsingListener implements EventListener {
         }
         return null;
     }
-    
+
     public static Description tryParsingWsdlFromBlob(Blob blob) {
         if (blob.getFilename().toLowerCase().endsWith("wsdl")) {
             File file = null;
@@ -150,7 +150,7 @@ public class WSDLParsingListener implements EventListener {
                 file = File.createTempFile("wsdlCandidate", null);
                 blob.transferTo(file);
                 WSDLReader wsdlReader = WSDLFactory.newInstance().newWSDLReader();
-                
+
                 try {
                     Description wsdl = wsdlReader.read(file.toURI().toURL());
                     return wsdl;
@@ -172,5 +172,5 @@ public class WSDLParsingListener implements EventListener {
         }
         return null;
     }
-    
+
 }

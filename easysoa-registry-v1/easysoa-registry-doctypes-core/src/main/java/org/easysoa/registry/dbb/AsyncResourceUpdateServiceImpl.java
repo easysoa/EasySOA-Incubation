@@ -23,32 +23,33 @@ package org.easysoa.registry.dbb;
 import org.apache.log4j.Logger;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  *
  * @author jguillemotte
  */
-public class SynchronousResourceUpdateServiceImpl extends ResourceUpdateServiceImpl {
+public class AsyncResourceUpdateServiceImpl extends ResourceUpdateServiceImpl {
 
-    private static Logger logger = Logger.getLogger(SynchronousResourceUpdateServiceImpl.class);
-    // TODO : document service to get the rdi attributes
-    // TODO : get the resourceDownloadService to get the resource
-    // TODO : Update the endpoint or the information service with the updated resource
-
-    // Default constructor
-    public SynchronousResourceUpdateServiceImpl(){
-
-    }
+    private static Logger logger = Logger.getLogger(AsyncResourceUpdateServiceImpl.class);
 
     @Override
     public void updateResource(DocumentModel newRdi, DocumentModel oldRdi,
             DocumentModel documentToUpdate, ResourceDownloadService resourceDownloadService) throws ClientException {
 
-        // Update resource
-        super.updateResource(newRdi, oldRdi, documentToUpdate, resourceDownloadService);
+        // Check if update is needed
+        if (!isNewResourceRetrieval(newRdi, oldRdi)) {
+            return;
+        }
 
-        // Fire event
-        super.fireResourceDownloadedEvent(documentToUpdate);
+        // Get the Nuxeo WorkManager
+        WorkManager service = Framework.getLocalService(WorkManager.class);
+
+        // Add a new work in the update queue
+        AsyncResourceUpdateWork work = new AsyncResourceUpdateWork(newRdi, oldRdi, documentToUpdate, resourceDownloadService);
+        service.schedule(work);
+
     }
 
 }

@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -19,7 +20,6 @@ import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
-import java.net.URLEncoder;
 
 /**
  * Impl of ResourceDownloadService for Nuxeo components.
@@ -95,7 +95,7 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
 	        }
 	        catch(Exception ex){
 	            // Error or timeout, try the second donwload method
-                    logger.warn("unable to get the resource with delegated downloader !", ex);
+                    logger.warn("unable to get the resource with delegated downloader, trying local downloader !");
                     //isDelegatedDownloadDisabled = true;
 	        }
         }
@@ -122,6 +122,9 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
 
     @Override
     public ResourceDownloadInfo get(ResourceDownloadInfo rdi) throws Exception {
+        // try to delegate to get(rdi)
+        // T0DO
+        // but if fails do a simple get(rdi.url) :
         rdi = get(new URL(rdi.getDownloadableUrl()));
         return rdi;
     }

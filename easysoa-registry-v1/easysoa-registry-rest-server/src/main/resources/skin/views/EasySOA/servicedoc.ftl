@@ -20,6 +20,7 @@
 
         <#include "/views/EasySOA/macros.ftl">
         <#include "/views/EasySOA/docMacros.ftl">
+        <#include "/views/EasySOA/soaMacros.ftl">
     
 	<div id="header">
 		<div id="headerContents">
@@ -83,6 +84,16 @@
 		${service['dc:description']}
 		
 		<h3>Métier</h3>
+		<#if service['iserv:linkedBusinessService']?has_content>
+		  <#assign businessService = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['iserv:linkedBusinessService']))/>
+		</#if>
+		<#if businessService?has_content>
+		   Fournit le service business <@displayDocShort businessService/>
+		<#else>
+		   Service intermédiaire (ne fournit pas de service business)
+		</#if>
+		<br/>
+		
         <#assign providerActorTitle = ""/>
         <#if providerActor?has_content>
             <#assign providerActorTitle = providerActor.title/>
@@ -98,13 +109,14 @@
 		<h3>Documentation</h3>
 		
 		<h4>Documentation - extraite :</h4>
+		(de la définition et de l'implémentation réelle)
+		<#--
 		du WSDL :
 		<p/>
 		<@displayProp service 'iserv:operations'/>
 		<p/>
-		de l'impl (TODO mashupper) :
+		de l'impl (first (?) non-test one) :
 		<p/>
-		<#-- doc of first (?) TODO non-test impl : -->
 		<#if actualImpls?size != 0>
 		${actualImpls[0]['impl:documentation']}
 		<@displayProp actualImpls[0] 'impl:operations'/>
@@ -113,69 +125,14 @@
 		</#if>
 		</#if>
 		<p/>
+		-->
 		
-		<#macro displayOperationParameters params>
-		   <#if params?has_content && params?length != 0>
-		      <br/>
-		      <div style="margin-left:10px; font-size:90%; color:grey;">${params?replace(', ', ')</span><br/>')?replace('=', ' <span style="font-size:90%">(')})</div
-		      <br/>
-		   </#if>
-		</#macro>
-
-		<#if actualImpls?size != 0><#assign impl_operations=actualImpls[0]['impl:operations']></#if>
+		<#if actualImpls?size != 0>
+		   <#assign impl_operations=actualImpls[0]['impl:operations']>
+		<#else>
+		   <#assign impl_operations="none">
+		</#if>
         <@displayOperations service['iserv:operations'] impl_operations/>
-        
-        <#macro displayOperations iserv_operations impl_operations>        
-    		<table style="width: 600px;">
-                <#if iserv_operations?size != 0>
-                    <#-- title (for RPC style operation display) NOT REQUIRED -->
-    		        <#-- tr>
-    		            <th style="font-weight: bold;">Name</th>
-    		            <th style="font-weight: bold;">Parameters</th>
-    		            <th style="font-weight: bold;">Returns</th>
-    		            <th style="font-weight: bold;">Documentation</th>
-    		        </tr -->
-                    <#list iserv_operations as iserv_operation>
-                    <tr><td>
-                    <table style="border-spacing: 0px 10px;">
-                        <#-- RPC style operation display : -->
-                        <#-- tr>
-                            <td><h:outputText value="${entry.get('operationName').getValue()}" /></td>
-                            <td><h:outputText value="${entry.get('operationParameters').getValue()}/>" /></td>
-                            <td><h:outputText value="${entry.get('operationReturnParameters').getValue()}" /></td>
-                            <td><h:outputText value="${entry.get('operationDocumentation').getValue()}" /></td>
-                        </tr -->
-                        <#-- in/out (message) style operation display : -->
-                        <#-- finding corresponding operation in (first) non mock impl : -->
-                        <#assign impl_operation = {}>
-                        <#list impl_operations as impl_operation_cur>
-                            <#if impl_operation_cur['operationName'] = iserv_operation['operationName']>
-                                <#assign impl_operation = impl_operation_cur>
-                            </#if>
-                        </#list>
-                        <#-- displaying mashupped iserv & impl operation, with pretty display of enum values : -->
-                        <tr>
-                            <td colspan="2" style="font-weight: bold; text-decoration: underline;">${iserv_operation['operationName']}</td>
-                            <td style="font-style: italic;">${iserv_operation['operationDocumentation']}<#if impl_operations?has_content> (${impl_operation['operationDocumentation']})</#if></td>
-                        </tr>
-                        <tr>
-                            <td title="${iserv_operation['operationInContentType']}">  <b>In</b> <span style="color:grey"><@displayMimeType iserv_operation['operationInContentType']/></span></td>
-                            <td colspan="2">${iserv_operation['operationParameters']}<#if impl_operations?has_content> [<@displayOperationParameters impl_operation['operationParameters']/>]</#if></td>
-                        </tr>
-                        <tr>
-                            <td title="${iserv_operation['operationOutContentType']}">  <b>Out</b> <span style="color:grey"><@displayMimeType iserv_operation['operationOutContentType']/></span></td>
-                            <td colspan="2">${iserv_operation['operationReturnParameters']}<#if impl_operations?has_content> [<@displayOperationParameters impl_operation['operationReturnParameters']/>]</#if></td>
-                        </tr>
-                    </table>
-                    </td></tr>
-                    </#list>
-                <#else>
-                    <tr>
-                        <td colspan="3" style="text-align: center">No operations.</td>
-                    </tr>
-                </#if>
-            </table>
-        </#macro>
 		<p/>
 		
 		TODO LATER OPT du WSDL de l'endpoint OR BELOW ON ENDPOINT :<p/>
@@ -184,47 +141,18 @@
 		TODO lister les non-SoaNodes fils du InformationService NON les fichiers joints, ou sinon du BusinessService<p/>
 		<#-- @displayProp service 'files:files'/><p/ -->
 		
-		<#macro displayMimeType mimeType>
-		   <#assign mimeTypePrettyName = mimeTypePrettyNames[mimeType]/>
-		   <#if !mimeTypePrettyName?has_content>
-		      <#assign mimeTypePrettyName = mimeType/>
-		   </#if>
-		   <span title="${mimeType}">${mimeTypePrettyName}</span>
-		</#macro>
-        <#macro displayFile service_files_file downloadUrlPrefix>
-                <tr>
-                    <#-- <@urlToLocalNuxeoDownloadAttachment service service_files_file_index/>" -->
-                    <td colspan="3"><a href="${downloadUrlPrefix}${service_files_file['filename']}">${service_files_file['filename']}
-                    <#if service_files_file['file']['mimeType']?has_content && service_files_file['file']['mimeType']?starts_with('image/')>
-                       <img src="${downloadUrlPrefix}${service_files_file['filename']}" height="35" width="35"/>
-                    </#if>
-                    </a></td>
-                    <td><@displayMimeType service_files_file['file']['mimeType']/></td>
-                    <td>${service_files_file['file']['length']}</td>
-                    <td><span style="color:grey" title="${service_files_file['file']['digest']}">digest</td>
-                </tr>
-        </#macro>
-		<#macro displayFiles service_files_files>
-            <#-- assign service_files_files=service['files:files']>
-            <#assign service_children=service['children'] --><#-- TODO LATER docs, Resources ?! -->
-            <table style="width: 600px;">
-            <#if service_files_files?size != 0>
-                <tr><td>
-                <table style="border-spacing: 0px 10px;">
-                <#list service_files_files as service_files_file>
-                    <@displayFile service_files_file '/nuxeo/nxfile/default/${service.id}/files:files/${service_files_file_index}/file/'/>
-                </#list>
-                </table>
-                </td></tr>
-            <#else>
-                <tr>
-                    <td colspan="3" style="text-align: center">Pas de fichiers joints</td>
-                </tr>
-            </#if>
-            <#-- TODO LATER also children documents -->
-            </table>
-		</#macro>
+		Attached files :<br/>
 		<@displayFiles service['files:files']/>
+		
+        Child documents :<br/>
+		<#list Session.getChildren(new_f('org.nuxeo.ecm.core.api.IdRef', service['id']), "Document") as childDocument>
+            <@displayDocShort childDocument/>
+		</#list>
+		
+        TODO CONFIGURATION & LISTALL Child Resources :<br/>
+        <#list Root.getDocumentService().getChildren(service, "Resource") as childResource>
+            <@displayDocShort childResource/>
+        </#list>
 		<p/>
 
 
@@ -298,24 +226,6 @@
 		et consomme, dépend de (en mode non test)
 		
 		<br/><b>Implementations :</b><br/>
-        <#macro displayTested serviceimpl>
-           <#assign deliverable = Root.getDocumentService().getSoaNodeParent(serviceimpl, 'Deliverable')/>
-           <#list Root.getDocumentService().getSoaNodeChildren(deliverable, 'ServiceConsumption') as servicecons>
-              <#-- ${servicecons['javasc:consumedInterface']} ?= ${serviceimpl['javasi:implementedInterface']}; -->
-              <#if servicecons['javasc:consumedInterface'] = serviceimpl['javasi:implementedInterface']
-                    && servicecons['javasc:consumerClass']?ends_with('Test')>
-                 <#-- && serviceimpl['serviceimpl:ismock'] = 'false' -->
-                 <#assign foundTestServiceCons = servicecons/>
-                 <!-- TODO + location -->
-              </#if>
-           </#list>
-           <#if foundTestServiceCons?has_content>
-              <li><span title="${deliverable['title']} / ${foundTestServiceCons['javasc:consumerClass']}">TESTED
-              (${foundTestServiceCons['javasc:consumerClass']?substring(foundTestServiceCons['javasc:consumerClass']?last_index_of('.') + 1, foundTestServiceCons['javasc:consumerClass']?length)})</span></li> 
-           <#else>
-              <li>not tested</li>
-           </#if>
-        </#macro>
 		<#list actualImpls as actualImpl>
 		   <#assign deliverable = Root.getDocumentService().getSoaNodeParent(actualImpl, 'Deliverable')/>
 		   <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">
@@ -371,9 +281,8 @@
 		Test it using :
         <a href="${web_discovery_url + '/scaffoldingProxy/?wsdlUrl=' + productionEndpoint['rdi:url']}">Service Scaffolder</a>, <!-- TODO light.js, or function, rather endpointUrl?wsdl ?? -->
         <a href="">SOAPUI</a>,
-        <a href="">FraSCAti Studio new application</a>
+        <a href="frascatiStudio_url + '/easySoa/GeneratedAppService'">FraSCAti Studio new application</a>
         <!-- a href="">FraSCAti Studio application A</a -->
-		</#if>
 		<br/>
 		<#assign productionImpl = Root.getDocumentService().getSoaNodeParent(productionEndpoint, 'ServiceImplementation')/>
         <#assign productionDeliverable = Root.getDocumentService().getSoaNodeParent(productionImpl, 'Deliverable')/>
@@ -395,6 +304,7 @@
            </#if>
 		</#list>
 		<p/>
+        </#if>
 		<br/>Tous les déploiements :<!-- Et à déploiement de test : -->
 		<#-- @displayDocsShort endpoints/ -->
         <@displayDocs actualImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>

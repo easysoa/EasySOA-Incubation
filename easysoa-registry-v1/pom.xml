@@ -19,6 +19,11 @@
     </license>
   </licenses>
 
+  <organization>
+    <name>EasySOA Consortium</name>
+    <url>http://www.easysoa.org</url>
+  </organization>
+
   <url>http://www.easysoa.org</url>
   <scm>
     <connection>scm:git:git://github.com/easysoa/EasySOA.git</connection>
@@ -40,10 +45,42 @@
     <!-- Missing -->
   </ciManagement>
 
-  <organization>
-    <name>EasySOA Consortium</name>
-    <url>http://www.easysoa.org</url>
-  </organization>
+  <developers>
+    <developer>
+      <id>dutoo</id>
+      <name>Marc Dutoo</name>
+      <email>marc.dutoo@openwide.fr</email>
+      <organization>Openwide</organization>
+      <organizationUrl>http://www.openwide.fr</organizationUrl>
+      <roles>
+        <role>Architect</role>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>guillemotte</id>
+      <name>Jeremie Guillemotte</name>
+      <email>jeremie.guillemotte@openwide.fr</email>
+      <organization>Openwide</organization>
+      <organizationUrl>http://www.openwide.fr</organizationUrl>
+      <roles>
+        <role>Architect</role>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>kalam-alami</id>
+      <name>Marwane Kalam-alami</name>
+      <email>marwane.kalam-alami@openwide.fr</email>
+      <organization>Openwide</organization>
+      <organizationUrl>http://www.openwide.fr</organizationUrl>
+      <roles>
+        <role>Architect</role>
+        <role>Developer</role>
+      </roles>
+    </developer>
+  </developers>
+
 
   <!-- ========== -->
   <!-- Properties -->

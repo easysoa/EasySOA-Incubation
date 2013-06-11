@@ -333,7 +333,7 @@ public interface DocumentService {
     List<SoaNodeId> createSoaNodeIds(DocumentModel... models) throws PropertyException, ClientException;
 
     /**
-     * Proxy-compliant alternative to CoreSession.getChildren():
+     * Adds proxy compliance to CoreSession.getChildren():
      * If ref is a proxy, gets the children of its actual target.
      * @param session
      * @param ref
@@ -343,6 +343,15 @@ public interface DocumentService {
      */
     DocumentModelList getChildren(CoreSession session, DocumentRef ref,
             String doctype) throws ClientException;
+    /**
+     * Proxy AND SUBTYPE-compliant alternative to CoreSession.getChildren() USING NXQL:
+     * If ref is a proxy, gets the children of its actual target.
+     * @param docModel
+     * @param type
+     * @return
+     * @throws ClientException
+     */
+    DocumentModelList getChildren(DocumentModel docModel, String type) throws ClientException;
 
 
     boolean isSoaNode(CoreSession documentManager, String doctype) throws ClientException;

@@ -1,17 +1,9 @@
 package org.easysoa.registry.types.listeners;
 
-import org.apache.log4j.Logger;
-import org.easysoa.registry.SoaNodeMatchingListener;
-import org.easysoa.registry.types.Component;
 import org.nuxeo.common.collections.ScopeType;
-import org.nuxeo.ecm.core.api.ClientException;
-import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.event.DocumentEventTypes;
-import org.nuxeo.ecm.core.event.Event;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
-import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 
 /**
  * 

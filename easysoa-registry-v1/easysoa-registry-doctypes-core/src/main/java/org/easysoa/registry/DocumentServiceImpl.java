@@ -443,6 +443,12 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
         parentRef = session.getSourceDocument(parentRef).getRef(); // making sure it's not a proxy
         return session.getChildren(parentRef, type);
     }
+    public DocumentModelList getChildren(DocumentModel docModel, String type) throws ClientException {
+    	docModel = docModel.getCoreSession().getSourceDocument(docModel.getRef()); // making sure it's not a proxy
+		//return soaNodeModel.getCoreSession().getChildren(docModel.getRef(), type); // NO doesn't handle subtypes
+		return query(docModel.getCoreSession(), NXQL_SELECT_FROM + type + NXQL_WHERE
+				+ "ecm:parentId='" + docModel.getRef().toString() + "'", false, false);
+    }
 
     public DocumentModel getSourceFolder(CoreSession documentManager,
             DocumentModel spNode) throws ClientException {
@@ -586,8 +592,8 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 			soaNodeModel = findSoaNode(soaNodeModel.getCoreSession(), this.createSoaNodeId(soaNodeModel));
 		}
 		//return soaNodeModel.getCoreSession().getChildren(soaNodeModel.getRef(), type); // NO doesn't handle subtypes
-		return soaNodeModel.getCoreSession().query(NXQL_SELECT_FROM + type + NXQL_WHERE
-				+ "ecm:parentId='" + soaNodeModel.getRef().toString() + "'");
+		return query(soaNodeModel.getCoreSession(), NXQL_SELECT_FROM + type + NXQL_WHERE
+				+ "ecm:parentId='" + soaNodeModel.getRef().toString() + "'", false, false);
 	}
 
 

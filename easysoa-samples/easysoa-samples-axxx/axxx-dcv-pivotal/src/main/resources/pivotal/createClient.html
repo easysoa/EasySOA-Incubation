@@ -17,7 +17,7 @@
 			      	<col width="100px">
 			       	<col width="200px">
 			       	<col width="200px">
-			      	<col width="100px">			      	
+			      	<col width="100px">
             	</colgroup>
 	            <tbody>
 		            <tr>
@@ -43,7 +43,7 @@
 								<option>Autre</option>
 							</select>
 		                </td>
-		                <td></td>		            	
+		                <td></td>
 		            </tr>
 		            <tr>
 		                <td><label for="Num et voie">Num et voie :</label></td>
@@ -63,7 +63,7 @@
 					</tr>
 					<tr>
 		                <td><label for="Ville">Ville :</label></td>
-		                <td><input class="validate[] text-input" type="text" name="ville" id="ville"></td>
+		                <td><input class="validate[] text-input" type="text" name="ville" id="ville" title="TEST MODE mock address validation service requires city to be Sarcelles, Paris or Lyon"><font color="#FF0000"><b>!</b></font></td>
 		                <td id="villeError" class="error"></td>
 		                <td><label for="RIB">RIB :</label></td>
 		                <td><input class="validate[custom[onlyNumber]] text-input" type="text" name="rib" id="rib"></td>
@@ -96,21 +96,34 @@
                 		<td colspan="3" align="center"><input id="cancelCreation" type="button" class="orange button" onclick="cancel()" value="Annuler">
                 		<td colspan="3" align="center"><input id="submitCreation" type="submit" class="orange button" value="Cr&eacute;er client">
                 	</td>
-            		</tr>		            
+            		</tr>
 		        </tbody>
 		    </table>
 	    </form>
-            
+
     </div>
 </div>
 
 <script type="text/javascript">
 
-	function cancel(){
-		if(confirm("Confirmer l'annulation ?")){ 
-			window.location='/pivotal/clients.html';
-		}
-	}
+    function cancel(){
+        if(confirm("Confirmer l'annulation ?")){
+            window.location='/pivotal/clients.html';
+        }
+    }
+
+    // select all desired input fields and attach tooltips to them
+    $("#myform :input").tooltip({
+        // place tooltip on the right edge
+        position: "center right",
+         // a little tweaking of the position
+        offset: [-2, 10],
+        // use the built-in fadeIn/fadeOut effect
+        effect: "fade",
+        // custom opacity setting
+        opacity: 0.7
+     });
+
 </script>
 
 #parse("footpage.html")

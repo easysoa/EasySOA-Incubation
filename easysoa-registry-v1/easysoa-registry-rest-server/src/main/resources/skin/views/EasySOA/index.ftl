@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <html xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+
     <head>
         <title>EasySOA index</title>
         <meta charset="utf-8" />
@@ -12,13 +12,13 @@
         <script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>
 
         <link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" /><!-- Remove this css, replaced by bootstrap -->
-        <link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" /> 
+        <link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" />
     </head>
-    
+
     <body>
 
         <#include "/views/EasySOA/macros.ftl">
-        
+
         <div id="header">
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
@@ -27,7 +27,7 @@
         </div>
 
         <br/>
-        
+
         <div class="container" id="container">
             <ul class="thumbnails">
                 <!-- Display the context bar -->
@@ -48,11 +48,6 @@
                                 <a class="btn" href="${Root.path}/services/cartography/runDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte à l'éxécution</a>
                             </div>
                             </p>
-                            <p>
-                            <div class="btn-group">
-                                <a class="btn" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>
-                            </div>                        
-                            </p>    
                         </p>
                         <p>
                             <table class="table table-bordered" width="100%">
@@ -70,7 +65,7 @@
                                 </tr>
                             </table>
                         </p>
-                        <a class="btn btn-primary" href="${Root.path}/services/cartography/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>                        
+                        <a class="btn btn-primary" href="${Root.path}/services/cartography/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
                     </div>
                 </li>
                 <li class="span6">
@@ -124,7 +119,7 @@
                         <img data-src="holder.js/300x200" alt="">
                         <h3>Gouvernance</h3>
                         <p>
-                            <div class="btn-group">                            
+                            <div class="btn-group">
                                 <a class="btn" href="${Root.path}/services/governance/prodPhaseMonitoring?subprojectId=${subprojectId}&visibility=${visibility}">Suivi des Phases de production SOA</a>
                                 <a class="btn" href="${Root.path}/services/governance/governanceIndicators?subprojectId=${subprojectId}&visibility=${visibility}">Indicateurs de complétion et gouvernance</a>
                             </div>
@@ -140,7 +135,7 @@
                                 <#else>
                                     <#assign nuxeoUrl = "/nuxeo/nxpath/default/default-domain@view_documents"/>
                                 </#if>
-                                
+
                                 <a class="btn" href="${nuxeoUrl}">Edition collaborative du modèle SOA</a>
                                 <!-- TODO make it work for versions -->
                                 <!-- et / ou Aide à la prise de décisions ? Registry des services, implementations ?? -->
@@ -151,7 +146,7 @@
                                 <tr>
                                     <td width="80%">Nombre de service jamais consomés :</td>
                                     <td width="20%">${indicators["Never consumed services"].count}</td>
-                                </tr>                                
+                                </tr>
                                 <tr>
                                     <td width="80%">Nombre de services n'ayant aucun tag utilisateur :</td>
                                     <td width="20%">${indicators["Services without at least one user tag"].count}</td>
@@ -161,18 +156,29 @@
                         <a class="btn btn-primary" href="${Root.path}/services/governance?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a><!-- TODO -->
                     </div>
                 </li>
+
+                <li class="span12">
+                    <div class="thumbnail">
+                        <img data-src="holder.js/300x200" alt="">
+                        <p>
+                            <div class="btn-group">
+                                <a class="btn" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>
+                            </div>
+                        </p>
+                    </div>
+                </li>
             </ul>
-        
+
             <!-- 2 categories with a separator -->
-            <hr style="color:black; background-color:black; height:3px;" /> 
-            
+            <hr style="color:black; background-color:black; height:3px;" />
+
             <ul class="thumbnails">
                 <li class="span6">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
                         <h3>A classer</h3>
                         <p>Statistiques et indicateurs à l'exécution, (?) d'appropiation du modèle SOA par les utilisateurs de EasySOA...</p>
-                        
+
                         <p>
                             <ul>
                                 <!-- TODO : add links -->
@@ -201,7 +207,7 @@
                 </li>
             </ul>
         </div>
-        
+
         <a class="btn btn-primary" href="${Root.path}/indicators/?subprojectId=${subprojectId}&visibility=${visibility}">Old indicators page (to remove when finished)</a>
 
     </body>

@@ -13,7 +13,7 @@
 	<script type="text/javascript" src="/lib/backbone.js"></script>
 	<script type="text/javascript" src="/js/common.js"></script>
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
-	
+
 	<script type="text/javascript" src="js/Frame.js"></script>
 	<script type="text/javascript" src="js/Navbar.js"></script>
 	<script type="text/javascript" src="js/SubmitForm.js"></script>
@@ -22,7 +22,7 @@
 	<script type="text/javascript" src="js/App.js"></script>
         <script type="text/javascript" src="js/utils.js"></script>
 </head>
-	
+
 <body>
 <script type="text/javascript">
 
@@ -45,14 +45,16 @@ function getUrlVars()
         if(typeof getUrlVars()["subprojectId"] != "undefined"){
             $('#context').html(formatPhaseForDisplay(decodeURI(getUrlVars()["subprojectId"])));
             $('#easysoa-context').attr('value', decodeURI(getUrlVars()["subprojectId"]));
+            var link = "http://localhost:8080/nuxeo/site/easysoa/dashboard/?subprojectId=" + decodeURI(getUrlVars()["subprojectId"]) + "&visibility=" + getUrlVars()["visibility"];
+            $('#matchingLink').attr("href", link);
         }
     });
 
 
-</script>    
-    
+</script>
+
   <div id="main">
-  
+
     <div id="headerCore">
 	    <a href="/" id="logoLink">&nbsp;</a>
       <div id="headerCoreContents">
@@ -61,9 +63,9 @@ function getUrlVars()
         Service discovery by browsing
       </div>
     </div>
-    
+
   	<div id="header">Service discovery by browsing</div>
-  	
+
   	<div id="content">
   		<div id="nothingProxied"><u>Warning</u>: Are you sure you have enabled your browser's proxy? Please make sure it is set to <b>http://127.0.0.1:8081</b>.</div>
 	  	<div id="navBar">
@@ -83,16 +85,18 @@ function getUrlVars()
   					<!-- Fake form -->
   					<h3>Selected WSDL</h3>
   					<p id="submitSelectedWSDL">None.</p>
-  					
+
   					<h3>Service details</h3>
                                         <div class="inputLabel">Perspective:</div>
                                         <i><span id="context"></span></i><input type="hidden" id="easysoa-context" value=""/><br />
-                                        <br />                                       
+                                        <br />
   					<div class="inputLabel">Service Name:</div>
   					<input id="submitService" type="text" /><br />
   					<div class="inputLabel">Environment:</div>
   					<select id="environmentSelect"></select> <input type="image" id="newEnvironment" src="img/add.png" alt="New env." /><br />
-  					<input id="submit" type="submit" value="Save service" />
+  					<input id="submit" type="submit" value="Save service" /><br />
+                                        <a id="matchingLink" href="" target="_blank" title="Une fois enregistrés, vous pouvez regler la correspondance entre les services et leurs implémentations et définitions dans l'outil de réconciliation">Mise en correspondance</a>
+                                        <!-- Once registered, how these endpoints match to their implementation and service definition can be tuned in the Matching Dashboard -->
   				</div>
   			</div>
   			<div id="menuFoundList">
@@ -105,7 +109,7 @@ function getUrlVars()
 	  	</div>
   	</div>
   </div>
-  
+
   <!-- Templates -->
   <script type="text/template" id="descriptorEntry">
 	  <input id="<%= url %>" type="radio" name="descriptor" value="<%= url %>" /> <b><label for="<%= url %>"><%= serviceName %></label></b><br />

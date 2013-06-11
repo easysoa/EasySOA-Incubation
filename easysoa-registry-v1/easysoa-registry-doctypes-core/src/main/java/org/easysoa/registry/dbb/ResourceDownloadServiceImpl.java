@@ -4,22 +4,22 @@
 package org.easysoa.registry.dbb;
 
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Properties;
-
+import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
+import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
-
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import org.easysoa.registry.types.ResourceDownloadInfo;
+import java.net.URLEncoder;
 
 /**
  * Impl of ResourceDownloadService for Nuxeo components.
@@ -41,6 +41,8 @@ import org.easysoa.registry.types.ResourceDownloadInfo;
  *
  */
 public class ResourceDownloadServiceImpl extends DefaultComponent implements ResourceDownloadService {
+
+    private static Logger logger = Logger.getLogger(ResourceDownloadServiceImpl.class);
 
     private String delegateResourceDownloadServiceUrl;
 
@@ -93,7 +95,8 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
 	        }
 	        catch(Exception ex){
 	            // Error or timeout, try the second donwload method
-                    isDelegatedDownloadDisabled = true;
+                    logger.warn("unable to get the resource with delegated downloader !", ex);
+                    //isDelegatedDownloadDisabled = true;
 	        }
         }
         if(file == null){
@@ -107,8 +110,20 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
             SimpleDateFormat sdf = new SimpleDateFormat(ResourceDownloadInfo.TIMESTAMP_DATETIME_PATTERN);
             resourceDownloadInfo.setTimestamp(sdf.format(date));
             resourceDownloadInfo.setFile(file);
+            String urlString = url.toString();
+            if(urlString.contains("?callback")){
+                resourceDownloadInfo.setUrl(urlString.substring(0, urlString.indexOf("?callback")));
+            } else {
+                resourceDownloadInfo.setUrl(urlString);
+            }
         }
         return resourceDownloadInfo;
+    }
+
+    @Override
+    public ResourceDownloadInfo get(ResourceDownloadInfo rdi) throws Exception {
+        rdi = get(new URL(rdi.getDownloadableUrl()));
+        return rdi;
     }
 
     /**
@@ -118,14 +133,22 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
      * @throws Exception
      */
     private File delegatedDownload(URL url) throws Exception {
+        //WebResource webResource = client.resource(delegateResourceDownloadServiceUrl + "/" +  URLEncoder.encode(url.toString(), "UTF-8"));
         WebResource webResource = client.resource(delegateResourceDownloadServiceUrl);
         // NB. reuses Jersey client rather than creating one per download else costs too much
         // (ex. lots of threads at SignatureParser l. 79 within annotation parsing)
         // TODO LATER better : called by ResourceUpdate within async using Nuxeo Work
 
         // TODO for frascati service side : Add a parameter to pass the url
-        webResource.setProperty("fileURL", url.toURI().toString());
+        String urlString = url.toString();
+        String urlWithoutCallback = urlString;
+        if(urlString.contains("?callback")){
+            //String callback = urlString.substring(urlString.indexOf("?callback"));
+            urlWithoutCallback = urlString.substring(0, urlString.indexOf("?callback"));
+        }
 
+        //webResource.setProperty("fileURL", urlWithoutCallback);
+        webResource = webResource.queryParam("fileURL", URLEncoder.encode(urlWithoutCallback, "UTF-8"));
         // Get the resource
         File resourceFile = webResource.get(File.class);
         return resourceFile;
@@ -147,7 +170,7 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
     		  return new File(url.getPath()); // to accept Windows URLs, see https://weblogs.java.net/blog/kohsuke/archive/2007/04/how_to_convert.html
     		}
     	}
-    	
+
         HttpDownloaderService httpDownloaderService = new HttpDownloaderServiceImpl();
         HttpDownloader fileDownloader = httpDownloaderService.createHttpDownloader(url);
         fileDownloader.download();

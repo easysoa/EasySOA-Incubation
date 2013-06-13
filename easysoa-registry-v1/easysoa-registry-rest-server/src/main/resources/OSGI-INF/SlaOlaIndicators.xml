@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<component name="org.easysoa.directories.sql">
+<component name="org.easysoa.registry.rest.server.directories.sql">
   
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="schema">  
       <schema name="sla-ola-indicator" src="schemas/sla-ola-indicator.xsd" prefix="ind" />

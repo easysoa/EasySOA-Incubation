@@ -17,6 +17,27 @@
     <easysoa.registry.marketplace.version>1.0-SNAPSHOT</easysoa.registry.marketplace.version>
     <nuxeo.distribution.version>5.7-I20130111_0115</nuxeo.distribution.version>
   </properties>
+  
+  <profiles>
+    <profile>
+      <!-- copied from above, because parent pom is not registry but nuxeo -->
+      <id>sample-axxx</id>
+      <activation>
+        <property>
+          <name>!skipSamples</name>
+        </property>
+      </activation>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+             <groupId>com.axxx.easysoa</groupId>
+             <artifactId>axxx-easysoa-registry</artifactId>
+             <version>${easysoa.registry.marketplace.version}</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+    </profile>
+  </profiles>
 
   <build>
     <plugins>
@@ -58,7 +79,7 @@
          <artifactId>easysoa-registry</artifactId>
          <version>${easysoa.registry.marketplace.version}</version>
          <type>pom</type>
-         <scope>import</scope>
+         <scope>import</scope><!-- because parent pom is not registry but nuxeo -->
       </dependency>
       <dependency>
          <groupId>org.nuxeo.ecm.distribution</groupId>

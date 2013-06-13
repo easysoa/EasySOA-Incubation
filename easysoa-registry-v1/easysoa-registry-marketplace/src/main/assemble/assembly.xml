@@ -8,7 +8,7 @@
 
   <property name="outdir" value="${maven.project.build.directory}" />
 
-  <target name="build" description="Build EasySOA Regsitry Marketplace package">
+  <target name="build" description="Base build EasySOA Regsitry Marketplace package">
     <tstamp />
     <delete failonerror="false" dir="${outdir}/marketplace" />
     <mkdir dir="${outdir}/marketplace" />
@@ -62,7 +62,16 @@
 
       <!-- tree-snapshot -->
       <artifact:resolveFile key="org.nuxeo.features:nuxeo-tree-snapshot::jar" />
+
     </copy>
+
+    <nx:profile name="sample-axxx">
+      <echo message="Adding sample-axxx..."/>
+      <copy todir="${outdir}/marketplace/install/bundles">
+        <artifact:resolveFile key="com.axxx.easysoa:axxx-easysoa-registry::jar" />
+      </copy>
+    </nx:profile>
+  	
     <!-- Whereas the marketplace build using an EAR is automatically downloading the
     required libraries, that simpler solution requires you explicitly list them -->
     <copy todir="${outdir}/marketplace/install/lib">

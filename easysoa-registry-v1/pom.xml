@@ -129,18 +129,39 @@
   <!--  Profiles   -->
   <!-- ============ -->
   <profiles>
-      <profile>
-          <id>marketplace</id>
+    <profile>
+      <id>sample-axxx</id>
+      <activation>
+        <property>
+          <name>!skipSamples</name>
+        </property>
+      </activation>
+      <modules>
+        <module>../easysoa-samples/easysoa-samples-axxx/axxx-easysoa-registry</module>
+      </modules>
+      <dependencyManagement>
+        <dependencies>
+          <dependency>
+            <groupId>com.axxx.easysoa</groupId>
+            <artifactId>axxx-easysoa-registry</artifactId>
+            <version>${easysoa.version}</version>
+          </dependency>
+        </dependencies>
+      </dependencyManagement>
+    </profile>
+    <profile>
+      <id>marketplace</id>
 	  <activation>
 	    <property>
 	      <name>!skipMarketplace</name>
 	    </property>
-	  </activation>
-          <modules>
-              <module>easysoa-registry-marketplace</module>
-          </modules>
-      </profile>
+      </activation>
+      <modules>
+        <module>easysoa-registry-marketplace</module>
+      </modules>
+    </profile>
   </profiles>
+  
 
   <!-- ============ -->
   <!-- Dependencies -->

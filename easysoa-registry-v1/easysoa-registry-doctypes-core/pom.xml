@@ -71,10 +71,18 @@
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-classification-web</artifactId>
     </dependency>
+    
+    <!-- to override mimetypeIconUpdater listener : -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
-      <artifactId>nuxeo-platform-filemanager-core-listener</artifactId><!-- to override mimetypeIconUpdater listener -->
+      <artifactId>nuxeo-platform-filemanager-core</artifactId>
+      <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-filemanager-core-listener</artifactId>
+    </dependency>
+    
     <dependency>
       <groupId>org.jboss.seam</groupId>
       <artifactId>jboss-seam</artifactId>

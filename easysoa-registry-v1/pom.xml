@@ -320,11 +320,19 @@
         <artifactId>nuxeo-platform-directory-sql</artifactId>
         <version>${nuxeo.version}</version>
       </dependency>
+      
+      <!-- to override mimetypeIconUpdater listener : -->
       <dependency>
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-platform-filemanager-core-listener</artifactId><!-- to override mimetypeIconUpdater listener -->
+        <artifactId>nuxeo-platform-filemanager-core</artifactId>
         <version>${nuxeo.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-filemanager-core-listener</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
         <artifactId>nuxeo-diff-core</artifactId>

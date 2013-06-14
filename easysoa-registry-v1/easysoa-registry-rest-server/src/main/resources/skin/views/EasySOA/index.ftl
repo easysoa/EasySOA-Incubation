@@ -120,8 +120,8 @@
                         <h3>Gouvernance</h3>
                         <p>
                             <div class="btn-group">
-                                <a class="btn" href="${Root.path}/services/governance/prodPhaseMonitoring?subprojectId=${subprojectId}&visibility=${visibility}">Suivi des Phases de production SOA</a>
-                                <a class="btn" href="${Root.path}/services/governance/governanceIndicators?subprojectId=${subprojectId}&visibility=${visibility}">Indicateurs de complétion et gouvernance</a>
+                                <a class="btn" href="${Root.path}/governance/prodPhaseMonitoring?subprojectId=${subprojectId}&visibility=${visibility}">Suivi des Phases de production SOA</a>
+                                <a class="btn" href="${Root.path}/governance/governanceIndicators?subprojectId=${subprojectId}&visibility=${visibility}">Indicateurs de complétion et gouvernance</a>
                             </div>
                             <p/>
                             <div class="btn-group">
@@ -153,7 +153,7 @@
                                 </tr>
                             </table>
                         </p>
-                        <a class="btn btn-primary" href="${Root.path}/services/governance?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a><!-- TODO -->
+                        <a class="btn btn-primary" href="${Root.path}/governance?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a><!-- TODO -->
                     </div>
                 </li>
 

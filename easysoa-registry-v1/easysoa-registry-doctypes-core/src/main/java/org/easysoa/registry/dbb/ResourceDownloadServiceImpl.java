@@ -1,8 +1,24 @@
 /**
+ * EasySOA
+ * Copyright 2011-2013 Open Wide
  *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Contact : easysoa-dev@googlegroups.com
  */
-package org.easysoa.registry.dbb;
 
+package org.easysoa.registry.dbb;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
@@ -61,7 +77,7 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
 	    	Properties props = documentService.getProperties();
 	    	if (props != null) {
 		    	delegateResourceDownloadServiceUrl = props.getProperty(
-		    			"ResourceDownloadServiceImpl.delegateResourceDownloadServiceUrl", "http://localhost:7080/get");
+                    "ResourceDownloadServiceImpl.delegateResourceDownloadServiceUrl", "http://localhost:7080/get");
 	    	}
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to get DocumentService", e);
@@ -85,17 +101,16 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
     @Override
     public ResourceDownloadInfo get(URL url) throws Exception {
 
-        ResourceDownloadInfoImpl resourceDownloadInfo = new ResourceDownloadInfoImpl();
         File file = null;
     	if (!isDelegatedDownloadDisabled) {
 	        // First try : Connect to FraSCAti studio download service
 	        try {
-                    file = delegatedDownload(url);
+                file = delegatedDownload(url);
 	        }
 	        catch(Exception ex){
 	            // Error or timeout, try the second donwload method
-                    logger.warn("unable to get the resource with delegated downloader, trying local downloader !");
-                    //isDelegatedDownloadDisabled = true;
+                logger.warn("unable to get the resource with delegated downloader, trying local downloader !");
+                //isDelegatedDownloadDisabled = true;
 	        }
         }
         if(file == null){
@@ -103,6 +118,17 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
             file = localDownload(url);
         }
 
+        return this.setRdi(url, file);
+    }
+
+    /**
+     *
+     * @param url
+     * @param file
+     * @return
+     */
+    private ResourceDownloadInfo setRdi(URL url, File file){
+        ResourceDownloadInfo resourceDownloadInfo = new ResourceDownloadInfoImpl();
         // Compute timestamp
         if(file != null){
             Date date = new Date();
@@ -121,10 +147,21 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
 
     @Override
     public ResourceDownloadInfo get(ResourceDownloadInfo rdi) throws Exception {
-        // try to delegate to get(rdi)
-        // T0DO
-        // but if fails do a simple get(rdi.url) :
-        rdi = get(new URL(rdi.getDownloadableUrl()));
+        File file = null;
+    	if (!isDelegatedDownloadDisabled) {
+	        // First try : Connect to FraSCAti studio download service
+	        try {
+                file = delegatedDownload(rdi);
+	        }
+	        catch(Exception ex){
+	            // Error or timeout, try the second donwload method
+                logger.warn("unable to get the resource with delegated downloader, trying local downloader !");
+                //isDelegatedDownloadDisabled = true;
+	        }
+        }
+        if(file == null){
+            rdi = get(new URL(rdi.getDownloadableUrl()));
+        }
         return rdi;
     }
 
@@ -135,7 +172,6 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
      * @throws Exception
      */
     private File delegatedDownload(URL url) throws Exception {
-        //WebResource webResource = client.resource(delegateResourceDownloadServiceUrl + "/" +  URLEncoder.encode(url.toString(), "UTF-8"));
         WebResource webResource = client.resource(delegateResourceDownloadServiceUrl);
         // NB. reuses Jersey client rather than creating one per download else costs too much
         // (ex. lots of threads at SignatureParser l. 79 within annotation parsing)
@@ -150,6 +186,20 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
         }
 
         webResource = webResource.queryParam("fileURL", URLEncoder.encode(urlWithoutCallback, "UTF-8"));
+        // Get the resource
+        File resourceFile = webResource.get(File.class);
+        return resourceFile;
+    }
+
+    /**
+     *
+     * @param rdi ResourceDownloadInfo
+     * @return
+     * @throws Exception
+     */
+    private File delegatedDownload(ResourceDownloadInfo rdi) throws Exception {
+        WebResource webResource = client.resource(delegateResourceDownloadServiceUrl);
+        webResource.entity(rdi);
         // Get the resource
         File resourceFile = webResource.get(File.class);
         return resourceFile;

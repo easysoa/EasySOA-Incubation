@@ -9,24 +9,35 @@
         ${phaseShortId?substring(0, phaseShortIdVersionIndex)?replace('/', ' / ')}
         (version <#if phaseShortId?ends_with('_v')>en cours<#else>${phaseShortId?substring(phaseShortIdVersionIndex + 2, phaseShortId?length)}</#if>)
     </#macro>
+    
+    <#macro displayPhaseIfOutsideContext subprojectIdToDisplay>
+        <#if !subprojectId?has_content || subprojectIdToDisplay != subprojectId>
+            <#assign parsedSubprojectId = Root.parseSubprojectId(subprojectId)/>
+            <#assign parsedSubprojectIdToDisplay = Root.parseSubprojectId(subprojectIdToDisplay)/>
+            <#if parsedSubprojectIdToDisplay.getProjectName() != parsedSubprojectId.getProjectName()>
+                ${parsedSubprojectIdToDisplay.getProjectName()} /
+            </#if> 
+            ${parsedSubprojectIdToDisplay.getSubprojectName()}
+            <#assign version = parsedSubprojectIdToDisplay.getVersion()/>
+            (version <#if version?length == 0>en cours<#else>${version}</#if>)
+        </#if>
+    </#macro>
 
     <#macro displayServiceTitle service subprojectId visibility>
-        <#assign providerActor = service['iserv:providerActor']/>
-        <#assign component = service['acomp:componentId']/>
         <#-- NB.  to create a new object, see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html -->
         <#assign providerActorTitle = ""/>
-        <#if providerActor?has_content>
-            <#assign providerActor = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', providerActor))/>
+        <#if service['iserv:providerActor']?has_content>
+            <#assign providerActor = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['iserv:providerActor']))/>
             <#assign providerActorTitle = providerActor.title + ' / '/>
         </#if>
         <#assign componentTitle = ""/>
-        <#if component?has_content>
+        <#if service['acomp:componentId']?has_content>
             <#assign component = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['acomp:componentId']))/>
             <#assign componentTitle = component.title + ' / '/>
         </#if>
         <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">
         ${providerActorTitle} ${componentTitle}</span> <span title="SOA ID: ${service['soan:name']}">${service.title}
-        </span> - <@displayPhase service['spnode:subproject']/> (((${service.versionLabel})))
+        </span> - <@displayPhaseIfOutsideContext service['spnode:subproject']/> (((${service.versionLabel})))
     </#macro>
     
     <#macro displayServiceShort service subprojectId visibility>
@@ -46,19 +57,22 @@
     </#macro>
 
     <#macro displayTagShort tag subprojectId visibility>
-         <a href="${Root.path}/tag${tag['spnode:subproject']?xml}:${tag['soan:name']?xml}?subprojectId=${subprojectId}&visibility=${visibility}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - <@displayPhase tag['spnode:subproject']/> (((${tag.versionLabel})))</a>
+         <a href="${Root.path}/tag${tag['spnode:subproject']?xml}:${tag['soan:name']?xml}?subprojectId=${subprojectId}&visibility=${visibility}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - <@displayPhaseIfOutsideContext tag['spnode:subproject']/> (((${tag.versionLabel})))</a>
     </#macro>
 
     <#macro displayDocShort doc>
         <#if doc['spnode:subproject']?has_content>
-         ${doc['title']} - <@displayPhase doc['spnode:subproject']/> (((${doc.versionLabel})))
+         ${doc['title']} - <@displayPhaseIfOutsideContext doc['spnode:subproject']/> (((${doc.versionLabel})))
         <#else>
          ${doc['title']} - ${doc['path']} (${doc.versionLabel})
         </#if>
     </#macro>
 		
     <#macro displayDocsShort docs>
-         <#list docs as doc><@displayDocShort doc/> ; </#list>
+         <#list docs as doc>
+             <@displayDocShort doc/>
+             <#if doc_index != docs?size - 1> ;</#if>
+         </#list>
     </#macro>
     
 <#assign documentPropNames=["lifeCyclePolicy", "versionLabel", "facets", "children", "type", "sourceId", "id", "author", "title", "repository", "created", "name", "path", "schemas", "parent", "lifeCycleState", "allowedStateTransitions", "isLocked", "modified", "content", "ref", "versions", "isFolder", "sessionId", "session", "proxies"]/>
@@ -101,6 +115,11 @@
     "files:files": ["filename", "file"],
     "files:files/file": [ "filename", "data", "length", "mimeType", "encoding", "digest" ]
     }/><#-- "length", "mimeType", "encoding", "digest" -->
+    
+<#assign typePropNames = {
+    "iserv": [informationServicePropNames]
+    }/><!-- TODO ?? -->
+    
     
 <#--  Mime types (see MediaTypes.java) : -->
 <#assign mimeTypePrettyNames = { "text/xml" : "XML", "application/xml" : "XML", "text/plain" : "plain text", "text/html" : "HTML",

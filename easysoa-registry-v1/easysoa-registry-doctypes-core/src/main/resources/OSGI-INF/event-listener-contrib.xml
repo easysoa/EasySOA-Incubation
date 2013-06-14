@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <component name="org.easysoa.registry.doctypes.core.eventlistener.contrib">
 
+  <require>filemanager.core.listener.icon</require><!-- to override mimetypeIconUpdater listener -->
+
   <!-- =============== -->
   <!-- Event listeners -->
   <!-- =============== -->
@@ -54,6 +56,14 @@
       priority="151">
       <event>aboutToCreateLeafVersionEvent</event>
     </listener -->
+    
+    <!-- Overriding so document icons will always stay set to their type icon and never become their mimetype
+    icon (otherwise, WSDL etc. mimetypes should be given pretty service + XML / graffle.png icons) -->
+    <listener name="mimetypeIconUpdater" async="false" postCommit="false" class="org.easysoa.registry.types.listeners.TypeIconMimetypeIconUpdater" priority="120">
+      <event>aboutToCreate</event>
+      <event>beforeDocumentModification</event>
+    </listener>
+    
   </extension>
 
 </component>

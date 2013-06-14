@@ -358,7 +358,6 @@ public interface DocumentService {
 
     boolean isTypeOrSubtype(CoreSession documentManager, String doctypeToTest, String expectedDoctype) throws ClientException;
 
-
 	List<DocumentModel> getInformationServices(CoreSession session, String subprojectId) throws ClientException;
 	List<DocumentModel> getInformationServicesInCriteria(CoreSession session, String subprojectCriteria) throws ClientException;
 
@@ -371,6 +370,40 @@ public interface DocumentService {
 	List<DocumentModel> getByType(CoreSession session, String type, String subprojectId) throws ClientException;
 	List<DocumentModel> getByTypeInCriteria(CoreSession session, String type, String subprojectCriteria) throws ClientException;
 
+	
+	/////////////////////////////////////////////////
+	// Model helper methods
+	
+	// TODO move them in appropriate Adapters
+	
+	List<DocumentModel> getImplementationsOfService(DocumentModel serviceModel, String subprojectId) throws ClientException;
+	List<DocumentModel> getImplementationsOfServiceInCriteria(DocumentModel serviceModel, String subprojectCriteria) throws ClientException;
+	List<DocumentModel> getMockImplementationsOfService(DocumentModel serviceModel, String subprojectId) throws ClientException;
+	List<DocumentModel> getMockImplementationsOfServiceInCriteria(DocumentModel serviceModel, String subprojectCriteria) throws ClientException;
+	List<DocumentModel> getActualImplementationsOfService(DocumentModel serviceModel, String subprojectId) throws ClientException;
+	List<DocumentModel> getActualImplementationsOfServiceInCriteria(DocumentModel serviceModel, String subprojectCriteria) throws ClientException;
+	
+	List<DocumentModel> getDeliverableConsumptions(DocumentModel delModel) throws ClientException;
+	List<DocumentModel> getDeliverablesConsumptions(List<DocumentModel> delModels) throws ClientException;
+	List<DocumentModel> getApplicationDeliverables(CoreSession session, String applicationName, String subprojectId) throws ClientException;
+	List<DocumentModel> getApplicationDeliverablesInCriteria(CoreSession session, String applicationName, String subprojectCriteria) throws ClientException;
+	// NOOO USELESS consumptions are at deliverable level
+	//List<DocumentModel> getInterfaceConsumptionsOfJavaImplementation(DocumentModel javaImplModel, String subprojectId) throws ClientException;
+	//List<DocumentModel> getInterfaceConsumptionsOfJavaImplementationInCriteria(DocumentModel javaImplModel, String subprojectCriteria) throws ClientException;
+	
+	DocumentModel getConsumerImplementationOfJavaConsumption(DocumentModel javaConsumptionModel, String subprojectId) throws ClientException;
+	DocumentModel getConsumerImplementationOfJavaConsumptionInCriteria(DocumentModel javaConsumptionModel, String subprojectCriteria) throws ClientException;
+	List<DocumentModel> getConsumerImplementationsOfJavaConsumptions(List<DocumentModel> javaConsumptionModels, String subprojectId, boolean nonMock, boolean mock) throws ClientException;
+	List<DocumentModel> getConsumerImplementationsOfJavaConsumptionsInCriteria(List<DocumentModel> javaConsumptionModels, String subprojectCriteria, boolean nonMock, boolean mock) throws ClientException;
+	
+	// TODO move JavaSI methods to -doctypes-java-core project
+	List<DocumentModel> getConsumedInterfaceImplementationsOfJavaConsumption(DocumentModel javaConsumptionModel, String subprojectId, boolean nonMock, boolean mock) throws ClientException;
+	/** Returns non mock and / or mock impls of this java consumption's interface */
+	List<DocumentModel> getConsumedInterfaceImplementationsOfJavaConsumptionInCriteria(DocumentModel javaConsumptionModel, String subprojectCriteria, boolean nonMock, boolean mock) throws ClientException;
+	DocumentModel getConsumedJavaInterfaceService(DocumentModel javaConsumptionModel, String subprojectId) throws ClientException;
+	/** Returns the InformationService of the first non-mock impl of this java consumption's interface */
+	DocumentModel getConsumedJavaInterfaceServiceInCriteria(DocumentModel javaConsumptionModel, String subprojectCriteria) throws ClientException;
+	
 	DocumentModel getServiceImplementationFromEndpoint(DocumentModel endpointModel) throws ClientException;
 
 	List<DocumentModel> getEndpointsOfService(DocumentModel service, String subprojectId) throws ClientException;
@@ -391,7 +424,7 @@ public interface DocumentService {
 	List<DocumentModel> getComponents(CoreSession session, String subprojectId) throws ClientException;
 	List<DocumentModel> getComponentsInCriteria(CoreSession session, String subprojectCriteria) throws ClientException;
 
-	DocumentRef getParentInformationService(DocumentModel model) throws ClientException;
+	DocumentModel getParentInformationService(DocumentModel model) throws ClientException;
 
 	/**
 	 * For now uses getSoaNodeParent()

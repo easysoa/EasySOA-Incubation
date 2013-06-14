@@ -11,9 +11,11 @@ import java.util.Properties;
 
 import org.easysoa.registry.facets.ServiceImplementationDataFacet;
 import org.easysoa.registry.types.Component;
+import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.IntelligentSystem;
+import org.easysoa.registry.types.ServiceConsumption;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.SubprojectNode;
@@ -626,6 +628,222 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 		return getByTypeInCriteria(session, Endpoint.DOCTYPE, subprojectCriteria);
 	}
 
+	@Override
+	public List<DocumentModel> getImplementationsOfService(DocumentModel serviceModel, String subprojectId) throws ClientException {
+		return getImplementationsOfServiceInCriteria(serviceModel,
+				NXQLQueryHelper.buildSubprojectCriteria(serviceModel.getCoreSession(), subprojectId, true));
+	}
+	@Override
+	public List<DocumentModel> getImplementationsOfServiceInCriteria(
+			DocumentModel serviceModel, String subprojectCriteria) throws ClientException {
+		CoreSession session = serviceModel.getCoreSession();
+		// mock impls :
+        List<DocumentModel> impls = this.query(session, DocumentService.NXQL_SELECT_FROM
+        		+ ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
+                + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + serviceModel.getId() + "'", true, false);
+        return impls;
+	}
+	@Override
+	public List<DocumentModel> getMockImplementationsOfService(DocumentModel serviceModel, String subprojectId) throws ClientException {
+		return getMockImplementationsOfServiceInCriteria(serviceModel,
+				NXQLQueryHelper.buildSubprojectCriteria(serviceModel.getCoreSession(), subprojectId, true));
+	}
+	@Override
+	public List<DocumentModel> getMockImplementationsOfServiceInCriteria(
+			DocumentModel serviceModel, String subprojectCriteria) throws ClientException {
+		CoreSession session = serviceModel.getCoreSession();
+		// NB. alt way would be getMockImplementationsOfService() and check is mock
+        List<DocumentModel> mockImpls = this.query(session, DocumentService.NXQL_SELECT_FROM
+        		+ ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
+                + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + serviceModel.getId() + "'"
+                + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + "='true'", true, false);
+        return mockImpls;
+	}
+	@Override
+	public List<DocumentModel> getActualImplementationsOfService(DocumentModel serviceModel, String subprojectId) throws ClientException {
+		return getActualImplementationsOfServiceInCriteria(serviceModel,
+				NXQLQueryHelper.buildSubprojectCriteria(serviceModel.getCoreSession(), subprojectId, true));
+	}
+	@Override
+	public List<DocumentModel> getActualImplementationsOfServiceInCriteria(
+			DocumentModel serviceModel, String subprojectCriteria) throws ClientException {
+		CoreSession session = serviceModel.getCoreSession();
+		// NB. alt way would be getMockImplementationsOfService() and check is mock
+        // WARNING IS NULL DOESN'T WORK IN RELEASE BUT DOES IN JUNIT
+    	// old impl using proxy :
+        //List<DocumentModel> actualImpls = new java.util.ArrayList<DocumentModel>();
+        /* = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
+                + DocumentService.NXQL_WHERE_NO_PROXY
+                + DocumentService.NXQL_AND + "ecm:uuid IN "
+                + getProxiedIdLiteralList(session,
+                        session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
+                + DocumentService.NXQL_WHERE_PROXY + DocumentService.NXQL_AND
+                + DocumentService.NXQL_PATH_STARTSWITH + RepositoryHelper.getRepositoryPath(session, subprojectId) + InformationService.DOCTYPE + "'"
+                + DocumentService.NXQL_AND + "ecm:parentId='" + service.getId() + "'"
+                + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + " IS NULL")));*/
+        List<DocumentModel> actualImpls = this.query(session, DocumentService.NXQL_SELECT_FROM
+        		+ ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
+                + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + serviceModel.getId() + "'"
+                + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + "<>'true'", true, false); // WARNING 'true' doesn't work in junit
+        if (actualImpls.isEmpty()) {
+        	// TODO HACK if empty, try using junit-only alternative query, in case we're in tests :
+            actualImpls = this.query(session, DocumentService.NXQL_SELECT_FROM
+            		+ ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
+                    + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + serviceModel.getId() + "'"
+                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + " IS NULL", true, false); // WARNING IS NULL works in junit only
+            // alternate solution using "not mock impl"
+            /*actualImpls = docService.query(session, DocumentService.NXQL_SELECT_FROM
+                    + ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
+                    + DocumentService.NXQL_AND + "ecm:uuid NOT IN " + toLiteral(getIds(mockImpls)), true, false);*/ 
+        }
+        return actualImpls;
+	}
+	@Override
+	public List<DocumentModel> getDeliverableConsumptions(DocumentModel delModel) throws ClientException {
+		return getSoaNodeChildren(delModel, ServiceConsumption.DOCTYPE);
+	}
+	@Override
+	public List<DocumentModel> getDeliverablesConsumptions(List<DocumentModel> delModels) throws ClientException {
+		ArrayList<DocumentModel> consumptions = new ArrayList<DocumentModel>();
+		for (DocumentModel delModel : delModels) {
+			consumptions.addAll(this.getDeliverableConsumptions(delModel));
+		}
+		return consumptions;
+	}
+	@Override
+	public List<DocumentModel> getApplicationDeliverables(CoreSession session, String applicationName, String subprojectId) throws ClientException {
+		return getApplicationDeliverablesInCriteria(session, applicationName,
+				NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, true));
+	}
+	@Override
+	public List<DocumentModel> getApplicationDeliverablesInCriteria(
+			CoreSession session, String applicationName, String subprojectCriteria) throws ClientException {
+        List<DocumentModel> applicationDeliverables = this.query(session, DocumentService.NXQL_SELECT_FROM
+        		+ Deliverable.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
+        		+ Deliverable.XPATH_APPLICATION + "='" + applicationName + "'", true, false);
+        return applicationDeliverables;
+	}
+
+	// NOOO USELESS consumptions are at deliverable level
+	/*@Override
+	public List<DocumentModel> getInterfaceConsumptionsOfJavaImplementation(DocumentModel javaImplModel, String subprojectId) throws ClientException {
+		return getInterfaceConsumptionsOfJavaImplementationInCriteria(javaImplModel,
+				NXQLQueryHelper.buildSubprojectCriteria(javaImplModel.getCoreSession(), subprojectId, true));
+	}
+	@Override
+	public List<DocumentModel> getInterfaceConsumptionsOfJavaImplementationInCriteria(
+			DocumentModel javaImplModel, String subprojectCriteria) throws ClientException {
+		CoreSession session = javaImplModel.getCoreSession();
+		String implementedJavaInterface = (String) javaImplModel.getPropertyValue("javasi:implementedInterface");
+		String implementedJavaInterfaceLocation = (String) javaImplModel.getPropertyValue("javasi:implementedInterfaceLocation");
+		// NB. consumption resides at same place than implementation so can use location
+        List<DocumentModel> javaConsumptions = this.query(session, DocumentService.NXQL_SELECT_FROM
+        		+ "JavaServiceConsumption" + subprojectCriteria + DocumentService.NXQL_AND
+                + "javasc:consumedInterface" + "='" +implementedJavaInterface + "'" + DocumentService.NXQL_AND
+                + "javasc:consumedInterfaceLocation" + "='" + implementedJavaInterfaceLocation + "'", true, false);
+        // TODO move to JavaServiceImplementation project by using an adapter, use JavaServiceImplementation & JavaServiceConsumption constants
+        // TODO handle maven dependencies ??
+        return javaConsumptions;
+	}*/
+
+	@Override
+	public DocumentModel getConsumerImplementationOfJavaConsumption(DocumentModel javaConsumptionModel, String subprojectId) throws ClientException {
+		return getConsumerImplementationOfJavaConsumptionInCriteria(javaConsumptionModel,
+				NXQLQueryHelper.buildSubprojectCriteria(javaConsumptionModel.getCoreSession(), subprojectId, true));
+	}
+	public DocumentModel getConsumerImplementationOfJavaConsumptionInCriteria(
+			DocumentModel javaConsumptionModel, String subprojectCriteria) throws ClientException {
+		CoreSession session = javaConsumptionModel.getCoreSession();
+		String consumerJavaClass = (String) javaConsumptionModel.getPropertyValue("javasc:consumerClass");
+		String consumedJavaInterfaceLocation = (String) javaConsumptionModel.getPropertyValue("javasc:consumedInterfaceLocation");
+		// NB. consumption resides at same place than implementation so can use location
+        List<DocumentModel> res = this.query(session, DocumentService.NXQL_SELECT_FROM
+        		+ "JavaServiceImplementation" + subprojectCriteria + DocumentService.NXQL_AND
+                + "javasi:implementationClass" + "='" +consumerJavaClass + "'" + DocumentService.NXQL_AND
+                + "javasi:implementedInterfaceLocation" + "='" + consumedJavaInterfaceLocation + "'", true, false);
+        // TODO move to JavaServiceImplementation project by using an adapter, use JavaServiceImplementation & JavaServiceConsumption constants
+        // TODO handle maven dependencies ??
+        if (!res.isEmpty()) {
+        	return res.get(0);
+        }
+        // TODO can there be more than one ???
+        return null;
+	}
+
+	@Override
+	public List<DocumentModel> getConsumerImplementationsOfJavaConsumptions(List<DocumentModel> javaConsumptionModels, String subprojectId, boolean nonMock, boolean mock) throws ClientException {
+		return getConsumerImplementationsOfJavaConsumptionsInCriteria(javaConsumptionModels,
+				NXQLQueryHelper.buildSubprojectCriteria(javaConsumptionModels.get(0).getCoreSession(), subprojectId, true), nonMock, mock);
+	}
+	@Override
+	public List<DocumentModel> getConsumerImplementationsOfJavaConsumptionsInCriteria(
+			List<DocumentModel> javaConsumptionModels, String subprojectCriteria, boolean nonMock, boolean mock) throws ClientException {
+		ArrayList<DocumentModel> filteredImpls = new ArrayList<DocumentModel>(javaConsumptionModels.size());
+		for (DocumentModel javaConsumptionModel : javaConsumptionModels) {
+			DocumentModel impl = getConsumerImplementationOfJavaConsumptionInCriteria(javaConsumptionModel, subprojectCriteria);
+			if (impl != null) {
+				boolean isMock = "true".equals(impl.getPropertyValue(ServiceImplementation.XPATH_ISMOCK));
+	        	if (nonMock && !isMock || mock && isMock) {
+	        		filteredImpls.add(impl);
+	        	}
+			}
+		}
+		return filteredImpls;
+	}
+
+	@Override
+	public List<DocumentModel> getConsumedInterfaceImplementationsOfJavaConsumption(
+			DocumentModel javaConsumptionModel, String subprojectId, boolean nonMock, boolean mock) throws ClientException {
+		return getConsumedInterfaceImplementationsOfJavaConsumptionInCriteria(javaConsumptionModel,
+				NXQLQueryHelper.buildSubprojectCriteria(javaConsumptionModel.getCoreSession(), subprojectId, true), nonMock, mock);
+	}
+	@Override
+	public List<DocumentModel> getConsumedInterfaceImplementationsOfJavaConsumptionInCriteria(
+			DocumentModel javaConsumptionModel, String subprojectCriteria, boolean nonMock, boolean mock) throws ClientException {
+		String consumedJavaInterface = (String) javaConsumptionModel.getPropertyValue("javasc:consumedInterface");
+        DocumentModelList impls = this.query(javaConsumptionModel.getCoreSession(), DocumentService.NXQL_SELECT_FROM
+        		+ "JavaServiceImplementation" + subprojectCriteria + DocumentService.NXQL_AND
+                + "javasi:implementedInterface" + "='" + consumedJavaInterface + "'", true, false);
+        // TODO move to JavaServiceImplementation project by using an adapter, use JavaServiceImplementation & JavaServiceConsumption constants
+        // TODO use javasc:consumedInterfaceLocation ? handle maven dependencies ??
+        return filterImpls(impls, nonMock, mock);
+	}
+	@Override
+	public DocumentModel getConsumedJavaInterfaceService(
+			DocumentModel javaConsumptionModel, String subprojectId) throws ClientException {
+		return getConsumedJavaInterfaceServiceInCriteria(javaConsumptionModel,
+				NXQLQueryHelper.buildSubprojectCriteria(javaConsumptionModel.getCoreSession(), subprojectId, true));
+	}
+	@Override
+	public DocumentModel getConsumedJavaInterfaceServiceInCriteria(
+			DocumentModel javaConsumptionModel, String subprojectCriteria) throws ClientException {
+		List<DocumentModel> consumedImpls = getConsumedInterfaceImplementationsOfJavaConsumptionInCriteria(javaConsumptionModel, subprojectCriteria, true, true);
+		// getting non mock impl IF POSSIBLE because it is a better guess (TODO how even better ??)
+		DocumentModel impl = null;
+		DocumentModel actualImpl = null;
+		for (DocumentModel consumedImpl : consumedImpls) {
+			if ("true".equals(consumedImpl.getPropertyValue(ServiceImplementation.XPATH_ISMOCK))) {
+				actualImpl = consumedImpl;
+				break;
+			}
+			impl = consumedImpl;
+		}
+		if (actualImpl != null) {
+			impl = actualImpl;
+		}
+		if (impl == null) {
+			// if none i.e. is a non-impl'd itf,
+			// TODO handle this case, ex.
+			// * by adding (consumed) iserv info on consumption
+			// * or by modeling java interface independently
+			// * or by adding java info to technical iserv NO DOESN'T SOLVE PB IF NO TECHNICAL ISERV
+		}
+		if (impl == null) {
+			return null;
+		}
+		return getParentInformationService(impl);
+	}
+	
 
 	@Override
 	public DocumentModel getServiceImplementationFromEndpoint(DocumentModel endpointModel) throws ClientException {
@@ -747,7 +965,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 	}
 
 	@Override
-	public DocumentRef getParentInformationService(DocumentModel model) throws ClientException {
+	public DocumentModel getParentInformationService(DocumentModel model) throws ClientException {
 		// is it itself an iserv ?
     	/*SoaMetamodelService soaMetamodelService;
 		try {
@@ -763,7 +981,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 			// NB. this prop is defined in ServiceImplementationDataFacet on serviceimpl or endpoint
 			iservId = (String) model.getPropertyValue(ServiceImplementationDataFacet.XPATH_PROVIDED_INFORMATION_SERVICE);
 			if (iservId != null && iservId.length() != 0) {
-				return new IdRef(iservId);
+				return model.getCoreSession().getDocument(new IdRef(iservId));
 			}
 		} catch (PropertyException e) {
 			// not a serviceimpl or endpoint
@@ -784,6 +1002,22 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 			throw new RuntimeException("Can't get SoaMetamodelService", e);
 		}*/
 		return getSoaNodeParent(model, ServiceImplementation.DOCTYPE);
+	}
+	
+
+	protected List<DocumentModel> filterImpls(List<DocumentModel> impls, boolean nonMock, boolean mock)
+			throws PropertyException, ClientException {
+		if (nonMock && mock) {
+        	return impls;
+        }
+        ArrayList<DocumentModel> filteredImpls = new ArrayList<DocumentModel>(impls.size());
+        for (DocumentModel impl : impls) {
+        	boolean isMock = "true".equals(impl.getPropertyValue(ServiceImplementation.XPATH_ISMOCK));
+        	if (nonMock && !isMock || mock && isMock) {
+        		filteredImpls.add(impl);
+        	}
+        }
+        return filteredImpls;
 	}
 
 }

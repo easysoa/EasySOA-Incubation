@@ -1109,8 +1109,12 @@
         <fields>
           <field>rdi:downloadableUrl</field>
         </fields>
+        <widgetModes>
+          <mode value="create">hidden</mode>
+          <mode value="edit">hidden</mode>
+        </widgetModes>
       </widget>
-      <widget name="resourcedownloadinfo_timestamp" type="text">
+      <widget name="resourcedownloadinfo_timestamp" type="datetime">
         <labels>
           <label mode="any">label.easysoa.layout.resourcedownloadinfo.timestamp</label>
         </labels>
@@ -1118,6 +1122,10 @@
         <fields>
           <field>rdi:timestamp</field>
         </fields>
+        <!-- widgetModes>
+          <mode value="create">hidden</mode>
+          <mode value="edit">hidden</mode>
+        </widgetModes -->
       </widget>
       <widget name="resourcedownloadinfo_probe_type" type="text">
         <labels>
@@ -1127,6 +1135,10 @@
         <fields>
           <field>rdi:probeType</field>
         </fields>
+        <widgetModes>
+          <mode value="create">hidden</mode>
+          <mode value="edit">hidden</mode>
+        </widgetModes>
       </widget>
       <widget name="resourcedownloadinfo_probe_instance_id" type="text">
         <labels>
@@ -1136,6 +1148,10 @@
         <fields>
           <field>rdi:instanceId</field>
         </fields>
+        <widgetModes>
+          <mode value="create">hidden</mode>
+          <mode value="edit">hidden</mode>
+        </widgetModes>
       </widget>      
     </layout>    
     

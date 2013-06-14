@@ -1,7 +1,6 @@
 groupname, description
 "members","Group of users with read/write access rights"
 "administrators","Group of users with administrative rights"
-"Administrator",""
 "Business User","GLOBAL (bonus) Business subgroup with less rights"
 "Business Analyst","GLOBAL Analyzes business, produces requirements, evaluates provided business service"
 "Designer","GLOBAL (???) designs Specifications"

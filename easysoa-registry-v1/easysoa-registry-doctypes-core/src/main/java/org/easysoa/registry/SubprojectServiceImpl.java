@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.easysoa.registry.subproject.SubprojectId;
 import org.easysoa.registry.types.Project;
 import org.easysoa.registry.types.Repository;
 import org.easysoa.registry.types.Subproject;
@@ -134,6 +135,16 @@ public class SubprojectServiceImpl {
             sbuf.append(version);
         } // else live : Phase / subproject id ends with _v
         return sbuf.toString();
+    }
+    
+    public static SubprojectId parseSubprojectId(String subprojectId) {
+    	int prefixLength = Repository.DEFAULT_DOMAIN_PATH.length();
+    	int slashIndex = subprojectId.lastIndexOf('/');
+    	int versionIndex = subprojectId.lastIndexOf('_'); // NB. always there at the end in "_v"
+    	String projectName = subprojectId.substring(prefixLength + 1, slashIndex);
+		String subprojectName = subprojectId.substring(slashIndex + 1, versionIndex);
+		String version = subprojectId.substring(versionIndex + 2, subprojectId.length());
+		return new SubprojectId(projectName, subprojectName, version);
     }
 
     public static String getPathFromId(String subprojectId) {

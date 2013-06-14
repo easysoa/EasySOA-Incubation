@@ -39,6 +39,11 @@
 
 		<h2>Service <@displayServiceTitle service subprojectId visibility/></h2>
 
+
+        <!-- 1. Display focus part according to role
+        (profile ex. Developer, relationship ex. providerActor, phase ex. Specifications -->
+
+
 		Vous voulez :
 		<ul>
 			<li>vous en servir par une application (applications et leurs IHMs, notamment web)</li>
@@ -80,30 +85,94 @@
             <li>vous en servir par une application (applications et leurs IHMs, notamment web) TODO appli:urlUiWeb</li>
         </ul>
 
+
+
+        <!-- 2. Display all global parts, and expand one (some) according to profile (role ??) -->
+
+
+
 		<h3>(description)</h3>
 		${service['dc:description']}
 		
-		<h3>Métier</h3>
+		<h3>Métier ((sert à))</h3>
 		<#if service['iserv:linkedBusinessService']?has_content>
-		  <#assign businessService = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['iserv:linkedBusinessService']))/>
+		  <#assign businessServiceRef = new_f('org.nuxeo.ecm.core.api.IdRef', service['iserv:linkedBusinessService'])/>
+		  <#assign businessService = Session.getDocument(businessServiceRef)/>
 		</#if>
 		<#if businessService?has_content>
-		   Fournit le service business <@displayDocShort businessService/>
+		  Fournit le service business <a href="<@urlToLocalNuxeoDocumentsUi businessService/>"><@displayDocShort businessService/></a> :<br/>
+          <#if businessService['businessservice:consumerActor']?has_content>
+            <#assign bsConsumerActor = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', businessService['businessservice:consumerActor']))/>
+          </#if>
+          <span style="font-weight: bold;">Acteur consommateur :</span>
+            <#if bsConsumerActor?has_content>
+                <a href="<@urlToLocalNuxeoDocumentsUi bsConsumerActor/>">${bsConsumerActor.title}</a>
+            <#else>
+                <span style="color: red;">MANQUANT</span> (<a href="<@urlToLocalNuxeoDocumentsUi businessService/>">résoudre</a>)
+            </#if>
+            <br/>
+            <span style="font-weight: bold;">Acteur fournisseur :</span>
+            <#if providerActor?has_content>
+                <a href="<@urlToLocalNuxeoDocumentsUi providerActor/>">${providerActor.title}</a>
+            <#else>
+                <span style="color: red;">MANQUANT</span> (<a href="<@urlToLocalNuxeoDocumentsUi businessService/>">résoudre</a>)
+            </#if>
+            <br/>
+           SLAs :
+           <#assign slas = Root.getDocumentService().getSoaNodeChildren(businessService, 'SLA')/>
+           <#if slas?size = 0>
+               aucun
+           <#else>
+               <#list slas as sla>
+                   <a href="<@urlToLocalNuxeoDocumentsUi sla/>">${sla.title}</a>
+                   <#if sla_index != slas?size - 1>, </#if>
+               </#list>
+           </#if>
+           <br/>
+           OLAs :
+           <#assign olas = Root.getDocumentService().getSoaNodeChildren(businessService, 'OLA')/>
+           <#if olas?size = 0>
+               aucun
+           <#else>
+               <#list olas as ola>
+                   <a href="<@urlToLocalNuxeoDocumentsUi ola/>">${ola.title}</a>,
+                   <#if ola_index != olas?size - 1>, </#if> 
+               </#list>
+           </#if>
+           <br/>
+           Documents de spécification :
+           <#assign specDocs = Session.getChildren(businessServiceRef, 'Document')/>
+           <#if specDocs?size = 0>
+               aucun
+           <#else>
+               <#list specDocs as specDoc>
+                   <a href="<@urlToLocalNuxeoDocumentsUi ola/>">${specDoc.title}</a>,
+                   <#if specDoc_index != specDoc?size - 1>, </#if> 
+               </#list>
+           </#if>
+           <br/>
+           <br/>
 		<#else>
-		   Service intermédiaire (ne fournit pas de service business)
+		   Service intermédiaire (ne fournit pas de service business) ((TODO sert à = consumptions ??))
 		</#if>
 		<br/>
 		
-        <#assign providerActorTitle = ""/>
+		<span style="font-weight: bold;">Acteur fournisseur :</span>
         <#if providerActor?has_content>
-            <#assign providerActorTitle = providerActor.title/>
+            <a href="<@urlToLocalNuxeoDocumentsUi providerActor/>">${providerActor.title}</a>
+        <#else>
+            aucun
         </#if>
-        <#assign componentTitle = ""/>
-        <#if component?has_content>
-            <#assign componentTitle = component.title/>
+        <br/>
+        
+        <span style="font-weight: bold;">Composant :</span>
+        <#if providerActor?has_content>
+            <a href="<@urlToLocalNuxeoDocumentsUi component/>">${component.title}</a>
+        <#else>
+            <span style="color: red;">MANQUANT</span> (<a href="<@urlToLocalNuxeoDocumentsUi service/>">résoudre</a>)
         </#if>
-        <span style="font-weight: bold;">Acteur fournisseur :</span> ${providerActorTitle}<br/>
-        <span style="font-weight: bold;">Composant :</span> ${componentTitle}<br/>
+        <br/>
+        
         <p/>
 
 		<h3>Documentation</h3>
@@ -228,13 +297,28 @@
 		<br/><b>Implementations :</b><br/>
 		<#list actualImpls as actualImpl>
 		   <#assign deliverable = Root.getDocumentService().getSoaNodeParent(actualImpl, 'Deliverable')/>
-		   <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">
+		   <span title="Phase : <@displayPhaseIfOutsideContext service['spnode:subproject']/>" style="color:grey; font-style: italic;">
 		   ${componentTitle} / ${deliverable['del:application']} / ${deliverable['soan:name']} / </span> <span title="SOA ID: ${service['soan:name']}">
 		   <#-- ${actualImpl['soan:name']} -->${actualImpl['title']}
-		   </span> - <@displayPhase actualImpl['spnode:subproject']/> (((${actualImpl.versionLabel})))
+		   </span> - <@displayPhaseIfOutsideContext actualImpl['spnode:subproject']/> (((${actualImpl.versionLabel})))
 		   <br/>
            <@displayTested productionImpl/><br/>
-		   Dépend de : <#list deliverable['del:dependencies'] as dependency>${dependency}, </#list>
+           <b>Son délivrable :</b></br>
+		   dépend de : <#list deliverable['del:dependencies'] as dependency>${dependency}, </#list>
+		   <br/>
+           <!-- TODO consumptions of : separate internal impls from external services -->
+		   <#assign delConsumptions = Root.getDocumentService().getDeliverableConsumptions(deliverable)/>
+           ((consomme les classes d'implémentations :
+		   <#list delConsumptions as delConsumption>
+		      <@displayDocsShort Root.getDocumentService().getConsumedInterfaceImplementationsOfJavaConsumption(delConsumption, subprojectId, true, false)/>))
+              <#if delConsumption_index != delConsumptions?size - 1> ;</#if>
+		   </#list>))
+		   <br/>
+           consomme les services :
+           <#list delConsumptions as delConsumption>
+              <@displayDocShort Root.getDocumentService().getConsumedJavaInterfaceService(delConsumption, subprojectId)/>))
+              <#if delConsumption_index != delConsumptions?size - 1> ;</#if>
+           </#list>
            <p/>
 		</#list>
         <#-- @displayDocsShort actualImpls/ -->
@@ -255,10 +339,10 @@
 		<#if productionEndpoint?has_content>
 		<a href="${productionEndpoint['endp:url']}">${productionEndpoint['endp:url']}</a>
         <br/>
-           <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">
+           <span title="Phase : <@displayPhaseIfOutsideContext service['spnode:subproject']/>" style="color:grey; font-style: italic;">
            ${productionEndpoint['env:environment']} / </span> <span title="SOA ID: ${productionEndpoint['soan:name']}">
            <#-- ${productionEndpoint['soan:name']} -->${productionEndpoint['endp:url']}
-           </span> - <@displayPhase productionEndpoint['spnode:subproject']/> (((${productionEndpoint.versionLabel})))
+           </span> - <@displayPhaseIfOutsideContext productionEndpoint['spnode:subproject']/> (((${productionEndpoint.versionLabel})))
            <br/>
         Resource : 
         <#if productionEndpoint['rdi:url']?has_content>
@@ -307,7 +391,7 @@
         </#if>
 		<br/>Tous les déploiements :<!-- Et à déploiement de test : -->
 		<#-- @displayDocsShort endpoints/ -->
-        <@displayDocs actualImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
+        <@displayDocs endpoints shortDocumentPropNames + endpointPropNames/>
 
 
 
@@ -322,6 +406,11 @@
         <p>&nbsp;</p>
         
 		<h2>test</h2>
+		
+		<h3>User</h3>
+        (test) user name : ${userName}<br/>
+		isUserProvider : ${isUserProvider?string}<br/>
+        isUserDeveloper : ${isUserDeveloper?string}<br/>
 
 		<h3>Contenu dans</h3>
 		<#if service['proxies']?has_content><#list service['proxies'] as proxy><@displayDocShort proxy['parent']/> ; </#list></#if>

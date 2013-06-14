@@ -44,7 +44,7 @@ import org.easysoa.registry.indicators.rest.IndicatorValue;
 import org.easysoa.registry.indicators.rest.IndicatorsController;
 import org.easysoa.registry.rest.EasysoaModuleRoot;
 import org.easysoa.registry.types.InformationService;
-import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.types.Subproject;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.types.adapters.SoaNodeAdapter;
@@ -55,6 +55,8 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.api.NuxeoPrincipal;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -201,39 +203,9 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         	}
 
         	// Implementations
-        	// mock impls :
-            List<DocumentModel> mockImpls = docService.query(session, DocumentService.NXQL_SELECT_FROM
-            		+ ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
-                    + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'"
-                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + "='true'", true, false);
-            // WARNING IS NULL DOESN'T WORK IN RELEASE BUT DOES IN JUNIT
-        	// old impl using proxy :
-            //List<DocumentModel> actualImpls = new java.util.ArrayList<DocumentModel>();
-            /* = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
-                    + DocumentService.NXQL_WHERE_NO_PROXY
-                    + DocumentService.NXQL_AND + "ecm:uuid IN "
-                    + getProxiedIdLiteralList(session,
-                            session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE
-                    + DocumentService.NXQL_WHERE_PROXY + DocumentService.NXQL_AND
-                    + DocumentService.NXQL_PATH_STARTSWITH + RepositoryHelper.getRepositoryPath(session, subprojectId) + InformationService.DOCTYPE + "'"
-                    + DocumentService.NXQL_AND + "ecm:parentId='" + service.getId() + "'"
-                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + " IS NULL")));*/
-            List<DocumentModel> actualImpls = docService.query(session, DocumentService.NXQL_SELECT_FROM
-            		+ ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
-                    + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'"
-                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + "<>'true'", true, false); // WARNING 'true' doesn't work in junit
-            if (actualImpls.isEmpty()) {
-            	// TODO HACK if empty, try using junit-only alternative query, in case we're in tests :
-	            actualImpls = docService.query(session, DocumentService.NXQL_SELECT_FROM
-	            		+ ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
-	                    + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'"
-	                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + " IS NULL", true, false); // WARNING IS NULL works in junit only
-	            // alternate solution using "not mock impl"
-                /*actualImpls = docService.query(session, DocumentService.NXQL_SELECT_FROM
-                        + ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
-                        + DocumentService.NXQL_AND + "ecm:uuid NOT IN " + toLiteral(getIds(mockImpls)), true, false);*/
-            }
-
+            List<DocumentModel> mockImpls = docService.getMockImplementationsOfServiceInCriteria(service, subprojectCriteria);
+            List<DocumentModel> actualImpls = docService.getActualImplementationsOfServiceInCriteria(service, subprojectCriteria);
+            
             // Endpoints
             List<DocumentModel> endpoints = docService.getEndpointsOfServiceInCriteria(service, subprojectCriteria);
             DocumentModel productionEndpoint = docService.getEndpointOfServiceInCriteria(service, "Production", subprojectCriteria);
@@ -241,7 +213,56 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
             if (productionEndpoint != null) {
             	productionImpl = docService.getServiceImplementationFromEndpoint(productionEndpoint);
             }
+            
+            
 
+
+            // Getting suborganisation
+            UserManager userManager = Framework.getService(UserManager.class);
+            String userName = getCurrentUser();
+            String testUser = request.getParameter("testUser");
+            if (testUser != null && testUser.length() != 0 && userManager.getPrincipal(testUser) != null) {
+            	userName = testUser;
+            }
+            NuxeoPrincipal user = userManager.getPrincipal(userName);
+            boolean hasUserCompany = user.getCompany() != null && user.getCompany().length() != 0;
+            // get it from Actor group :
+            // (which is defined company-wide, TODO LATER actually define them in a parent company / SI subproject & manage consistency)
+            StringBuffer actorGroupNameBuf = new StringBuffer();
+            if (hasUserCompany) {
+            	actorGroupNameBuf.append(user.getCompany());
+            	actorGroupNameBuf.append('/');
+            }
+        	actorGroupNameBuf.append(providerActor.getName()); // TODO rather soaname ??
+            String providerActorGroupName = actorGroupNameBuf.toString();
+            boolean isUserProvider = user.isMemberOf(providerActorGroupName);
+            // LATER get it from Component NO because too costly, or at least use explicit concept of SubActor
+            // LATER finer : get it from development project task management
+            
+            // Getting role
+            DocumentModel subproject = SubprojectServiceImpl.getSubprojectById(session, subprojectId);
+            String subprojectName = subproject.getName(); // TODO rather parse subprojectId
+            String projectName = session.getParentDocument(subproject.getRef()).getName();
+            // (?) getting it from (TODO versioned ???) subproject-local group :
+            boolean isUserDeveloper = user.isMemberOf(projectName + '/' + subprojectName + '/' + "Developer");
+            isUserDeveloper = isUserDeveloper || user.isMemberOf(projectName + '/' + "Developer");
+            // (??) else getting it from project-local group :
+            isUserDeveloper = isUserDeveloper || user.isMemberOf(projectName + '/' + "Developer");
+            // LATER (?) else getting it from company / SI-wide group :
+            if (!isUserDeveloper && hasUserCompany) {
+            	isUserDeveloper = user.isMemberOf(user.getCompany() + '/' + "Developer");
+            }
+            // else getting it from global group :
+            isUserDeveloper = isUserDeveloper || user.isMemberOf("Developer");
+            // else (default) getting it from which Phase is current in visibility Context  :
+            if (!subproject.isVersion()) {
+                isUserDeveloper = isUserDeveloper || Subproject.REALISATION_SUBPROJECT_NAME.equals(subproject.getName());
+            } else {
+                isUserDeveloper = isUserDeveloper || Subproject.SPECIFICATIONS_SUBPROJECT_NAME.equals(subproject.getName());
+            }
+            
+            
+            
             view = view
                     .arg("subproject", serviceSubprojectId)
                     .arg("service", service)
@@ -252,10 +273,16 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
                     .arg("endpoints", endpoints)
                     .arg("productionEndpoint", productionEndpoint)
                     .arg("productionImpl", productionImpl)
+                    
+                    .arg("userName", userName)
+                    .arg("isUserProvider", isUserProvider)
+                    .arg("isUserDeveloper", isUserDeveloper)
+                    
                     .arg("new_f", new freemarker.template.utility.ObjectConstructor())
                     // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
                     // and not "new" else conflicts with Nuxeo's NewMethod helper
                     .arg("servicee", service.getAdapter(SoaNodeAdapter.class))
+                    
                     .arg("subprojectId", subprojectId)
                     .arg("visibility", visibility)
                     .arg("contextInfo", ContextData.getVersionData(session, subprojectId));

@@ -1,5 +1,5 @@
 /**
- * EasySOA Proxy
+ * EasySOA Registry
  * Copyright 2011-2013 Open Wide
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,8 @@ import java.security.Principal;
 import java.util.Properties;
 
 import org.easysoa.registry.DocumentService;
-import org.easysoa.registry.types.Endpoint;
+import org.easysoa.registry.SubprojectServiceImpl;
+import org.easysoa.registry.subproject.SubprojectId;
 import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -121,6 +122,10 @@ public class EasysoaModuleRoot extends ModuleRoot {
     		String subprojectId) throws PropertyException, ClientException {
     	return NXQLQueryHelper.buildSubprojectCriteria(
     			soaNodeDocModel.getCoreSession(), subprojectId, true);
+    }
+    
+    public SubprojectId parseSubprojectId(String subprojectId) throws Exception {
+    	return SubprojectServiceImpl.parseSubprojectId(subprojectId);
     }
     
 }

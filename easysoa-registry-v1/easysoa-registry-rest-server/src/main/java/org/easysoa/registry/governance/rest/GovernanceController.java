@@ -35,7 +35,7 @@ import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
- * Governance
+ * Governance controller
  *
  * @author jguillemotte
  */
@@ -44,7 +44,6 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 public class GovernanceController extends EasysoaModuleRoot {
 
     @GET
-    //@Path("governance") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doGetGovernancePageHTML(@QueryParam("subprojectId") String subprojectId,
     		@QueryParam("visibility") String visibility) throws Exception {

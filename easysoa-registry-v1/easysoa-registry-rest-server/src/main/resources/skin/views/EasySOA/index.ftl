@@ -43,9 +43,9 @@
                             <!-- TODO : Replace this hard coded link by a build in link ? -->
                             <p>
                             <div class="btn-group">
-                                <a class="btn" href="${Root.path}/services/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte sources</a>
+                                <a class="btn" href="${Root.path}/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte sources</a>
                                 <a class="btn" href="${web_discovery_url}?subprojectId=${subprojectId}&visibility=${visibility}" target="_blank">Découverte web</a>
-                                <a class="btn" href="${Root.path}/services/cartography/runDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte à l'éxécution</a>
+                                <a class="btn" href="${Root.path}/cartography/runDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte à l'éxécution</a>
                             </div>
                             </p>
                         </p>
@@ -65,7 +65,7 @@
                                 </tr>
                             </table>
                         </p>
-                        <a class="btn btn-primary" href="${Root.path}/services/cartography/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
+                        <a class="btn btn-primary" href="${Root.path}/cartography/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
                     </div>
                 </li>
                 <li class="span6">

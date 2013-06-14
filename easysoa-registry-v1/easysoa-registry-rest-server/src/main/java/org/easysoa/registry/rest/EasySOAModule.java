@@ -2,6 +2,7 @@ package org.easysoa.registry.rest;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.easysoa.registry.cartography.rest.CartographyController;
 import org.easysoa.registry.context.rest.ContextController;
 import org.easysoa.registry.dashboard.rest.MatchingDashboard;
 import org.easysoa.registry.dbb.rest.ServiceFinderRest;
@@ -48,7 +49,8 @@ public class EasySOAModule extends WebEngineModule {
             EndpointStateController.class,
             ContextController.class,
             IndexController.class,
-            GovernanceController.class
+            GovernanceController.class,
+            CartographyController.class
         };
     }
 

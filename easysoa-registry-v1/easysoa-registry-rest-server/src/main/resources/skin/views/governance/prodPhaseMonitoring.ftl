@@ -23,6 +23,7 @@
 
     <body>
         <#include "/views/EasySOA/macros.ftl">
+        <#include "/views/governance/governanceMacros.ftl">
 
         <div id="header">
             <div id="headerContents">

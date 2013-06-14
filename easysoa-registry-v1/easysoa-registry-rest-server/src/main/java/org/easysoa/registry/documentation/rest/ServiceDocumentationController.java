@@ -384,60 +384,6 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
     }
 
     @GET
-    @Path("cartography") // TODO encoding
-    @Produces(MediaType.TEXT_HTML)
-    public Object doGetCartographyFullPageHTML(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
-
-        CoreSession session = SessionFactory.getSession(request);
-
-        // Indicators
-        IndicatorsController indicatorsController = new IndicatorsController();
-        Map<String, IndicatorValue> indicators = indicatorsController.computeIndicators(session, null, null, subprojectId, visibility);
-
-        return getView("cartography")
-                .arg("subprojectId", subprojectId)
-                .arg("visibility", visibility)
-                .arg("indicators", indicators)
-                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
-    }
-
-    @GET
-    @Path("cartography/sourceDiscovery") // TODO encoding
-    @Produces(MediaType.TEXT_HTML)
-    public Object doGetSourceDiscoveryPageHTML(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
-
-        CoreSession session = SessionFactory.getSession(request);
-
-        // Indicators
-        IndicatorsController indicatorsController = new IndicatorsController();
-        Map<String, IndicatorValue> indicators = indicatorsController.computeIndicators(session, null, null, subprojectId, visibility);
-
-        return getView("sourceDiscovery")
-                .arg("subprojectId", subprojectId)
-                .arg("visibility", visibility)
-                .arg("indicators", indicators)
-                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
-    }
-
-    @GET
-    @Path("cartography/runDiscovery") // TODO encoding
-    @Produces(MediaType.TEXT_HTML)
-    public Object doGetRunDiscoveryPageHTML(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
-
-        CoreSession session = SessionFactory.getSession(request);
-
-        // Indicators
-        IndicatorsController indicatorsController = new IndicatorsController();
-        Map<String, IndicatorValue> indicators = indicatorsController.computeIndicators(session, null, null, subprojectId, visibility);
-
-        return getView("runDiscovery")
-                .arg("subprojectId", subprojectId)
-                .arg("visibility", visibility)
-                .arg("indicators", indicators)
-                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
-    }
-
-    @GET
     @Path("matchingFull") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doGetMatchingFullPageHTML(@QueryParam("subprojectId") String subprojectId,

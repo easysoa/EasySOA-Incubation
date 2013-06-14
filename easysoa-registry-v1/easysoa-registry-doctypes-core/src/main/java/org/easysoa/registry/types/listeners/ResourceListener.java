@@ -87,12 +87,9 @@ public class ResourceListener extends EventListenerBase implements EventListener
         DocumentModel previousDocumentModel = (DocumentModel) context.getProperty("previousDocumentModel");
         ResourceUpdateService resourceUpdateService;
         try {
-
-            // TODO : How to get sync or async resource update service ???
-            //resourceUpdateService = Framework.getService(ResourceUpdateService.class);
             if(synchronous){
-                //resourceUpdateService = Framework.getService(ResourceUpdateService.class, "org.easysoa.registry.dbb.SyncResourceUpdateService");
                 resourceUpdateService = new SynchronousResourceUpdateServiceImpl();
+                //resourceUpdateService = Framework.getService(ResourceUpdateService.class, "org.easysoa.registry.dbb.SyncResourceUpdateService");
             } else {
                 resourceUpdateService = new AsyncResourceUpdateServiceImpl();
                 //resourceUpdateService = Framework.getService(ResourceUpdateService.class, "org.easysoa.registry.dbb.AsyncResourceUpdateService");

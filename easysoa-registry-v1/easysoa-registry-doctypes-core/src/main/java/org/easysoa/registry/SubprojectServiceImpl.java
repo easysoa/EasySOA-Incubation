@@ -29,20 +29,20 @@ import org.nuxeo.snapshot.Snapshotable;
 public class SubprojectServiceImpl {
 
     public static final String  SUBPROJECT_ID_VERSION_SEPARATOR = "_v";
-    
+
     public static final PathRef defaultProjectPathRef = new PathRef(Project.DEFAULT_PROJECT_PATH);
     ///public static final PathRef defaultSubprojectPathRef = new PathRef(Subproject.DEFAULT_SUBPROJECT_PATH);
     public static final String defaultSubprojectId = Subproject.DEFAULT_SUBPROJECT_PATH + SUBPROJECT_ID_VERSION_SEPARATOR;
 
 
     private static Logger logger = Logger.getLogger(SubprojectServiceImpl.class);
-    
+
     /**
      * Creates but doesn't save session
      * @param documentManager
      * @param name
      * @return
-     * @throws ClientException 
+     * @throws ClientException
      */
     public static DocumentModel createProject(CoreSession documentManager, String name) throws ClientException {
         DocumentModel projectModel = documentManager.createDocumentModel(Project.DOCTYPE);
@@ -66,7 +66,7 @@ public class SubprojectServiceImpl {
         DocumentModel subprojectModel = documentManager.createDocumentModel(Subproject.DOCTYPE); // triggers DocumentEventTypes.EMPTY_DOCUMENTMODEL_CREATED
         subprojectModel.setPathInfo(projectModel.getPathAsString(), name); // TODO safeName()
         subprojectModel.setPropertyValue("dc:title", name);
-        
+
         String[] parentSubprojectEcmUuids;
         if (parentSubprojectModels == null) {
             parentSubprojectEcmUuids = NuxeoListUtils.EMPTY_STRING_ARRAY;
@@ -74,31 +74,31 @@ public class SubprojectServiceImpl {
             parentSubprojectEcmUuids = NuxeoListUtils.getIds(parentSubprojectModels).toArray(NuxeoListUtils.EMPTY_STRING_ARRAY);
         }
         subprojectModel.setPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS, parentSubprojectEcmUuids);
-        
+
         onSubprojectAboutToCreate(documentManager, subprojectModel);
-        
+
         subprojectModel = documentManager.createDocument(subprojectModel);
         return subprojectModel;
     }
-    
+
     /**
      * To be called on aboutToCreate
-     * @param subprojectModel 
-     * @param documentManager 
-     * @param parentSubprojectEcmUuids 
-     * @throws ClientException 
+     * @param subprojectModel
+     * @param documentManager
+     * @param parentSubprojectEcmUuids
+     * @throws ClientException
      */
     public static void onSubprojectAboutToCreate(CoreSession documentManager,
             DocumentModel subprojectModel) throws ClientException {
         String subprojectId = buildSubprojectId(subprojectModel);
-        
+
         if (getSubprojectById(documentManager, subprojectId) != null) {
             throw new ClientException("Trying to create Subproject but already exists at "
                     + subprojectId);
         }
-        
+
         subprojectModel.setPropertyValue(Subproject.XPATH_SUBPROJECT, subprojectId); // to get copied
-        
+
         // TODO also on document change... (parents)
         computeAndSetVisibleSubprojects(documentManager, subprojectModel);
         // NB. saveDocument() is auto done after aboutToCreate even by event system
@@ -135,7 +135,7 @@ public class SubprojectServiceImpl {
         } // else live : Phase / subproject id ends with _v
         return sbuf.toString();
     }
-    
+
     public static String getPathFromId(String subprojectId) {
         int lastVersionSeparatorId = subprojectId.lastIndexOf(SUBPROJECT_ID_VERSION_SEPARATOR);
         if (lastVersionSeparatorId < 0) {
@@ -144,7 +144,7 @@ public class SubprojectServiceImpl {
         }
         return subprojectId.substring(0, lastVersionSeparatorId);
     }
-    
+
     public static boolean isBeingVersionedSubprojectNodeEvent(Event event, DocumentModel subprojectNode)
             throws PropertyException, ClientException {
         if (!DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
@@ -172,20 +172,20 @@ public class SubprojectServiceImpl {
      */
     public static DocumentModel getSubprojectById(CoreSession documentManager, String subprojectId) throws ClientException {
         subprojectId = getSubprojectIdOrCreateDefault(documentManager, subprojectId);
-        
+
         return getSubprojectByIdInternal(documentManager, subprojectId);
     }
-    
+
     protected static DocumentModel getSubprojectByIdInternal(CoreSession documentManager, String subprojectId) throws ClientException {
         // NB. three differents ways :
-        
+
         // 1. looking in db using path : NO doesn't work for versioned Phase / subproject because their Path is relative
         /*int lastVersionSeparatorId = subprojectId.lastIndexOf(SUBPROJECT_ID_VERSION_SEPARATOR);
         if (lastVersionSeparatorId < 0) {
             logger.warn("getSubprojectById() called on badly formatted subprojectId " + subprojectId);
             return null;
         }
-        
+
         String path = subprojectId.substring(0, lastVersionSeparatorId);
         String versionLabelCriteria;
         if (lastVersionSeparatorId == subprojectId.length() - SUBPROJECT_ID_VERSION_SEPARATOR.length()) {
@@ -210,7 +210,7 @@ public class SubprojectServiceImpl {
         } else {
             throw new ClientException("More than one subproject found for id " + subprojectId + " : " + res);
         }
-        
+
         // 3. using getParent() => rather use getSubprojectOfNode()
     }
 
@@ -236,23 +236,23 @@ public class SubprojectServiceImpl {
         } else {
             parentSubprojectIds = (String[]) foundParentSubprojectIds;
         }
-        
+
         //String[] visibleSubprojectIds = (String[]) subprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS);
         int estimatedSize = ((parentSubprojectIds == null) ? 0 : parentSubprojectIds.length * 2) + 1;
         ArrayList<String> visibleSubprojectIdList = new ArrayList<String>(estimatedSize);
         visibleSubprojectIdList.add(subprojectId);
-        
+
         StringBuffer visibleSubprojectIdsCsvSbuf = new StringBuffer("'"); // NB. '\'' doesn't work, counts as int !!
         visibleSubprojectIdsCsvSbuf.append(subprojectId);
         visibleSubprojectIdsCsvSbuf.append('\'');
-        
+
         if (parentSubprojectIds != null && parentSubprojectIds.length != 0) {
             for (String parentSubprojectId : parentSubprojectIds) {
                 DocumentModel parentSubprojectModel = documentManager.getDocument(new IdRef(parentSubprojectId));
 
                 String[] parentVisibleSubprojectIds = (String[]) parentSubprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS);
                 visibleSubprojectIdList.addAll(Arrays.asList(parentVisibleSubprojectIds));
-                
+
                 String parentVisibleSubprojectIdsCsv = (String) parentSubprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV);
                 //  NB. should always be set, at least to itself
                 visibleSubprojectIdsCsvSbuf.append(',');
@@ -263,16 +263,16 @@ public class SubprojectServiceImpl {
         subprojectModel.setPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS, visibleSubprojectIds);
         String visibleSubprojectIdsCsv = visibleSubprojectIdsCsvSbuf.toString();
         subprojectModel.setPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV, visibleSubprojectIdsCsv);
-        // TODO only set if changed & then return true 
+        // TODO only set if changed & then return true
     }
-    
+
     /*
-    
+
     public static void computeAndSetVisibleSubprojects(CoreSession documentManager,
             DocumentModel subprojectModel, boolean aboutToBeVersioned) throws ClientException {
         String subprojectId = buildSubprojectId(subprojectModel);
         subprojectModel.setPropertyValue(Subproject.XPATH_SUBPROJECT, subprojectId); // to get copied
-        
+
         Serializable foundParentSubprojectIds = subprojectModel.getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS);
         String[] parentSubprojectIds;
         if (foundParentSubprojectIds instanceof String) {
@@ -282,7 +282,7 @@ public class SubprojectServiceImpl {
         } else {
             parentSubprojectIds = (String[]) foundParentSubprojectIds;
         }
-        
+
         int estimatedSize = ((parentSubprojectIds == null) ? 0 : parentSubprojectIds.length * 2) + 1;
         ArrayList<String> visibleVersionedSubprojectIdList = new ArrayList<String>(estimatedSize);
         // current subproject is necessarily live since is being modified :
@@ -300,14 +300,14 @@ public class SubprojectServiceImpl {
             visibleLiveSubprojectIdsCsvSbuf.append(subprojectId);
             visibleLiveSubprojectIdsCsvSbuf.append("',");
         }
-        
+
         if (parentSubprojectIds != null && parentSubprojectIds.length != 0) {
             for (String parentSubprojectId : parentSubprojectIds) {
                 DocumentModel parentSubprojectModel = documentManager.getDocument(new IdRef(parentSubprojectId));
-                
+
                 String[] parentVisibleSubprojectIds = (String[]) parentSubprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS);
                 visibleLiveSubprojectIdList.addAll(Arrays.asList(parentVisibleSubprojectIds));
-                
+
                 String parentVisibleSubprojectIdsCsv = (String) parentSubprojectModel.getPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV);
                 //  NB. should always be set, at least to itself
                 //visibleSubprojectIdsCsvSbuf.append(',');
@@ -327,9 +327,9 @@ public class SubprojectServiceImpl {
         }
         visibleVersionSubprojectIdsCsvSbuf.deleteCharAt(visibleVersionSubprojectIdsCsvSbuf.length() - 1);
         visibleLiveSubprojectIdsCsvSbuf.deleteCharAt(visibleLiveSubprojectIdsCsvSbuf.length() - 1);
-        
+
         //String vcsv = visibleVersionSubprojectCriteriaSbuf.toString() + " OR (ecm:isVersion AND "
-        //        + SubprojectNode.XPATH_SUBPROJECT + " IN (" + visibleLiveSubprojectCriteriaSbuf.toString() + ")"; 
+        //        + SubprojectNode.XPATH_SUBPROJECT + " IN (" + visibleLiveSubprojectCriteriaSbuf.toString() + ")";
 
         StringBuffer visibleVersionSubprojectCriteriaSbuf = new StringBuffer(
                 DocumentService.NXQL_IS_VERSIONED + DocumentService.NXQL_AND
@@ -339,18 +339,18 @@ public class SubprojectServiceImpl {
                 DocumentService.NXQL_IS_NOT_VERSIONED + DocumentService.NXQL_AND
                 + SubprojectNode.XPATH_SUBPROJECT + " IN ("
                 + visibleVersionSubprojectIdsCsvSbuf.toString() + ")");
-        
+
         String[] visibleSubprojectIds = (String[]) visibleSubprojectIdList.toArray(NuxeoListUtils.EMPTY_STRING_ARRAY);
         subprojectModel.setPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS, visibleSubprojectIds);
         String visibleSubprojectIdsCsv = "((" + visibleVersionSubprojectCriteriaSbuf.toString()
                 + ") OR (" + visibleLiveSubprojectCriteriaSbuf.toString() + "))";
         subprojectModel.setPropertyValue(Subproject.XPATH_VISIBLE_SUBPROJECTS_CSV, visibleSubprojectIdsCsv);
-        // TODO only set if changed & then return true 
+        // TODO only set if changed & then return true
     }
-    
+
     */
-    
-    
+
+
     /**
      * Rightens identifier after calling getSubprojectIdOrCreateDefault()
      * @param documentManager
@@ -374,7 +374,7 @@ public class SubprojectServiceImpl {
      * If possible, rather use setDefaultSubprojectIfNone()
      * @param documentManager
      * @param subprojectId
-     * @return default (live) Phase / subproject if given subprojectId is null ; 
+     * @return default (live) Phase / subproject if given subprojectId is null ;
      * since is live, can be queried using Path
      * @throws ClientException
      * @obsolete
@@ -453,21 +453,21 @@ public class SubprojectServiceImpl {
         }
         return project;
     }
-    
+
     /*
      * TODO probably wrong for versions (and doesn't exclude versions if not) !!
      * @obsolete rather use buildCriteriaInSubproject() which is correct
      * @param subprojectId
-     * @return 
+     * @return
      */
     /*public static String getSubprojectById(String subprojectId) {
         return DocumentService.NXQL_PATH_STARTSWITH + getPathFromId(subprojectId) + "'";
     }*/
-    
+
     /**
-     * 
+     *
      * @param subprojectId
-     * @return 
+     * @return
      */
     public static String buildCriteriaInSubproject(String subprojectId) {
         return SubprojectNode.XPATH_SUBPROJECT + "='" + subprojectId + "'";
@@ -478,7 +478,7 @@ public class SubprojectServiceImpl {
      * @param subprojectNode The subproject DocumentModel
      * @return The criteria
      * @throws PropertyException
-     * @throws ClientException 
+     * @throws ClientException
      */
     public static String buildCriteriaSeenFromSubproject(DocumentModel subprojectNode)
             throws PropertyException, ClientException {
@@ -491,7 +491,7 @@ public class SubprojectServiceImpl {
         if (implVisibleSubprojectIds == null) {
             throw new ClientException("visibleSubprojects should not be null on " + subprojectNode);
         }
-        
+
         // ex. "AXXXSpecifications"; // or in 2 pass & get it from subProject ??
         return SubprojectNode.XPATH_SUBPROJECT + " IN (" + implVisibleSubprojectIds + ")";
     }
@@ -509,7 +509,7 @@ public class SubprojectServiceImpl {
         ///return SubprojectNode.XPATH_VISIBLE_SUBPROJECTS + "='" + subproject.getId() + "'"; // NB. multivalued prop
         return SubprojectNode.XPATH_VISIBLE_SUBPROJECTS + "='" + subprojectId + "'"; // NB. multivalued prop
     }
-    
+
     /**
      * Uses getParent. To rather use spnode:subproject, use getSubprojectById()
      * @obsolete
@@ -528,26 +528,26 @@ public class SubprojectServiceImpl {
         }
         return parent;
     }
-    
+
     public static String getSubprojectId(DocumentModel docModel) throws ClientException {
     	return (String) docModel.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
     }
-    
-    
+
+
     public static DocumentModel createSubprojectVersion(DocumentModel subproject,
             VersioningOption vOpt) throws ClientException {
         long oldVersionMajor = getVersion(subproject, "major_version");//"uid:major_version"
         long oldVersionMinor = getVersion(subproject, "minor_version");
         String newVersionLabel;
         if (vOpt == VersioningOption.MAJOR) {
-            newVersionLabel = (oldVersionMajor + 1) + "." +  oldVersionMinor; 
+            newVersionLabel = (oldVersionMajor + 1) + "." +  oldVersionMinor;
         } else { // assuming minor
             newVersionLabel = oldVersionMajor + "." +  (oldVersionMinor + 1);
         }
 
         String liveSubprojectId = (String) subproject.getPropertyValue(Subproject.XPATH_SUBPROJECT);
         String newVersionedSubprojectId = liveSubprojectId + newVersionLabel;
-        
+
         subproject.setPropertyValue(Subproject.XPATH_SUBPROJECT, newVersionedSubprojectId);
         //computeAndSetVisibleSubprojects(subproject.getCoreSession(), subproject);// TODO or evented ??
         ///incrementVersionedSuprojectIdRecursive(subproject, newVersionLabel);// TODO or evented ??
@@ -565,7 +565,7 @@ public class SubprojectServiceImpl {
         subproject.getCoreSession().saveDocument(subproject); // triggers event that calls SubprojectNodeListener
               // which will recompute subproject properties on copy them on all descendants
         subproject.getCoreSession().save(); // just in case
-        
+
         return snapshot.getDocument();
     }
 
@@ -579,10 +579,10 @@ public class SubprojectServiceImpl {
     private static void incrementVersionedSuprojectIdRecursive(DocumentModel subproject,
             String newVersionLabel) throws PropertyException, ClientException {
         String subprojectId = (String) subproject.getPropertyValue(Subproject.XPATH_SUBPROJECT);
-        
+
         String newVersionedSubprojectId = subprojectId + newVersionLabel;
         subproject.setPropertyValue(Subproject.XPATH_SUBPROJECT, newVersionedSubprojectId);//TODO versioned
-        
+
         DocumentModelIterator childrenIt = subproject.getCoreSession().getChildrenIterator(subproject.getRef());
         while (childrenIt.hasNext()) {
             DocumentModel child = childrenIt.next();
@@ -643,5 +643,60 @@ public class SubprojectServiceImpl {
             // TODO or using facet inheritance through spnode:subproject ?? NOOO documentService.createDocument() ex. ITS...
         }
     }
-    
+
+    /**
+     * Returns the parent subprojects references
+     * @param documentManager The Nuxeo core session
+     * @param subprojectId The subproject ID
+     * @return A String array containing the parent subprojects references
+     * @throws ClientException
+     */
+    public static String[] getParentSubprojectsRef(CoreSession documentManager, String subprojectId) throws ClientException {
+        return getParentSubprojectsRef(getSubprojectById(documentManager, subprojectId));
+    }
+
+    /**
+     * Returns the parent subprojects references
+     * @param subproject The subproject DocumentModel
+     * @return A String array containing the parent subprojects references
+     * @throws ClientException
+     */
+    public static String[] getParentSubprojectsRef(DocumentModel subproject) throws ClientException {
+        String[] result = (String[]) subproject.getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS);
+        if(result == null){
+            result = new String[0];
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @param documentManager
+     * @param subprojectId
+     * @return
+     * @throws ClientException
+     */
+    public static List<DocumentModel> getParentSubprojects(CoreSession documentManager, String subprojectId) throws ClientException {
+        return getParentSubprojects(getSubprojectById(documentManager, subprojectId));
+    }
+
+    /**
+     *
+     * @param subproject
+     * @return
+     * @throws ClientException
+     */
+    public static List<DocumentModel> getParentSubprojects(DocumentModel subproject) throws ClientException {
+        ArrayList<DocumentModel> result = new ArrayList<DocumentModel>();
+        String[] parentReferences = (String[]) subproject.getPropertyValue(Subproject.XPATH_PARENT_SUBPROJECTS);
+        if(parentReferences == null){
+            return result;
+        }
+        for(String parentRef : parentReferences){
+            DocumentModel parentSubprojectModel = subproject.getCoreSession().getDocument(new IdRef(parentRef));
+            result.add(parentSubprojectModel);
+        }
+        return result;
+    }
+
 }

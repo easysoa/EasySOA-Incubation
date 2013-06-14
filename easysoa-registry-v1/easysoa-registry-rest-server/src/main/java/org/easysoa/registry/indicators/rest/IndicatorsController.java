@@ -59,7 +59,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 //@Path("easysoa") // TODO move the indicators page in easysoa/indicators
 // TODO Add a new controller for index page
 public class IndicatorsController extends EasysoaModuleRoot {
-    
+
     // New category for indicators
     public static final String CATEGORY_STEERING = "steering"; // Or Governance ?
     public static final String CATEGORY_CARTOGRAPHY = "cartography";
@@ -67,7 +67,7 @@ public class IndicatorsController extends EasysoaModuleRoot {
     public static final String CATEGORY_MATCHING = "matching";
 
     private static Logger logger = Logger.getLogger(IndicatorsController.class);
-    
+
     private List<IndicatorProvider> indicatorProviders = new ArrayList<IndicatorProvider>();
 
     /**
@@ -86,7 +86,7 @@ public class IndicatorsController extends EasysoaModuleRoot {
         addIndicator(new DoctypeCountProvider("Nombre de " + TaggingFolder.DOCTYPE, "", TaggingFolder.DOCTYPE, CATEGORY_CARTOGRAPHY));
 
         // Doctype-specific indicators
-        //addIndicator(new ServiceStateProvider()); // Disabled because outdated (see Comment in ServiceStateProvider.class)
+        addIndicator(new ServiceStateProvider(CATEGORY_STEERING));
         addIndicator(new ServiceImplStateProvider(CATEGORY_CARTOGRAPHY));
         //addIndicator(new SoftwareComponentIndicatorProvider()); // Disabled, need to be updated
         addIndicator(new TagsIndicatorProvider(CATEGORY_STEERING));
@@ -95,11 +95,10 @@ public class IndicatorsController extends EasysoaModuleRoot {
         // Miscellaneous indicators
         addIndicator(new PlaceholdersIndicatorProvider(CATEGORY_MATCHING));
 
-        // 
+        //
         addIndicator(new LastCodeDiscoveryIndicatorProvider(CATEGORY_CARTOGRAPHY));
         //
         addIndicator(new ServiceDefaultCountIndicatorProvider(CATEGORY_STEERING));
-        
     }
 
     /**
@@ -266,7 +265,7 @@ public class IndicatorsController extends EasysoaModuleRoot {
         }
         /*}*/
 
-        // Warn if some indicators have been left pending 
+        // Warn if some indicators have been left pending
         for (IndicatorProvider pendingProvider : pendingProviders) {
             logger.warn(pendingProvider.getClass().getName()
                     + " provider dependencies could not be satisfied ("

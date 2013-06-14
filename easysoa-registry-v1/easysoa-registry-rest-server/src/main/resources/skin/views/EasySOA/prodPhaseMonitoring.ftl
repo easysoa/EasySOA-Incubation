@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 
 <html xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+
     <head>
         <title>EasySOA Gouvernance</title>
         <meta charset="utf-8"/>
         <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
-        
+
         <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/flot/jquery.flot._js"></script>
         <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/flot/jquery.flot.categories._js"></script>
-        
+
         <link href="/nuxeo/site/easysoa/skin/css/prettify.css" type="text/css" rel="stylesheet"/>
         <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/prettify/prettify._js"></script>
-        
+
         <!-- Bootstrap default style and scripts -->
         <link href="/nuxeo/site/easysoa/skin/css/bootstrap.css" rel="stylesheet" media="screen"/>
         <script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>
         <!-- custom style and scripts -->
 	<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all"/>
-	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico"/> 
+	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico"/>
     </head>
-    
+
     <body>
         <#include "/views/EasySOA/macros.ftl">
-        
+
         <div id="header">
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
@@ -55,49 +55,12 @@
                         </table>
                     </div>
                 </li>
-                
-                <@displayReturnToIndexButtonBar/>                
+
+                <@displayReturnToIndexButtonBar/>
             </ul>
         </div>
     </body>
-    
-    <script type="text/javascript">
-        // Function for bargraph rendering
-        $(function() {
-            //var data = [ ["Spécifications", 75], ["Réalisation", 54], ["Déploiement", 28] ];
-            
-            var data = [
-                {label:'Plus de 75%', color:'green', data: [[1, 78]]},
-                {label:'De 50 à 75%', color:'orange', data: [[2, 55]]},
-                {label:'Moins de 50%', color:'red', data: [[3, 20]]},
-            ];
-            
-            $.plot("#phaseGraph", data, {
-                series: {
-                    bars: {
-                        show: true,
-                        barWidth: 0.8,
-                        align: "center"
-                    }
-                },
-                xaxis: {
-                    ticks: [[1,'Spécifications'],[2,'Réalisation'],[3,'Déploiement']]
-                    //mode: "categories",
-                    //tickLength: 0
-                },
-                yaxis: {
-                    max: 100,
-                    tickSize: 10
-                },
-                legend: { 
-                    show: true,
-                    container: $("#legendholder")
-                }
-            });
+    <!-- Phase monitoring graph -->
+    <@displayPhaseMonitoringDiagram indicators/>
 
-            // Add the Flot version string to the footer
-            //$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
-	});    
-    </script>
-    
 </html>

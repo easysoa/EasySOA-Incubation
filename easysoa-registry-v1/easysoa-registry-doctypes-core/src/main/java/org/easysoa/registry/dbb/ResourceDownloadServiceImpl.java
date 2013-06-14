@@ -88,9 +88,8 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
         ResourceDownloadInfoImpl resourceDownloadInfo = new ResourceDownloadInfoImpl();
         File file = null;
     	if (!isDelegatedDownloadDisabled) {
-	        // First try : Connect to FraSCAti studio download service (TODO : this service must be exposed as REST service ...)
+	        // First try : Connect to FraSCAti studio download service
 	        try {
-	            //return delegatedDownload(url);
                     file = delegatedDownload(url);
 	        }
 	        catch(Exception ex){
@@ -150,7 +149,6 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
             urlWithoutCallback = urlString.substring(0, urlString.indexOf("?callback"));
         }
 
-        //webResource.setProperty("fileURL", urlWithoutCallback);
         webResource = webResource.queryParam("fileURL", URLEncoder.encode(urlWithoutCallback, "UTF-8"));
         // Get the resource
         File resourceFile = webResource.get(File.class);

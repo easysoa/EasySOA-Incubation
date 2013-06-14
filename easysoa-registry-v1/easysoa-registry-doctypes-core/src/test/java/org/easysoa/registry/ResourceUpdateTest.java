@@ -93,6 +93,8 @@ public class ResourceUpdateTest extends AbstractWebEngineTest {
     @Test
     public void synchronousResourceUpdateTest() throws Exception {
 
+        // TODO : remove the setSynchronousUpdateService method and
+        // use Nuxeo deploy configuration instead to keep the sync update test active
         ResourceListener.setSynchronousUpdateService(true);
 
         SoaNodeId discoveredEndpointId = new EndpointId("Production", MOCK_SERVER_ENDPOINT_URL);

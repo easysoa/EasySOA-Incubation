@@ -25,17 +25,17 @@ Available context variables are :
 * & what's put by controller
 
 -->
-    
+
     <#-- URL Constants -->
     <#assign web_discovery_url= Root.getWebDiscoveryUrl() /><!-- VM : owsi-vm-easysoa-axxx-registry -->
     <#assign httpproxy_app_instance_factory_url= 'http://localhost:8082' /><!-- TODO proxy war or FStudio ?? VM : owsi-vm-easysoa-axxx-registry -->
     <#assign jasmine_url= Root.getJasmineUrl() /><!-- VM : owsi-vm-easysoa-axxx-pivotal -->
-    
+
     <#-- Macros -->
-    
+
     <#include "/views/context/macros.ftl"><!-- to display Phase (displayContextBar) -->
     <#include "/views/EasySOA/urlMacros.ftl"><!-- for document urls -->
-    
+
     <#macro displayIndicatorsInTable indicators category>
         <table class="table table-bordered">
         <#list indicators?keys as indicatorsKey>
@@ -62,10 +62,10 @@ Available context variables are :
                 </td>
             </tr>
             </#if>
-        </#list>    
+        </#list>
         </table>
     </#macro>
-    
+
     <#macro displayUserInfo user>
         <#if user == "">
             <img src="/nuxeo/site/easysoa/skin/img/user.png" /> Non connecté (<a href="/login.html">Connexion</a>)
@@ -73,12 +73,12 @@ Available context variables are :
             <img src="/nuxeo/site/easysoa/skin/img/user.png" /> Bonjour <span id="username">${user}</span> (<a href="/nuxeo/logout">Déconnexion</a>)
         </#if>
     </#macro>
-    
-   
+
+
     <#macro displayReturnToIndexButtonBar>
         <@displayBackButtonBar "Retour à l'accueil"/>
     </#macro>
-    
+
     <#macro displayBackButtonBar buttonLabel>
         <li class="span12">
             <div class="thumbnail">
@@ -87,5 +87,52 @@ Available context variables are :
             </div>
         </li>
     </#macro>
-    
-    
+
+    <#macro displayPhaseMonitoringDiagram indicators>
+        <script type="text/javascript">
+            // Function for bargraph rendering
+            $(function() {
+                //var data = [ ["Spécifications", 75], ["Réalisation", 54], ["Déploiement", 28] ];
+                /*var data = [
+                    {label:'Plus de 75%', color:'green', data: [[1, 78]]},
+                    {label:'De 50 à 75%', color:'orange', data: [[2, 55]]},
+                    {label:'Moins de 50%', color:'red', data: [[3, 20]]},
+                ];*/
+                var data = [
+                    {label:'${indicators["serviceWhithoutComponent"].percentage} %', color:'green', data: [[1, ${indicators["serviceWhithoutComponent"].percentage}]]}
+                    ,{label:'${indicators["serviceWhithoutImplementation"].percentage} %', color:'orange', data: [[2, ${indicators["serviceWhithoutImplementation"].percentage}]]}
+                    ,{label:'${indicators["serviceWithImplementationWhithoutEndpoint"].percentage} %', color:'red', data: [[3, ${indicators["serviceWithImplementationWhithoutEndpoint"].percentage}]]}
+                ];
+
+                $.plot("#phaseGraph", data, {
+                    series: {
+                        bars: {
+                            show: true,
+                            barWidth: 0.8,
+                            align: "center"
+                        }
+                    },
+                    xaxis: {
+                        ticks: [
+                            [1,'Spécifications']
+                            ,[2,'Réalisation']
+                            ,[3,'Déploiement']
+                        ]
+                        //mode: "categories",
+                        //tickLength: 0
+                    },
+                    yaxis: {
+                        max: 100,
+                        tickSize: 10
+                    },
+                    legend: {
+                        show: true,
+                        container: $("#legendholder")
+                    }
+                });
+
+                // Add the Flot version string to the footer
+                //$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+            });
+        </script>
+    </#macro>

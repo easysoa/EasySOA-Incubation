@@ -23,13 +23,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-
 import org.apache.log4j.Logger;
 import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.rest.EasysoaModuleRoot;
@@ -55,9 +53,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
  */
 //XXX Slightly outdated after removal of Service doctype
 @WebObject(type = "EasySOA")
-@Path("easysoa/indicators") // TODO move the indicators page in easysoa/indicators
-//@Path("easysoa") // TODO move the indicators page in easysoa/indicators
-// TODO Add a new controller for index page
+@Path("easysoa/indicators")
 public class IndicatorsController extends EasysoaModuleRoot {
 
     // New category for indicators

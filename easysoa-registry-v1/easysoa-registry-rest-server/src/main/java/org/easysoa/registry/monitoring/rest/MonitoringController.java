@@ -1,20 +1,20 @@
 /**
  * EasySOA Registry
  * Copyright 2012 Open Wide
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * Contact : easysoa-dev@googlegroups.com
  */
 
@@ -33,6 +33,8 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
+import org.easysoa.registry.indicators.rest.IndicatorValue;
+import org.easysoa.registry.indicators.rest.IndicatorsController;
 import org.easysoa.registry.integration.EndpointStateServiceImpl;
 import org.easysoa.registry.rest.EasysoaModuleRoot;
 import org.easysoa.registry.rest.integration.EndpointStateService;
@@ -53,47 +55,47 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Indicators
- * 
+ *
  * impl : TODO see ServiceDocumentationController, MatchingDashboard...
- * 
+ *
  * @author mdutoo, jguillemotte
- * 
+ *
  */
 @WebObject(type = "monitoring")
 @Path("easysoa/monitoring")
-public class EndpointStateController extends EasysoaModuleRoot {
-    
+public class MonitoringController extends EasysoaModuleRoot {
+
     @SuppressWarnings("unused")
-    private static Logger logger = Logger.getLogger(EndpointStateController.class);
-    
+    private static Logger logger = Logger.getLogger(MonitoringController.class);
+
     /**
      * Default constructor
      */
-    public EndpointStateController() {
-        
+    public MonitoringController() {
+
     }
-    
+
     @GET
     @Produces(MediaType.TEXT_HTML)
     public Object doGetHTML(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
         String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
-        
+
         // Get the environments
         List<String> envs = docService.getEnvironmentsInCriteria(session, subprojectCriteria);
-       
+
         // Get the deployed services
         List<DocumentModel> services = docService.getInformationServicesInCriteria(session, subprojectCriteria);
-        
+
         Map<String, List<DocumentModel>> endpoints = new HashMap<String, List<DocumentModel>>();
-        
+
         for(DocumentModel service : services){
             // Get the endpoints
         	List<DocumentModel> endpointsList = docService.getEndpointsOfServiceInCriteria(service, subprojectCriteria);
             endpoints.put(service.getName(), endpointsList);
         }
-        
+
         return getView("dashboard")
                 .arg("envs", envs) // TODO later by (sub)project
                 .arg("endpoints", endpoints)
@@ -101,19 +103,19 @@ public class EndpointStateController extends EasysoaModuleRoot {
                 .arg("visibility", visibility)
                 .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
     }
-    
+
     @GET
     @Path("envIndicators/{endpointId:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doGetByPathHTML(@PathParam("endpointId") String endpointId, @QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
-        
+
         // Check there is at least on environment
         if(endpointId == null || "".equals(endpointId)){
             throw new IllegalArgumentException("At least one endpointID must be specified");
         }
-        
+
         // Get the enpoints associated with the environment
         //DocumentModelList endpointsModel = session.query("SELECT * FROM " + Endpoint.DOCTYPE + " WHERE " + Endpoint.XPATH_ENDP_ENVIRONMENT + " = " + envName);
 
@@ -123,18 +125,18 @@ public class EndpointStateController extends EasysoaModuleRoot {
         String serviceId = endpoint.getProperty(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE).getValue(String.class);
         DocumentModel service = session.getDocument(new IdRef(serviceId)); /// docService.query(session, "SELECT * FROM " + InformationService.DOCTYPE + " WHERE ecm:uuid = '" + serviceId + "'" , true, false).get(0);
         String slaOrOlaSubprojectId = (String) service.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
-        
+
         //String serviceFolder = session.getDocument(service.getParentRef()).getPathAsString();
-        
+
         // Get the indicators for the endpoint in the Nuxeo store
         EndpointStateService endpointStateService = new EndpointStateServiceImpl();
         List<SlaOrOlaIndicator> indicators =  endpointStateService.getSlaOrOlaIndicators(endpointId, "", null, null, 10, 0).getSlaOrOlaIndicatorList();
 
-        // TODO Complete the returned indicators 
+        // TODO Complete the returned indicators
         // Complete each indicator with the description / services ...
         for(SlaOrOlaIndicator indicator : indicators){
             indicator.setDescription("Aucune description");
-            
+
             DocumentModel slaOrOla;
             // Get only the first par of the subprojectID
             /*String subPath = "";
@@ -144,16 +146,16 @@ public class EndpointStateController extends EasysoaModuleRoot {
             // Get the SLA or OLA indicator in the Nuxeo registry
             slaOrOla = docService.findSoaNode(session, new SoaNodeId(slaOrOlaSubprojectId, org.easysoa.registry.types.SlaOrOlaIndicator.SLA_DOCTYPE, indicator.getSlaOrOlaName()), true);
             if(slaOrOla == null){
-                slaOrOla = docService.findSoaNode(session, new SoaNodeId(slaOrOlaSubprojectId, org.easysoa.registry.types.SlaOrOlaIndicator.OLA_DOCTYPE, indicator.getSlaOrOlaName()), true);    
+                slaOrOla = docService.findSoaNode(session, new SoaNodeId(slaOrOlaSubprojectId, org.easysoa.registry.types.SlaOrOlaIndicator.OLA_DOCTYPE, indicator.getSlaOrOlaName()), true);
             }
-            
+
             // Set additionnal indicator informatons
             if(slaOrOla != null){
                 indicator.setDescription(slaOrOla.getProperty(org.easysoa.registry.types.SlaOrOlaIndicator.XPATH_SLA_OR_OLA_DESCRIPTION).getValue(String.class));
                 indicator.setPath(slaOrOla.getPathAsString());
             }
         }
-        
+
         Template view = getView("envIndicators"); // TODO see services.ftl, dashboard/*.ftl...
         if (indicators != null) {
             view = view.arg("indicators", indicators);
@@ -164,23 +166,42 @@ public class EndpointStateController extends EasysoaModuleRoot {
                 .arg("service", service.getName())
                 .arg("servicePath", service.getPathAsString())
                 .arg("endpoint", endpoint);
-        
-        return view; 
+
+        return view;
     }
-    
+
+    @GET
+    @Path("usage") // TODO encoding
+    @Produces(MediaType.TEXT_HTML)
+    public Object doGetUsagePageHTML(@QueryParam("subprojectId") String subprojectId,
+    		@QueryParam("visibility") String visibility) throws Exception {
+
+        CoreSession session = SessionFactory.getSession(request);
+
+        // Indicators
+        IndicatorsController indicatorsController = new IndicatorsController();
+        Map<String, IndicatorValue> indicators = indicatorsController.computeIndicators(session, null, null, subprojectId, visibility);
+
+        return getView("usage")
+                .arg("subprojectId", subprojectId)
+                .arg("visibility", visibility)
+                .arg("indicators", indicators)
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
+    }
+
     @GET
     @Path("jasmine")
     @Produces(MediaType.TEXT_HTML)
     public Object doGetJasminePageHTML(@QueryParam("subprojectId") String subProjectId, @QueryParam("visibility") String visibility) throws Exception {
-        
+
         CoreSession session = SessionFactory.getSession(request);
-        
+
         Template view = getView("jasmine");
         view.arg("subprojectId", subProjectId)
                 .arg("visibility", visibility)
                 .arg("contextInfo", ContextData.getVersionData(session, subProjectId));
-        
-        return view;         
+
+        return view;
     }
-    
+
 }

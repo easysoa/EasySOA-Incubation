@@ -205,7 +205,7 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         	// Implementations
             List<DocumentModel> mockImpls = docService.getMockImplementationsOfServiceInCriteria(service, subprojectCriteria);
             List<DocumentModel> actualImpls = docService.getActualImplementationsOfServiceInCriteria(service, subprojectCriteria);
-            
+
             // Endpoints
             List<DocumentModel> endpoints = docService.getEndpointsOfServiceInCriteria(service, subprojectCriteria);
             DocumentModel productionEndpoint = docService.getEndpointOfServiceInCriteria(service, "Production", subprojectCriteria);
@@ -213,8 +213,8 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
             if (productionEndpoint != null) {
             	productionImpl = docService.getServiceImplementationFromEndpoint(productionEndpoint);
             }
-            
-            
+
+
 
 
             // Getting suborganisation
@@ -238,7 +238,7 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
             boolean isUserProvider = user.isMemberOf(providerActorGroupName);
             // LATER get it from Component NO because too costly, or at least use explicit concept of SubActor
             // LATER finer : get it from development project task management
-            
+
             // Getting role
             DocumentModel subproject = SubprojectServiceImpl.getSubprojectById(session, subprojectId);
             String subprojectName = subproject.getName(); // TODO rather parse subprojectId
@@ -260,9 +260,9 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
             } else {
                 isUserDeveloper = isUserDeveloper || Subproject.SPECIFICATIONS_SUBPROJECT_NAME.equals(subproject.getName());
             }
-            
-            
-            
+
+
+
             view = view
                     .arg("subproject", serviceSubprojectId)
                     .arg("service", service)
@@ -273,16 +273,16 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
                     .arg("endpoints", endpoints)
                     .arg("productionEndpoint", productionEndpoint)
                     .arg("productionImpl", productionImpl)
-                    
+
                     .arg("userName", userName)
                     .arg("isUserProvider", isUserProvider)
                     .arg("isUserDeveloper", isUserDeveloper)
-                    
+
                     .arg("new_f", new freemarker.template.utility.ObjectConstructor())
                     // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
                     // and not "new" else conflicts with Nuxeo's NewMethod helper
                     .arg("servicee", service.getAdapter(SoaNodeAdapter.class))
-                    
+
                     .arg("subprojectId", subprojectId)
                     .arg("visibility", visibility)
                     .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
@@ -423,25 +423,6 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         Map<String, IndicatorValue> indicators = indicatorsController.computeIndicators(session, null, null, subprojectId, visibility);
 
         return getView("matchingFull")
-                .arg("subprojectId", subprojectId)
-                .arg("visibility", visibility)
-                .arg("indicators", indicators)
-                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
-    }
-
-    @GET
-    @Path("usage") // TODO encoding
-    @Produces(MediaType.TEXT_HTML)
-    public Object doGetUsagePageHTML(@QueryParam("subprojectId") String subprojectId,
-    		@QueryParam("visibility") String visibility) throws Exception {
-
-        CoreSession session = SessionFactory.getSession(request);
-
-        // Indicators
-        IndicatorsController indicatorsController = new IndicatorsController();
-        Map<String, IndicatorValue> indicators = indicatorsController.computeIndicators(session, null, null, subprojectId, visibility);
-
-        return getView("usage")
                 .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
                 .arg("indicators", indicators)

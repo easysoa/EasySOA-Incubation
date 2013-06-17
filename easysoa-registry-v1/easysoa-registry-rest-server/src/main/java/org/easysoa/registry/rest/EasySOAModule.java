@@ -12,7 +12,7 @@ import org.easysoa.registry.index.rest.IndexController;
 import org.easysoa.registry.indicators.rest.IndicatorsController;
 import org.easysoa.registry.integration.EndpointStateServiceImpl;
 import org.easysoa.registry.integration.SimpleRegistryServiceImpl;
-import org.easysoa.registry.monitoring.rest.EndpointStateController;
+import org.easysoa.registry.monitoring.rest.MonitoringController;
 import org.easysoa.registry.rest.marshalling.JsonMessageReader;
 import org.easysoa.registry.rest.marshalling.JsonMessageWriter;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
@@ -46,7 +46,7 @@ public class EasySOAModule extends WebEngineModule {
             ServiceDocumentationController.class,
             MatchingDashboard.class,
             ServiceFinderRest.class,
-            EndpointStateController.class,
+            MonitoringController.class,
             ContextController.class,
             IndexController.class,
             GovernanceController.class,

@@ -111,7 +111,7 @@
                                 </tr>
                             </table>
                         </p>
-                        <a class="btn btn-primary" href="${Root.path}/services/usage/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
+                        <a class="btn btn-primary" href="${Root.path}/monitoring/usage/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
                     </div>
                 </li>
                 <li class="span6">

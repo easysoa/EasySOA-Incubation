@@ -84,6 +84,16 @@
 		</service>
 		<reference name="clientService" target="Client/ClientService" />
 	</component>
+    
+    <!-- simulating MS web page that lists WSs :
+    <component name="MSWSSimulation">
+        <service name="Velocity">
+            <interface.java interface="javax.servlet.Servlet" />
+            <sca:binding.http uri="/WS" />
+        </service>
+        <property name="title">MS WebServices</property>
+        <web:implementation.velocity location="WS" default="index.html" />
+    </component -->
 
     <!-- component name="Rest">
         <implementation.java class="org.easysoa.impl.RESTCallImpl" />

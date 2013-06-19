@@ -136,53 +136,13 @@
 																    </tr>
 																	<tr><td colspan="6">&nbsp;</td></tr>													    
 																    <tr>
-																        <td><form:label path="tdrTdb.dotationGlobale">Dotation globale</form:label></td>
-																		<td><form:hidden path="tdrTdb.dotationGlobale"/>${tdrPrecompteDetails.tdrTdb.dotationGlobale}</td>
-															        	<td>&nbsp;</td>
-																        <td><form:label path="tdrTdb.reliquatAnneePrecedente">Reliquat annee precedente</form:label></td>
-																		<td><form:input path="tdrTdb.reliquatAnneePrecedente"/></td>
-															        	<td>&nbsp;</td>		    
+                                                                        <td><form:label path="tdrTdb.dotationAnnuelle">Dotation anuelle</form:label></td>
+                                                                        <td><form:input path="tdrTdb.dotationAnnuelle"/></td>
+                                                                        <td>&nbsp;</td>
+                                                                        <td><form:label path="tdrTdb.nbBeneficiairesPrevisionnel">Nombre bénéficiaires prévisionel</form:label></td>
+                                                                        <td><form:input path="tdrTdb.nbBeneficiairesPrevisionnel"/></td>
+                                                                        <td><form:errors path="tdrTdb.nbBeneficiairesPrevisionnel" cssClass="error" /></td>
 																    </tr>
-																    <tr>
-																        <td><form:label path="tdrTdb.dotationAnnuelle">Dotation anuelle</form:label></td>
-																		<td><form:input path="tdrTdb.dotationAnnuelle"/></td>
-															        	<td>&nbsp;</td>
-																        <td><form:label path="tdrTdb.sommeUtilisee">Somme utilisée</form:label></td>
-																		<td><form:hidden path="tdrTdb.sommeUtilisee"/>${tdrPrecompteDetails.tdrTdb.sommeUtilisee}</td>
-															        	<td>&nbsp;</td>		    
-																    </tr>
-																    <tr>
-																        <td><form:label path="tdrTdb.montantDisponible">Montant disponible</form:label></td>
-																		<td><form:hidden path="tdrTdb.montantDisponible"/>${tdrPrecompteDetails.tdrTdb.montantDisponible}</td>
-															        	<td>&nbsp;</td>
-																        <td><form:label path="tdrTdb.nbBeneficiairesApv">Nombre bénéficiaires APV</form:label></td>
-																		<td><form:input path="tdrTdb.nbBeneficiairesApv"/></td>
-															        	<td><form:errors path="tdrTdb.nbBeneficiairesApv" cssClass="error" /></td>		    
-																    </tr>
-																	<tr><td colspan="6">&nbsp;</td></tr>
-																    <tr>
-																        <td><form:label path="tdrTdb.nbEnfants">Nombre enfants</form:label></td>
-																		<td><form:input path="tdrTdb.nbEnfants"/></td>
-															        	<td><form:errors path="tdrTdb.nbEnfants" cssClass="error" /></td>
-																        <td><form:label path="tdrTdb.nbJeunes">Nombre jeunes</form:label></td>
-																		<td><form:input path="tdrTdb.nbJeunes"/></td>
-															        	<td><form:errors path="tdrTdb.nbJeunes" cssClass="error" /></td>		    </tr>
-																    <tr>
-																        <td><form:label path="tdrTdb.nbAdultesIsoles">Nombre adultes isolés</form:label></td>
-																		<td><form:input path="tdrTdb.nbAdultesIsoles"/></td>
-															        	<td><form:errors path="tdrTdb.nbAdultesIsoles" cssClass="error" /></td>
-																        <td><form:label path="tdrTdb.nbSeniors">Nombre séniors</form:label></td>
-																		<td><form:input path="tdrTdb.nbSeniors"/></td>
-															        	<td><form:errors path="tdrTdb.nbSeniors" cssClass="error" /></td>
-																	</tr>
-																    <tr>
-																        <td><form:label path="tdrTdb.nbBeneficiairesPrevisionnel">Nombre bénéficiaires prévisionel</form:label></td>
-																		<td><form:input path="tdrTdb.nbBeneficiairesPrevisionnel"/></td>
-															        	<td><form:errors path="tdrTdb.nbBeneficiairesPrevisionnel" cssClass="error" /></td>
-															        	<td>&nbsp;</td>
-															        	<td>&nbsp;</td>
-															        	<td>&nbsp;</td>
-															        </tr>
 															        <tr><td colspan="6">&nbsp;</td></tr>
 															    	<tr>
 															        	<td colspan="3">

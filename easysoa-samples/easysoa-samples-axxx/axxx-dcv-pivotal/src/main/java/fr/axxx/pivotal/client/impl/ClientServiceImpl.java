@@ -86,7 +86,8 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public Client updateClient(String identifiantClient, String raisonSociale, Integer anciennete, 
             String typeStructure, String numEtVoie, String email, String codePostal, String ville, String pays,
-            String tel, String rib, String formeJuridique, String siren){
+            String tel, String rib, String formeJuridique, String siren, BigDecimal dotGlobAPVN, BigDecimal dontReliquatN1, 
+            BigDecimal dontDotN, BigDecimal nbBenefPrevN, BigDecimal montantUtiliseN, BigDecimal nbBenefN){
         EntityManager entityManager = database.get();
         Client client = null;
         try{
@@ -101,11 +102,25 @@ public class ClientServiceImpl implements ClientService {
             client.setEmail(email);
             client.setCodePostal(codePostal);
             client.setVille(ville);
-            client.setPays(pays);
+            if (pays != null && pays.length() != 0) { // check for call from APV
+            	client.setPays(pays);
+            }
             client.setTel(tel);
-            client.setRIB(rib);
-            client.setFormeJuridique(formeJuridique);
+            if (rib != null && rib.length() != 0) { // check for call from APV
+            	client.setRIB(rib);
+            }
+            if (formeJuridique != null && formeJuridique.length() != 0) { // check for call from APV
+            	client.setFormeJuridique(formeJuridique);
+            }
             client.setSIREN(siren);
+
+            client.setDotGlobAPVN(dotGlobAPVN);
+            client.setDontReliquatN1(dontReliquatN1);
+            client.setDontDotN(dontDotN);
+            client.setNbBenefPrevN(nbBenefPrevN);
+            client.setMontantUtiliseN(montantUtiliseN);
+            client.setNbBenefN(nbBenefN);
+            
             entityManager.getTransaction().begin();
             entityManager.persist(client);
             entityManager.getTransaction().commit();

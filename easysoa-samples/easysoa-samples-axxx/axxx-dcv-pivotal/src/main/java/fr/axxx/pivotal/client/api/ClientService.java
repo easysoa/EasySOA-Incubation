@@ -81,7 +81,8 @@ public interface ClientService {
      */
     Client updateClient(String identifiantClient, String raisonSociale, Integer anciennete, 
             String typeStructure, String numEtVoie, String email, String codePostal, String ville, String pays,
-            String tel, String rib, String formeJuridique, String siren);
+            String tel, String rib, String formeJuridique, String siren, BigDecimal dotGlobAPVN, BigDecimal dontReliquatN1, 
+            BigDecimal dontDotN, BigDecimal nbBenefPrevN, BigDecimal montantUtiliseN, BigDecimal nbBenefN);
 	
     /**
      * Call the web service creerPrecompte

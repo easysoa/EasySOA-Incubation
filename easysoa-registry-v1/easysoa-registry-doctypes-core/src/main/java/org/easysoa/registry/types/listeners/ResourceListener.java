@@ -1,5 +1,5 @@
 /**
- * EasySOA Proxy
+ * EasySOA Registry
  * Copyright 2011-2013 Open Wide
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,12 +22,13 @@ package org.easysoa.registry.types.listeners;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.SoaMetamodelService;
-import org.easysoa.registry.dbb.AsyncResourceUpdateServiceImpl;
+import org.easysoa.registry.dbb.AsyncResourceUpdateService;
+import org.easysoa.registry.dbb.ConfigurableResourceUpdateService;
 import org.easysoa.registry.dbb.ProbeConfUtil;
 import org.easysoa.registry.dbb.ResourceDownloadService;
 import org.easysoa.registry.dbb.ResourceParsingService;
 import org.easysoa.registry.dbb.ResourceUpdateService;
-import org.easysoa.registry.dbb.SynchronousResourceUpdateServiceImpl;
+import org.easysoa.registry.dbb.SyncResourceUpdateService;
 import org.easysoa.registry.types.Resource;
 import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.nuxeo.common.collections.ScopeType;
@@ -53,17 +54,6 @@ public class ResourceListener extends EventListenerBase implements EventListener
 
     private static Logger logger = Logger.getLogger(ResourceListener.class);
 
-    // Using asynchronous update by default
-    private static boolean synchronous = false;
-
-    /**
-     * If set to true, the synchronous update service will be used, else the asynchronous service
-     * @param sync
-     */
-    public static void setSynchronousUpdateService(boolean sync){
-        synchronous = sync;
-    }
-
     @Override
     public void handleEvent(Event event) throws ClientException {
 
@@ -87,13 +77,7 @@ public class ResourceListener extends EventListenerBase implements EventListener
         DocumentModel previousDocumentModel = (DocumentModel) context.getProperty("previousDocumentModel");
         ResourceUpdateService resourceUpdateService;
         try {
-            if(synchronous){
-                resourceUpdateService = new SynchronousResourceUpdateServiceImpl();
-                //resourceUpdateService = Framework.getService(ResourceUpdateService.class, "org.easysoa.registry.dbb.SyncResourceUpdateService");
-            } else {
-                resourceUpdateService = new AsyncResourceUpdateServiceImpl();
-                //resourceUpdateService = Framework.getService(ResourceUpdateService.class, "org.easysoa.registry.dbb.AsyncResourceUpdateService");
-            }
+        	resourceUpdateService = Framework.getService(ResourceUpdateService.class); // ResourceUpdateService
         }
         catch(Exception ex){
             throw new ClientException("Can't get ResourceUpdateService", ex);

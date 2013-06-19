@@ -12,19 +12,17 @@ public class NamesTest {
 		
 		// Service Implementation name
 		
-		ServiceImplementationName wsTypeName = ServiceImplementationName.fromName("ws:namespace:porttypename=servicename");
+		ServiceImplementationName wsTypeName = ServiceImplementationName.fromName("WS:{namespace}porttypename=servicename");
 		Assert.assertEquals(ServiceNameType.WEB_SERVICE, wsTypeName.getType());
-		Assert.assertEquals("namespace", wsTypeName.getNamespace());
-		Assert.assertEquals("porttypename", wsTypeName.getInterfaceName());
+		Assert.assertEquals("{namespace}porttypename", wsTypeName.getInterfaceName());
 		Assert.assertEquals("servicename", wsTypeName.getImplementationName());
-		Assert.assertEquals("ws:namespace:porttypename", wsTypeName.getInformationServiceSoaName());
+		Assert.assertEquals("WS:{namespace}porttypename", wsTypeName.getInformationServiceSoaName());
 
-		ServiceImplementationName itfTypeName = ServiceImplementationName.fromName("java:project:interfaceclass=implementationclass");
+		ServiceImplementationName itfTypeName = ServiceImplementationName.fromName("java:interfaceclass=implementationclass");
 		Assert.assertEquals(ServiceNameType.JAVA_INTERFACE, itfTypeName.getType());
-		Assert.assertEquals("project", itfTypeName.getNamespace());
 		Assert.assertEquals("interfaceclass", itfTypeName.getInterfaceName());
 		Assert.assertEquals("implementationclass", itfTypeName.getImplementationName());
-		Assert.assertEquals("java:project:interfaceclass", itfTypeName.getInformationServiceSoaName());
+		Assert.assertEquals("java:interfaceclass", itfTypeName.getInformationServiceSoaName());
 		
 	}
 	

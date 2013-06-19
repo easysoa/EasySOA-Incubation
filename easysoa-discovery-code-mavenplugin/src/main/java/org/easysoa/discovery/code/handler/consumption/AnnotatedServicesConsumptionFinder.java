@@ -25,6 +25,7 @@ public class AnnotatedServicesConsumptionFinder implements ServiceConsumptionFin
     // configuration :
     private boolean allInjected = true;
 
+    /** whether not to find test consumptions (default false) */
     private boolean filterSources = false;
     
     private List<String> annotationsToDetect;
@@ -105,10 +106,9 @@ public class AnnotatedServicesConsumptionFinder implements ServiceConsumptionFin
             String itfClassName = injectedType.getFullyQualifiedName();
             if (serviceInterfaces.containsKey(itfClassName)) {
                 discoveredConsumptions.add(new JavaServiceConsumptionInformation(
-                        mavenDeliverable.getSoaNodeId(),
                         fromClass.getFullyQualifiedName(),
-                        itfClassName,
-                        serviceInterfaces.get(itfClassName).getMavenDeliverableId().getName()));
+                        serviceInterfaces.get(itfClassName),
+                        ParsingUtils.isTestClass(fromClass)));
                 injectedBeanProperties.add(beanPropertyName);
             }
         }

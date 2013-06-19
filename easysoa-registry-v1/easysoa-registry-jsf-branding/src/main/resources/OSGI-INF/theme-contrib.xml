@@ -16,8 +16,7 @@
 
   <!-- Register new flavor for EasySOA -->
   <extension target="org.nuxeo.theme.styling.service" point="flavors">
-    <flavor name="easysoa">
-      <label>label.theme.flavor.nuxeo.default</label>
+    <flavor name="easysoa" extends="default">
       <logo>
         <path>/img/easysoa/logo-core-50.png</path>
         <previewPath>/img/easysoa/logo-core-50.png</previewPath>
@@ -25,7 +24,7 @@
         <height>50</height>
         <title>EasySOA Core</title>
       </logo>
-      <presetsList>
+      <presetsList append="true">
         <presets category="border" src="themes/palettes/easysoa-borders.properties" />
         <presets category="background" src="themes/palettes/easysoa-backgrounds.properties" />
         <presets category="font" src="themes/palettes/easysoa-fonts.properties" />
@@ -62,6 +61,7 @@
        <defaultFlavor>easysoa</defaultFlavor>
      </themePage>
      <themePage name="galaxy/default">
+       <flavors append="true"/>
        <defaultFlavor>easysoa</defaultFlavor>
      </themePage>
   </extension>

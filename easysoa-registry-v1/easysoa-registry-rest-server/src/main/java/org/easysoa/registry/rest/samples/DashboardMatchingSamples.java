@@ -67,14 +67,14 @@ public class DashboardMatchingSamples {
 			p.put(InformationService.XPATH_TITLE, "Java Service #" + i);
 			p.put(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{namespace}portType" + i);
 			serviceId = new SoaNodeId(subprojectId, InformationService.DOCTYPE, 
-					new InformationServiceName(ServiceNameType.WEB_SERVICE, "namespace", "portType" + i).toString());
+					new InformationServiceName(ServiceNameType.WEB_SERVICE, "{namespace}portType" + i).toString());
 			postSoaNode(serviceId, p);
 		}
 
         p.put(InformationService.XPATH_TITLE, "Java Service #3 Bis");
         p.put(InformationService.XPATH_WSDL_PORTTYPE_NAME, "{namespace}portType3");
         postSoaNode(new SoaNodeId(subprojectId, InformationService.DOCTYPE, 
-                new InformationServiceName(ServiceNameType.WEB_SERVICE, "namespace", "portType3bis").toString()), p);
+                new InformationServiceName(ServiceNameType.WEB_SERVICE, "{namespace}portType3bis").toString()), p);
         
 		// Components
 		p.put(Component.XPATH_COMP_LINKED_INFORMATION_SERVICE, (String) getSoaNode(serviceId).getProperty(SoaNode.XPATH_UUID));

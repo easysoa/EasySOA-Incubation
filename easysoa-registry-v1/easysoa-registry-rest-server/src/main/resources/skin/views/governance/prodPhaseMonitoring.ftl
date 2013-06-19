@@ -54,6 +54,30 @@
                                 <td style="width: 80%"><div id="phaseGraph" style="width:600px;height:400px"></div></td>
                             </tr>
                         </table>
+                        
+                        <h4>Détails (passer la souris au-dessus) :</h4>
+                        <p>
+                            <table class="table table-bordered" width="100%">
+                                <tr>
+                                    <#assign indicator = indicators["specificationsProgress"]/>
+                                    <td width="80%" title="${indicator.description}">Spécifications</td>
+                                    <td width="10%" title="${indicator.description}">${indicator.count}</td>
+                                    <td width="10%" title="${indicator.description}">${indicator.percentage} %</td>
+                                </tr>
+                                <tr>
+                                    <#assign indicator = indicators["realisationProgress"]/>
+                                    <td width="80%" title="${indicator.description}">Réallisation</td>
+                                    <td width="10%" title="${indicator.description}">${indicator.count}</td>
+                                    <td width="10%" title="${indicator.description}">${indicator.percentage} %</td>
+                                </tr>
+                                <tr>
+                                    <#assign indicator = indicators["deploiementProgress"]/>
+                                    <td width="80%" title="${indicator.description}">Déploiement</td>
+                                    <td width="10%" title="${indicator.description}">${indicator.count}</td>
+                                    <td width="10%" title="${indicator.description}">${indicator.percentage} %</td>
+                                </tr>
+                            </table>
+                        </p>
                     </div>
                 </li>
 

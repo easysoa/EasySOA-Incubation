@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<component name="org.easysoa.registry.dbb.ConfigurableResourceUpdateService" version="1.0">
+
+  <implementation class="org.easysoa.registry.dbb.ConfigurableResourceUpdateServiceImpl" />
+
+  <service>
+    <provide interface="org.easysoa.registry.dbb.ResourceUpdateService" />
+    <provide interface="org.easysoa.registry.dbb.ConfigurableResourceUpdateService" />
+  </service>
+
+</component>

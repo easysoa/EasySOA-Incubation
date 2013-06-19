@@ -1,6 +1,6 @@
 /**
  * EasySOA Registry
- * Copyright 2011 Open Wide
+ * Copyright 2011-2013 Open Wide
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -20,36 +20,12 @@
 
 package org.easysoa.registry.dbb;
 
-public class FoundService {
 
-    private String name;
-    
-    /** the definition (WSDL) URL and not the endpoint URL
-     * TODO add a param for that */
-    private String url;
-    
-    private String applicationName;
-
-    public FoundService(String name, String url, String applicationName) {
-        this(name, url);
-        this.applicationName = applicationName;
-    }
-    
-    public FoundService(String name, String url) {
-        this.name = name;
-        this.url = url;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public String getURL() {
-        return url;
-    }
-    
-    public String getApplicationName() {
-        return applicationName;
-    }
+/**
+ * Interface allowing to get sync implementation of ResourceUpdateService
+ *
+ * @author jguillemotte
+ */
+public interface SyncResourceUpdateService extends ResourceUpdateService {
 
 }

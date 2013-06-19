@@ -70,17 +70,29 @@
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-classification-web</artifactId>
+      <exclusions>
+          <exclusion>
+              <artifactId>nuxeo-connect-client</artifactId>
+              <groupId>org.nuxeo.connect</groupId>
+              <!-- else NoSuchMethoderror in NuxeoAuthFilter : common-codec Base64.decodeBase64
+              (which is embedded in nuxeo connect jar !!) -->
+          </exclusion>
+      </exclusions>
     </dependency>
     
     <!-- to override mimetypeIconUpdater listener : -->
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-filemanager-core</artifactId>
-      <scope>test</scope>
+      <!-- scope>test</scope --><!-- not only test, else tests won't work in ex. -rest-server -->
     </dependency>
     <dependency>
       <groupId>org.nuxeo.ecm.platform</groupId>
       <artifactId>nuxeo-platform-filemanager-core-listener</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-mimetype-core</artifactId>
     </dependency>
     
     <dependency>
@@ -95,6 +107,12 @@
     <dependency>
       <groupId>org.nuxeo.features</groupId>
       <artifactId>nuxeo-tree-snapshot</artifactId>
+    </dependency>
+    
+    <!-- for list helper -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
 
     <!-- Correlation graph -->

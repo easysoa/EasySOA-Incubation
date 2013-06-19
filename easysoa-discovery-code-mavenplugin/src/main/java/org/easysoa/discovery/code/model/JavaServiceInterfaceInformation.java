@@ -2,10 +2,13 @@ package org.easysoa.discovery.code.model;
 
 import java.util.Map;
 
+import org.easysoa.discovery.code.handler.JaxWSSourcesHandler;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
 import org.easysoa.registry.types.OperationInformation;
 import org.easysoa.registry.types.ids.SoaNodeId;
 
+
+// TODO change wsName(space) to serviceItfName (for REST also), or make it WS only
 public class JavaServiceInterfaceInformation {
 
     private SoaNodeId mavenDeliverableId;
@@ -36,12 +39,16 @@ public class JavaServiceInterfaceInformation {
         return mavenDeliverableId;
     }
     
-    public String getWsName() {
+    public String getWsPortTypeLocalName() {
 		return wsName;
 	}
     
-    public String getWsNamespace() {
+    public String getWsPortTypeNS() {
 		return wsNamespace;
+	}
+    
+    public String getWsPortTypeName() {
+		return JaxWSSourcesHandler.toShortNsName(this.getWsPortTypeNS(), this.getWsPortTypeLocalName());
 	}
     
     /**

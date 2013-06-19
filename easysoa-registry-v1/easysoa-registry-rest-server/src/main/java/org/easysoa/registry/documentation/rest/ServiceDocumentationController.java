@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -39,11 +40,19 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.DocumentService;
+import org.easysoa.registry.SoaMetamodelService;
 import org.easysoa.registry.SubprojectServiceImpl;
+import org.easysoa.registry.facets.ServiceImplementationDataFacet;
 import org.easysoa.registry.indicators.rest.IndicatorValue;
 import org.easysoa.registry.indicators.rest.IndicatorsController;
 import org.easysoa.registry.rest.EasysoaModuleRoot;
+import org.easysoa.registry.subproject.SubprojectId;
+import org.easysoa.registry.types.BusinessService;
+import org.easysoa.registry.types.Deliverable;
+import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
+import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.Subproject;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.TaggingFolder;
@@ -175,114 +184,209 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
     }
 
     @GET
-    @Path("path{serviceSubprojectId:[^:]+}:{serviceName:.+}")
+    @Path("path{nodeSubprojectId:[^:]+}:{type:[^:]*}:{name:.+}")
     @Produces(MediaType.TEXT_HTML)
     public Object doGetByPathHTML(
-    		@PathParam("serviceSubprojectId") String serviceSubprojectId, @PathParam("serviceName") String serviceName,
-            @QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
+    		@PathParam("nodeSubprojectId") String nodeSubprojectId,
+    		@PathParam("name") String name, @PathParam("type") String type,
+            @QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility)
+            		throws Exception {
+    	if (type == null || type.length() == 0) {
+    		type = InformationService.DOCTYPE;
+    	}
+    	
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
+        SoaMetamodelService soaMetamodelService = Framework.getService(SoaMetamodelService.class);
 
-        serviceSubprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, serviceSubprojectId);
+        nodeSubprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, nodeSubprojectId);
 
         String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
 
-        DocumentModel service = docService.findSoaNode(session, new SoaNodeId(serviceSubprojectId, InformationService.DOCTYPE, serviceName));
+        DocumentModel soaNode = docService.findSoaNode(session, new SoaNodeId(nodeSubprojectId, type, name));
 
         Template view = getView("servicedoc");
-        if (service != null) {
-        	String providerActorId = (String) service.getPropertyValue("iserv:providerActor");
+        if (soaNode != null) { // TODO else "not found"
+
+    		DocumentModel service = null;
+    		DocumentModel serviceimpl = null;
+    		DocumentModel productionImpl = null;
+    		List<DocumentModel> actualImpls = null; // TODO also check platform, also nonActualNonMockImpls
+    		List<DocumentModel> mockImpls = null;
+    		List<DocumentModel> userConsumerImpls = null;
+    		DocumentModel endpoint = null;
+    		DocumentModel productionEndpoint = null;
+    		List<DocumentModel> endpoints = null;
+    		List<DocumentModel> actualEndpoints = null;
+    		List<DocumentModel> mockEndpoints = null;
+    		List<DocumentModel> userConsumerEndpoints = null;
+        	if (soaMetamodelService.isAssignable(type, InformationService.DOCTYPE)) {
+        		service = soaNode;
+        	} else if (soaMetamodelService.isAssignable(type, ServiceImplementation.DOCTYPE)) {
+        		serviceimpl = soaNode;
+        		service = docService.getParentInformationService(serviceimpl);
+        	} else if (soaMetamodelService.isAssignable(type, Endpoint.DOCTYPE)) {
+        		endpoint = soaNode;
+        		serviceimpl = docService.getParentServiceImplementation(endpoint);
+        		service = docService.getParentInformationService(serviceimpl);
+        	} // TODO else not supported, OR simple display
+        	
+        	// Business
+        	String businessServiceId = (String) service.getPropertyValue(InformationService.XPATH_LINKED_BUSINESS_SERVICE);
+        	DocumentModel businessService = null;
+        	DocumentModel consumerActor = null;
+        	if (businessServiceId != null && !businessServiceId.isEmpty()) {
+        		businessService = session.getDocument(new IdRef(businessServiceId));
+        		
+            	String businessConsumerActorId = (String) businessService.getPropertyValue(BusinessService.XPATH_CONSUMER_ACTOR);
+            	if (businessConsumerActorId != null && !businessConsumerActorId.isEmpty()) {
+            		consumerActor = session.getDocument(new IdRef(businessConsumerActorId));
+        		}
+        	}
+        	
+        	String providerActorId = (String) service.getPropertyValue(InformationService.XPATH_PROVIDER_ACTOR);
         	DocumentModel providerActor = null;
         	if (providerActorId != null && !providerActorId.isEmpty()) {
         		providerActor = session.getDocument(new IdRef(providerActorId));
         	}
-        	String componentId = (String) service.getPropertyValue("acomp:componentId");
+        	String componentId = (String) service.getPropertyValue(InformationService.XPATH_COMPONENT_ID);
         	DocumentModel component = null;
         	if (componentId != null && !componentId.isEmpty()) {
         		component = session.getDocument(new IdRef(componentId));
         	}
 
         	// Implementations
-            List<DocumentModel> mockImpls = docService.getMockImplementationsOfServiceInCriteria(service, subprojectCriteria);
-            List<DocumentModel> actualImpls = docService.getActualImplementationsOfServiceInCriteria(service, subprojectCriteria);
-
+            if (serviceimpl == null) {
+	            mockImpls = docService.getMockImplementationsOfServiceInCriteria(service, subprojectCriteria);
+	            actualImpls = docService.getActualImplementationsOfServiceInCriteria(service, subprojectCriteria);
+            } // else only displaying selected impl
+            
             // Endpoints
-            List<DocumentModel> endpoints = docService.getEndpointsOfServiceInCriteria(service, subprojectCriteria);
-            DocumentModel productionEndpoint = docService.getEndpointOfServiceInCriteria(service, "Production", subprojectCriteria);
-            DocumentModel productionImpl = null;
+            if (endpoint == null) {
+            	if (serviceimpl != null) {
+                    endpoints = docService.getEndpointsOfImplementationInCriteria(serviceimpl, subprojectCriteria);
+            	} else {
+                    endpoints = docService.getEndpointsOfServiceInCriteria(service, subprojectCriteria);
+            	}
+            	actualEndpoints = new ArrayList<DocumentModel>(endpoints.size());
+            	mockEndpoints = new ArrayList<DocumentModel>(endpoints.size());
+            	for (DocumentModel curEndpoint : endpoints) {
+            		String isMock = (String) curEndpoint.getPropertyValue(ServiceImplementationDataFacet.XPATH_ISMOCK);
+            		if (isMock != null && Boolean.parseBoolean(isMock)) { // TODO & not placeholder
+            			mockEndpoints.add(curEndpoint);
+            		} else {
+            			actualEndpoints.add(curEndpoint);
+            		}
+            	}
+            } // else only displaying selected endpoint
+            
+            productionEndpoint = docService.getEndpointOfServiceInCriteria(service, "Production", subprojectCriteria);
+            productionImpl = null;
             if (productionEndpoint != null) {
             	productionImpl = docService.getServiceImplementationFromEndpoint(productionEndpoint);
+            } else if (!actualImpls.isEmpty()) {
+            	productionImpl = actualImpls.get(0); // TODO also check it matches component
             }
+            
+            
 
 
-
-
-            // Getting suborganisation
-            UserManager userManager = Framework.getService(UserManager.class);
+            // user & roles :
             String userName = getCurrentUser();
             String testUser = request.getParameter("testUser");
-            if (testUser != null && testUser.length() != 0 && userManager.getPrincipal(testUser) != null) {
+            if (testUser != null && testUser.length() != 0 && getUserManager().getPrincipal(testUser) != null) {
             	userName = testUser;
             }
-            NuxeoPrincipal user = userManager.getPrincipal(userName);
-            boolean hasUserCompany = user.getCompany() != null && user.getCompany().length() != 0;
+            NuxeoPrincipal user = getUserManager().getPrincipal(userName);
+            
+
+            // Getting suborganisation
             // get it from Actor group :
             // (which is defined company-wide, TODO LATER actually define them in a parent company / SI subproject & manage consistency)
-            StringBuffer actorGroupNameBuf = new StringBuffer();
-            if (hasUserCompany) {
-            	actorGroupNameBuf.append(user.getCompany());
-            	actorGroupNameBuf.append('/');
-            }
-        	actorGroupNameBuf.append(providerActor.getName()); // TODO rather soaname ??
-            String providerActorGroupName = actorGroupNameBuf.toString();
-            boolean isUserProvider = user.isMemberOf(providerActorGroupName);
+            String userConsumerGroupName = getUserActorGroupName(user, consumerActor);
+            boolean isUserConsumer = userConsumerGroupName != null;
+            String userProviderGroupName = getUserActorGroupName(user, providerActor);
+            boolean isUserProvider = userProviderGroupName != null;
             // LATER get it from Component NO because too costly, or at least use explicit concept of SubActor
             // LATER finer : get it from development project task management
-
-            // Getting role
-            DocumentModel subproject = SubprojectServiceImpl.getSubprojectById(session, subprojectId);
-            String subprojectName = subproject.getName(); // TODO rather parse subprojectId
-            String projectName = session.getParentDocument(subproject.getRef()).getName();
-            // (?) getting it from (TODO versioned ???) subproject-local group :
-            boolean isUserDeveloper = user.isMemberOf(projectName + '/' + subprojectName + '/' + "Developer");
-            isUserDeveloper = isUserDeveloper || user.isMemberOf(projectName + '/' + "Developer");
-            // (??) else getting it from project-local group :
-            isUserDeveloper = isUserDeveloper || user.isMemberOf(projectName + '/' + "Developer");
-            // LATER (?) else getting it from company / SI-wide group :
-            if (!isUserDeveloper && hasUserCompany) {
-            	isUserDeveloper = user.isMemberOf(user.getCompany() + '/' + "Developer");
-            }
-            // else getting it from global group :
-            isUserDeveloper = isUserDeveloper || user.isMemberOf("Developer");
+            
+            // Getting role :
+            SubprojectId spId = SubprojectServiceImpl.parseSubprojectId(subprojectId);
+            String userBusinessAnalystRoleGroupName = getUserRoleGroupName(spId, user, "Business Analyst");
+            boolean isUserBusinessAnalyst = userBusinessAnalystRoleGroupName != null;
+            String userDeveloperRoleGroupName = getUserRoleGroupName(spId, user, "Developer");
+            boolean isUserDeveloper = userDeveloperRoleGroupName != null;
+            String userOperatorRoleGroupName = getUserRoleGroupName(spId, user, "Operator");
+            boolean isUserOperator = userOperatorRoleGroupName != null;
+            
             // else (default) getting it from which Phase is current in visibility Context  :
-            if (!subproject.isVersion()) {
-                isUserDeveloper = isUserDeveloper || Subproject.REALISATION_SUBPROJECT_NAME.equals(subproject.getName());
-            } else {
-                isUserDeveloper = isUserDeveloper || Subproject.SPECIFICATIONS_SUBPROJECT_NAME.equals(subproject.getName());
+            /*if (!isUserBusinessAnalyst && !isUserDeveloper && !isUserOperator) {
+	            if (spId.getVersion().length() == 0) {
+	            	isUserBusinessAnalyst = Subproject.SPECIFICATIONS_SUBPROJECT_NAME.equals(spId.getSubprojectName());
+	                isUserDeveloper = Subproject.REALISATION_SUBPROJECT_NAME.equals(spId.getSubprojectName());
+	                isUserOperator = Subproject.DEPLOIEMENT_SUBPROJECT_NAME.equals(spId.getSubprojectName());
+	            } else {
+	                isUserDeveloper = Subproject.SPECIFICATIONS_SUBPROJECT_NAME.equals(spId.getSubprojectName());
+	                isUserOperator = Subproject.REALISATION_SUBPROJECT_NAME.equals(spId.getSubprojectName());
+	            }
+            }*/
+            
+            
+            if (isUserConsumer && mockImpls != null) {
+            	userConsumerImpls = new ArrayList<DocumentModel>(mockImpls.size());
+            	userConsumerEndpoints = new ArrayList<DocumentModel>(endpoints.size());
+            	for (DocumentModel mockImpl : mockImpls) {
+                	DocumentModel mockImplDeliverable = docService.getSoaNodeParent(mockImpl, Deliverable.DOCTYPE);
+                	String mockImplDeliverableApp = (String) mockImplDeliverable.getPropertyValue(Deliverable.XPATH_APPLICATION);
+            		// checking if owner, by matching deliverable app to component app
+                	String actorAppPrefix = consumerActor.getName() + '/';
+                	if (mockImplDeliverableApp != null && mockImplDeliverableApp.startsWith(actorAppPrefix)) {
+                		// NB. consumerActor != null because isUserConsumer
+                		userConsumerImpls.add(mockImpl);
+                		userConsumerEndpoints.addAll(docService.getEndpointsOfImplementationInCriteria(mockImpl, subprojectCriteria));
+                	}
+            	} 
             }
-
-
-
+            
+            
             view = view
-                    .arg("subproject", serviceSubprojectId)
+                    .arg("subproject", nodeSubprojectId)
+                    .arg("soaNode", soaNode)
                     .arg("service", service)
+                    .arg("businessService", businessService)
+                    .arg("consumerActor", consumerActor)
                     .arg("providerActor", providerActor)
                     .arg("component", component)
+                    .arg("serviceimpl", serviceimpl)
                     .arg("actualImpls", actualImpls)
                     .arg("mockImpls", mockImpls)
+                    .arg("userConsumerImpls", userConsumerImpls)
+                    .arg("endpoint", endpoint)
                     .arg("endpoints", endpoints)
                     .arg("productionEndpoint", productionEndpoint)
                     .arg("productionImpl", productionImpl)
-
+                    .arg("userConsumerEndpoints", userConsumerEndpoints)
+                    .arg("mockEndpoints", mockEndpoints)
+                    .arg("actualEndpoints", actualEndpoints)
+                    
+                    .arg("user", user)
                     .arg("userName", userName)
+                    .arg("isUserConsumer", isUserConsumer)
+                    .arg("userConsumerGroupName", userConsumerGroupName)
                     .arg("isUserProvider", isUserProvider)
+                    .arg("userProviderGroupName", userProviderGroupName)
+                    .arg("isUserBusinessAnalyst", isUserBusinessAnalyst)
+                    .arg("userBusinessAnalystRoleGroupName", userBusinessAnalystRoleGroupName)
                     .arg("isUserDeveloper", isUserDeveloper)
-
+                    .arg("userDeveloperRoleGroupName", userDeveloperRoleGroupName)
+                    .arg("isUserOperator", isUserOperator)
+                    .arg("userOperatorRoleGroupName", userOperatorRoleGroupName)
+                    
                     .arg("new_f", new freemarker.template.utility.ObjectConstructor())
                     // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
                     // and not "new" else conflicts with Nuxeo's NewMethod helper
                     .arg("servicee", service.getAdapter(SoaNodeAdapter.class))
-
+                    
                     .arg("subprojectId", subprojectId)
                     .arg("visibility", visibility)
                     .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
@@ -290,7 +394,59 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         return view;
     }
 
-    @GET
+    private String getUserActorGroupName(NuxeoPrincipal user, DocumentModel actor) {
+    	if (actor == null) {
+    		return null;
+    	}
+        // get it from Actor group :
+        // (which is defined company-wide, TODO LATER actually define them in a parent company / SI subproject & manage consistency)
+    	// TODO rename actor groups from SI DPS to AXXX/SI DPS according to said parent company
+    	// because it is not the same as the company group of the user ex. OW Consulting !!!
+        /*String actorGroupNamePrefix = "";
+        boolean hasUserCompany = user.getCompany() != null && user.getCompany().length() != 0;
+        if (hasUserCompany) {
+        	actorGroupNamePrefix = user.getCompany() + '/';
+        }
+        String actorGroupName = actorGroupNamePrefix + actor.getName();*/
+        String actorGroupName = actor.getName(); // TODO rather soaname ?? (though should be the same)
+        if (user.isMemberOf(actorGroupName)) {
+        	return actorGroupName;
+        }
+		return null;
+	}
+
+	private String getUserRoleGroupName(SubprojectId spId, NuxeoPrincipal user, String roleName) {
+        // (?) getting it from (TODO versioned ???) subproject-local group :
+        String subprojectWideGroupName = spId.getProjectName() + '/' + spId.getSubprojectName() + '/' + roleName;
+        if (user.isMemberOf(subprojectWideGroupName)) {
+        	return subprojectWideGroupName;
+        }
+        // TODO LATER also per component ??
+        
+        // (??) else getting it from project-local group :
+        String projectWideGroupName = spId.getProjectName() + '/' + roleName;
+        if (user.isMemberOf(projectWideGroupName)) {
+        	return projectWideGroupName;
+        }
+        
+        // LATER (?) else getting it from company / SI-wide group :
+        boolean hasUserCompany = user.getCompany() != null && user.getCompany().length() != 0;
+        if (hasUserCompany) {
+            String companyWideGroupName = user.getCompany() + '/' + roleName;
+        	if (user.isMemberOf(companyWideGroupName)) {
+        		return companyWideGroupName;
+        	}
+        }
+        
+        // else getting it from global group :
+        if (user.isMemberOf(roleName)) {
+        	return roleName;
+        }
+        
+        return null;
+	}
+
+	@GET
     @Path("tag/path{tagSubprojectId:[^:]+}:{tagName:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doGetByTagHTML(@PathParam("tagSubprojectId") String tagSubprojectId, @PathParam("tagName") String tagName,

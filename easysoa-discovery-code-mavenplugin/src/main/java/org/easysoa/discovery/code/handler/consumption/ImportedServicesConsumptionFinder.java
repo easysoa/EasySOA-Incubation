@@ -15,6 +15,7 @@ import com.thoughtworks.qdox.model.Type;
 
 public class ImportedServicesConsumptionFinder implements ServiceConsumptionFinder {
 
+    /** whether not to find test consumptions (default true) */
     private boolean filterSources = true;
     
     public ImportedServicesConsumptionFinder() {
@@ -51,10 +52,9 @@ public class ImportedServicesConsumptionFinder implements ServiceConsumptionFind
             for (String serviceInterface : serviceInterfaces.keySet()) {
                 if (importedClassType.getFullyQualifiedName().equals(serviceInterface)) {
                     foundConsumptions.add(new JavaServiceConsumptionInformation(
-                            mavenDeliverable.getSoaNodeId(),
                             c.getFullyQualifiedName(),
-                            serviceInterface,
-                            serviceInterfaces.get(serviceInterface).getMavenDeliverableId().getName()));
+                            serviceInterfaces.get(serviceInterface),
+                            ParsingUtils.isTestClass(c)));
                 }
             }
         }

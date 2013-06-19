@@ -4,7 +4,8 @@
   <parent>
     <groupId>org.nuxeo.ecm.distribution</groupId>
     <artifactId>nuxeo-distribution</artifactId>
-    <version>5.7-I20130111_0115</version>
+    <!-- version>5.7-I20130111_0115</version -->
+    <version>5.7-I20130610_0116</version>
   </parent>
 
   <groupId>org.easysoa.registry.marketplace</groupId>
@@ -15,7 +16,8 @@
 
   <properties>
     <easysoa.registry.marketplace.version>1.0-SNAPSHOT</easysoa.registry.marketplace.version>
-    <nuxeo.distribution.version>5.7-I20130111_0115</nuxeo.distribution.version>
+    <!-- nuxeo.distribution.version>5.7-I20130111_0115</nuxeo.distribution.version -->
+    <nuxeo.distribution.version>5.7-I20130610_0116</nuxeo.distribution.version>
   </properties>
   
   <profiles>
@@ -44,6 +46,9 @@
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>nuxeo-distribution-tools</artifactId>
+        <version>1.11.5</version><!-- force 1.11.5 (because 1.13 not ready) else
+        NoSuchMethodError: org.apache.maven.artifact.manager.WagonManager.setInteractive(Z)V
+        see https://jira.nuxeo.com/browse/NXP-11116 -->
         <configuration>
           <buildFiles>
             <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>

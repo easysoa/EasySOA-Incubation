@@ -5,26 +5,27 @@ public class InformationServiceName {
 
 	protected static final String JAVA = "java";
 	
-	protected static final String WS = "ws";
+	protected static final String WS = "WS";
+	
+	protected static final String REST = "REST";
 
 	private String fullName;
 	
 	private ServiceNameType type;
 
-	private String namespace;
-
+	/** {ns}name for WS, path for REST... */
 	private String interfaceName;
 
-	public InformationServiceName(ServiceNameType type, String namespace,
-			String interfaceName) {
+	public InformationServiceName(ServiceNameType type, String interfaceName) {
+		String typeString;
 		switch (type) {
-		case WEB_SERVICE: this.fullName = WS; break;
-		case JAVA_INTERFACE: this.fullName = JAVA; break;
-		default: this.fullName = "???";
+		case WEB_SERVICE: typeString = InformationServiceName.WS; break;
+		case REST: typeString = InformationServiceName.REST; break;
+		case JAVA_INTERFACE: typeString = InformationServiceName.JAVA; break;
+		default: typeString = "???";
 		}
-		this.fullName += ":" + namespace + ":" + interfaceName;
+		this.fullName = typeString + ":" + interfaceName;
 		this.type = type;
-		this.namespace = namespace;
 		this.interfaceName = interfaceName;
 	}
 	
@@ -36,7 +37,7 @@ public class InformationServiceName {
 	public static InformationServiceName fromName(String name) {
 		String[] splitName = name.split(":");
 		
-		if (splitName.length == 3) {
+		if (splitName.length == 2) {
 			// Namespace
 			ServiceNameType type;
 			if (WS.equals(splitName[0])) {
@@ -49,7 +50,7 @@ public class InformationServiceName {
 				type = ServiceNameType.UNKNOWN;
 			}
 			
-			return new InformationServiceName(type, splitName[1], splitName[2]);
+			return new InformationServiceName(type, splitName[1]);
 		}
 		else {
 			return null;
@@ -58,10 +59,6 @@ public class InformationServiceName {
 	
 	public ServiceNameType getType() {
 		return type;
-	}
-	
-	public String getNamespace() {
-		return namespace;
 	}
 	
 	public String getInterfaceName() {

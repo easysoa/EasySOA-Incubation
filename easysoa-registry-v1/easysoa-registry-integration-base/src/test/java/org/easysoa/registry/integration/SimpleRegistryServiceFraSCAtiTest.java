@@ -5,6 +5,8 @@ package org.easysoa.registry.integration;
 
 import java.util.ArrayList;
 
+import junit.framework.Assert;
+
 import org.apache.log4j.Logger;
 import org.easysoa.registry.rest.integration.EndpointInformation;
 import org.easysoa.registry.rest.integration.EndpointInformations;
@@ -17,7 +19,6 @@ import org.objectweb.fractal.api.Component;
 import org.ow2.frascati.FraSCAti;
 import org.ow2.frascati.assembly.factory.processor.ProcessingContextImpl;
 import org.ow2.frascati.util.FrascatiException;
-import org.testng.Assert;
 
 /**
  * @author jguillemotte

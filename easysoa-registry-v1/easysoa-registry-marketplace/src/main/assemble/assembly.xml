@@ -60,6 +60,12 @@
       <artifact:resolveFile key="org.nuxeo.rating:nuxeo-rating-web::jar" />
       <artifact:resolveFile key="org.nuxeo.rating:nuxeo-rating-gadget::jar" />
 
+      <!-- required by -doctypes-preview -->
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-preview::jar" />
+
+      <!-- required by -jsf-branding -->
+      <artifact:resolveFile key="org.nuxeo.ecm.platform:nuxeo-platform-virtualnavigation-web::jar" />
+
       <!-- tree-snapshot -->
       <artifact:resolveFile key="org.nuxeo.features:nuxeo-tree-snapshot::jar" />
 

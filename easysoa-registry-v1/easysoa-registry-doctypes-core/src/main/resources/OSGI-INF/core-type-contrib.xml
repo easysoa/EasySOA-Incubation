@@ -19,6 +19,7 @@
     <schema name="soaversionable" src="schemas/soa-versionable.xsd" prefix="soav" />
     <schema name="informationservice" src="schemas/information-service.xsd" prefix="iserv" />
     <schema name="serviceimpl" src="schemas/serviceimpl.xsd" prefix="impl" />
+    <schema name="servicecons" src="schemas/service-consumption.xsd" prefix="sc" />
     <schema name="endpoint" src="schemas/endpoint.xsd" prefix="endp" />
     <schema name="wsdlinfo" src="schemas/wsdlinfo.xsd" prefix="wsdl" />
     <schema name="restinfo" src="schemas/restinfo.xsd" prefix="rest" />
@@ -171,6 +172,9 @@
       <facet name="InformationServiceData" />
     </doctype>
     <doctype extends="SoaNode" name="ServiceConsumption">
+      <schema name="servicecons" />
+      <facet name="WsdlInfo" /><!-- of consumed ws itf -->
+      <facet name="RestInfo" />
     </doctype>
     <doctype extends="ServiceConsumption" name="EndpointConsumption">
     </doctype>

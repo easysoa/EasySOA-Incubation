@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.InvalidDoctypeException;
-import org.easysoa.registry.types.adapters.SoaNodeAdapter;
+import org.easysoa.registry.types.adapters.ServiceConsumptionAdapter;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.types.java.JavaServiceConsumption;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
@@ -22,7 +22,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author mkalam-alami
  *
  */
-public class JavaServiceConsumptionAdapter extends SoaNodeAdapter implements JavaServiceConsumption {
+public class JavaServiceConsumptionAdapter extends ServiceConsumptionAdapter implements JavaServiceConsumption {
     
     public JavaServiceConsumptionAdapter(DocumentModel documentModel)
             throws PropertyException, InvalidDoctypeException, ClientException {
@@ -38,6 +38,16 @@ public class JavaServiceConsumptionAdapter extends SoaNodeAdapter implements Jav
     public String getConsumedInterface() throws Exception {
         return (String) documentModel.getPropertyValue(XPATH_CONSUMEDINTERFACE);
     }
+
+	@Override
+	public String getConsumerClass() throws Exception {
+        return (String) documentModel.getPropertyValue(XPATH_CONSUMERCLASS);
+	}
+
+	@Override
+	public String getConsumedInterfaceLocation() throws Exception {
+        return (String) documentModel.getPropertyValue(XPATH_CONSUMEDINTERFACELOCATION);
+	}
 
     @Override
     public List<SoaNodeId> getConsumableServiceImpls() throws Exception {

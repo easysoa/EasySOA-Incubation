@@ -20,6 +20,7 @@ package org.easysoa.registry.indicators.rest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -47,6 +48,8 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
  * Indicators
+ * 
+ * TODO refactor init of providers & computing to dedicated IndicatorsService
  *
  * @author mdutoo
  *
@@ -95,6 +98,8 @@ public class IndicatorsController extends EasysoaModuleRoot {
         addIndicator(new LastCodeDiscoveryIndicatorProvider(CATEGORY_CARTOGRAPHY));
         //
         addIndicator(new ServiceDefaultCountIndicatorProvider(CATEGORY_STEERING));
+        //
+        addIndicator(new PhaseProgressIndicatorProvider(CATEGORY_STEERING));
     }
 
     /**
@@ -207,6 +212,7 @@ public class IndicatorsController extends EasysoaModuleRoot {
         List<IndicatorProvider> pendingProviders = new ArrayList<IndicatorProvider>();
         Map<String, IndicatorValue> computedIndicators = new HashMap<String, IndicatorValue>();
         //Map<String, Map<String, IndicatorValue>> indicatorsByCategory = new HashMap<String, Map<String, IndicatorValue>>();
+        HashSet<String> pendingRequiredIndicators = new HashSet<String>(indicatorProviders.size());
         int previousComputedProvidersCount = -1;
 
         // Compute indicators in several passes, with respect to dependencies
@@ -231,6 +237,7 @@ public class IndicatorsController extends EasysoaModuleRoot {
                         for (String requiredIndicator : requiredIndicators) {
                             if (!computedIndicators.containsKey(requiredIndicator)) {
                                 allRequirementsSatisfied = false;
+                                pendingRequiredIndicators.add(requiredIndicator);
                                 break;
                             }
                         }
@@ -248,6 +255,7 @@ public class IndicatorsController extends EasysoaModuleRoot {
                         if (indicators != null) {
                             //categoryIndicators.putAll(indicators);
                             computedIndicators.putAll(indicators);
+                            pendingRequiredIndicators.removeAll(indicators.entrySet()); // just in case there had been required
                         }
 
                         computedProviders.add(indicatorProvider);
@@ -267,7 +275,10 @@ public class IndicatorsController extends EasysoaModuleRoot {
                     + " provider dependencies could not be satisfied ("
                     + pendingProvider.getRequiredIndicators() + ")");
         }
-
+        if (!pendingRequiredIndicators.isEmpty()) {
+	        logger.warn("Pending required indicators : " + pendingRequiredIndicators);
+        }
+        
         //return indicatorsByCategory;
         return computedIndicators;
     }

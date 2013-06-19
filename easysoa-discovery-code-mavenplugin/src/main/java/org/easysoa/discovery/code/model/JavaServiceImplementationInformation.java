@@ -13,6 +13,8 @@ import org.easysoa.registry.types.java.JavaServiceImplementation;
 // TODO Put in a rest-client-java project
 public class JavaServiceImplementationInformation extends ServiceImplementationInformation implements JavaServiceImplementation {
 
+    /*
+    // java impls should have at least those props
     public JavaServiceImplementationInformation(SoaNodeId deliverable, String implementationClass,
             String implementedInterface, String implementedInterfaceLocation) {
         this(deliverable.getSubprojectId(), new ServiceImplementationName(ServiceNameType.JAVA_INTERFACE,
@@ -22,15 +24,25 @@ public class JavaServiceImplementationInformation extends ServiceImplementationI
         this.properties.put(XPATH_IMPLEMENTEDINTERFACELOCATION, implementedInterfaceLocation);
     }
     
+    // WS impls should have at least those props (and can also have java impl props if it's java)
     public JavaServiceImplementationInformation(String subprojectId,
             String namespace, String name, String servicename) {
     	this(subprojectId, new ServiceImplementationName(ServiceNameType.WEB_SERVICE, namespace, name, servicename).toString());
         this.properties.put(XPATH_WSDL_PORTTYPE_NAME, new QName(namespace, name).toString());
         this.properties.put(XPATH_WSDL_SERVICE_NAME, new QName(namespace, servicename).toString());
     }
+    */
     
     public JavaServiceImplementationInformation(String subprojectId, String soaname) {
         super(subprojectId, JavaServiceImplementation.DOCTYPE, soaname);
+    }
+    
+    public JavaServiceImplementationInformation(String subprojectId, ServiceImplementationName soaname) {
+        super(subprojectId, JavaServiceImplementation.DOCTYPE, soaname.toString());
+    }
+    
+    public JavaServiceImplementationInformation(SoaNodeId deliverableSoaId, ServiceImplementationName soaname) {
+        super(deliverableSoaId.getSubprojectId(), JavaServiceImplementation.DOCTYPE, soaname.toString());
     }
 
 	public static JavaServiceImplementationInformation create(SoaNodeInformation soaNodeInfo) {

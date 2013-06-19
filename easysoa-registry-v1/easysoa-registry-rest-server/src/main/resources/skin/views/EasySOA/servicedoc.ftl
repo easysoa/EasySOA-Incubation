@@ -95,10 +95,6 @@
 		${service['dc:description']}
 		
 		<h3>Métier ((sert à))</h3>
-		<#if service['iserv:linkedBusinessService']?has_content>
-		  <#assign businessServiceRef = new_f('org.nuxeo.ecm.core.api.IdRef', service['iserv:linkedBusinessService'])/>
-		  <#assign businessService = Session.getDocument(businessServiceRef)/>
-		</#if>
 		<#if businessService?has_content>
 		  Fournit le service business <a href="<@urlToLocalNuxeoDocumentsUi businessService/>"><@displayDocShort businessService/></a> :<br/>
           <#if businessService['businessservice:consumerActor']?has_content>
@@ -141,6 +137,7 @@
            </#if>
            <br/>
            Documents de spécification :
+          <#assign businessServiceRef = new_f('org.nuxeo.ecm.core.api.IdRef', service['iserv:linkedBusinessService'])/>
            <#assign specDocs = Session.getChildren(businessServiceRef, 'Document')/>
            <#if specDocs?size = 0>
                aucun
@@ -186,7 +183,7 @@
 		<p/>
 		de l'impl (first (?) non-test one) :
 		<p/>
-		<#if actualImpls?size != 0>
+		<#if actualImpls?has_content && actualImpls?size != 0>
 		${actualImpls[0]['impl:documentation']}
 		<@displayProp actualImpls[0] 'impl:operations'/>
 		<#if actualImpls?size != 1>
@@ -196,7 +193,7 @@
 		<p/>
 		-->
 		
-		<#if actualImpls?size != 0>
+		<#if actualImpls?has_content && actualImpls?size != 0>
 		   <#assign impl_operations=actualImpls[0]['impl:operations']>
 		<#else>
 		   <#assign impl_operations="none">
@@ -291,59 +288,115 @@
         </#if>
 		
 		
-		<h3>Implementation(test)</h3>
+		<h3>Implémentations de service (y compris de test)</h3>
 		et consomme, dépend de (en mode non test)
+		<br/>
 		
-		<br/><b>Implementations :</b><br/>
+        <#if serviceimpl?has_content>
+          Cette implémentation : <@displayImplementationShort serviceimpl subprojectId visibility/>
+		</#if>
+		<br/>
+        <#if !serviceimpl?has_content || !endpoint?has_content || endpoint['env:environment'] != 'Production'>
+          Implémenté en Production par
+          <#if productionImpl?has_content>
+            <@displayImplementationShort productionImpl subprojectId visibility/>
+          <#else>
+            (aucun)
+          </#if>
+          <br/>
+        </#if>
+        <p/>
+        
+        <#if isUserConsumer>
+          Vos implémentations de test :
+          <#list userConsumerImpls as userConsumerImpl>
+            <@displayImplementationShort userConsumerImpl subprojectId visibility/>
+            <br/>
+          </#list>
+        </#if>
+        <p/>
+		
+		<#if actualImpls?has_content>
+		<b>Autres implémentations :</b><br/>
 		<#list actualImpls as actualImpl>
-		   <#assign deliverable = Root.getDocumentService().getSoaNodeParent(actualImpl, 'Deliverable')/>
-		   <span title="Phase : <@displayPhaseIfOutsideContext service['spnode:subproject']/>" style="color:grey; font-style: italic;">
-		   ${componentTitle} / ${deliverable['del:application']} / ${deliverable['soan:name']} / </span> <span title="SOA ID: ${service['soan:name']}">
-		   <#-- ${actualImpl['soan:name']} -->${actualImpl['title']}
-		   </span> - <@displayPhaseIfOutsideContext actualImpl['spnode:subproject']/> (((${actualImpl.versionLabel})))
+		   <#if (!productionImpl?has_content || productionImpl.id != actualImpl.id) && (!serviceimpl?has_content || serviceimpl.id != actualImpl.id)>
+		   
+        <#-- @displayDocShort actualImpl/ -->
+        <@displayDoc actualImpl shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
+        <br/>
+        
+		   <@displayImplementationShort actualImpl subprojectId visibility/>
 		   <br/>
-           <@displayTested productionImpl/><br/>
+           <@displayTested actualImpl/><br/>
            <b>Son délivrable :</b></br>
+           <#assign deliverable = Root.getDocumentService().getSoaNodeParent(actualImpl, 'Deliverable')/>
 		   dépend de : <#list deliverable['del:dependencies'] as dependency>${dependency}, </#list>
 		   <br/>
            <!-- TODO consumptions of : separate internal impls from external services -->
 		   <#assign delConsumptions = Root.getDocumentService().getDeliverableConsumptions(deliverable)/>
            ((consomme les classes d'implémentations :
 		   <#list delConsumptions as delConsumption>
-		      <@displayDocsShort Root.getDocumentService().getConsumedInterfaceImplementationsOfJavaConsumption(delConsumption, subprojectId, true, false)/>))
+		      <@displayDocsShort Root.getDocumentService().getConsumedInterfaceImplementationsOfJavaConsumption(delConsumption, subprojectId, true, false)/>
               <#if delConsumption_index != delConsumptions?size - 1> ;</#if>
 		   </#list>))
 		   <br/>
            consomme les services :
            <#list delConsumptions as delConsumption>
-              <@displayDocShort Root.getDocumentService().getConsumedJavaInterfaceService(delConsumption, subprojectId)/>))
+              <#assign delConsumedService = Root.getDocumentService().getConsumedJavaInterfaceService(delConsumption, subprojectId)/>
+              <#if delConsumedService?has_content>
+                 <@displayDocShort delConsumedService/>
+              <#else>
+                 ${delConsumption['wsdlinfo:wsdlPortTypeName']}
+              </#if>
+              (java ${delConsumption['javasc:consumedInterface']})
               <#if delConsumption_index != delConsumptions?size - 1> ;</#if>
            </#list>
            <p/>
+           
+           </#if>
 		</#list>
-        <#-- @displayDocsShort actualImpls/ -->
-        <@displayDocs actualImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
-		<br/>
 		Découverte :
         <a href="${Root.path}/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Source</a>
-		<br/>
+		<p/>
+		</#if>
 		
-		<br/><b>Mocks :</b><br/>
+        <#if mockImpls?has_content>
+		<br/><b>Implémentations de test (mocks) :</b><br/>
 		<#-- @displayDocsShort mockImpls/ -->
         <@displayDocs mockImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
 		<#-- TODO TEST ismock : ${mockImpls[0]['impl:ismock']} -->
+        <p/>
+        </#if>
 
 
-		<h3>Endpoints</h3>
-		Déployé en Production à :
-		<#if productionEndpoint?has_content>
-		<a href="${productionEndpoint['endp:url']}">${productionEndpoint['endp:url']}</a>
-        <br/>
-           <span title="Phase : <@displayPhaseIfOutsideContext service['spnode:subproject']/>" style="color:grey; font-style: italic;">
-           ${productionEndpoint['env:environment']} / </span> <span title="SOA ID: ${productionEndpoint['soan:name']}">
-           <#-- ${productionEndpoint['soan:name']} -->${productionEndpoint['endp:url']}
-           </span> - <@displayPhaseIfOutsideContext productionEndpoint['spnode:subproject']/> (((${productionEndpoint.versionLabel})))
-           <br/>
+		<h3>Services déployés (endpoints)</h3>
+		
+        <#if endpoint?has_content>
+          Cet endpoint est déployé en ${endpoint['env:environment']} à
+          <a href="${endpoint['endp:url']}">${endpoint['endp:url']}</a>
+          par <@displayEndpointTitle endpoint subprojectId visibility/>
+          <br/>
+        </#if>
+        <#if !endpoint?has_content || endpoint['env:environment'] != 'Production'>
+          Déployé en Production à
+          <#if productionEndpoint?has_content>
+            <a href="${productionEndpoint['endp:url']}">${productionEndpoint['endp:url']}</a> par <@displayEndpointShort productionEndpoint subprojectId visibility/>
+          <#else>
+            (aucun)
+          </#if>
+          <br/>
+        </#if>
+        <p/>
+        
+        <#if isUserConsumer>
+          <b>Vos endpoints de test :</b><br/>
+          <#list userConsumerEndpoints as userConsumerEndpoint>
+            <@displayEndpointShort userConsumerEndpoint subprojectId visibility/>
+            <br/>
+          </#list>
+        </#if>
+        <p/>
+        
         Resource : 
         <#if productionEndpoint['rdi:url']?has_content>
            external at <a href="${productionEndpoint['rdi:url']}">${productionEndpoint['rdi:url']}</a><!-- TODO shortened url display -->
@@ -353,6 +406,7 @@
            internal
         </#if>
 		<br/>
+		
 		Découverte :
 		<a href="${web_discovery_url}?subprojectId=${subprojectId}&visibility=${visibility}">Web</a>, <!-- TODO pass as probe params : Environment (, iserv/endpoint (, user, component)) -->
         <a href="${httpproxy_app_instance_factory_url}?subprojectId=${subprojectId}&visibility=${visibility}&user=${Root.currentUser}&environment=Production'}">Monitoring</a>,  <!-- TODO HTTP Proxy host prop, url to probe IHM, pass as probe params : subproject / Phase, Environment (, iserv/endpoint (, component)) -->
@@ -362,36 +416,67 @@
 		<a href="${Root.path}/../monitoring/envIndicators/${productionEndpoint.id}?subprojectId=${subprojectId}&visibility=${visibility}">Usage</a>, 
 		<a href="${Root.path}/../monitoring/jasmine/?subprojectId=${subprojectId}&visibility=${visibility}">Statistiques</a>
 		<br/>
-		Test it using :
+		Tester avec :
         <a href="${web_discovery_url + '/scaffoldingProxy/?wsdlUrl=' + productionEndpoint['rdi:url']}">Service Scaffolder</a>, <!-- TODO light.js, or function, rather endpointUrl?wsdl ?? -->
         <a href="">SOAPUI</a>,
         <a href="frascatiStudio_url + '/easySoa/GeneratedAppService'">FraSCAti Studio new application</a>
         <!-- a href="">FraSCAti Studio application A</a -->
-		<br/>
-		<#assign productionImpl = Root.getDocumentService().getSoaNodeParent(productionEndpoint, 'ServiceImplementation')/>
+		<p/>
+		
+		<#if productionImpl?has_content>
         <#assign productionDeliverable = Root.getDocumentService().getSoaNodeParent(productionImpl, 'Deliverable')/>
-		Fournit par l'Application ${actorTitle} / ${componentTitle} / ${productionDeliverable['del:application']} (JARS)
+		Fournit par l'Application ${actorTitle} / ${componentTitle} (${productionDeliverable['del:application']}) (TODO jars)
 		<br/>
-		nécessitant les services
+		nécessitant les services :
+		<ul>
 		<!-- TODO list deliverables by application -->
-		<#list Root.getDocumentService().getSoaNodeChildren(productionDeliverable, 'ServiceConsumption') as servicecons>
-		   <#list Root.getDocumentService().getSoaNodeChildren(productionDeliverable, 'ServiceImplementation') as serviceimpl>
-		      <#if servicecons['javasc:consumedInterface'] = serviceimpl['javasi:implementedInterface'] && serviceimpl['serviceimpl:ismock'] = 'false'>
-		         <#assign foundServiceimpl = serviceimpl/>
-		         <!-- TODO + location -->
-		      </#if>
-		   </#list>
-		   <#if !foundServiceimpl?has_content>
-              <li>external ${servicecons['title']} through ${servicecons['javasc:consumedInterface']} (test ?)</li> 
-           <#else>
-              <li>(internal ${servicecons['title']} by ${foundServiceimpl['title']} through ${servicecons['javasc:consumedInterface']})</li>
+		<#assign productionDelConsumptions = Root.getDocumentService().getDeliverableConsumptions(productionDeliverable)/>
+		<#list productionDelConsumptions as servicecons>
+		   <#if servicecons['sc:isTest'] != 'true'>
+		      <#list Root.getDocumentService().getSoaNodeChildren(productionDeliverable, 'ServiceImplementation') as serviceimpl>
+		         <#if servicecons['javasc:consumedInterface'] = serviceimpl['javasi:implementedInterface'] && serviceimpl['serviceimpl:ismock'] != 'true'>
+		            <#assign foundLocalNonMockConsumedServiceImpl = serviceimpl/>
+		            <!-- TODO + location -->
+		         </#if>
+		      </#list>
+		      <#if !foundLocalNonMockConsumedServiceImpl?has_content>
+                 <li>externe au délivrable ${servicecons['title']} through ${servicecons['javasc:consumedInterface']}</li> 
+              <#else>
+                 <li>(interne au délivrable ${servicecons['title']} par l'implémentation ${foundLocalNonMockConsumedServiceImpl['title']} d'interface ${servicecons['javasc:consumedInterface']})</li>
+              </#if>
            </#if>
 		</#list>
+		</ul>
 		<p/>
+		</#if>
+		
+        <#if actualEndpoints?has_content>
+        <b>Autres déploiements :</b><br/>
+		<#-- @displayDocsShort actualEndpoints/ -->
+        <#-- @displayDocs actualEndpoints shortDocumentPropNames + endpointPropNames/ -->
+		<#list actualEndpoints as actualEndpoint>
+           <#if (!productionEndpoint?has_content || productionEndpoint.id != actualEndpoint.id) && (!endpoint?has_content || endpoint.id != actualEndpoint.id)>
+              <@displayEndpointShort actualEndpoint subprojectId visibility/>
+              <br/>
+              <@displayDoc actualEndpoint shortDocumentPropNames + endpointPropNames/>
+           </#if>
+        </#list>
+        <p/>
         </#if>
-		<br/>Tous les déploiements :<!-- Et à déploiement de test : -->
-		<#-- @displayDocsShort endpoints/ -->
-        <@displayDocs endpoints shortDocumentPropNames + endpointPropNames/>
+        
+        <#if userConsumerEndpoints?has_content>
+        <b>Vos déploiements de test :</b><br/>
+        <#-- @displayDocsShort userConsumerEndpoints/ -->
+        <@displayDocs userConsumerEndpoints shortDocumentPropNames + endpointPropNames/>
+        <p/>
+        <#elseif mockEndpoints?has_content>
+        <b>Déploiements de test :</b><br/>
+        <#-- @displayDocsShort mockEndpoints/ -->
+        <@displayDocs mockEndpoints shortDocumentPropNames + endpointPropNames/>
+        <p/>
+        </#if>
+        
+        TODO LATER endpoint consumptions (like service ones)
 
 
 
@@ -408,9 +493,20 @@
 		<h2>test</h2>
 		
 		<h3>User</h3>
-        (test) user name : ${userName}<br/>
-		isUserProvider : ${isUserProvider?string}<br/>
-        isUserDeveloper : ${isUserDeveloper?string}<br/>
+		(actual) user name & company : ${Context.getPrincipal().getName()} ${Context.getPrincipal().getCompany()}<br/>
+        (test) user & groups : ${user.getName()} '<#list user.getGroups() as groupName>${groupName}, </#list>)<br/>
+        isUserConsumer : ${isUserConsumer?string} (${userConsumerGroupName})<br/>
+		isUserProvider : ${isUserProvider?string} (${userConsumerGroupName})<br/>
+        isUserBusinessAnalyst : ${isUserBusinessAnalyst?string} (${userConsumerGroupName})<br/>
+        isUserDeveloper : ${isUserDeveloper?string} (${userConsumerGroupName})<br/>
+        isUserOperator : ${isUserOperator?string} (${userConsumerGroupName})<br/>
+        Choose other test user :
+        <#assign otherUsers = Root.getUserManager().getUserIds()/>
+        <#list otherUsers as otherUser>
+           <#assign requestQuery = Context.getRequest().getQueryString()?replace('&testUser=' + user.getName(), '')/>
+           <a href="${Context.getURL()}?${requestQuery}&testUser=${otherUser}">${otherUser}</a>
+           <#if otherUser_index != otherUsers?size - 1>, </#if>
+        </#list>
 
 		<h3>Contenu dans</h3>
 		<#if service['proxies']?has_content><#list service['proxies'] as proxy><@displayDocShort proxy['parent']/> ; </#list></#if>

@@ -9,9 +9,9 @@
                 {label:'Moins de 50%', color:'red', data: [[3, 20]]},
             ];*/
             var data = [
-                {label:'${indicators["serviceWhithoutComponent"].percentage} %', color:'green', data: [[1, ${indicators["serviceWhithoutComponent"].percentage}]]}
-                ,{label:'${indicators["serviceWhithoutImplementation"].percentage} %', color:'orange', data: [[2, ${indicators["serviceWhithoutImplementation"].percentage}]]}
-                ,{label:'${indicators["serviceWithImplementationWhithoutEndpoint"].percentage} %', color:'red', data: [[3, ${indicators["serviceWithImplementationWhithoutEndpoint"].percentage}]]}
+                {label:'${indicators["specificationsProgress"].percentage} %', color:'green', data: [[1, ${indicators["specificationsProgress"].percentage}]]}
+                ,{label:'${indicators["realisationProgress"].percentage} %', color:'orange', data: [[2, ${indicators["realisationProgress"].percentage}]]}
+                ,{label:'${indicators["deploiementProgress"].percentage} %', color:'red', data: [[3, ${indicators["deploiementProgress"].percentage}]]}
             ];
 
             $.plot("#phaseGraph", data, {

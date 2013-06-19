@@ -20,6 +20,8 @@ import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.OperationInformation;
 import org.easysoa.registry.types.Platform;
+import org.easysoa.registry.types.ids.ServiceImplementationName;
+import org.easysoa.registry.types.ids.ServiceNameType;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
 
 import com.thoughtworks.qdox.model.JavaClass;
@@ -144,20 +146,6 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                     }
 
                     if (itf != null || pathMethods != null || ParsingUtils.hasAnnotation(c, ANN_PATH)) {
-                        
-                        // Extract WS info
-                        JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(
-                                this.codeDiscovery.getSubproject(), c.getFullyQualifiedName());
-                        serviceImpl.setTitle(c.getName());
-
-                		serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPL_LANGUAGE, Platform.LANGUAGE_JAVA);
-                		serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPL_BUILD, Platform.BUILD_MAVEN);
-                        serviceImpl.setProperty(JavaServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXRS);
-                        
-                        serviceImpl.setProperty(JavaServiceImplementation.XPATH_DOCUMENTATION, c.getComment());
-                        serviceImpl.setProperty(JavaServiceImplementation.XPATH_ISMOCK, ParsingUtils.isTestClass(c));
-                        serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTATIONCLASS, c.getFullyQualifiedName());
-                        serviceImpl.addParentDocument(mavenDeliverable.getSoaNodeId());
 
                         // extract base jaxrs conf :
                         //TODO also methods & inheritance see http://fusesource.com/docs/esb/4.2/rest/RESTAnnotateInherit.html
@@ -173,6 +161,22 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                         if (baseRestContentType == null) {
                             baseRestContentType = MediaType.APPLICATION_OCTET_STREAM; // see https://cwiki.apache.org/WINK/jax-rs-request-and-response-entities.html
                         }
+                        
+                        // Create name & impl info
+                        JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(
+                                this.codeDiscovery.getSubproject(),
+                                new ServiceImplementationName(ServiceNameType.REST, // ?????
+                                		baseRestPath, c.getFullyQualifiedName())); // also baseRestAccepts, group operations by path prefix ??
+                        serviceImpl.setTitle(c.getName()); // c.getName() (shortcut) or serviceImpl.getSoaName() ?
+
+                		serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPL_LANGUAGE, Platform.LANGUAGE_JAVA);
+                		serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPL_BUILD, Platform.BUILD_MAVEN);
+                        serviceImpl.setProperty(JavaServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXRS);
+                        
+                        serviceImpl.setProperty(JavaServiceImplementation.XPATH_DOCUMENTATION, c.getComment());
+                        serviceImpl.setProperty(JavaServiceImplementation.XPATH_ISMOCK, ParsingUtils.isTestClass(c));
+                        serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTATIONCLASS, c.getFullyQualifiedName());
+                        serviceImpl.addParentDocument(mavenDeliverable.getSoaNodeId());
                         
                         if (itf != null) {
                             // Extract WS info

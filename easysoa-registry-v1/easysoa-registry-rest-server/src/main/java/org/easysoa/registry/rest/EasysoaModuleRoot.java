@@ -32,6 +32,7 @@ import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
+import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
@@ -116,6 +117,9 @@ public class EasysoaModuleRoot extends ModuleRoot {
     
     public DocumentService getDocumentService() throws Exception {
     	return Framework.getService(DocumentService.class);
+    }
+    public UserManager getUserManager() throws Exception {
+    	return Framework.getService(UserManager.class);
     }
     
     public String buildSubprojectCriteria(DocumentModel soaNodeDocModel,

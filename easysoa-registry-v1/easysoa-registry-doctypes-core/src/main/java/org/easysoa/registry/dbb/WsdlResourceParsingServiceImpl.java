@@ -286,7 +286,7 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
             if (false) { // TODO [soaname change] ?!?
                 sourceDocument.setPropertyValue(InformationService.XPATH_SOANAME,
                         new InformationServiceName(ServiceNameType.WEB_SERVICE,
-                                portTypeName.getNamespaceURI(), portTypeName.getLocalPart()).toString());
+                                '{' + portTypeName.getNamespaceURI() + '}' + portTypeName.getLocalPart()).toString());
                 changed = true;
             }
             changed = setIfChanged(sourceDocument, InformationService.XPATH_WSDL_SERVICE_NAME, toStringIfNotNull(serviceName)) || changed;
@@ -348,8 +348,9 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
             if (sourceDocument.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME) == null) {
                     InformationServiceName parsedSoaName = InformationServiceName.fromName(
                                     (String) sourceDocument.getPropertyValue(InformationService.XPATH_SOANAME));
-                    if (parsedSoaName != null) { // not null only if in format ws/java:ns:name
-                            String portTypeName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getInterfaceName();
+                    if (parsedSoaName != null && parsedSoaName.getType().equals(ServiceNameType.WEB_SERVICE)) {
+                    	// NB. not null only if in format ws/java:ns:name
+                            String portTypeName = parsedSoaName.getInterfaceName();
                             sourceDocument.setPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
                             documentModified = true;
                     }
@@ -358,17 +359,17 @@ public class WsdlResourceParsingServiceImpl implements ResourceParsingService {
         else if (ServiceImplementation.DOCTYPE.equals(sourceDocument.getType())) {
             ServiceImplementationName parsedSoaName = ServiceImplementationName.fromName(
                                     (String) sourceDocument.getPropertyValue(ServiceImplementation.XPATH_SOANAME));
-            if (parsedSoaName != null) {
+            if (parsedSoaName != null && parsedSoaName.getType().equals(ServiceNameType.WEB_SERVICE)) {
                     if (sourceDocument.getPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME) == null) {
-                            String portTypeName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getInterfaceName();
+                    	String portTypeName = parsedSoaName.getInterfaceName();
                             sourceDocument.setPropertyValue(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
                             documentModified = true;
                     }
-                    if (sourceDocument.getPropertyValue(ServiceImplementation.XPATH_WSDL_SERVICE_NAME) == null) {
-                            String serviceName = "{" + parsedSoaName.getNamespace() + "}" + parsedSoaName.getImplementationName();
+                    /*if (sourceDocument.getPropertyValue(ServiceImplementation.XPATH_WSDL_SERVICE_NAME) == null) {
+                            String serviceName = parsedSoaName.getImplementationName(); // NO rather {ns}implementationLocalName
                             sourceDocument.setPropertyValue(ServiceImplementation.XPATH_WSDL_SERVICE_NAME, serviceName);
                             documentModified = true;
-                    }
+                    }*/
             }
         }
         // NB. not done for endpoint whose SOA name is always "environment:url"

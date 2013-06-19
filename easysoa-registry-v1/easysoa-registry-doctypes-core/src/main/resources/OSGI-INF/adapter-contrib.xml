@@ -17,6 +17,8 @@
       factory="org.easysoa.registry.types.adapters.CoreDoctypesAdapterFactory" />
     <adapter class="org.easysoa.registry.types.ServiceConsumption"
       factory="org.easysoa.registry.types.adapters.CoreDoctypesAdapterFactory" />
+    <adapter class="org.easysoa.registry.types.ServiceConsumption"
+      factory="org.easysoa.registry.types.adapters.CoreDoctypesAdapterFactory" />
     <adapter class="org.easysoa.registry.types.EndpointConsumption"
       factory="org.easysoa.registry.types.adapters.CoreDoctypesAdapterFactory" />
     <adapter class="org.easysoa.registry.types.DeployedDeliverable"

@@ -39,9 +39,65 @@
         ${providerActorTitle} ${componentTitle}</span> <span title="SOA ID: ${service['soan:name']}">${service.title}
         </span> - <@displayPhaseIfOutsideContext service['spnode:subproject']/> (((${service.versionLabel})))
     </#macro>
+
+    <#macro displayImplementationTitle serviceimpl subprojectId visibility>
+        <#if providerActor?has_content>
+            <#assign providerActorTitle = providerActor.title/>
+        <#else>
+            <#assign providerActorTitle = '(no actor)'/>
+        </#if>
+        <#if component?has_content>
+            <#assign componentTitle = component.title/>
+        <#else>
+            <#assign componentTitle = '(no component)'/>
+        </#if>
+        <#assign deliverable = Root.getDocumentService().getSoaNodeParent(serviceimpl, 'Deliverable')/>
+        <#if deliverable?has_content>
+            <#assign deliverableTitle = deliverable['del:application'] + ' / ' + deliverable['soan:name']/>
+        <#else>
+            <#assign deliverableTitle = '(no deliverable)'/>
+        </#if>
+        <span title="Phase : <@displayPhase serviceimpl['spnode:subproject']/>" style="color:grey; font-style: italic;">
+        ${providerActorTitle} / ${componentTitle} / ${deliverableTitle} /</span>
+        <span title="SOA ID: ${serviceimpl['soan:name']}">${serviceimpl.title}</span>
+        - <@displayPhaseIfOutsideContext serviceimpl['spnode:subproject']/> (((${serviceimpl.versionLabel})))
+    </#macro>
+
+    <#macro displayEndpointTitle endpoint subprojectId visibility>
+        <#assign serviceimpl = Root.getDocumentService().getServiceImplementationFromEndpoint(endpoint)/><#-- TODO if none ?? -->
+        <#assign deliverable = Root.getDocumentService().getSoaNodeParent(serviceimpl, 'Deliverable')/><#-- TODO if none ?? -->
+        <#if deliverable?has_content && deliverable['del:application']?has_content && deliverable['del:application']?length != 0>
+            <#assign applicationTitle = deliverable['del:application']/><!-- + ' / ' + deliverable['soan:name'] -->
+        <#else>
+            <#-- assign applicationTitle = '(no application)'/ -->
+            <#if providerActor?has_content>
+                <#assign providerActorTitle = providerActor.title/>
+            <#else>
+                <#assign providerActorTitle = '(no actor)'/>
+            </#if>
+            <#if component?has_content>
+                <#assign componentTitle = component.title/>
+            <#else>
+                <#assign componentTitle = '(no component)'/>
+            </#if>
+            <#assign applicationTitle = providerActorTitle + '/' + componentTitle/>
+        </#if>
+        <span title="Phase : <@displayPhase endpoint['spnode:subproject']/>" style="color:grey; font-style: italic;">
+        ${endpoint['env:environment']} / ${applicationTitle} /</span>
+        <span title="SOA ID: ${endpoint['soan:name']}">${endpoint.title}</span>
+        - <@displayPhaseIfOutsideContext endpoint['spnode:subproject']/> (((${endpoint.versionLabel})))
+    </#macro>
     
     <#macro displayServiceShort service subprojectId visibility>
-        <a href="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}?subproject=${service['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayServiceTitle service subprojectId visibility/></a>
+        <a href="${Root.path}/path${service['spnode:subproject']?xml}::${service['soan:name']?xml}?subproject=${service['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayServiceTitle service subprojectId visibility/></a>
+    </#macro>
+    
+    <#macro displayImplementationShort serviceimpl subprojectId visibility>
+        <a href="${Root.path}/path${serviceimpl['spnode:subproject']?xml}:${serviceimpl.type}:${serviceimpl['soan:name']?xml}?subproject=${serviceimpl['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayImplementationTitle serviceimpl subprojectId visibility/></a>
+    </#macro>
+    
+    <#macro displayEndpointShort endpoint subprojectId visibility>
+        <a href="${Root.path}/path${endpoint['spnode:subproject']?xml}:${endpoint.type}:${endpoint['soan:name']?xml}?subproject=${endpoint['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayEndpointTitle endpoint subprojectId visibility/></a>
     </#macro>
 
     <#macro displayServicesShort services subprojectId visibility>

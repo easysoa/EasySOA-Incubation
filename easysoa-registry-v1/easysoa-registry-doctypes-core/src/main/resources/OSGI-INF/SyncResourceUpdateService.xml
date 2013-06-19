@@ -4,7 +4,7 @@
   <implementation class="org.easysoa.registry.dbb.SynchronousResourceUpdateServiceImpl" />
 
   <service>
-    <provide interface="org.easysoa.registry.dbb.ResourceUpdateService" />
+    <provide interface="org.easysoa.registry.dbb.SyncResourceUpdateService" />
   </service>
 
 </component>

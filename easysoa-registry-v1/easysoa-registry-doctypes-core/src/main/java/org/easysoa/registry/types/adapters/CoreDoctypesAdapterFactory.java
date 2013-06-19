@@ -31,6 +31,9 @@ public class CoreDoctypesAdapterFactory implements DocumentAdapterFactory {
             if (ServiceImplementation.class.equals(itf)) {
                 return new ServiceImplementationAdapter(doc);
             }
+            if (ServiceConsumption.class.equals(itf)) {
+                return new ServiceConsumptionAdapter(doc);
+            }
             if (EndpointConsumption.class.equals(itf)) {
                 return new EndpointConsumptionAdapter(doc);
             }

@@ -22,7 +22,7 @@ import org.nuxeo.runtime.api.Framework;
  * @author mkalam-alami
  *
  */
-public class EndpointConsumptionAdapter extends SoaNodeAdapter implements EndpointConsumption {
+public class EndpointConsumptionAdapter extends ServiceConsumptionAdapter implements EndpointConsumption {
 
     private final CoreSession documentManager;
 

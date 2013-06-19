@@ -890,7 +890,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
             }
             return this.query(serviceImpl.getCoreSession(), DocumentService.NXQL_SELECT_FROM
         		+ Endpoint.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
-                + "id in " + NuxeoListUtils.toLiteral(NuxeoListUtils.getProxiedIds(serviceImpl.getCoreSession(), endpoints)), true, false);
+                + "ecm:uuid in " + NuxeoListUtils.toLiteral(NuxeoListUtils.getProxiedIds(serviceImpl.getCoreSession(), endpoints)), true, false);
 	}
 
     @Override
@@ -907,7 +907,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
         }
         StringBuilder query = new StringBuilder(DocumentService.NXQL_SELECT_FROM
             + Endpoint.DOCTYPE + subprojectCriteria);
-        query.append(DocumentService.NXQL_AND + "id in " + NuxeoListUtils.toLiteral(NuxeoListUtils.getProxiedIds(serviceImpl.getCoreSession(), endpoints)));
+        query.append(DocumentService.NXQL_AND + "ecm:uuid in " + NuxeoListUtils.toLiteral(NuxeoListUtils.getProxiedIds(serviceImpl.getCoreSession(), endpoints)));
         query.append(DocumentService.NXQL_AND + Endpoint.XPATH_ENDP_ENVIRONMENT + "='" + environment + "'");
         List<DocumentModel> endpointsOfImplementation = this.query(serviceImpl.getCoreSession(), query.toString(), true, false);
         if (!endpoints.isEmpty()) {

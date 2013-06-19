@@ -7,22 +7,23 @@ public class ServiceImplementationName {
 	
 	private ServiceNameType type;
 
-	private String namespace;
-
+	/** {ns}name for WS, path for REST... */
 	private String interfaceName;
 
+	/** fully qualified impl name as known */
 	private String implementationName;
 
-	public ServiceImplementationName(ServiceNameType type, String namespace,
+	public ServiceImplementationName(ServiceNameType type,
 			String interfaceName, String implementationName) {
+		String typeString;
 		switch (type) {
-		case WEB_SERVICE: this.fullName = InformationServiceName.WS; break;
-		case JAVA_INTERFACE: this.fullName = InformationServiceName.JAVA; break;
-		default: this.fullName = "???";
+		case WEB_SERVICE: typeString = InformationServiceName.WS; break;
+		case REST: typeString = InformationServiceName.REST; break;
+		case JAVA_INTERFACE: typeString = InformationServiceName.JAVA; break;
+		default: typeString = "???";
 		}
-		this.fullName += ":" + namespace + ":" + interfaceName + "=" + implementationName;
+		this.fullName = typeString + ":" + interfaceName + "=" + implementationName;
 		this.type = type;
-		this.namespace = namespace;
 		this.interfaceName = interfaceName;
 		this.implementationName = implementationName;
 	}
@@ -30,7 +31,7 @@ public class ServiceImplementationName {
 	public static ServiceImplementationName fromName(String name) {
 		String[] splitName = name.split("[:=]");
 		
-		if (splitName.length == 4) {
+		if (splitName.length == 3) {
 			// Namespace
 			ServiceNameType type;
 			if (InformationServiceName.WS.equals(splitName[0])) {
@@ -43,7 +44,7 @@ public class ServiceImplementationName {
 				type = ServiceNameType.UNKNOWN;
 			}
 			
-			return new ServiceImplementationName(type, splitName[1], splitName[2], splitName[3]);
+			return new ServiceImplementationName(type, splitName[1], splitName[2]);
 		}
 		else {
 			return null;
@@ -52,10 +53,6 @@ public class ServiceImplementationName {
 	
 	public ServiceNameType getType() {
 		return type;
-	}
-	
-	public String getNamespace() {
-		return namespace;
 	}
 	
 	public String getInterfaceName() {

@@ -25,9 +25,13 @@
       <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <layouts mode="any">
-        <layout>soanode</layout>
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
+        <layout>soanode</layout>
+        <layout>servicecons</layout>
         <layout>javaserviceconsumption</layout>
+        <layout>wsdlinfo</layout>
+        <layout>restinfo</layout>
         <layout>files</layout>
       </layouts>
       <layouts mode="listing">
@@ -50,10 +54,13 @@
       <bigIcon>/icons/file_100.png</bigIcon>
       <default-view>view_documents</default-view>
       <layouts mode="any">
-        <layout>soanode</layout>
         <layout>heading</layout>
+        <layout>subprojectnode</layout>
+        <layout>soanode</layout>
         <layout>serviceimpl</layout>
         <layout>javaserviceimplementation</layout>
+        <layout>wsdlinfo</layout>
+        <layout>restinfo</layout>
         <layout>files</layout>
       </layouts>
       <layouts mode="listing">

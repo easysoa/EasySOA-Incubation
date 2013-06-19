@@ -87,9 +87,20 @@
   <!-- ========== -->
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    
     <easysoa.version>1.0-SNAPSHOT</easysoa.version>
     <easysoa.studio.version>0.0.0-SNAPSHOT</easysoa.studio.version>
-    <nuxeo.version>5.7-I20130111_0115</nuxeo.version>
+    
+    <!-- nuxeo version :
+    have a look at ex. https://maven-us.nuxeo.org/nexus/content/groups/easysoa/org/nuxeo/activity/nuxeo-activity/
+    IMPORTANT change it also in easysoa-registry-marketplace (because it has a different parent)
+    and axxx-easysoa-model (because it has no parent) -->
+    <!-- nuxeo.version>5.7-I20130111_0115</nuxeo.version -->
+    <nuxeo.version>5.7-I20130610_0116</nuxeo.version>
+    
+    <!-- other nuxeo-compatible registry deps versions : -->
+    <guava.version>13.0.1</guava.version>
+    <!-- other registry deps versions : -->
     <jung.version>2.0.1</jung.version>
     <collections.generic.version>4.01</collections.generic.version>
     <easywsdl.version>2.3</easywsdl.version>
@@ -332,6 +343,11 @@
         <artifactId>nuxeo-platform-filemanager-core-listener</artifactId>
         <version>${nuxeo.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-mimetype-core</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
       
       <dependency>
         <groupId>org.nuxeo.ecm</groupId>
@@ -381,12 +397,33 @@
       <dependency>
         <groupId>org.nuxeo.ecm.social</groupId>
         <artifactId>nuxeo-relationship</artifactId>
-        <version>${nuxeo.version}}</version>
+        <version>${nuxeo.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.ecm.social</groupId>
         <artifactId>nuxeo-mini-message</artifactId>
-        <version>${nuxeo.version}}</version>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      
+      <!-- required by -doctypes-preview -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-preview</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      
+      <!-- required by -jsf-branding -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.platform</groupId>
+        <artifactId>nuxeo-platform-virtualnavigation-web</artifactId>
+        <version>${nuxeo.version}</version>
+      </dependency>
+      
+      <!-- other nuxeo-compatible deps -->
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
       </dependency>
       
       <!-- JUNG (graph lib.) -->

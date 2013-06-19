@@ -28,6 +28,7 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
     // Needed to override its MimetypeIconUpdater listener
     "org.nuxeo.ecm.platform.filemanager.core",
     "org.nuxeo.ecm.platform.filemanager.core.listener",
+    "org.nuxeo.ecm.platform.mimetype.core",
     
     // Nuxeo tree snapshot add-on
     "org.nuxeo.snapshot",

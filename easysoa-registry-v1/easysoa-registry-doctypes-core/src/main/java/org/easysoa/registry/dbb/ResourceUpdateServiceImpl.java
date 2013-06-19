@@ -1,5 +1,5 @@
 /**
- * EasySOA Proxy
+ * EasySOA Registry
  * Copyright 2011-2013 Open Wide
  *
  * This program is free software: you can redistribute it and/or modify
@@ -41,7 +41,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author jguillemotte
  */
-class ResourceUpdateServiceImpl implements ResourceUpdateService  {
+public abstract class ResourceUpdateServiceImpl implements ResourceUpdateService  {
 
     @Override
     public boolean isNewResourceRetrieval(DocumentModel newRdi, DocumentModel oldRdi) throws ClientException {
@@ -60,6 +60,22 @@ class ResourceUpdateServiceImpl implements ResourceUpdateService  {
             return false;
         }
         return true;
+    }
+
+    /**
+     * To be called by implementations
+     * @param newRdi
+     * @param oldRdi
+     * @param documentToUpdate
+     * @param resourceDownloadService
+     * @throws ClientException
+     */
+    protected void doUpdateResourceAndFireEvent(DocumentModel newRdi, DocumentModel oldRdi,
+            DocumentModel documentToUpdate, ResourceDownloadService resourceDownloadService) throws ClientException {
+
+    	documentToUpdate = this.doUpdateResource(newRdi, oldRdi, documentToUpdate, resourceDownloadService);
+    	
+        this.fireResourceDownloadedEvent(documentToUpdate); // firing on persisted document (else no SQLBlob so no digest)
     }
 
     @Override
@@ -84,13 +100,12 @@ class ResourceUpdateServiceImpl implements ResourceUpdateService  {
         }
     }
 
-    @Override
-    public void updateResource(DocumentModel newRdi, DocumentModel oldRdi,
+    protected DocumentModel doUpdateResource(DocumentModel newRdi, DocumentModel oldRdi,
             DocumentModel documentToUpdate, ResourceDownloadService resourceDownloadService) throws ClientException {
 
         // Check if update is needed
         if (!isNewResourceRetrieval(newRdi, oldRdi)) {
-            return;
+            return documentToUpdate;
         }
 
         CoreSession coreSession = documentToUpdate.getCoreSession();
@@ -104,7 +119,7 @@ class ResourceUpdateServiceImpl implements ResourceUpdateService  {
             // or maybe none known yet (??)
             // For test only, to remove
             //newUrl = "http://footballpool.dataaccess.eu/data/info.wso?WSDL";
-            return;
+            return documentToUpdate;
         }
         ResourceDownloadInfo resource;
         InputStream file;
@@ -130,8 +145,9 @@ class ResourceUpdateServiceImpl implements ResourceUpdateService  {
         documentToUpdate = coreSession.saveDocument(documentToUpdate); // updates (& triggers events),
         // else Blob stays a StreamingBlob instead of becoming an SQLBlob and can't compute the new digest
         EventListenerBase.enableListeners(documentToUpdate); // reenabling them for resourceDownloaded event
-
-        //coreSession.save(); // persists ; TODO now or later ??
+        ///coreSession.save(); // not required
+        
+        return documentToUpdate; // returning persisted document
     }
 
     /**

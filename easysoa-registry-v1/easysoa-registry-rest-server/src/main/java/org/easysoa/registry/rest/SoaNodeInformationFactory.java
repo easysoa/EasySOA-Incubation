@@ -34,6 +34,9 @@ public class SoaNodeInformationFactory {
         add("deliverabletype");
         add("informationservice");
         add("serviceimpl");
+        add("servicecons");
+        add("javaserviceimplementation"); // TODO move to -java- project ??
+        add("javaserviceconsumption"); // TODO move to -java- project ??
         add("endpoint");
         add("wsdlinfo");
         add("restinfo");

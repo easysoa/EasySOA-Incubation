@@ -27,6 +27,10 @@ import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.OperationInformation;
 import org.easysoa.registry.types.Platform;
+import org.easysoa.registry.types.ServiceImplementation;
+import org.easysoa.registry.types.ids.InformationServiceName;
+import org.easysoa.registry.types.ids.ServiceImplementationName;
+import org.easysoa.registry.types.ids.ServiceNameType;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
 
 import com.thoughtworks.qdox.model.JavaClass;
@@ -379,7 +383,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 	    
 		String wsdlPortTypeName;
 		if (interfaceInfo != null) {
-		    wsdlPortTypeName = toShortNsName(interfaceInfo.getWsNamespace(), interfaceInfo.getWsName());
+		    wsdlPortTypeName = interfaceInfo.getWsPortTypeName();
 		} else {
 		    wsdlPortTypeName = toShortNsName(wsNamespace, wsName);
 		}
@@ -387,8 +391,9 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 
         JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(
                 this.codeDiscovery.getSubproject(),
-                wsNamespace + ":" + wsName + "=" + serviceName); // TODO NOOOOO rather classname !!!
-        serviceImpl.setTitle(c.getName());
+                new ServiceImplementationName(ServiceNameType.WEB_SERVICE, // ?????
+                wsdlPortTypeName, c.getFullyQualifiedName())); // serviceName
+        serviceImpl.setTitle(c.getName()); // c.getName() (shortcut) or serviceImpl.getSoaName() ?
         
 		// TODO Cleaner porttype/servicename discovery + revert soanodeid
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, wsdlPortTypeName);
@@ -441,7 +446,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 	    return informationService;
 	}
 	
-	private String toShortNsName(String ns, String name) {
+	public static String toShortNsName(String ns, String name) {
 	    return '{' + ns + '}' + name;
 	}
 

@@ -23,6 +23,7 @@ package org.easysoa.registry.dbb;
 import org.apache.log4j.Logger;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.work.AbstractWork;
+import org.nuxeo.runtime.api.Framework;
 
 /**
  *
@@ -51,11 +52,21 @@ public class AsyncResourceUpdateWork extends AbstractWork {
 
     @Override
     public void work() throws Exception {
+    	String repositoryName = null;
+        initSession(repositoryName);
+        // if the runtime has shutdown (normally because tests are finished)
+        // this can happen, see NXP-4009
+        if (session.getPrincipal() == null) {
+            return;
+        }
 
-        ResourceUpdateService service = new ResourceUpdateServiceImpl();
+        ResourceUpdateService service = Framework.getService(SyncResourceUpdateService.class);
+        
+        // getting a document with a session for the service below (requires it to be TODO) :
+        documentToUpdate = session.getDocument(documentToUpdate.getRef());
+
+        // Update resource & fire event
         service.updateResource(newRdi, oldRdi, documentToUpdate, resourceDownloadService);
-        service.fireResourceDownloadedEvent(documentToUpdate);
-
     }
 
 }

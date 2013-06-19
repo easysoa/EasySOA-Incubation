@@ -28,6 +28,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
+import org.easysoa.registry.dbb.ConfigurableResourceUpdateService;
 import org.easysoa.registry.test.AbstractWebEngineTest;
 import org.easysoa.registry.test.EasySOAWebEngineFeature;
 import org.easysoa.registry.types.Endpoint;
@@ -35,6 +36,7 @@ import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.types.listeners.ResourceListener;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -66,17 +68,15 @@ public class ResourceUpdateTest extends AbstractWebEngineTest {
 
     @Inject
     DocumentService documentService;
+    
+    @After
+    public void resetConfigurableResourceUpdateService() {
 
-    /*@Test
-    public void testHello() throws HttpException, IOException {
-        HttpClient httpClient = new HttpClient();
-        //GetMethod get = new GetMethod("http://localhost:" + EasySOAWebEngineFeature.PORT + "/hello");
-        GetMethod get = new GetMethod("http://localhost:18080/hello");
-        int statusCode = httpClient.executeMethod(get);
-        Assert.assertEquals(200, statusCode);
-        String response = get.getResponseBodyAsString();
-        Assert.assertEquals(response, "Hello WebEngine");
-    }*/
+        // TODO : remove the setSynchronousUpdateService method and
+        // use Nuxeo deploy configuration instead to keep the sync update test active
+    	ConfigurableResourceUpdateService configurableResourceUpdateService = Framework.getLocalService(ConfigurableResourceUpdateService.class);
+    	configurableResourceUpdateService.setSynchronousUpdateService(false);
+    }
 
     @Test
     public void testMock() throws HttpException, IOException {
@@ -95,7 +95,8 @@ public class ResourceUpdateTest extends AbstractWebEngineTest {
 
         // TODO : remove the setSynchronousUpdateService method and
         // use Nuxeo deploy configuration instead to keep the sync update test active
-        ResourceListener.setSynchronousUpdateService(true);
+    	ConfigurableResourceUpdateService configurableResourceUpdateService = Framework.getLocalService(ConfigurableResourceUpdateService.class);
+    	configurableResourceUpdateService.setSynchronousUpdateService(true);
 
         SoaNodeId discoveredEndpointId = new EndpointId("Production", MOCK_SERVER_ENDPOINT_URL);
         HashMap<String, Object> properties = new HashMap<String, Object>();

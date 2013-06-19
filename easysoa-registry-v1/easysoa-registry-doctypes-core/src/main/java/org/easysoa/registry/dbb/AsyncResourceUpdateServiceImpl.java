@@ -1,5 +1,5 @@
 /**
- * EasySOA Proxy
+ * EasySOA Registry
  * Copyright 2011-2013 Open Wide
  *
  * This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author jguillemotte
  */
-public class AsyncResourceUpdateServiceImpl extends ResourceUpdateServiceImpl {
+public class AsyncResourceUpdateServiceImpl extends ResourceUpdateServiceImpl implements AsyncResourceUpdateService {
 
     private static Logger logger = Logger.getLogger(AsyncResourceUpdateServiceImpl.class);
 
@@ -43,6 +43,12 @@ public class AsyncResourceUpdateServiceImpl extends ResourceUpdateServiceImpl {
             return;
         }
 
+        if (documentToUpdate.isDirty()) {
+        	// write if dirty (required ex. on documentCreated & async...)
+        	documentToUpdate.getCoreSession().saveDocument(documentToUpdate);
+        }
+        documentToUpdate.getCoreSession().save(); // not required //// TODO TDO
+        
         // Get the Nuxeo WorkManager
         WorkManager service = Framework.getLocalService(WorkManager.class);
 

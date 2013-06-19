@@ -45,17 +45,18 @@
                                 <tr>
                                     <td width="80%">BusinessServices sans interface (InformationService) :</td>
                                     <td width="10%">0</td>
-                                    <td width="10%">0%</td>
+                                    <td width="10%">0 %</td>
                                 </tr>
                                 <tr>
-                                    <td width="80%">InformationServices sans architecture (sans composant) :</td>
-                                    <td width="10%">8</td>
-                                    <td width="10%">25%</td>
+                                    <#assign indicator = indicators["serviceWithoutComponent"]/>
+                                    <td width="80%" title="${indicator.description}">InformationServices sans architecture (sans composant) :</td>
+                                    <td width="10%" title="${indicator.description}">${indicator.count}</td>
+                                    <td width="10%" title="${indicator.description}">${indicator.percentage} %</td>
                                 </tr>
                                 <tr>
                                     <td width="80%">Composant sans contrainte de Plateforme :</td>
                                     <td width="10%">5</td>
-                                    <td width="10%">12%</td>
+                                    <td width="10%">12 %</td>
                                 </tr>                                
                             </table>
                         </p>

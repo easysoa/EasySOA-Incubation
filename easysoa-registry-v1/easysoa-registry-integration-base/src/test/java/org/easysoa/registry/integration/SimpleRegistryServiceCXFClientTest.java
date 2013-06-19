@@ -3,13 +3,14 @@
  */
 package org.easysoa.registry.integration;
 
+import junit.framework.Assert;
+
 import org.easysoa.registry.rest.integration.ServiceInformation;
 import org.easysoa.registry.rest.integration.SimpleRegistryService;
 import org.easysoa.registry.rest.integration.ServiceInformations;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.testng.Assert;
 
 /**
  * CXF Client (Spring) for Simple registry Service

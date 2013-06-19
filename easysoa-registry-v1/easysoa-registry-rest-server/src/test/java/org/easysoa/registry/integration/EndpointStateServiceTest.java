@@ -9,6 +9,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import junit.framework.Assert;
+
 import org.apache.log4j.Logger;
 import org.easysoa.registry.rest.AbstractRestApiTest;
 import org.easysoa.registry.rest.integration.ServiceLevelHealth;
@@ -22,7 +24,6 @@ import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
-import org.testng.Assert;
 
 import com.google.inject.Inject;
 import com.sun.jersey.api.client.Client;

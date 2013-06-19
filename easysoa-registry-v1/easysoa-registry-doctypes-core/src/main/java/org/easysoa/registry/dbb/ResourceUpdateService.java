@@ -41,7 +41,7 @@ public interface ResourceUpdateService {
      * Update resource method
      * @param newRdi The new resource
      * @param oldRdi The old resource
-     * @param documentToUpdate The registry document to update
+     * @param documentToUpdate The registry document to update (must have a CoreSession)
      * @param resourceDownloadService to be used to download the resource from its url
      * @throws Exception 
      */
@@ -50,10 +50,9 @@ public interface ResourceUpdateService {
     
     /**
      * Fire a "resourceDownloaded" event
-     * @param coreSession The Nuxeo core session
-     * @param document The document to associate with the event
+     * @param document The document to associate with the event (must have a CoreSession)
      * @throws ClientException
-     */    
+     */
     public void fireResourceDownloadedEvent(DocumentModel document) throws ClientException;
     
 }

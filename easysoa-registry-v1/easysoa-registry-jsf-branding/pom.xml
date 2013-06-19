@@ -11,4 +11,13 @@
   
   <artifactId>easysoa-registry-jsf-branding</artifactId>
   <name>EasySOA Registry JSF UI Branding</name>
+  
+  <dependencies>
+    <!-- required (to override theme...) -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.platform</groupId>
+      <artifactId>nuxeo-platform-virtualnavigation-web</artifactId>
+    </dependency>
+  </dependencies>
+  
 </project>

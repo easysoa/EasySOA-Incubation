@@ -1,5 +1,5 @@
 /**
- * EasySOA Proxy
+ * EasySOA Registry
  * Copyright 2011-2013 Open Wide
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,8 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  * @author jguillemotte
  */
-public class SynchronousResourceUpdateServiceImpl extends ResourceUpdateServiceImpl {
+public class SynchronousResourceUpdateServiceImpl extends ResourceUpdateServiceImpl
+		implements SyncResourceUpdateService {
 
     private static Logger logger = Logger.getLogger(SynchronousResourceUpdateServiceImpl.class);
     // TODO : document service to get the rdi attributes
@@ -44,11 +45,8 @@ public class SynchronousResourceUpdateServiceImpl extends ResourceUpdateServiceI
     public void updateResource(DocumentModel newRdi, DocumentModel oldRdi,
             DocumentModel documentToUpdate, ResourceDownloadService resourceDownloadService) throws ClientException {
 
-        // Update resource
-        super.updateResource(newRdi, oldRdi, documentToUpdate, resourceDownloadService);
-
-        // Fire event
-        super.fireResourceDownloadedEvent(documentToUpdate);
+        // Update resource & fire event
+        super.doUpdateResourceAndFireEvent(newRdi, oldRdi, documentToUpdate, resourceDownloadService);
     }
 
 }

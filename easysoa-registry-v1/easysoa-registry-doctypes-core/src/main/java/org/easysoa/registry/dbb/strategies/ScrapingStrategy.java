@@ -74,8 +74,12 @@ public class ScrapingStrategy extends DefaultAbstractStrategy implements Service
             for (Object o : links) {
                 TagNode link = (TagNode) o;
                 try {
-                    String ref = new URL(url, link.getAttributeByName("href"))
-                            .toString();
+                	String linkHref = link.getAttributeByName("href");
+                	if (linkHref == null) {
+                		// NB. happens in some bad html
+                		continue ;
+                	}
+                    String ref = new URL(url, linkHref).toString();
                     String name = (link.getText() != null) ? link.getText()
                             .toString() : ref; // TODO else title attr
     
@@ -104,8 +108,8 @@ public class ScrapingStrategy extends DefaultAbstractStrategy implements Service
                         foundServicesNames.add(name);
                     }
     
-                } catch (MalformedURLException e) {
-                    // Nothing (link parsing failure)
+                } catch (Exception e) {
+                    // Nothing (link parsing failure: MalformedURLException or anything else...)
                 }
             }
             

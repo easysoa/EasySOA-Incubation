@@ -14,5 +14,7 @@ public interface JavaServiceConsumption extends ServiceConsumption {
     static final String XPATH_CONSUMEDINTERFACELOCATION = "javasc:consumedInterfaceLocation";
     
     String getConsumedInterface() throws Exception;
+    String getConsumerClass() throws Exception;
+    String getConsumedInterfaceLocation() throws Exception;
 
 }

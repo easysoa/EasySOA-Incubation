@@ -82,8 +82,8 @@ login = function(request, response, next) {
 								response.writeHead(200, JSONP_HEADERS);
 								response.end(params.callback + '({result: "ok"})');
 							} else {
-                                                                console.log("[DEBUG] prev : " + params.prev);
-								response.redirect(params.prev + "&visibility=" + request.query.visibility || '/easysoa?subprojectId=' + request.query.subprojectId + "&visibility=" + request.query.visibility);
+                                                                console.log("[DEBUG] prev : " + params.prev + " - decoded : " + decodeURIComponent(params.prev));
+								response.redirect(decodeURIComponent(params.prev));
 							}
 						} else {
 							redirectToLoginForm(request, response, true);
@@ -122,7 +122,7 @@ logout = function(request, response, next) {
 	if (request.query && request.query.callback) {
 		response.end(request.query.callback + '({result: "ok"})');
 	} else {
-		response.redirect('/easysoa');
+		response.redirect(request.url);
 	}
 };
 
@@ -180,7 +180,7 @@ redirectToLoginForm = function(request, response, error, nuxeoNotReady) {
 					+ '({result: "error", error: "Forbidden"})');
 		}
 	} else {
-		var prevPage = request.body.prev || request.query.prev || request.url;
+		var prevPage = request.body.prev || request.query.prev || encodeURIComponent(request.url);
 		var destinationUrl = LOGIN_FORM_PATH + '?'
 				//+ ((prevPage) ? 'prev=' + prevPage + '&' : '')
                                 + ((prevPage) ? 'prev=' + prevPage : '')

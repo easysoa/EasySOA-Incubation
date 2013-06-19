@@ -40,13 +40,21 @@ function getUrlVars()
 }
 
    $(window).load(function () {
-        $('#frame').attr('src', "default.html?subprojectId=" + getUrlVars()['subprojectId'] + "&visibility=" + getUrlVars()['visibility']);
+	    var visibility = getUrlVars()['visibility'];
+        $('#frame').attr('src', "default.html?subprojectId=" + getUrlVars()['subprojectId'] + "&visibility=" + visibility);
         // Display the current context
         if(typeof getUrlVars()["subprojectId"] != "undefined"){
-            $('#context').html(formatPhaseForDisplay(decodeURI(getUrlVars()["subprojectId"])));
-            $('#easysoa-context').attr('value', decodeURI(getUrlVars()["subprojectId"]));
-            var link = "http://localhost:8080/nuxeo/site/easysoa/dashboard/?subprojectId=" + decodeURI(getUrlVars()["subprojectId"]) + "&visibility=" + getUrlVars()["visibility"];
-            $('#matchingLink').attr("href", link);
+        	try {
+            	var subprojectId = decodeURIComponent(getUrlVars()["subprojectId"]);
+                $('#context').html(formatPhaseForDisplay(subprojectId));
+                $('#easysoa-context').attr('value', subprojectId);
+                var link = "http://localhost:8080/nuxeo/site/easysoa/dashboard/?subprojectId=" + subprojectId + "&visibility=" + visibility;
+                $('#matchingLink').attr("href", link);
+        	} catch (e) {
+        		alert("Projet erroné, fermez et réouvrez la page de découverte web.\n\n"
+        				+ "Détails :\nerreur de décodage de subprojectId (" + getUrlVars()["subprojectId"]
+        				+ ")\n" + e.message);
+        	}
         }
     });
 

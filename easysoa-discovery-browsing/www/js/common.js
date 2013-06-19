@@ -17,7 +17,9 @@ $('#headerUserBar').ready(function() {
 		success: function(data, textStatus, jqXHR) {
 		    var data = jQuery.parseJSON(jqXHR.responseText);
 		    if (data.username) {
-		   		$('#headerUserBar').html('<img src="/img/user.png" /> Logged as <span id="username">'+data.username+'</span> (<a href="/logout">logout</a>)');
+		   		$('#headerUserBar').html('<img src="/img/user.png" /> Logged as <span id="username">'
+		   				+ data.username + '</span> (<a href="/logout?prev='
+		   				+ encodeURIComponent(encodeURIComponent(document.URL.replace(document.location.origin, ''))) + '">logout</a>)');
 		   		window.username = data.username;
 		    }
 		    else {

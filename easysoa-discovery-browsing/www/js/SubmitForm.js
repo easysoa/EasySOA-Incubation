@@ -31,20 +31,24 @@ $(function() {
           var environmentName = $('#environmentSelect option').filter(":selected").attr('value');
           var context = $('#easysoa-context').attr('value');
 
+          var serviceName = $('#submitService').attr('value'); //FIXME Better property sync with getServiceName()
           var url = this.getURL();
+          var endpointUrl = url.replace('?wsdl', '').replace('?WSDL', '');
+          
 			    jQuery.ajax({
 			        url: '/dbb/send?token=' + Math.random(), // avoids caching
 			        data: {
 			            'id': {
                                       'subprojectId' : context,
 			              'type': 'Endpoint',
-			              'name': environmentName + ':' + url
+			              'name': environmentName + ':' + endpointUrl
 			            },
 			            'properties': {
                                       'spnode:subproject':context,
-			              'endp:url': url,
+			              'endp:url': endpointUrl,
 			              'env:environment': environmentName,
-			              'dc:title': environmentName + ': ' + $('#submitService').attr('value'), //FIXME Better property sync with getServiceName()
+			              'dc:title': environmentName + ' - ' + endpointUrl, // rather than serviceName because not discriminant enough
+			              'dc:description': environmentName + ' - ' + serviceName,
                                       'rdi:url':url
 			              // TODO v1 LATER component / platform, probe
 			            }

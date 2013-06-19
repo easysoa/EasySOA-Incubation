@@ -51,6 +51,7 @@ exports.SERVICE_FINDER_IGNORE = [
   'jQuery',
   '/socket\\.io/',
   'google',
+  '8080', // nuxeo registry
   '8083',
   NUXEO_URL
 ];

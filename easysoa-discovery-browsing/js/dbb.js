@@ -96,7 +96,7 @@ exports.handleProxyRequest = function(request, response) {
                     findWSDLsAndReturnToDbbProxyUi(nuxeoSession, request.url);                    
                 } else {
                     // Send back an error
-                    console.log("ERROR:", "Not logged in");
+                    console.log("ERROR:", "Not logged in, " + request.url);
                     response.writeHead(500);
                     response.end("You are not logged in !");
                 }

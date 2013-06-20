@@ -22,7 +22,9 @@ import fr.axxx.pivotal.client.model.InformationAPV;
 import fr.axxx.pivotal.persistence.EntityManagerProvider;
 
 /**
- * ClientService implementation on top of JPA 
+ * ClientService implementation on top of JPA.
+ * <p/>
+ * Transactions are managed explicitly.
  */
 @Scope("COMPOSITE")
 public class ClientServiceImpl implements ClientService {
@@ -32,6 +34,7 @@ public class ClientServiceImpl implements ClientService {
     @Reference
     public EntityManagerProvider database;
     
+    /** The APV application's remote service that is called to create a PrecomptePartenaire */
     @Reference
     public PrecomptePartenaireService precomptePartenaireService;
     

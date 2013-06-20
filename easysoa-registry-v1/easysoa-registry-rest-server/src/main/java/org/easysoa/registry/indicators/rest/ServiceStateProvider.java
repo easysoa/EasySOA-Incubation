@@ -33,26 +33,24 @@ import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.Subproject;
-import org.easysoa.registry.utils.ContextVisibility;
+import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.runtime.api.Framework;
 
-// XXX Outdated (Relied on the Service doctype)
-public class ServiceStateProvider implements IndicatorProvider {
+/**
+ * Computes various indicators on services & their impls & endpoints
+ * 
+ * @author mkalam-alami, mdutoo
+ *
+ */
+public class ServiceStateProvider extends IndicatorProviderBase {
 
-    //private static final String SERVICE_DOCTYPE_INDICATOR = DoctypeCountProvider.getName(InformationService.DOCTYPE);
-    private static final String SERVICE_DOCTYPE_INDICATOR = "Nombre de " + InformationService.DOCTYPE;
-
-    private String category;
+    private static final String SERVICE_DOCTYPE_INDICATOR = InformationService.DOCTYPE;
 
     ServiceStateProvider(String category){
-        if(category == null){
-            this.category = "";
-        } else {
-            this.category = category;
-        }
+       super(category);
     }
 
     @Override
@@ -65,18 +63,7 @@ public class ServiceStateProvider implements IndicatorProvider {
             Map<String, IndicatorValue> computedIndicators, String visibility) throws Exception {
         DocumentService documentService = Framework.getService(DocumentService.class);
 
-        String subprojectCriteria;
-        if (subprojectId == null) {
-            subprojectCriteria = "";
-        } else {
-            if(ContextVisibility.STRICT.getValue().equals(visibility)){
-                subprojectCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);
-            } else {
-                subprojectCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));
-            }
-        }
+        String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
 
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
         DocumentModelList serviceList = documentService.query(session, DocumentService.NXQL_SELECT_FROM
@@ -121,11 +108,8 @@ public class ServiceStateProvider implements IndicatorProvider {
         		serviceWithoutInterfaceNb++;
         	}
 
-            // finding (all) its implems and then their endpoints
-            List<DocumentModel> serviceImpls = documentService.query(session, DocumentService.NXQL_SELECT_FROM
-            		+ ServiceImplementation.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
-                    + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + "='" + service.getId() + "'"
-                    + DocumentService.NXQL_AND + ServiceImplementation.XPATH_ISMOCK + "<>'true'", true, false); // WARNING 'true' doesn't work in junit
+            // finding (all) its implems (actual or mock) and then their endpoints
+            List<DocumentModel> serviceImpls = documentService.getImplementationsOfServiceInCriteria(service, subprojectCriteria);
             if (serviceImpls.isEmpty()) {
                 serviceWithoutImplementationNb++;
                 //serviceWhithoutImplementationIdSet.add(service.getId());
@@ -136,22 +120,25 @@ public class ServiceStateProvider implements IndicatorProvider {
                 for (DocumentModel serviceImplModel : serviceImpls) {
                     ServiceImplementation serviceImpl = serviceImplModel.getAdapter(ServiceImplementation.class);
 
-                    DocumentModel productionEndpoint = documentService.getEndpointOfImplementation(serviceImplModel, Endpoint.ENV_PRODUCTION, subprojectId);
                     if (serviceImpl.isMock()) {
                     	isAServiceWithMockImplementation = true;
+                    	
                     } else {
+                    	
                     	Serializable[] tests = (Serializable[]) serviceImplModel.getPropertyValue(ServiceImplementation.XPATH_TESTS);
                     	if (tests.length != 0) {
                     		isAServiceWithTestedImplementation = true;
                     	}
-                    	if (productionEndpoint == null) {
+                    	
+                        DocumentModel productionEndpoint = documentService.getEndpointOfImplementation(serviceImplModel, Endpoint.ENV_PRODUCTION, subprojectId);
+                        if (productionEndpoint == null) {
                             serviceWithImplementationWhithoutProductionEndpointNb++; // at most one production endpoint (else should pass through boolean)
-                    	}
-                    }
+                        }
 
-                    List<DocumentModel> endpoints = documentService.getEndpointsOfImplementation(serviceImplModel, subprojectId);
-                    if (!serviceImpl.isMock() && (endpoints == null || endpoints.isEmpty())) {
-                        isAServiceWithImplementationWhithoutEndpoint = false;
+                        List<DocumentModel> endpoints = documentService.getEndpointsOfImplementation(serviceImplModel, subprojectId);
+                        if (endpoints != null && !endpoints.isEmpty()) {
+                            isAServiceWithImplementationWhithoutEndpoint = false;
+                        }
                     }
                 }
                 if (isAServiceWithImplementationWhithoutEndpoint) {
@@ -167,58 +154,45 @@ public class ServiceStateProvider implements IndicatorProvider {
         }
 
         // Indicators results registration
-        indicators.put("serviceWithoutActor",
-                new IndicatorValue("", category, serviceWithoutActorNb,
-                        (servicesCount > 0) ? (100 * serviceWithoutActorNb / servicesCount) : 0));
-        indicators.put("serviceWithoutInterface",
-                new IndicatorValue("", category, serviceWithoutInterfaceNb,
-                        (servicesCount > 0) ? (100 * serviceWithoutInterfaceNb / servicesCount) : 0));
-        indicators.put("serviceWithoutComponent",
-                new IndicatorValue("", category, serviceWithoutComponentNb,
-                        (servicesCount > 0) ? (100 * serviceWithoutComponentNb / servicesCount) : 0));
+        newIndicator(indicators, "serviceWithoutActor", serviceWithoutActorNb,
+                        (servicesCount > 0) ? (100 * serviceWithoutActorNb / servicesCount) : 0);
+        newIndicator(indicators, "serviceWithoutInterface", serviceWithoutInterfaceNb,
+                        (servicesCount > 0) ? (100 * serviceWithoutInterfaceNb / servicesCount) : 0);
+        newIndicator(indicators, "serviceWithoutComponent", serviceWithoutComponentNb,
+                        (servicesCount > 0) ? (100 * serviceWithoutComponentNb / servicesCount) : 0);
 
         // TODO "main" vs "test" implementation
-        indicators.put("serviceWithoutImplementation",
-                new IndicatorValue("", category, serviceWithoutImplementationNb,
-                        (servicesCount > 0) ? (100 * serviceWithoutImplementationNb / servicesCount) : 0));
+        newIndicator(indicators, "serviceWithoutImplementation", serviceWithoutImplementationNb,
+                        (servicesCount > 0) ? (100 * serviceWithoutImplementationNb / servicesCount) : 0);
         int serviceWithImplementationNb = servicesCount - serviceWithoutImplementationNb;
-        indicators.put("serviceWithImplementation",
-                new IndicatorValue("", category, serviceWithImplementationNb,
-                        (servicesCount > 0) ? (100 * serviceWithImplementationNb / servicesCount) : 0)); // for governance completion
+        newIndicator(indicators, "serviceWithImplementation", serviceWithImplementationNb,
+                        (servicesCount > 0) ? (100 * serviceWithImplementationNb / servicesCount) : 0); // for governance completion
 
-        indicators.put("serviceWithMockImplementation",
-                new IndicatorValue("", category, serviceWithMockImplementationNb,
-                        (servicesCount > 0) ? (100 * serviceWithMockImplementationNb / servicesCount) : 0)); // for governance completion
-        indicators.put("serviceWithTestedImplementation",
-                new IndicatorValue("", category, serviceWithTestedImplementationNb,
-                        (servicesCount > 0) ? (100 * serviceWithTestedImplementationNb / servicesCount) : 0)); // for governance completion
+        newIndicator(indicators, "serviceWithMockImplementation", serviceWithMockImplementationNb,
+                        (servicesCount > 0) ? (100 * serviceWithMockImplementationNb / servicesCount) : 0); // for governance completion
+        newIndicator(indicators, "serviceWithTestedImplementation", serviceWithTestedImplementationNb,
+                        (servicesCount > 0) ? (100 * serviceWithTestedImplementationNb / servicesCount) : 0); // for governance completion
         
         // TODO "test", "integration", "staging" ("design", "dev")
-        indicators.put("serviceWithImplementationWhithoutEndpoint",
-                new IndicatorValue("", category, serviceWithImplementationWhithoutEndpointNb,
-                        (servicesCount - serviceWithoutImplementationNb > 0) ? (100 * serviceWithImplementationWhithoutEndpointNb / serviceWithImplementationNb) : 0));
+        newIndicator(indicators, "serviceWithImplementationWhithoutEndpoint", serviceWithImplementationWhithoutEndpointNb,
+                        (servicesCount - serviceWithoutImplementationNb > 0) ? (100 * serviceWithImplementationWhithoutEndpointNb / serviceWithImplementationNb) : 0);
 
-        indicators.put("serviceWithImplementationWhithoutProductionEndpoint",
-                new IndicatorValue("", category, serviceWithImplementationWhithoutProductionEndpointNb,
-                        (servicesCount - serviceWithoutImplementationNb > 0) ? (100 * serviceWithImplementationWhithoutProductionEndpointNb / serviceWithImplementationNb) : 0));
+        newIndicator(indicators, "serviceWithImplementationWhithoutProductionEndpoint", serviceWithImplementationWhithoutProductionEndpointNb,
+                        (servicesCount - serviceWithoutImplementationNb > 0) ? (100 * serviceWithImplementationWhithoutProductionEndpointNb / serviceWithImplementationNb) : 0);
 
         int serviceWhithoutEndpointNb = serviceWithoutImplementationNb + serviceWithImplementationWhithoutEndpointNb;
-        indicators.put("serviceWithoutEndpoint",
-                new IndicatorValue("", category, serviceWhithoutEndpointNb,
-                        (servicesCount > 0) ? (100 * serviceWhithoutEndpointNb / servicesCount) : 0));
+        newIndicator(indicators, "serviceWithoutEndpoint", serviceWhithoutEndpointNb,
+                        (servicesCount > 0) ? (100 * serviceWhithoutEndpointNb / servicesCount) : 0);
         int serviceWithEndpointNb = servicesCount - serviceWhithoutEndpointNb;
-        indicators.put("serviceWithEndpoint",
-                new IndicatorValue("", category, serviceWithEndpointNb,
-                        (servicesCount > 0) ? (100 * serviceWithEndpointNb / servicesCount) : 0)); // for governance completion
+        newIndicator(indicators, "serviceWithEndpoint", serviceWithEndpointNb,
+                        (servicesCount > 0) ? (100 * serviceWithEndpointNb / servicesCount) : 0); // for governance completion
 
         int serviceWhithoutProductionEndpointNb = serviceWithoutImplementationNb + serviceWithImplementationWhithoutProductionEndpointNb;
-        indicators.put("serviceWithoutProductionEndpoint",
-                new IndicatorValue("", category, serviceWhithoutProductionEndpointNb,
-                        (servicesCount > 0) ? (100 * serviceWhithoutProductionEndpointNb / servicesCount) : 0));
+        newIndicator(indicators, "serviceWithoutProductionEndpoint", serviceWhithoutProductionEndpointNb,
+                        (servicesCount > 0) ? (100 * serviceWhithoutProductionEndpointNb / servicesCount) : 0);
         int serviceWithProductionEndpointNb = servicesCount - serviceWhithoutProductionEndpointNb;
-        indicators.put("serviceWithProductionEndpoint",
-                new IndicatorValue("", category, serviceWithProductionEndpointNb,
-                        (servicesCount > 0) ? (100 * serviceWithProductionEndpointNb / servicesCount) : 0)); // for governance completion
+        newIndicator(indicators, "serviceWithProductionEndpoint", serviceWithProductionEndpointNb,
+                        (servicesCount > 0) ? (100 * serviceWithProductionEndpointNb / servicesCount) : 0); // for governance completion
 
         return indicators;
     }

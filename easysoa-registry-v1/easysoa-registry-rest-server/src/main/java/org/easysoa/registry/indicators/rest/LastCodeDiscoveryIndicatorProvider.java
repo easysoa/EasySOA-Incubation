@@ -1,5 +1,5 @@
 /**
- * EasySOA Proxy
+ * EasySOA Registry
  * Copyright 2011-2013 Open Wide
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -22,8 +22,8 @@ package org.easysoa.registry.indicators.rest;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.utils.NXQLQueryHelper;
@@ -36,27 +36,15 @@ import org.nuxeo.runtime.api.Framework;
  * Compute the last Code Discovery Indicator.
  * @author jguillemotte
  */
-public class LastCodeDiscoveryIndicatorProvider implements IndicatorProvider {
-
-    private String category;
+public class LastCodeDiscoveryIndicatorProvider extends IndicatorProviderBase {
     
     public LastCodeDiscoveryIndicatorProvider(String category){
-        if(category == null){
-            this.category = "";
-        } else {
-            this.category = category;
-        }
-    }
-    
-    @Override
-    public List<String> getRequiredIndicators() {
-        return null;
+        super(category);
     }
 
     @Override
     public Map<String, IndicatorValue> computeIndicators(CoreSession session, String subprojectId, Map<String, IndicatorValue> computedIndicators, String visibility) throws Exception {
         
-
     	DocumentService documentService = Framework.getService(DocumentService.class);        
         
         // Init the result map
@@ -89,10 +77,9 @@ public class LastCodeDiscoveryIndicatorProvider implements IndicatorProvider {
         for (String application : appToModifiedMap.keySet()) {
         	Date lastModificationDate = appToModifiedMap.get(application);
             // TODO : modify the IndicatorValue to be able to pass dates as value
-            IndicatorValue iValue = new IndicatorValue("Date de la dernière découverte code/analyse pour l'application "
-            		+ application, category, -1, -1);
-            iValue.setDate(lastModificationDate);
-            indicators.put("Date de la dernière découverte code/analyse pour l'application " + application, iValue);
+        	// TODO : i18n
+            newIndicator(indicators, "Date de la dernière découverte code/analyse pour l'application " + application, -1, -1)
+                .setDate(lastModificationDate);;
         }
         
         return indicators;

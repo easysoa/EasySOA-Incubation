@@ -51,18 +51,9 @@
                         </p>
                         <p>
                             <table class="table table-bordered" width="100%">
-                                <tr>
-                                    <td width="80%">Nombre de services définis :</td>
-                                    <td width="20%">${indicators["Nombre de InformationService"].count}</td>
-                                </tr>
-                                <tr>
-                                    <td width="80%">Nombre services implémentés :</td>
-                                    <td width="20%">${indicators["Nombre de ServiceImplementation"].count}</td>
-                                </tr>
-                                <tr>
-                                    <td width="80%">Nombre de services déployés :</td>
-                                    <td width="20%">${indicators["Nombre de Endpoint"].count}</td>
-                                </tr>
+                                <@displayIndicatorInTableShort indicators["InformationService"]/>
+                                <@displayIndicatorInTableShort indicators["ServiceImplementation"]/>
+                                <@displayIndicatorInTableShort indicators["Endpoint"]/>
                             </table>
                         </p>
                         <a class="btn btn-primary" href="${Root.path}/cartography/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
@@ -79,10 +70,7 @@
                         </p>
                         <p>
                             <table class="table table-bordered" width="100%">
-                                <tr>
-                                    <td width="80%">Nombre de Placeholders (implémentations inconnues d'endpoints) :</td>
-                                    <td width="20%">${indicators["Nombre de Placeholders"].count}</td>
-                                </tr>
+                                <@displayIndicatorInTableShort indicators["ServiceImplementationPlaceholders"]/>
                             </table>
                         </p>
                         <a class="btn btn-primary" href="${Root.path}/services/matchingFull/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
@@ -105,10 +93,7 @@
                         <p>
                             <!-- Replace by a new indicator showing the the nb or % of services in default -->
                             <table class="table table-bordered" width="100%">
-                                <tr>
-                                    <td width="80%">Nombre de services en défaut :</td>
-                                    <td width="20%">25%<#--${indicators["Never consumed services"].count}--></td>
-                                </tr>
+                                <@displayIndicatorInTableShort indicators["serviceInViolation"]/>
                             </table>
                         </p>
                         <a class="btn btn-primary" href="${Root.path}/monitoring/usage/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
@@ -143,14 +128,8 @@
                         </p>
                         <p>
                             <table class="table table-bordered" width="100%">
-                                <tr>
-                                    <td width="80%">Nombre de service jamais consomés :</td>
-                                    <td width="20%">${indicators["Never consumed services"].count}</td>
-                                </tr>
-                                <tr>
-                                    <td width="80%">Nombre de services n'ayant aucun tag utilisateur :</td>
-                                    <td width="20%">${indicators["Services without at least one user tag"].count}</td>
-                                </tr>
+                                <@displayIndicatorInTableShort indicators["serviceWithoutConsumption"]/>
+                                <@displayIndicatorInTableShort indicators["serviceWithoutUserTag"]/>
                             </table>
                         </p>
                         <a class="btn btn-primary" href="${Root.path}/governance?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a><!-- TODO -->
@@ -169,6 +148,10 @@
                 </li>
             </ul>
 
+
+
+            <#if Root.isDevModeSet()>
+            
             <!-- 2 categories with a separator -->
             <hr style="color:black; background-color:black; height:3px;" />
 
@@ -206,6 +189,9 @@
                     </div>
                 </li>
             </ul>
+            
+            </#if>
+            
         </div>
 
         <a class="btn btn-primary" href="${Root.path}/indicators/?subprojectId=${subprojectId}&visibility=${visibility}">Old indicators page (to remove when finished)</a>

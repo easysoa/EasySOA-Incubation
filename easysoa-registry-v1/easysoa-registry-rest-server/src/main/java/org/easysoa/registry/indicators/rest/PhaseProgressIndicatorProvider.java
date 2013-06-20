@@ -34,21 +34,15 @@ import org.nuxeo.ecm.core.api.CoreSession;
  * @author mdutoo
  *
  */
-public class PhaseProgressIndicatorProvider implements IndicatorProvider {
-
-    private String category;
+public class PhaseProgressIndicatorProvider extends IndicatorProviderBase {
 
     PhaseProgressIndicatorProvider(String category){
-        if(category == null){
-            this.category = "";
-        } else {
-            this.category = category;
-        }
+        super(category);
     }
     
 	@Override
 	public List<String> getRequiredIndicators() {
-        return Arrays.asList("Nombre de " + InformationService.DOCTYPE,
+        return Arrays.asList(InformationService.DOCTYPE,
         		"serviceWithoutActor", "serviceWithoutInterface", "serviceWithoutComponent",
         		"serviceWithImplementation", "serviceWithoutImplementation",
         		"serviceWithMockImplementation", "serviceWithTestedImplementation",
@@ -64,7 +58,7 @@ public class PhaseProgressIndicatorProvider implements IndicatorProvider {
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
 
         // Count indicators - Service-specific
-        int servicesCount = computedIndicators.get("Nombre de " + InformationService.DOCTYPE).getCount();
+        int servicesCount = computedIndicators.get(InformationService.DOCTYPE).getCount();
         int serviceWithoutActorNb = computedIndicators.get("serviceWithoutActor").getCount();
         int serviceWithoutInterfaceNb = computedIndicators.get("serviceWithoutInterface").getCount();
         int serviceWithoutComponentNb = computedIndicators.get("serviceWithoutComponent").getCount();
@@ -79,32 +73,38 @@ public class PhaseProgressIndicatorProvider implements IndicatorProvider {
         // specifications can't be complete without all interfaces, provider actors, components)
         int specificationsProgress = 3 * servicesCount
         		- (serviceWithoutActorNb + serviceWithoutInterfaceNb + serviceWithoutComponentNb);
-        indicators.put("specificationsProgress",
-                new IndicatorValue("", category, specificationsProgress,
+        newIndicator(indicators, "specificationsProgress", specificationsProgress,
                         (servicesCount > 0) ? (100 * specificationsProgress / 3 / servicesCount) : 0,
+                        		"3 * servicesCount - (serviceWhithoutActorNb + serviceWhithoutInterfaceNb + serviceWhithoutComponentNb");
+        /*
                         		"3 * servicesCount[" + servicesCount + "] - (serviceWhithoutActorNb["
                         + serviceWithoutActorNb + "] + serviceWhithoutInterfaceNb[" + serviceWithoutInterfaceNb
                         + "] + serviceWhithoutComponentNb[" + serviceWithoutComponentNb + "]"));
+                        */
 
         // realisation can't be complete without all actual impls, but tested impls & mock impls help closing half the gap
         int realisationProgress = 4 * servicesCount * serviceWithImplementationNb
         		+ serviceWithoutImplementationNb * (serviceWithMockImplementationNb + serviceWithTestedImplementationNb);
-        indicators.put("realisationProgress",
-                new IndicatorValue("", category, realisationProgress,
+        newIndicator(indicators, "realisationProgress", realisationProgress,
                         (servicesCount > 0) ? (100 * realisationProgress / 4 / servicesCount / servicesCount) : 0,
+                                "4 * servicesCount * serviceWithImplementationNb + serviceWhithoutImplementationNb * (serviceWhithMockImplementationNb + serviceWhithTestedImplementationNb)");
+        /*
                         "4 * servicesCount[" + servicesCount + "] * serviceWithImplementationNb[" + serviceWithImplementationNb
                         + "] + serviceWhithoutImplementationNb[" + serviceWithoutImplementationNb + "] * (serviceWhithMockImplementationNb["
                         		+ serviceWithMockImplementationNb + "] + serviceWhithTestedImplementationNb[" + serviceWithTestedImplementationNb + "])"));
+                        		*/
         
         // deploiement can't be complete without all production endpoints, but non-production endpoints help closing half the gap
         int deploiementProgress = 2 * servicesCount * serviceWithProductionEndpointNb
         		+ serviceWithoutProductionEndpointNb * serviceWithEndpointNb;
-        indicators.put("deploiementProgress",
-                new IndicatorValue("", category, deploiementProgress,
+        newIndicator(indicators, "deploiementProgress", deploiementProgress,
                         (servicesCount > 0) ? (100 * deploiementProgress / 2 / servicesCount / servicesCount) : 0,
+                        		"2 * servicesCount * serviceWithProductionEndpointNb + serviceWhithoutProductionEndpointNb * serviceWithEndpointNb");
+        /*
                         		"2 * servicesCount[" + servicesCount + "] * serviceWithProductionEndpointNb["
                         + serviceWithProductionEndpointNb + "] + serviceWhithoutProductionEndpointNb["
                         				+ serviceWithoutProductionEndpointNb + "] * serviceWithEndpointNb[" + serviceWithEndpointNb + "]"));
+                        				*/
         
         return indicators;
 	}

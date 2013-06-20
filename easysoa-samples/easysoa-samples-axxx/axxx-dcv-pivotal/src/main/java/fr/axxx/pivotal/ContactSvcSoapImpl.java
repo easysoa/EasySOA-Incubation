@@ -16,6 +16,10 @@ import fr.axxx.pivotal.client.model.InformationAPV;
 import fr.axxx.pivotal.client.model.ContactClient;
 
 /**
+ * Implementation of ContactSvcSoap on top of Pivotal's FraSCAti service over JPA persistence
+ * architecture. Allows to integrate Pivotal with other applications (especially DPS' APV),
+ * by letting them query and update its database of Clients.
+ * 
  * @author jguillemotte
  *
  */
@@ -26,7 +30,12 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
     
     @Reference
     private ClientService clientService;
-    
+
+	/**
+	 * Creates or updates the given client.
+	 * <br/>
+	 * Does a updateClient.updateClient().
+	 */
     @Override
     public ArrayOfString client(String identifiantClient, String raisonSociale, Integer anciennete, String typeStructure, String numEtVoie, String email, String codePostal, String ville, String pays,
             String tel, String rib, String formeJuridique, String siren, BigDecimal dotGlobAPVN, BigDecimal dontReliquatN1, BigDecimal dontDotN, BigDecimal nbBenefPrevN, BigDecimal montantUtiliseN,
@@ -35,10 +44,14 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
                 anciennete, typeStructure, numEtVoie, email, codePostal, 
                 ville, pays, tel, rib, formeJuridique, siren, dotGlobAPVN, dontReliquatN1, 
                 dontDotN, nbBenefPrevN, montantUtiliseN, nbBenefN);
-        // TODO also amount fields !
         return mapClientToArrayOfString(client);
     }
 
+	/**
+	 * Creates or updates the Information APV entry of the given client and of the given year and public.
+	 * <br/>
+	 * Does a clientService.createOrUpdateInformationApv().
+	 */
     @Override
     public ArrayOfString informationAPV(String identifiantClient, String bilanLibelle, Integer nombre, Integer bilanAnnee) {
         ArrayOfString arrayOfString = new ArrayOfString();
@@ -56,6 +69,11 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
         return arrayOfString;
     }
 
+	/**
+	 * Creates or updates the contact of the given client and of the given type.
+	 * <br/>
+	 * Does a clientService.createOrUpdateContactClient().
+	 */
     @Override
     public ArrayOfString contactClient(String identifiantClient, String nomContact, String prenomContact, String fonctionContact, String telephone, String email, String numEtVoie, String codePostal,
             String ville, String pays) {
@@ -82,6 +100,9 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
         return arrayOfString;
     }
 
+	/**
+	 * Returns how much Clients there is for each TypeStructure, by asking clientService.
+	 */
     @Override
     public GetRepartitionTypeStructureResponse getRepartitionTypeStructure() {
         GetRepartitionTypeStructureResponse response = new GetRepartitionTypeStructureResponse();
@@ -97,6 +118,11 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
         return response;
     }
 
+	/**
+	 * Returns the given existing Client's fields' values, in the same order as in client().
+	 * <br/>
+	 * NB. The return type is maybe wrong ?
+	 */
     @Override
     public ArrayOfString getClient(String identifiantClient) {
         ArrayOfString arrayOfString = new ArrayOfString();
@@ -106,14 +132,15 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
     }
 
     /**
-     * Map a client in an ArrayOfString
+     * Map a client's fields' values to an ArrayOfString
      * @param client The client to map
-     * @return An ArrayOfString containing the client informations
+     * @return An ArrayOfString containing the client informations, in the same order as in client()
      */
     private ArrayOfString mapClientToArrayOfString(Client client){
         ArrayOfString arrayOfString = new ArrayOfString();
         arrayOfString.getString().add(client.getIdentifiantClient());
         arrayOfString.getString().add(client.getRaisonSociale());
+        arrayOfString.getString().add(String.valueOf(client.getAnciennete()));
         arrayOfString.getString().add(client.getTypeStructure());
         arrayOfString.getString().add(client.getNumEtVoie());
         arrayOfString.getString().add(client.getEmail());
@@ -127,9 +154,9 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
         arrayOfString.getString().add(String.valueOf(client.getDotGlobAPVN()));
         arrayOfString.getString().add(String.valueOf(client.getDontReliquatN1()));
         arrayOfString.getString().add(String.valueOf(client.getDontDotN()));
-        arrayOfString.getString().add(String.valueOf(client.getNbBenefN()));
-        arrayOfString.getString().add(String.valueOf(client.getMontantUtiliseN()));
         arrayOfString.getString().add(String.valueOf(client.getNbBenefPrevN()));
+        arrayOfString.getString().add(String.valueOf(client.getMontantUtiliseN()));
+        arrayOfString.getString().add(String.valueOf(client.getNbBenefN()));
         return arrayOfString;
     }
     

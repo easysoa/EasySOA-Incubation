@@ -1,6 +1,6 @@
 /**
  * EasySOA Registry
- * Copyright 2012 Open Wide
+ * Copyright 2012-2013 Open Wide
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,9 +22,7 @@ package org.easysoa.registry.indicators.rest;
 
 import java.util.Map;
 
-import org.easysoa.registry.DocumentService;
-import org.easysoa.registry.SubprojectServiceImpl;
-import org.easysoa.registry.utils.ContextVisibility;
+import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.IterableQueryResult;
@@ -55,21 +53,10 @@ public abstract class QueryCountIndicator extends Indicator {
             Map<String, IndicatorValue> computedIndicators, String visibility) throws ClientException {
         //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
         // TODO default or not ??
-        String subprojectPathCriteria;
-        if (subprojectId == null) {
-            subprojectPathCriteria = "";
-        } else {
-            //TODO : To replace by SubprojectServiceImpl.buildCriteriaSeenFromSubproject(getSubprojectById(CoreSession documentManager, String subprojectId))
-            if (ContextVisibility.STRICT.getValue().equals(visibility)) {
-                subprojectPathCriteria = DocumentService.NXQL_AND
-                        + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);
-            } else {
-                subprojectPathCriteria = DocumentService.NXQL_AND
-                        + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));
-            }
-        }
+    	
+    	String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
 
-        IterableQueryResult queryResult = session.queryAndFetch(valueQuery + subprojectPathCriteria, NXQL.NXQL);
+        IterableQueryResult queryResult = session.queryAndFetch(valueQuery + subprojectCriteria, NXQL.NXQL);
         try {
             if (this.totalQuery == null) {
                 return new IndicatorValue(this.getName(), this.getCategory(), (int) queryResult.size(), -1);

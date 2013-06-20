@@ -9,6 +9,7 @@ import java.util.Map;
 import org.easysoa.discovery.code.ParsingUtils;
 import org.easysoa.discovery.code.model.JavaServiceConsumptionInformation;
 import org.easysoa.discovery.code.model.JavaServiceInterfaceInformation;
+import org.easysoa.registry.types.ServiceConsumption;
 import org.easysoa.registry.types.java.MavenDeliverable;
 
 import com.thoughtworks.qdox.model.AbstractJavaEntity;
@@ -105,10 +106,15 @@ public class AnnotatedServicesConsumptionFinder implements ServiceConsumptionFin
         if (allInjected || injectionAnnotation != null) {
             String itfClassName = injectedType.getFullyQualifiedName();
             if (serviceInterfaces.containsKey(itfClassName)) {
-                discoveredConsumptions.add(new JavaServiceConsumptionInformation(
-                        fromClass.getFullyQualifiedName(),
-                        serviceInterfaces.get(itfClassName),
-                        ParsingUtils.isTestClass(fromClass)));
+                JavaServiceConsumptionInformation scInfo = new JavaServiceConsumptionInformation(
+                        fromClass.getFullyQualifiedName(), serviceInterfaces.get(itfClassName));
+                if (injectedMember.getComment() != null) {
+                    scInfo.setProperty(ServiceConsumption.XPATH_DOCUMENTATION,
+                            injectedMember.getName() + ((injectedMember.getComment() == null) ?
+                            "" : ": " + injectedMember.getComment()));
+                }
+            	scInfo.setProperty(ServiceConsumption.XPATH_ISTEST, ParsingUtils.isTestClass(fromClass));
+                discoveredConsumptions.add(scInfo);
                 injectedBeanProperties.add(beanPropertyName);
             }
         }

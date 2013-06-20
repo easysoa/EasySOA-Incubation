@@ -18,7 +18,6 @@ import com.axxx.dps.apv.model.Tdr;
 import com.axxx.dps.apv.model.TdrTdb;
 import com.axxx.dps.apv.persistence.GenericEntityServiceImpl;
 
-import fr.axxx.pivotal.Client;
 import fr.axxx.pivotal.ContactSvcSoap;
 
 
@@ -34,6 +33,8 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
     @Autowired
     protected TdrDao tdrDao;
 
+    /** The Pivotal application's (remote) service to call back to update dashboard information
+     * about the APV program (number of people sent of holidays, amount of money spent...) */
     @Autowired
     @Qualifier("com.ancv.form.ws.esbContactSvcClient")
     private ContactSvcSoap pivotalContactService;

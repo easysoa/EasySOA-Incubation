@@ -1,6 +1,6 @@
 /**
  * EasySOA Registry
- * Copyright 2012 Open Wide
+ * Copyright 2012-2013 Open Wide
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -26,23 +26,26 @@ import org.easysoa.registry.types.SoaNode;
 
 /**
  * 
- * @author jguillemotte
+ * @author jguillemotte, mdutoo
  */
 public class PlaceholdersIndicatorProvider extends QueryCountIndicator {
 
+	private String docType;
     // indicator category
     private String category;
     
     /**
      * Constructor
+     * @param docType
      * @param category Indicator category
      */
-    public PlaceholdersIndicatorProvider(String category) {
-        super(DocumentService.NXQL_SELECT_FROM + SoaNode.ABSTRACT_DOCTYPE
+    public PlaceholdersIndicatorProvider(String docType, String category) {
+        super(DocumentService.NXQL_SELECT_FROM + docType
                 + DocumentService.NXQL_WHERE_NO_PROXY
                 + DocumentService.NXQL_AND + SoaNode.XPATH_ISPLACEHOLDER + " = 1",
-              DocumentService.NXQL_SELECT_FROM + SoaNode.ABSTRACT_DOCTYPE
+              DocumentService.NXQL_SELECT_FROM + docType
                 + DocumentService.NXQL_WHERE_NO_PROXY);
+        this.docType = docType;
         this.category = category;
     }
 
@@ -53,8 +56,7 @@ public class PlaceholdersIndicatorProvider extends QueryCountIndicator {
 
     @Override
     public String getName() {
-        //return "Placeholders count";
-        return "Nombre de Placeholders";
+        return docType + "Placeholders";
     }
     
     @Override
@@ -69,7 +71,7 @@ public class PlaceholdersIndicatorProvider extends QueryCountIndicator {
 
     @Override
     public String getDocType() {
-        return "";
+        return docType;
     }
 
 }

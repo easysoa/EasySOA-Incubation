@@ -16,6 +16,9 @@ import org.easysoa.registry.types.ids.SoaNodeId;
 public interface ServiceConsumption extends SoaNode, WsdlInfoFacet, RestInfoFacet {
 	
     static final String DOCTYPE = "ServiceConsumption";
+
+    static final String XPATH_DOCUMENTATION = "sc:documentation"; // TODO refactor to Facet common with ServiceImplementation
+    // TODO also ide, language, build, (tests)
     
     static final String XPATH_ISTEST = "sc:isTest";
     

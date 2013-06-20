@@ -35,6 +35,13 @@ import org.nuxeo.ecm.core.api.CoreSession;
 public interface IndicatorProvider {
     
     /**
+     * To allow to find it among others.
+     * Is its class name if not an indicator instancfe itself.
+     * @return its name
+     */
+    String getName();
+    
+    /**
      * @return The required indicator names
      */
     List<String> getRequiredIndicators();

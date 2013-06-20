@@ -1,6 +1,6 @@
 /**
  * EasySOA Registry
- * Copyright 2012 Open Wide
+ * Copyright 2012-2013 Open Wide
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -30,6 +30,7 @@ import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceConsumption;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ContextVisibility;
+import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -37,23 +38,12 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * 
- * @author
+ * @author mkalam-alami
  */
-public class ServiceConsumptionIndicatorProvider implements IndicatorProvider {
-
-    private String category;
+public class ServiceConsumptionIndicatorProvider extends IndicatorProviderBase {
     
     public ServiceConsumptionIndicatorProvider(String category){
-        if(category == null){
-            this.category = "";
-        } else {
-            this.category = category;
-        }
-    }
-    
-    @Override
-    public List<String> getRequiredIndicators() {
-        return null;
+        super(category);
     }
 
     @Override
@@ -61,40 +51,28 @@ public class ServiceConsumptionIndicatorProvider implements IndicatorProvider {
             Map<String, IndicatorValue> computedIndicators, String visibility) throws Exception {
         DocumentService documentService = Framework.getService(DocumentService.class);
         
-        String subprojectPathCriteria;
-        if (subprojectId == null) {
-            subprojectPathCriteria = "";
-        } else {
-            if(ContextVisibility.STRICT.getValue().equals(visibility)){
-                subprojectPathCriteria = DocumentService.NXQL_AND + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);
-            } else {
-                subprojectPathCriteria = DocumentService.NXQL_AND + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(
-                        SubprojectServiceImpl.getSubprojectById(session, subprojectId));                
-            }
-        }
+        String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
         
-        List<SoaNodeId> servicesIds = documentService.createSoaNodeIds(session.query(
+        List<SoaNodeId> servicesIds = documentService.createSoaNodeIds(documentService.query(session,
                 DocumentService.NXQL_SELECT_FROM + InformationService.DOCTYPE
-                + DocumentService.NXQL_WHERE_NO_PROXY
-                + subprojectPathCriteria).toArray(new DocumentModel[]{}));
+                + subprojectCriteria, true, false).toArray(new DocumentModel[]{}));
         List<SoaNodeId> unconsumedServiceIds = new ArrayList<SoaNodeId>(servicesIds);
-        DocumentModelList serviceConsumptionModels = session.query(DocumentService.NXQL_SELECT_FROM + ServiceConsumption.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY);
+        DocumentModelList serviceConsumptionModels = documentService.query(session,
+                DocumentService.NXQL_SELECT_FROM + ServiceConsumption.DOCTYPE
+                + subprojectCriteria, true, false);
         for (DocumentModel serviceConsumptionModel : serviceConsumptionModels) {
             ServiceConsumption serviceConsumption = serviceConsumptionModel.getAdapter(ServiceConsumption.class);
             List<SoaNodeId> consumableServiceImpls = serviceConsumption.getConsumableServiceImpls();
             for (SoaNodeId consumableServiceImpl : consumableServiceImpls) {
-                DocumentModelList consumableParents = documentService.findAllParents(session, documentService.findSoaNode(session, consumableServiceImpl));
-                for (DocumentModel consumableParent : consumableParents) {
-                    if (InformationService.DOCTYPE.equals(consumableParent.getType())) {
-                        unconsumedServiceIds.remove(documentService.createSoaNodeId(consumableParent));
-                    }
+                DocumentModel consumableParent = documentService.getParentInformationService(documentService.findSoaNode(session, consumableServiceImpl));
+                if (consumableParent != null) {
+                    unconsumedServiceIds.remove(documentService.createSoaNodeId(consumableParent));
                 }
             }
         }
         
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
-        indicators.put("Never consumed services",
-                new IndicatorValue("Never consumed services", this.category, unconsumedServiceIds.size(), (servicesIds.size() > 0) ? 100 * unconsumedServiceIds.size() / servicesIds.size() : -1));
+        newIndicator(indicators, "serviceWithoutConsumption", unconsumedServiceIds.size(), (servicesIds.size() > 0) ? 100 * unconsumedServiceIds.size() / servicesIds.size() : -1);
         
         return indicators;
     }

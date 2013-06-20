@@ -43,8 +43,8 @@
                             </p>
                             <p>
                                 <a class="btn" href="${Root.path}/jasmine/?subprojectId=${subprojectId}&visibility=${visibility}"">Statistiques</a>
-                                <!--<small>Jasmine for Easysoa computes and display business indicators from technical service events according to EasySOA-known SLA configuration</small>-->
-                                <small> : JASMINe pour Easysoa calcule et affiche des indicateurs metier issus d'événements de services techniques suivant les configurations SLA enregistrées dans EasySOA.</small>
+                                <!--<small>Jasmine for EasySOA computes and display business indicators from technical service events according to EasySOA-known SLA configuration</small>-->
+                                <small> : JASMINe pour EasySOA calcule et affiche des indicateurs metier issus d'événements de services techniques suivant les configurations SLA enregistrées dans EasySOA.</small>
                             </p>
                         </p>
 

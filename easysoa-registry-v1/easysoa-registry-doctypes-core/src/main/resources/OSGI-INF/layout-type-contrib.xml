@@ -916,7 +916,7 @@
           <!-- property name="required">true</property -->
         </properties>
       </widget>
-      <widget name="serviceimpl_documentation" type="textarea">
+      <widget name="serviceimpl_documentation" type="textarea"><!-- htmltext -->
         <labels>
           <label mode="any">label.easysoa.layout.serviceimpl.documentation</label>
         </labels>
@@ -975,9 +975,21 @@
       </templates>
       <rows>
         <row>
+          <widget>servicecons_documentation</widget>
+        </row>
+        <row>
           <widget>servicecons_isTest</widget>
         </row>
       </rows>
+      <widget name="servicecons_documentation" type="textarea"><!-- htmltext -->
+        <labels>
+          <label mode="any">label.easysoa.layout.servicecons.documentation</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>sc:documentation</field>
+        </fields>
+      </widget>
       <widget name="servicecons_isTest" type="text">
         <labels>
           <label mode="any">label.easysoa.layout.servicecons.isTest</label>

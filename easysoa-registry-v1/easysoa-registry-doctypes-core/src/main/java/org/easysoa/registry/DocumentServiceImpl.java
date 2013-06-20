@@ -910,7 +910,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
         query.append(DocumentService.NXQL_AND + "ecm:uuid in " + NuxeoListUtils.toLiteral(NuxeoListUtils.getProxiedIds(serviceImpl.getCoreSession(), endpoints)));
         query.append(DocumentService.NXQL_AND + Endpoint.XPATH_ENDP_ENVIRONMENT + "='" + environment + "'");
         List<DocumentModel> endpointsOfImplementation = this.query(serviceImpl.getCoreSession(), query.toString(), true, false);
-        if (!endpoints.isEmpty()) {
+        if (!endpointsOfImplementation.isEmpty()) {
             return endpointsOfImplementation.get(0);
         }
         return null;

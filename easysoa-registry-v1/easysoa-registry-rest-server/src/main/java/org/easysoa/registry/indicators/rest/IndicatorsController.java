@@ -24,22 +24,28 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
 import org.apache.log4j.Logger;
 import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.rest.EasysoaModuleRoot;
+import org.easysoa.registry.types.Actor;
+import org.easysoa.registry.types.BusinessService;
+import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.DeployedDeliverable;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.EndpointConsumption;
 import org.easysoa.registry.types.InformationService;
+import org.easysoa.registry.types.RequirementsDocument;
+import org.easysoa.registry.types.ServiceConsumption;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
-import org.easysoa.registry.types.SoftwareComponent;
 import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.utils.ContextData;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -68,47 +74,75 @@ public class IndicatorsController extends EasysoaModuleRoot {
     private static Logger logger = Logger.getLogger(IndicatorsController.class);
 
     private List<IndicatorProvider> indicatorProviders = new ArrayList<IndicatorProvider>();
+    private Map<String,IndicatorProvider> name2indicatorProviderMap = new HashMap<String,IndicatorProvider>();
 
     /**
      * Init the indicator controller
      */
     public IndicatorsController() {
+    	
+    	// CARTOGRAPHY
+    	
         // Document count by type
-        addIndicator(new DoctypeCountProvider("Nombre de " + SoaNode.ABSTRACT_DOCTYPE, "", SoaNode.ABSTRACT_DOCTYPE, CATEGORY_CARTOGRAPHY)); // TODO : replace all these providers by a unique provider
-        addIndicator(new DoctypeCountProvider("Nombre de " + InformationService.DOCTYPE, "", InformationService.DOCTYPE, CATEGORY_CARTOGRAPHY));
-        addIndicator(new DoctypeCountProvider("Nombre de " + SoftwareComponent.DOCTYPE, "", SoftwareComponent.DOCTYPE, CATEGORY_CARTOGRAPHY));
-        addIndicator(new DoctypeCountProvider("Nombre de " + ServiceImplementation.DOCTYPE, "", ServiceImplementation.DOCTYPE, CATEGORY_CARTOGRAPHY));
-        addIndicator(new DoctypeCountProvider("Nombre de " + Deliverable.DOCTYPE, "", Deliverable.DOCTYPE, CATEGORY_CARTOGRAPHY));
-        addIndicator(new DoctypeCountProvider("Nombre de " + DeployedDeliverable.DOCTYPE, "", DeployedDeliverable.DOCTYPE, CATEGORY_CARTOGRAPHY));
-        addIndicator(new DoctypeCountProvider("Nombre de " + Endpoint.DOCTYPE, "", Endpoint.DOCTYPE, CATEGORY_CARTOGRAPHY));
-        addIndicator(new DoctypeCountProvider("Nombre de " + EndpointConsumption.DOCTYPE, "", EndpointConsumption.DOCTYPE, CATEGORY_CARTOGRAPHY));
-        addIndicator(new DoctypeCountProvider("Nombre de " + TaggingFolder.DOCTYPE, "", TaggingFolder.DOCTYPE, CATEGORY_CARTOGRAPHY));
+    	addIndicatorProvider(new DoctypeCountProvider(SoaNode.ABSTRACT_DOCTYPE, CATEGORY_CARTOGRAPHY)); // TODO : replace all these providers by a unique provider
+    	addIndicatorProvider(new DoctypeCountProvider(BusinessService.DOCTYPE, CATEGORY_CARTOGRAPHY));
+    	addIndicatorProvider(new DoctypeCountProvider(Actor.DOCTYPE, CATEGORY_CARTOGRAPHY));
+    	addIndicatorProvider(new DoctypeCountProvider(RequirementsDocument.DOCTYPE, CATEGORY_CARTOGRAPHY));
+    	//addIndicatorProvider(new DoctypeCountProvider(SoftwareComponent.DOCTYPE, CATEGORY_CARTOGRAPHY));
+    	addIndicatorProvider(new DoctypeCountProvider(InformationService.DOCTYPE, CATEGORY_CARTOGRAPHY));
+    	addIndicatorProvider(new DoctypeCountProvider(Component.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicatorProvider(new DoctypeCountProvider(ServiceImplementation.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicatorProvider(new DoctypeCountProvider(ServiceConsumption.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicatorProvider(new DoctypeCountProvider(Deliverable.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicatorProvider(new DoctypeCountProvider(DeployedDeliverable.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicatorProvider(new DoctypeCountProvider(Endpoint.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicatorProvider(new DoctypeCountProvider(EndpointConsumption.DOCTYPE, CATEGORY_CARTOGRAPHY));
+        addIndicatorProvider(new DoctypeCountProvider(TaggingFolder.DOCTYPE, CATEGORY_CARTOGRAPHY));
 
-        // Doctype-specific indicators
-        addIndicator(new ServiceStateProvider(CATEGORY_STEERING));
-        addIndicator(new ServiceImplStateProvider(CATEGORY_CARTOGRAPHY));
-        //addIndicator(new SoftwareComponentIndicatorProvider()); // Disabled, need to be updated
-        addIndicator(new TagsIndicatorProvider(CATEGORY_STEERING));
-        addIndicator(new ServiceConsumptionIndicatorProvider(CATEGORY_USAGE));
+        // Specific indicators
+        addIndicatorProvider(new LastCodeDiscoveryIndicatorProvider(CATEGORY_CARTOGRAPHY));
+        addIndicatorProvider(new ServiceImplStateProvider(CATEGORY_CARTOGRAPHY));
 
-        // Miscellaneous indicators
-        addIndicator(new PlaceholdersIndicatorProvider(CATEGORY_MATCHING));
+        
+        // MATCHING
+        
+        //addIndicatorProvider(new PlaceholdersIndicatorProvider(InformationService.DOCTYPE, CATEGORY_MATCHING));
+        addIndicatorProvider(new PlaceholdersIndicatorProvider(ServiceImplementation.DOCTYPE, CATEGORY_MATCHING));
+        addIndicatorProvider(new PlaceholdersIndicatorProvider(Endpoint.DOCTYPE, CATEGORY_MATCHING));
+        //addIndicatorProvider(new PlaceholdersIndicatorProvider(SoaNode.DOCTYPE, CATEGORY_MATCHING));
 
-        //
-        addIndicator(new LastCodeDiscoveryIndicatorProvider(CATEGORY_CARTOGRAPHY));
-        //
-        addIndicator(new ServiceDefaultCountIndicatorProvider(CATEGORY_STEERING));
-        //
-        addIndicator(new PhaseProgressIndicatorProvider(CATEGORY_STEERING));
+        
+        // USAGE
+
+        addIndicatorProvider(new ServiceDefaultCountIndicatorProvider(CATEGORY_USAGE));
+        
+        
+        // STEERING
+
+        addIndicatorProvider(new ServiceConsumptionIndicatorProvider(CATEGORY_STEERING));
+        addIndicatorProvider(new ServiceStateProvider(CATEGORY_STEERING));
+        //addIndicatorProvider(new SoftwareComponentIndicatorProvider()); // Disabled, need to be updated
+        addIndicatorProvider(new TagsIndicatorProvider(CATEGORY_STEERING));
+
+
+        addIndicatorProvider(new PhaseProgressIndicatorProvider(CATEGORY_STEERING));
     }
 
     /**
-     * Add an indicator in the indicator list
+     * Add an indicator provider in the indicator list
      *
-     * @param indicator
+     * @param indicator provider
      */
-    public void addIndicator(IndicatorProvider indicator) {
-        indicatorProviders.add(indicator);
+    public void addIndicatorProvider(IndicatorProvider indicatorProvider) {
+    	if (name2indicatorProviderMap.containsKey(indicatorProvider.getName())) {
+    		throw new RuntimeException("Conflicting indicatorProvider names: " + indicatorProvider.getName());
+    	}
+        indicatorProviders.add(indicatorProvider);
+        name2indicatorProviderMap.put(indicatorProvider.getName(), indicatorProvider);
+    }
+
+    public IndicatorProvider getIndicatorProvider(String name) {
+        return name2indicatorProviderMap.get(name);
     }
 
     // TODO : add a method to compute indicators and to be callable from another controller
@@ -126,13 +160,6 @@ public class IndicatorsController extends EasysoaModuleRoot {
 
         // using all subprojects or getting default one is let to indicator impls TODO better
         //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
-        // TODO default or not ??
-        /*String subprojectPathCriteria;
-         if (subprojectId == null) {
-         subprojectPathCriteria = "";
-         } else {
-         subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH + session.getDocument(new IdRef(subprojectId)).getPathAsString() + "'";
-         }*/
 
         if ("".equals(subprojectId)) {
             subprojectId = null;

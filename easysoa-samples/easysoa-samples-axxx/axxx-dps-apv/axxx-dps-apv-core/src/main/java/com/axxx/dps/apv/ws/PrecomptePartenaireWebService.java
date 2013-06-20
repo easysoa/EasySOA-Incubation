@@ -8,8 +8,13 @@ import javax.jws.WebService;
 
 
 /**
- * Gère les Précomptes des partenaires sociaux :
- * * permet de les créer.
+ * Gère les Précomptes des partenaires sociaux du programme Aide pour
+ * les Projets Vacanciers (APV) : permet de
+ * <ul>
+ *    <li>en créer</li>
+ *    <li>les mettre à jour</li>
+ *    <li>retourner ceux existants</li>
+ * </ul>
  * 
  * @author mdutoo
  */
@@ -32,7 +37,8 @@ public interface PrecomptePartenaireWebService {
 	public void creerPrecompte(@WebParam(name="precomptePartenaire") PrecomptePartenaire precomptePartenaire);
 
 	/**
-     * Créer le Précompte de partenaire avec les informations fournies, ou le met à jour s'il existe déjà
+     * Créer le Précompte de partenaire avec les informations fournies,
+     * ou le met à jour s'il existe déjà et le retourne
 	 * @param precomptePartenaire le precompte à créer
 	 * @param mettreAJour si faux, ne le met pas à jour s'il existe déjà
 	 */

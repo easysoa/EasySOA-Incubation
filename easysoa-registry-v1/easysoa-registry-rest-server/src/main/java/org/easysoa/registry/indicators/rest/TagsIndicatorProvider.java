@@ -1,6 +1,6 @@
 /**
  * EasySOA Registry
- * Copyright 2012 Open Wide
+ * Copyright 2012-2013 Open Wide
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -21,8 +21,8 @@
 package org.easysoa.registry.indicators.rest;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.types.InformationService;
@@ -36,27 +36,16 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * 
- * @author
+ * @author mdutoo
  */
-public class TagsIndicatorProvider implements IndicatorProvider {
-
-    private String category;
+public class TagsIndicatorProvider extends IndicatorProviderBase {
     
     /**
      * 
      * @param category 
      */
     public TagsIndicatorProvider(String category){
-        if(category == null){
-            this.category = "";
-        } else {
-            this.category = category;
-        }
-    }
-    
-    @Override
-    public List<String> getRequiredIndicators() {
-        return null;
+        super(category);
     }
 
     @Override
@@ -102,12 +91,10 @@ public class TagsIndicatorProvider implements IndicatorProvider {
         
         // Register indicators
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
-        indicators.put("Services without at least one user tag",
-                new IndicatorValue("Services without at least one user tag", this.category, notTaggedServices,
-                        (serviceModels.size() > 0) ? 100 * notTaggedServices / serviceModels.size() : -1));
-        indicators.put("Average tag count per user",
-                new IndicatorValue("Average tag count per user", this.category,
-                        (userCount > 0) ? taggingFolderCountValue.getCount() / userCount : -1, -1));
+        newIndicator(indicators, "serviceWithoutUserTag", notTaggedServices,
+                        (serviceModels.size() > 0) ? 100 * notTaggedServices / serviceModels.size() : -1);
+        newIndicator(indicators, "userTagAverage",
+                        (userCount > 0) ? taggingFolderCountValue.getCount() / userCount : -1, -1);
         
         return indicators;
     }

@@ -48,9 +48,13 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.runtime.api.Framework;
 
-public class SoftwareComponentIndicatorProvider implements IndicatorProvider {
+public class SoftwareComponentIndicatorProvider extends IndicatorProviderBase {
 
-    @Override
+    public SoftwareComponentIndicatorProvider(String category) {
+		super(category);
+	}
+
+	@Override
     public List<String> getRequiredIndicators() {
         return Arrays.asList(
                 DoctypeCountProvider.getName(Deliverable.DOCTYPE),

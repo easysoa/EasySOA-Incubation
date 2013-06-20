@@ -55,27 +55,28 @@
                             </tr>
                         </table>
                         
-                        <h4>Détails (passer la souris au-dessus) :</h4>
+                        <h4>Détails :</h4>
                         <p>
                             <table class="table table-bordered" width="100%">
                                 <tr>
-                                    <#assign indicator = indicators["specificationsProgress"]/>
-                                    <td width="80%" title="${indicator.description}">Spécifications</td>
-                                    <td width="10%" title="${indicator.description}">${indicator.count}</td>
-                                    <td width="10%" title="${indicator.description}">${indicator.percentage} %</td>
+                                    <@displayIndicatorInTableWithDescription indicators["specificationsProgress"]/>
                                 </tr>
                                 <tr>
-                                    <#assign indicator = indicators["realisationProgress"]/>
-                                    <td width="80%" title="${indicator.description}">Réallisation</td>
-                                    <td width="10%" title="${indicator.description}">${indicator.count}</td>
-                                    <td width="10%" title="${indicator.description}">${indicator.percentage} %</td>
+                                    <@displayIndicatorInTableWithDescription indicators["realisationProgress"]/>
                                 </tr>
                                 <tr>
-                                    <#assign indicator = indicators["deploiementProgress"]/>
-                                    <td width="80%" title="${indicator.description}">Déploiement</td>
-                                    <td width="10%" title="${indicator.description}">${indicator.count}</td>
-                                    <td width="10%" title="${indicator.description}">${indicator.percentage} %</td>
+                                    <@displayIndicatorInTableWithDescription indicators["deploiementProgress"]/>
                                 </tr>
+                            </table>
+                        </p>
+                        
+                        <h4>Ces indicateurs globaux d'avancement reposent sur les indicateurs suivants :</h4>
+                        <p>
+                            <table class="table table-bordered" width="100%">
+                            <#assign indicatorNames = indicatorsService.getIndicatorProvider("PhaseProgressIndicatorProvider").getRequiredIndicators()/>
+                            <#list indicatorNames as indicatorName>
+                                <@displayIndicatorInTable2 indicators[indicatorName] />
+                            </#list>
                             </table>
                         </p>
                     </div>

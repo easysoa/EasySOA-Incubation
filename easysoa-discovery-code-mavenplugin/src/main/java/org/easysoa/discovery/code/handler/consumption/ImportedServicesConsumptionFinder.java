@@ -7,6 +7,7 @@ import java.util.Map;
 import org.easysoa.discovery.code.ParsingUtils;
 import org.easysoa.discovery.code.model.JavaServiceConsumptionInformation;
 import org.easysoa.discovery.code.model.JavaServiceInterfaceInformation;
+import org.easysoa.registry.types.ServiceConsumption;
 import org.easysoa.registry.types.java.MavenDeliverable;
 
 import com.thoughtworks.qdox.model.JavaClass;
@@ -51,10 +52,14 @@ public class ImportedServicesConsumptionFinder implements ServiceConsumptionFind
             Type importedClassType = new Type(importedClassName);
             for (String serviceInterface : serviceInterfaces.keySet()) {
                 if (importedClassType.getFullyQualifiedName().equals(serviceInterface)) {
-                    foundConsumptions.add(new JavaServiceConsumptionInformation(
-                            c.getFullyQualifiedName(),
-                            serviceInterfaces.get(serviceInterface),
-                            ParsingUtils.isTestClass(c)));
+                    JavaServiceConsumptionInformation scInfo = new JavaServiceConsumptionInformation(
+                            c.getFullyQualifiedName(), serviceInterfaces.get(serviceInterface));
+                    if (c.getComment() != null) {
+	                    scInfo.setProperty(ServiceConsumption.XPATH_DOCUMENTATION,
+	                   	        "Class documentation: " + c.getComment());
+                    }
+                    scInfo.setProperty(ServiceConsumption.XPATH_ISTEST, ParsingUtils.isTestClass(c));
+                    foundConsumptions.add(scInfo);
                 }
             }
         }

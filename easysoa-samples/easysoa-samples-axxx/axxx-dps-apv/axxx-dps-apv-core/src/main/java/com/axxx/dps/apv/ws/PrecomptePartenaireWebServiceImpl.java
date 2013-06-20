@@ -16,7 +16,8 @@ import com.axxx.dps.apv.util.AxxxConfUtil;
 
 /**
  * Implémente le service web de gestion des Précomptes de partenaires sociaux
- * au dessus du service applicatif interne TdrService de l'application APV.
+ * au-dessus du service applicatif interne TdrService (basé sur Spring et Hibernate)
+ * de l'application APV.
  * 
  * @author mdutoo
  */
@@ -62,6 +63,10 @@ public class PrecomptePartenaireWebServiceImpl implements PrecomptePartenaireWeb
     @Autowired
     private TdrService tdrService;
 
+    /**
+     * Crée le précompte partenaire fourni.
+     * Utilise le TdrService de l'application APV.
+     */
 	@Override
 	public void creerPrecompte(PrecomptePartenaire precomptePartenaire) {
 	    log.warn("creerPrecompte appelé: " + precomptePartenaire.getNomStructure());
@@ -84,6 +89,9 @@ public class PrecomptePartenaireWebServiceImpl implements PrecomptePartenaireWeb
         tdrService.create(newTdr);
 	}
 
+	/**
+	 * Pas implémenté à ce jour.
+	 */
 	// without annotations again
     @Override
     public PrecomptePartenaire creerEtRetournePrecompte(PrecomptePartenaire precomptePartenaire, boolean mettreAJour) {
@@ -91,6 +99,9 @@ public class PrecomptePartenaireWebServiceImpl implements PrecomptePartenaireWeb
         return precomptePartenaire;
     }
 
+	/**
+	 * Pas implémenté à ce jour.
+	 */
     // with same annotations again
     @Override
     public @WebResult(name = "PrecomptePartenaires") PrecomptePartenaire[] getPrecomptePartenaires() {

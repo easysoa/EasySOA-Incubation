@@ -1,6 +1,6 @@
 /**
  * EasySOA Registry
- * Copyright 2012 Open Wide
+ * Copyright 2012-2013 Open Wide
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -25,40 +25,35 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.easysoa.registry.DocumentService;
-import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.OperationInformation;
 import org.easysoa.registry.types.ServiceImplementation;
-import org.easysoa.registry.utils.ContextVisibility;
+import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Computes various indicators on services implementations, including doc quality
  * 
- * @author
+ * @author mkalam-alami; mdutoo
  */
-public class ServiceImplStateProvider implements IndicatorProvider {
+public class ServiceImplStateProvider extends IndicatorProviderBase {
 
     //private static final String SERVICEIMPL_DOCTYPE_INDICATOR = DoctypeCountProvider.getName(ServiceImplementation.DOCTYPE);
     
     // TODO : Add a key and a name in indicators
-    private static final String SERVICEIMPL_DOCTYPE_INDICATOR = "Nombre de " + ServiceImplementation.DOCTYPE;
-
-    private String category;
+    private static final String SERVICEIMPL_DOCTYPE_INDICATOR = ServiceImplementation.DOCTYPE;
     
     /**
      * 
      * @param category 
      */
     public ServiceImplStateProvider(String category){
-        if(category == null){
-            this.category = "";
-          } else {
-            this.category = category;
-        }
+    	super(category);
     }
     
     @Override
@@ -72,18 +67,7 @@ public class ServiceImplStateProvider implements IndicatorProvider {
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
         DocumentService documentService = Framework.getService(DocumentService.class);
 
-        String subprojectPathCriteria;
-        if (subprojectId == null) {
-            subprojectPathCriteria = "";
-        } else {
-            if(ContextVisibility.STRICT.getValue().equals(visibility)){
-                subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);
-            } else {
-                subprojectPathCriteria = DocumentService.NXQL_AND
-                    + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(SubprojectServiceImpl.getSubprojectById(session, subprojectId));
-            }
-        }
+        String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
 
         // Count indicators - ServiceImplementation-specific
         final int IDEAL_DOCUMENTATION_LINES = 40, DOCUMENTATION_LINES_TOLERANCE = 20;
@@ -93,7 +77,7 @@ public class ServiceImplStateProvider implements IndicatorProvider {
         Map<Serializable, Boolean> hasMock = new HashMap<Serializable, Boolean>();
         int mockedImplsCount = 0, testedImplsCount = 0, nonMockImplsCount = 0;
         DocumentModelList serviceImplModels = session.query(DocumentService.NXQL_SELECT_FROM
-                + ServiceImplementation.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
+                + ServiceImplementation.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY + subprojectCriteria);
         
         for (DocumentModel serviceImplModel : serviceImplModels) {
             ServiceImplementation serviceImpl = serviceImplModel.getAdapter(ServiceImplementation.class);
@@ -156,19 +140,14 @@ public class ServiceImplStateProvider implements IndicatorProvider {
         
         //% de doc seulement sur les services qui en ont / Qualité de doc moyenne en%
         //indicateurs documentation : % d'éléments doc'és (pour service, impl ; non test ; LATER pour consumer)
-        indicators.put("Undocumented service implementations", 
-                new IndicatorValue("Undocumented service implementations", this.category, undocumentedServiceImpls, -1));
-        indicators.put("Lines of documentation per documented service impl. (average)",
-                new IndicatorValue("Lines of documentation per documented service impl. (average)", this.category, (serviceImplCount - undocumentedServiceImpls > 0) ? (documentationLines / (serviceImplCount - undocumentedServiceImpls)) : -1, -1));
-        indicators.put("Service impls without mocks", 
-                new IndicatorValue("Service impls without mocks", this.category, nonMockImplsCount - mockedImplsCount,
-                        (nonMockImplsCount > 0) ? (100 * (nonMockImplsCount - mockedImplsCount) / nonMockImplsCount) : -1));
-        indicators.put("Service impls without tests", 
-                new IndicatorValue("Service impls without tests", this.category, nonMockImplsCount - testedImplsCount,
-                        (nonMockImplsCount > 0) ? (100 * (nonMockImplsCount - testedImplsCount) / nonMockImplsCount) : -1));
-        indicators.put("Documented service implementations documentation quality", 
-                new IndicatorValue("Documented service implementations documentation quality", this.category, -1, (serviceImplCount - undocumentedServiceImpls > 0) ?
-                        (100 * serviceImplsDocQuality / ((IDEAL_DOCUMENTATION_LINES - DOCUMENTATION_LINES_TOLERANCE) * (serviceImplCount - undocumentedServiceImpls))) : -1));
+        newIndicator(indicators, "serviceImplementationWithoutDocumentation", undocumentedServiceImpls, -1);
+        newIndicator(indicators, "serviceImplementationDocumentationLineAverage", (serviceImplCount - undocumentedServiceImpls > 0) ? (documentationLines / (serviceImplCount - undocumentedServiceImpls)) : -1, -1);
+        newIndicator(indicators, "serviceImplementationWithoutMock", nonMockImplsCount - mockedImplsCount,
+                        (nonMockImplsCount > 0) ? (100 * (nonMockImplsCount - mockedImplsCount) / nonMockImplsCount) : -1);
+        newIndicator(indicators, "serviceImplementationWithoutTest", nonMockImplsCount - testedImplsCount,
+                        (nonMockImplsCount > 0) ? (100 * (nonMockImplsCount - testedImplsCount) / nonMockImplsCount) : -1);
+        newIndicator(indicators, "documentedServiceImplementationDocumentationQuality", -1, (serviceImplCount - undocumentedServiceImpls > 0) ?
+                        (100 * serviceImplsDocQuality / ((IDEAL_DOCUMENTATION_LINES - DOCUMENTATION_LINES_TOLERANCE) * (serviceImplCount - undocumentedServiceImpls))) : -1);
 
         // TODO model consistency ex. impl without service
         // TODO for one ex. impl of ONE service => prop to query

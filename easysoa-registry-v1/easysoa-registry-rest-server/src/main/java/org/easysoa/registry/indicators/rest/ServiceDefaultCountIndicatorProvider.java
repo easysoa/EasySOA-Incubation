@@ -1,5 +1,5 @@
 /**
- * EasySOA Proxy
+ * EasySOA Registry
  * Copyright 2011-2013 Open Wide
  * 
  * This program is free software: you can redistribute it and/or modify
@@ -36,23 +36,12 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  *
- * @author jguillemotte
+ * @author jguillemotte, mdutoo
  */
-public class ServiceDefaultCountIndicatorProvider implements IndicatorProvider {
-
-    private String category;
+public class ServiceDefaultCountIndicatorProvider extends IndicatorProviderBase {
     
     public ServiceDefaultCountIndicatorProvider(String category) {
-        if(category == null){
-            this.category = "";
-        } else {
-            this.category = category;
-        }
-    }    
-    
-    @Override
-    public List<String> getRequiredIndicators() {
-        return null;
+        super(category);
     }
 
     @Override
@@ -96,9 +85,8 @@ public class ServiceDefaultCountIndicatorProvider implements IndicatorProvider {
             percentValue = countValue * 100 / totalNumberOfIndicators;
         }
         
-        // Set the indicator
-        IndicatorValue iValue = new IndicatorValue("Nombre de services en défaut", category, countValue, percentValue);
-        indicators.put("Nombre de services en défaut", iValue);
+        // Set the indicator 
+        newIndicator(indicators, "serviceInViolation", countValue, percentValue);
         
         return indicators;
     }

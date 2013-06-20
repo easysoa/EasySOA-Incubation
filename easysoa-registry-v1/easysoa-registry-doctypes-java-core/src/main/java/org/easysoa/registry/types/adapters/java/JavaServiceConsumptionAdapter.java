@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.InvalidDoctypeException;
+import org.easysoa.registry.SubprojectServiceImpl;
+import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.adapters.ServiceConsumptionAdapter;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.types.java.JavaServiceConsumption;
@@ -53,12 +55,14 @@ public class JavaServiceConsumptionAdapter extends ServiceConsumptionAdapter imp
     public List<SoaNodeId> getConsumableServiceImpls() throws Exception {
         DocumentService documentService = Framework.getService(DocumentService.class);
         CoreSession documentManager = documentModel.getCoreSession();
-        String query = NXQLQueryBuilder.getQuery(DocumentService.NXQL_SELECT_FROM
-                + JavaServiceImplementation.DOCTYPE + DocumentService.NXQL_WHERE_PROXY // TODO doesn't work outside Phase/subproject BUT required for getAllParents in XXX
-                + DocumentService.NXQL_AND + JavaServiceImplementation.XPATH_IMPLEMENTEDINTERFACE + " = ?",
-                new Object[] { getConsumedInterface() },
-                true, true);
-        DocumentModelList consumableServiceImplModels = documentManager.query(query);
+        DocumentModelList consumableServiceImplModels = documentService.query(documentManager,
+        		DocumentService.NXQL_SELECT_FROM + JavaServiceImplementation.DOCTYPE
+                + DocumentService.NXQL_AND + XPATH_WSDL_PORTTYPE_NAME + " = '" + getProperty(XPATH_WSDL_PORTTYPE_NAME) + "'"
+                + DocumentService.NXQL_AND + SubprojectServiceImpl.buildCriteriaSeenFromSubproject(this.documentModel),
+                true, false);
+        // NB. matching on wsdl:wsdlPortTypeName rather than on
+        // javasi:implementedInterface=javasc:consumedInterface, because the remote provider's
+        // java interface is not necessarily (rarely) the same as the this consumer's !
         return documentService.createSoaNodeIds(consumableServiceImplModels.toArray(new DocumentModel[]{}));
     }
     

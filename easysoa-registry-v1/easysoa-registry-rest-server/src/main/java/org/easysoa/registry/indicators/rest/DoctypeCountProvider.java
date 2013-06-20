@@ -57,7 +57,7 @@ public class DoctypeCountProvider extends QueryCountIndicator {
      * @param category 
      */
     public DoctypeCountProvider(String name, String docType, String category) {
-        this(name, "", docType, category);
+        this(name, null, docType, category);
     }
 
     /**
@@ -66,7 +66,7 @@ public class DoctypeCountProvider extends QueryCountIndicator {
      * @param category 
      */
     public DoctypeCountProvider(String docType, String category) {
-        this("", "", docType, category);
+        this(docType, null, docType, category);
     }
     
     @Override
@@ -96,7 +96,7 @@ public class DoctypeCountProvider extends QueryCountIndicator {
     }
     
     public static String getName(String docType) {
-        return /*"Nombre de " + */docType;// + " count";
+        return docType;
     }
     
 }

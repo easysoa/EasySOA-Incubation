@@ -27,8 +27,6 @@ import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.OperationInformation;
 import org.easysoa.registry.types.Platform;
-import org.easysoa.registry.types.ServiceImplementation;
-import org.easysoa.registry.types.ids.InformationServiceName;
 import org.easysoa.registry.types.ids.ServiceImplementationName;
 import org.easysoa.registry.types.ids.ServiceNameType;
 import org.easysoa.registry.types.java.JavaServiceImplementation;

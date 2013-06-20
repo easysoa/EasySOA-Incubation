@@ -20,14 +20,9 @@
 
 package org.easysoa.registry.types;
 
-public interface BusinessService extends TaggingFolder { // or SoaNode ??
 
-	public static final String DOCTYPE = "BusinessService";
+public interface Actor extends SoaNode {
 
-	public static final String SCHEMA_BUSINESSSERVICE = "businessservice";
-	
-	public static final String XPATH_CONSUMER_ACTOR = "businessservice:consumerActor";
-	
-	public static final String XPATH_PROVIDER_ACTOR = "businessservice:providerActor";
-	
+    static final String DOCTYPE = "Actor";
+
 }

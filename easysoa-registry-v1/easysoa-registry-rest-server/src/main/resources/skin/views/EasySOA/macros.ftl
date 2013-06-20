@@ -39,32 +39,77 @@ Available context variables are :
     <#macro displayIndicatorsInTable indicators category>
         <table class="table table-bordered">
         <#list indicators?keys as indicatorsKey>
-            <#--<#if indicators[indicatorsKey].count != -1 && indicators[indicatorsKey].containsCategory(category) == "true">-->
-            <#if indicators[indicatorsKey].containsCategory(category) == "true">
-            <tr>
-                <#--<td>${indicatorsKey}</td>-->
-                <td>${indicators[indicatorsKey].name}</td>
-                <td><b>
-                    <#if indicators[indicatorsKey].count != -1>
-                        ${indicators[indicatorsKey].count}
-                    <#else>
-                        <#if indicators[indicatorsKey].date>
-                            ${indicators[indicatorsKey].date?date}
-                        </#if>
-                    </#if>
-                </b></td>
-                <!-- TODO : Display the percentage ??? -->
-                <td>    <#if indicators[indicatorsKey].percentage != -1>
-                            Pourcentage : <b>${indicators[indicatorsKey].percentage}%</b>
-                    <#else>
-                            Pourcentage : <b>N.A.</b>
-                    </#if>
-                </td>
-            </tr>
+            <#-- display indicator if in the right category, or if no (empty) category : -->
+            <#if category?length = 0 || indicators[indicatorsKey].containsCategory(category) == "true">
+                <@displayIndicatorInTable indicators[indicatorsKey]/>
             </#if>
         </#list>
         </table>
     </#macro>
+
+    <#macro displayIndicatorInTable indicator>
+            <tr>
+                <td>${Context.getMessage(indicator.name)}</td>
+                <td><b>
+                    <@displayIndicatorValue indicator/>
+                </b></td>
+                <#-- Don't display percentage if not available -->
+                <td>
+                    <@displayIndicatorPourcentage indicator/>
+                </td>
+            </tr>
+    </#macro>
+    
+    <#macro displayIndicatorInTable2 indicator>
+            <tr>
+                <td width="80%" title="${indicator.description}">${Context.getMessage(indicator.name)}</td>
+                <td width="10%"><b>
+                    <@displayIndicatorValue indicator/>
+                </b></td>
+                <#-- Don't display percentage if not available -->
+                <td width="10%">
+                    <@displayIndicatorPourcentage indicator/>
+                </td>
+            </tr>
+    </#macro>
+    
+    <#macro displayIndicatorInTableWithDescription indicator>
+            <tr>
+                <td width="30%" title="${indicator.description}">${Context.getMessage(indicator.name)}</td>
+                <td width="10%" title="${indicator.description}"><b>
+                    <@displayIndicatorValue indicator/>
+                </b></td>
+                <#-- Don't display percentage if not available -->
+                <td width="10%" title="${indicator.description}">
+                    <@displayIndicatorPourcentage indicator/>
+                </td>
+                <td width="50%" title="${indicator.description}" style="color:grey; font-size: 85%">${indicator.description} %</td>
+            </tr>
+    </#macro>
+    
+    <#macro displayIndicatorInTableShort indicator>
+                                <tr>
+                                    <td width="80%" title="${indicator.description}">${Context.getMessage(indicator.name)} :</td>
+                                    <td width="20%"><@displayIndicatorValue indicator/></td>
+                                </tr>
+    </#macro>
+    
+    <#macro displayIndicatorValue indicator>
+                    <#if indicator.count != -1>
+                        ${indicator.count}
+                    <#elseif indicator.date>
+                        ${indicator.date?date}
+                    </#if>
+    </#macro>
+    
+    <#macro displayIndicatorPourcentage indicator>
+                    <#if indicator.percentage != -1>
+                            Pourcentage : <b>${indicator.percentage}%</b>
+                    <#else>
+                            Pourcentage : <b>N.A.</b>
+                    </#if>
+    </#macro>
+    
 
     <#macro displayUserInfo user>
         <#if user == "">

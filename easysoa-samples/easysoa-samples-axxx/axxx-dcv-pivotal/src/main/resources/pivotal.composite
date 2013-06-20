@@ -29,7 +29,7 @@
     xmlns:wsdli="http://www.w3.org/2004/08/wsdl-instance"
     xmlns:web="http://frascati.ow2.org/xmlns/web/1.0"
     xmlns:sca="http://tuscany.apache.org/xmlns/sca/1.0">
-    
+
     <component name="Pivotal">
         <service name="Velocity">
             <interface.java interface="javax.servlet.Servlet" />
@@ -39,9 +39,11 @@
         <web:implementation.velocity location="pivotal" default="index.html" />
         <reference name="connection" target="Connection/connection" />
         <reference name="clientService" target="Client/ClientService" />
+        <reference name="clientDetailsView" target="clientDetailsView/html" />
+        <reference name="clientsView" target="clientsView/html" />
         <!-- reference name="implementations" target="ImplementationsProcessor/processor" / -->
     </component>
-    
+
     <component name="PivotalDatabase">
         <implementation.java class="fr.axxx.pivotal.persistence.EntityManagerProviderImpl" />
         <service name="database">
@@ -85,6 +87,26 @@
 		<reference name="clientService" target="Client/ClientService" />
 	</component>
 
+    <component name="clientDetailsView">
+        <web:implementation.velocity location="pivotal" default="clientDetails.html" />
+        <service name="html">
+            <interface.java interface="fr.axxx.pivotal.app.api.View" />
+        </service>
+        <property name="title">Clients details</property>
+        <reference name="connection" target="Connection/connection" />
+        <reference name="clientService" target="Client/ClientService" />
+    </component>
+
+    <component name="clientsView">
+        <web:implementation.velocity location="pivotal" default="clients.html" />
+        <service name="html">
+            <interface.java interface="fr.axxx.pivotal.app.api.View" />
+        </service>
+        <property name="title">Clients</property>
+        <reference name="connection" target="Connection/connection" />
+        <reference name="clientService" target="Client/ClientService" />
+    </component>
+
     <!-- component name="Rest">
         <implementation.java class="org.easysoa.impl.RESTCallImpl" />
         <service name="rest">
@@ -96,8 +118,8 @@
         <reference name="implementations" target="ImplementationsProcessor/processor" />
         <reference name="database" target="PivotalDatabase/database" />
     </component>
-    
-    
+
+
     <component name="StudioGUIRest">
         <implementation.java class="org.easysoa.impl.StudioGUIRestImpl" />
         <service name="studio-gui-rest">
@@ -145,7 +167,7 @@
         <reference name="preferences" target="Preferences/preferences"/>
     </component>
 
-    
+
     <component name="HTMLProcessor">
         <web:implementation.velocity location="processor"
             default="htmlProcessor.vm" />
@@ -154,5 +176,5 @@
         </service>
         <reference name="serviceManager" target="ServiceManager/serviceManager" />
     </component -->
-    
+
 </composite>

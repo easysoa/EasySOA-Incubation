@@ -1,0 +1,10 @@
+## Same auth file that the one in /pivotal folder.
+## required because with ../auth or /pivotal/auth, the file is not found
+## To remove when a solution is found
+
+#set($user = $request.getSession(true).getAttribute("user"))
+
+#if(!$user)
+    $request.getSession().setAttribute("messageConnection","error")
+    $response.sendRedirect("/pivotal/index.html")
+#end

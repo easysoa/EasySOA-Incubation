@@ -1,8 +1,26 @@
+
+## In case of direct call
+## (ex. redirect there from the end of a POST)
+#render({ "client" : $clientService.getClient($identifiantClient) }, $request, $request.getSession(true).getAttribute("user"), $creerPrecompteSubmitted, $creerPrecompteResponse)
+
+## View interface definition
+## NB. (is always the same)
+#macro ( render $arg0 $arg1 $arg2 $arg3 $arg4)
+    #set($params = $arg0)
+    #set($request = $arg1)
+    #set($user = $arg2)
+    #set($creerPrecompteSubmitted = $arg3)
+    #set($creerPrecompteResponse = $arg4)
+
+    ## (mapping business params so the old code will work)
+    #set($client = $params.client)
+
+    ## View layout
+
 #parse("banner.html")
 #parse("header.html")
 #parse("roundedDiv.html")
-#set($user = $request.getSession().getAttribute("user"))
-#set($client = $clientService.getClient($identifiantClient))
+
 <div id="welcome-title">Bienvenue $user.getLogin()</div>
 <div id="a_tabbar" class="dhtmlxTabBar" imgpath="/pivotal/images/" tabstyle="silver" skinColors="#FFFFFF,#FFFFFF" style="width:1000px; height:700px;">
 	<div id="detailsClient" class="rounded-div-content" name="D&eacute;tails client">
@@ -16,7 +34,7 @@
 				      	<col width="100px">
 				       	<col width="200px">
 				       	<col width="200px">
-				      	<col width="100px">			      	
+				      	<col width="100px">
 			        </colgroup>
 				    <tbody>
 			            <tr>
@@ -89,9 +107,9 @@
 			          	</tr>
 			        </tbody>
 			    </table>
-			</div>			            
+			</div>
 		</form>
-		
+
 		<div id="friendsView">
 		    <table id="statFields">
 				<colgroup> <!-- 1000 -->
@@ -100,7 +118,7 @@
 			      	<col width="100px">
 			       	<col width="200px">
 			       	<col width="200px">
-			      	<col width="100px">			      	
+			      	<col width="100px">
 		        </colgroup>
 			    <tbody>
 					<tr>
@@ -109,7 +127,7 @@
 		            	<td></td>
 		                <td><label for="dontReliquatN1">dontReliquatN1 :</label></td>
 		                <td>#if($client.getDontReliquatN1())$client.getDontReliquatN1()#end</td>
-		                <td></td>							
+		                <td></td>
 					</tr>
 					<tr>
 		            	<td><label for="dontDotN">dontDotN :</label></td>
@@ -117,7 +135,7 @@
 		            	<td></td>
 		                <td><label for="nbBenefPrevN">nbBenefPrevN :</label></td>
 		                <td>#if($client.getNbBenefPrevN())$client.getNbBenefPrevN()#end</td>
-		                <td></td>							
+		                <td></td>
 					</tr>
 					<tr>
 		            	<td><label for="montantUtiliseN">montantUtiliseN :</label></td>
@@ -125,12 +143,12 @@
 		            	<td></td>
 		                <td><label for="nbBenefN">nbBenefN :</label></td>
 		                <td>#if($client.getNbBenefN())$client.getNbBenefN()#end</td>
-		                <td></td>							
+		                <td></td>
 					</tr>
 		        </tbody>
 		    </table>
 		</div>
-		
+
 		<form method="POST" action="/pivotal/action/creerPrecompte" id="formCreerPrecompte">
 			<div id="friendsView">
 			    <table style="margin-left:auto;margin-right:auto;">
@@ -144,7 +162,7 @@
 								#if($client.isCreerPrecompteDone())
             					<input id="submitCreerPrecompte" name="submitCreerPrecompte" type="submit" class="grey button" value="Cr&eacute;er pr&eacute;compte" disabled="disabled">
 								#else
-								<input id="submitCreerPrecompte" name="submitCreerPrecompte" type="submit" class="orange button" value="Cr&eacute;er pr&eacute;compte">								
+								<input id="submitCreerPrecompte" name="submitCreerPrecompte" type="submit" class="orange button" value="Cr&eacute;er pr&eacute;compte">
 								#end
 								<input type="hidden" name="identifiantClient" value="$client.getIdentifiantClient()">
 							</td>
@@ -166,7 +184,7 @@
 				</table>
 			</div>
 		</form>
-		
+
 		<div id="friendsView">
 			Informations APV
 			<div id="catalogServicesTableHolder" style="overflow: auto; max-height: 125px;">
@@ -191,10 +209,10 @@
 						#end
 			        </tbody>
 			    </table>
-			</div>		
-		</div>		
+			</div>
+		</div>
 	</div>
-	
+
 	<div id="contactsClient" class="rounded-div-content" name="Contacts client">
 	<!--<div id="rounded-div-content" name="Contacts client">-->
 		<div id="friendsView">
@@ -225,18 +243,20 @@
 		            </tr>
 					#end
 		        </tbody>
-		    </table>		
-			
+		    </table>
+
 	    </div>
 	</div>
 </div>
 <script type="text/javascript">
 
 	function cancel(){
-		if(confirm("Confirmer l'annulation ?")){ 
-			window.location='/pivotal/clients.html';
+		if(confirm("Confirmer l'annulation ?")){
+			window.location='/pivotal/getClients.html';
 		}
 	}
 </script>
 
 #parse("footpage.html")
+
+#end

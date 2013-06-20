@@ -1,0 +1,5 @@
+#parse("auth")
+
+#set( $client = $clientService.getClient($identifiantClient) )
+#set( $params = {"client" : $client} )
+$clientDetailsView.render( $params, $request, $user )

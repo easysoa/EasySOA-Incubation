@@ -1,7 +1,24 @@
+
+## In case of direct call
+## (ex. redirect there from the end of a POST)
+#render({ "clients" : $clientService.listClient() }, $request, $request.getSession(true).getAttribute("user"))
+
+## View interface definition
+## NB. (is always the same)
+#macro ( render $arg0 $arg1 $arg2)
+    #set($params = $arg0)
+    #set($request = $arg1)
+    #set($user = $arg2)
+
+    ## (mapping business params so the old code will work)
+    #set($clients = $params.clients)
+
+    ## View layout
+
 #parse("banner.html")
 #parse("header.html")
 #parse("roundedDiv.html")
-#set($user = $request.getSession().getAttribute("user"))
+
 <div id="welcome-title">Bienvenue $user.getLogin()</div>
 <div id="rounded-div-content">
 	<div id="friendsView">
@@ -24,9 +41,11 @@
 	    		<td>Email</td>
 	    		<td></td>
 	    	<tr>
-	    	#foreach($u in $clientService.listClient())
+	    	#foreach($u in $clients)
 	    	<tr>
-	    		<td><a href="clientDetails.html?identifiantClient=$u.getIdentifiantClient()">$u.getIdentifiantClient()</a></td>
+	    		<td><!--<a href="clientDetails.html?identifiantClient=$u.getIdentifiantClient()">$u.getIdentifiantClient()</a>-->
+                    <a href="/pivotal/getClient.html?identifiantClient=$u.getIdentifiantClient()">$u.getIdentifiantClient()</a>
+                </td>
 	    		<td>$u.getRaisonSociale()</td>
 	    		<td>$u.getSIREN()</td>
 	    		<td>$u.getEmail()</td>
@@ -35,7 +54,7 @@
 	    	#end
     	</tbody>
     </table>
-    
+
     <p/>
 	<button class="orange button" onclick="openNewClientPage()" name="Nouveau client">Nouveau client</button>
     </div>
@@ -44,11 +63,11 @@
 <script type="text/javascript">
 
 	function removeClient(identifiantClient){
-		if(confirm('Are you sure ?')){ 
+		if(confirm('Are you sure ?')){
 			window.location='/pivotal/action/removeClient?identifiantClient='+identifiantClient;
 		}
 	}
-	
+
 	function openNewClientPage(){
 		document.location= "createClient.html";
 	}
@@ -56,3 +75,5 @@
 </script>
 
 #parse("footpage.html")
+
+#end

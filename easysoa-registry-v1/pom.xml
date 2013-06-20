@@ -237,7 +237,7 @@
       <dependency>
         <!-- Import Nuxeo dependency management -->
         <groupId>org.nuxeo.ecm.platform</groupId>
-        <artifactId>nuxeo-features-parent</artifactId>
+        <artifactId>nuxeo-features-parent</artifactId><!-- audit for classifiaction... -->
         <version>${nuxeo.version}</version>
         <type>pom</type>
         <scope>import</scope>

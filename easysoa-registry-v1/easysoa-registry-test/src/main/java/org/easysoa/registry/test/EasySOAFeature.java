@@ -21,9 +21,10 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
     "org.nuxeo.ecm.platform.types.api",
     "org.nuxeo.ecm.platform.types.core",
     
-    // Nuxeo classification add-on core
+    // Nuxeo classification add-on core & deps
     "org.nuxeo.ecm.platform.classification.api",
     "org.nuxeo.ecm.platform.classification.core",
+    //"org.nuxeo.ecm.platform.audit", // brings exceptions
     
     // Needed to override its MimetypeIconUpdater listener
     "org.nuxeo.ecm.platform.filemanager.core",
@@ -41,8 +42,15 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
     "org.easysoa.registry.doctypes.core",
     
     // Wall requirements
-    ///"org.nuxeo.ecm.activity",
-    ///"org.nuxeo.ecm.core.persistence",
+    //"org.nuxeo.ecm.activity",
+    //"org.nuxeo.ecm.core.persistence", // brings exceptions
+    
+    // Diff requirements
+    "org.nuxeo.diff.jsf",
+    "org.nuxeo.theme.core",
+    "org.nuxeo.theme.fragments",
+    "org.nuxeo.theme.html",
+    "org.nuxeo.theme.jsf",
     
     // Bundles that are required to be deployed by easysoa registry bundles
     "org.nuxeo.ecm.webapp.base", // !!

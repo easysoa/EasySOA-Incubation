@@ -94,6 +94,8 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
 
     @Test
     public void testDuplicatesHandling() throws Exception {
+        System.out.println("\n\nAny hidden error ??\n");
+        try {
         // Create already created system
         DocumentModel duplicateModel = documentService.create(documentManager,
                 new SoaNodeId(TaggingFolder.DOCTYPE, "MySystem"),
@@ -108,6 +110,9 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
                 Assert.assertFalse("System created twice should still have only one source", sourceFound);
                 sourceFound = true;
             }
+        }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
     

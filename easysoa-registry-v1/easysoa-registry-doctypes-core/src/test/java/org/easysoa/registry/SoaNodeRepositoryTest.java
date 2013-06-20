@@ -50,7 +50,7 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
         Assert.assertNotNull("Repository must be created on first access", repositoryInstance);
     }
 
-    //@Test
+    @Test
     public void testDocumentRelocation() throws Exception {
         // Create SystemTreeRoot
         strModel = documentService.createDocument(documentManager,

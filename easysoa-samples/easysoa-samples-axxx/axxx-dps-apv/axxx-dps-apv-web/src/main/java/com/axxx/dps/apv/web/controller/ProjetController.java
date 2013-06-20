@@ -70,7 +70,12 @@ public class ProjetController {
     @RequestMapping(method=RequestMethod.POST, value="/projet/add")
     public String add(@Valid @ModelAttribute("projet") Projet projet, BindingResult result) {
         if (result.hasErrors()) {
-            return "projets";
+            if (projet != null) {
+                //result.getModel().put("projet", projet); // for form
+                return "redirect:newProjet?tdrId=" + projet.getTdr().getId();
+                // TODO should return "newProjet" but at next save then projet is null !?! 
+            }
+            return "redirect:/tdr/list";
         }
         //Tdr tdr = tdrService.getById(projet.getTdr().getId());projet.setTdr(tdr); // done by initProjet()
         projet.computeTotalBenef();
@@ -109,6 +114,7 @@ public class ProjetController {
 
     @RequestMapping(method=RequestMethod.GET, value="/projet/newProjet")
     public String newProjet(@RequestParam("tdrId") long tdrId, Map<String, Object> map) {
+        //map.put("projet", new Projet()); // for formg tdrId, Map<String, Object> map) {
         //map.put("projet", new Projet()); // for form
         map.put("tdrId", tdrId);        
         return "newProjet";

@@ -13,8 +13,11 @@
     <!-- axxx-easysoa-model.version>1.0-SNAPSHOT</axxx-easysoa-model.version -->
     
     <!-- EasySOA code discovery & conf -->
-    <easysoa.version>1.0-SNAPSHOT</easysoa.version><!-- TODO define in root ?? -->
-    <nuxeo.version>5.7-I20130111_0115</nuxeo.version><!-- TODO define in root ?? -->
+    <!-- version : TODO define in root ?? -->
+    <easysoa.version>1.0-SNAPSHOT</easysoa.version>
+    <!-- nuxeo.version>5.7-I20130111_0115</nuxeo.version -->
+    <nuxeo.version>5.7-I20130610_0116</nuxeo.version>
+    
     <!-- easysoa.discovery.code.nuxeoSitesUrl>http://localhost:8080/nuxeo/site</easysoa.discovery.code.nuxeoSitesUrl --><!-- for local tests -->
     <easysoa.discovery.code.nuxeoSitesUrl>http://vmregistry:8080/nuxeo/site</easysoa.discovery.code.nuxeoSitesUrl>
     <easysoa.discovery.code.username>Administrator</easysoa.discovery.code.username>

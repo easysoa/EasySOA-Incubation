@@ -3,6 +3,8 @@
  */
 package com.axxx.dps.apv.web.controller;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -86,6 +88,8 @@ public class TdrPrecompteController {
             return "redirect:/tdrprecompte/details/" + tdr.getId();
         }
         tdrService.update(tdr);
+        // TODO rather in tdrService.approve() method
+        tdr.getTdrTdb().setAnnee(new GregorianCalendar().get(Calendar.YEAR));
         tdr.getTdrTdb().setStatus("approved");
         tdrService.update(tdr);
         return "redirect:/tdrprecompte/details/" + tdr.getId();

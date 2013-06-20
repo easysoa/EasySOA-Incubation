@@ -1,5 +1,6 @@
 package com.axxx.dps.apv.service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -121,8 +122,21 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
 
     @Override
     public void publish(Tdr tdr) {
-        
+        // don't set those because don't have the info :
+        String pays = null;
+		String formeJuridique = null;
+		String rib = null;
         TdrTdb tdrTdb = tdr.getTdrTdb();
+        
+        // update client global infos
+		pivotalContactService.client(tdr.getIdentifiantClientPivotal(), tdr.getNomStructure(), tdrTdb.getAnnee(), tdr.getTypeStructure(),
+        		tdr.getAdresse(), tdr.getEmail(), tdr.getCp(), tdr.getVille(), pays, tdr.getTelephone(),
+        		rib, formeJuridique, tdr.getSirenSiret(),
+        		BigDecimal.valueOf(tdrTdb.getDotationGlobale()), BigDecimal.valueOf(tdrTdb.getReliquatAnneePrecedente()),
+        		BigDecimal.valueOf(tdrTdb.getDotationAnnuelle()), BigDecimal.valueOf(tdrTdb.getNbBeneficiairesPrevisionnel()),
+        		BigDecimal.valueOf(tdrTdb.getSommeUtilisee()), BigDecimal.valueOf(tdrTdb.getNbBeneficiairesApv()));
+		
+		// update per public info
         pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "enfants", tdrTdb.getNbEnfants(), tdrTdb.getAnnee());
         pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "jeunes", tdrTdb.getNbJeunes(), tdrTdb.getAnnee());
         pivotalContactService.informationAPV(tdr.getIdentifiantClientPivotal(), "adultesisoles", tdrTdb.getNbAdultesIsoles(), tdrTdb.getAnnee());

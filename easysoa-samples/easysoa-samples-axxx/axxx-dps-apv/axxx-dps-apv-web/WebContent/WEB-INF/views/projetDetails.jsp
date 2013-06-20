@@ -85,15 +85,15 @@
 																		<td><form:hidden path="status"  />${projet.status}</td>
 															        	<td><form:errors path="status" cssClass="error" /></td>
 																    	<td><form:label path="typeLieu">Type lieu</form:label></td>
-																		<td><form:input path="typeLieu" /></td>
+																		<td><form:hidden path="typeLieu" />${projet.typeLieu}</td>
 															        	<td><form:errors path="typeLieu" cssClass="error" /></td>
 																	</tr>
 																	<tr>
 																    	<td><form:label path="periode">Période</form:label></td>
-																		<td><form:input path="periode" /></td>
+																		<td><form:hidden path="periode" />${projet.periode}</td>
 															        	<td><form:errors path="periode" cssClass="error" /></td>
 																    	<td><form:label path="departement">Département</form:label></td>
-																		<td><form:input path="departement" /></td>
+																		<td><form:hidden path="departement" />${projet.departement}</td>
 															        	<td><form:errors path="departement" cssClass="error" /></td>
 																	</tr>																	
 																	<tr>
@@ -108,9 +108,9 @@
 																    	<td><form:label path="jeunesBenefs.nbBeneficiaires">Jeunes : nombre de bénéficiaires</form:label></td>
 																		<td><form:input path="jeunesBenefs.nbBeneficiaires" /></td>
 															        	<td><form:errors path="jeunesBenefs.nbBeneficiaires" cssClass="error" /></td>
-																    	<td><form:label path="enfantsBenefs.montantApv">Montant Apv</form:label></td>
-																		<td><form:input path="enfantsBenefs.montantApv" /></td>
-															        	<td><form:errors path="enfantsBenefs.montantApv" cssClass="error" /></td>															        
+																    	<td><form:label path="jeunesBenefs.montantApv">Montant Apv</form:label></td>
+																		<td><form:input path="jeunesBenefs.montantApv" /></td>
+															        	<td><form:errors path="jeunesBenefs.montantApv" cssClass="error" /></td>															        
 															        </tr>
 															    	<tr>
 																    	<td><form:label path="adultesIsolesBenefs.nbBeneficiaires">Adultes isolés : nombre de bénéficiaires</form:label></td>

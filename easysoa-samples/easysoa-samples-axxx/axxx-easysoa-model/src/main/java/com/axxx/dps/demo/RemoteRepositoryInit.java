@@ -100,16 +100,19 @@ public class RemoteRepositoryInit {
 	private static Session session;
     private static SimpleRegistryService simpleRegistryService;
     private static EndpointStateService endpointStateService;
+
+    private static String url = "http://localhost:8080/nuxeo/site"; // http://vmregistry:8080/nuxeo/site
+    private static String username = "Administrator";
+    private static String password = "Administrator";
     
-    private static String apvHost = null;
-    private static String pivotalHost = null;
-    private static String registryHost = null;
+    // VM hosts : default "vmxxx" is better than "localhost" because is such in WSDLs (using enriched /etc/hosts)
+    private static String apvHost = "vmapv"; 
+    private static String pivotalHost = "vmpivotal"; // localhost
+    private static String registryHost = "vmregistry"; // localhost
+    
     private static boolean uploadUsingResourceUpdate = true;
 
 	public static final void main(String[] args) throws Exception {
-	    String url = "http://localhost:8080/nuxeo/site";
-        String username = "Administrator";
-        String password = "Administrator";
         HashSet<String> steps = new HashSet<String>(args.length);
 	    for (String arg : Arrays.asList(args)) {
 	        String[] keyValueArg = arg.split("=");
@@ -203,6 +206,7 @@ public class RemoteRepositoryInit {
 		String compArchitecturePath = createDocument("Folder", "3. Component architecture", specificationsPath);
 		
 		// Actors
+		// TODO make them relative to shared company project, ex. name them AXXX/SI DPS
 		SoaNodeId actUniId = new SoaNodeId(specificationsSubprojectId, ACTOR_DOCTYPE, "Uniserv"); createSoaNode(actUniId);
 		SoaNodeId actCommId = new SoaNodeId(specificationsSubprojectId, ACTOR_DOCTYPE, "Commercial_AXXX"); createSoaNode(actCommId);
 		SoaNodeId actCRMId = new SoaNodeId(specificationsSubprojectId, ACTOR_DOCTYPE, "CRM DCV"); createSoaNode(actCRMId);
@@ -506,23 +510,14 @@ public class RemoteRepositoryInit {
 	}
 
     private static String getApvHost() {
-        if (apvHost == null) {
-            return "localhost";
-        }
         return apvHost;
     }
 
     private static String getPivotalHost() {
-        if (pivotalHost == null) {
-            return "localhost";
-        }
         return pivotalHost;
     }
 
     private static String getRegistryHost() {
-        if (registryHost == null) {
-            return "localhost";
-        }
         return registryHost;
     }
     

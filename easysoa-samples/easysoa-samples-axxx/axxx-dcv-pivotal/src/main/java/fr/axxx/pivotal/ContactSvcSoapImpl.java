@@ -33,7 +33,8 @@ public class ContactSvcSoapImpl implements ContactSvcSoap {
             BigDecimal nbBenefN) {
         Client client = clientService.updateClient(identifiantClient, raisonSociale, 
                 anciennete, typeStructure, numEtVoie, email, codePostal, 
-                ville, pays, tel, rib, formeJuridique, siren);
+                ville, pays, tel, rib, formeJuridique, siren, dotGlobAPVN, dontReliquatN1, 
+                dontDotN, nbBenefPrevN, montantUtiliseN, nbBenefN);
         // TODO also amount fields !
         return mapClientToArrayOfString(client);
     }

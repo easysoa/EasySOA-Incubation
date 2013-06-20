@@ -10,7 +10,7 @@
 	<script type="text/javascript">
 
 	function getURLParameter(name) {
-            return decodeURI(
+            return decodeURIComponent(
                 (RegExp('[?|&]'+ name + '=' + '(.+?)(&|$)').exec(location.search)||[,''])[1]
             );
         }
@@ -22,10 +22,7 @@
              if (getURLParameter('nuxeoNotReady') == 'true') {
                 $('#nuxeoNotReady').show();
              }
-             $('#prev').attr('value', getURLParameter('prev'));
-             $('#subprojectId').attr('value', getURLParameter('subprojectId'));
-             $('#visibility').attr('value', getURLParameter('visibility'));
-             $("#loginForm").attr("action", "/login?subprojectId=" + getURLParameter('subprojectId') + "&visibility=" + getURLParameter('visibility'));
+             $('#prev').attr('value', encodeURIComponent(getURLParameter('prev')));
          });
 
 	</script>
@@ -45,8 +42,6 @@
     <form id="loginForm" method="post" action="/login">
 
         <input type="hidden" id="prev" name="prev" value="" />
-        <input type="hidden" id="subprojectId" name="subprojectId" value="" />
-        <input type="hidden" id="visibility" name="visibility" value="" />
 
         <!--<p>User name<br />-->
         <p>Utilisateur<br />

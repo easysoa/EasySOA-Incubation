@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project activeEnvironment="Default" name="owsi-vm-easysoa-axxx-apv.accelance" resourceRoot="" soapui-version="4.5.1" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="PrecomptePartenaireServiceImplSoapBinding" type="wsdl" bindingName="{http://www.axxx.com/dps/apv}PrecomptePartenaireServiceImplSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://owsi-vm-easysoa-axxx-apv.accelance.net:7080/apv/services/PrecomptePartenaireService?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://owsi-vm-easysoa-axxx-apv.accelance.net:7080/apv/services/PrecomptePartenaireService?wsdl"><con:part><con:url>http://owsi-vm-easysoa-axxx-apv.accelance.net:7080/apv/services/PrecomptePartenaireService?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="PrecomptePartenaireServiceImpl" targetNamespace="http://www.axxx.com/dps/apv" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.axxx.com/dps/apv" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+    <xs:schema elementFormDefault="unqualified" targetNamespace="http://www.axxx.com/dps/apv" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:element name="creerPrecompte" type="tns:creerPrecompte"/>
+      <xs:element name="creerPrecompteResponse" type="tns:creerPrecompteResponse"/>
+      <xs:element name="precomptePartenaire" type="tns:precomptePartenaire"/>
+      <xs:complexType name="creerPrecompte">
+        <xs:sequence>
+          <xs:element minOccurs="0" name="precomptePartenaire" type="tns:precomptePartenaire"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="precomptePartenaire">
+        <xs:sequence>
+          <xs:element name="identifiantClientPivotal" type="xs:string"/>
+          <xs:element name="typeStructure" type="tns:typeStructure"/>
+          <xs:element name="nomStructure" type="xs:string"/>
+          <xs:element name="anciennete" type="xs:int"/>
+          <xs:element name="telephone" type="xs:string"/>
+          <xs:element minOccurs="0" name="email" type="xs:string"/>
+          <xs:element name="adresse" type="xs:string"/>
+          <xs:element name="ville" type="xs:string"/>
+          <xs:element name="cp" type="xs:string"/>
+          <xs:element name="apeNaf" type="xs:string"/>
+          <xs:element name="sirenSiret" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="creerPrecompteResponse">
+        <xs:sequence/>
+      </xs:complexType>
+      <xs:simpleType name="typeStructure">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="ASSOCIATION_NAT"/>
+          <xs:enumeration value="MISSION_LOCALE"/>
+          <xs:enumeration value="DELEGATION_TERRITORIALE_ASSOCIATIVE"/>
+          <xs:enumeration value="CENTRE_SOCIAL"/>
+          <xs:enumeration value="AUTRE"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="creerPrecompte">
+    <wsdl:part element="tns:creerPrecompte" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="creerPrecompteResponse">
+    <wsdl:part element="tns:creerPrecompteResponse" name="parameters"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="PrecomptePartenaireService">
+    <wsdl:operation name="creerPrecompte">
+      <wsdl:input message="tns:creerPrecompte" name="creerPrecompte"></wsdl:input>
+      <wsdl:output message="tns:creerPrecompteResponse" name="creerPrecompteResponse"></wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PrecomptePartenaireServiceImplSoapBinding" type="tns:PrecomptePartenaireService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="creerPrecompte">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="creerPrecompte">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="creerPrecompteResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PrecomptePartenaireServiceImpl">
+    <wsdl:port binding="tns:PrecomptePartenaireServiceImplSoapBinding" name="PrecomptePartenairePort">
+      <soap:address location="http://owsi-vm-easysoa-axxx-apv.accelance.net:7080/apv/services/PrecomptePartenaireService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://owsi-vm-easysoa-axxx-registry.accelance.net:7080/frascati-cloud/services/admin/PrecompteProxy1</con:endpoint><con:endpoint>http://owsi-vm-easysoa-axxx-apv.accelance.net:7080/apv/services/PrecomptePartenaireService</con:endpoint></con:endpoints><con:operation isOneWay="false" action="" name="creerPrecompte" bindingOperationName="creerPrecompte" type="Request-Response" outputName="creerPrecompteResponse" inputName="creerPrecompte" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call name="Request 1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://owsi-vm-easysoa-axxx-registry.accelance.net:7080/frascati-cloud/services/admin/PrecompteProxy1</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:apv="http://www.axxx.com/dps/apv">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <apv:creerPrecompte>
+         <!--Optional:-->
+         <precomptePartenaire>
+            <identifiantClientPivotal>Test1</identifiantClientPivotal>
+            <typeStructure>ASSO_NAT</typeStructure>
+            <nomStructure>Emmaus1</nomStructure>
+            <anciennete>10</anciennete>
+            <telephone>0625976832</telephone>
+            <!--Optional:-->
+            <email>contact@emmaus.org</email>
+            <adresse>28 rue des platanes</adresse>
+            <ville>lyon</ville>
+            <cp>69004</cp>
+            <apeNaf>45521</apeNaf>
+            <sirenSiret>554881</sirenSiret>
+         </precomptePartenaire>
+      </apv:creerPrecompte>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://www.axxx.com/dps/apv/PrecomptePartenaireService/creerPrecompte"/><con:wsrmConfig version="1.2"/></con:call></con:operation></con:interface><con:properties/><con:wssContainer/></con:soapui-project>

@@ -69,7 +69,7 @@ $(document).ready(function() {
 
   // Display the current context
   /*if(typeof getUrlVars()["subprojectId"] != "undefined"){
-    $('#context').html(decodeURI(getUrlVars()["subprojectId"]));
+    $('#context').html(decodeURIComponent(getUrlVars()["subprojectId"]));
   }*/
 
   /**
@@ -78,7 +78,7 @@ $(document).ready(function() {
 
   //alert('ajax url : /js/bookmarklet/bookmarklet-min.js?subprojectId=' + decodeURI(getUrlVars()["subprojectId"])); // OK
   $.ajax({
-    url: '/js/bookmarklet/bookmarklet-min.js?subprojectId=' + decodeURI(getUrlVars()["subprojectId"]) + "&visibility=" + getUrlVars()["visibility"],
+    url: '/js/bookmarklet/bookmarklet-min.js?subprojectId=' + decodeURIComponent(getUrlVars()["subprojectId"]) + "&visibility=" + getUrlVars()["visibility"],
     dataType: 'text', // Prevents JS execution
     success: function(data, status, xhr) {
       ///alert('ajax response : ' + xhr.responseText); // OK

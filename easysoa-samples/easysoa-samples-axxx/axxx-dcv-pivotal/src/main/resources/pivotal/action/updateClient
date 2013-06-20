@@ -1,11 +1,6 @@
-#set($user = $request.getSession(true).getAttribute("user"))
+#parse("auth")
 
-#if($user)
-	$clientService.updateClient($identifiantClient, $raisonSociale, $Integer.parseInt($anciennete),
-            $typeStructure, $numEtVoie, $email, $codePostal, $ville, $pays,
-            $tel, $rib, $formeJuridique, $siren)
-	$response.sendRedirect("../clientDetails.html?identifiantClient=$identifiantClient")
-#else
-    $request.getSession().setAttribute("messageConnection","error")
-    $response.sendRedirect("../index.html")
-#end
+$clientService.updateClient($identifiantClient, $raisonSociale, $Integer.parseInt($anciennete),
+    $typeStructure, $numEtVoie, $email, $codePostal, $ville, $pays,
+    $tel, $rib, $formeJuridique, $siren)
+$response.sendRedirect("../clientDetails.html?identifiantClient=$identifiantClient")

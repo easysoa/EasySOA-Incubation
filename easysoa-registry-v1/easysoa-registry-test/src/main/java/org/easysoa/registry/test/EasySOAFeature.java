@@ -30,13 +30,25 @@ import org.nuxeo.runtime.test.runner.SimpleFeature;
     "org.nuxeo.ecm.platform.filemanager.core.listener",
     "org.nuxeo.ecm.platform.mimetype.core",
     
-    // Nuxeo tree snapshot add-on
+    // Nuxeo tree snapshot add-on & deps
     "org.nuxeo.snapshot",
+    "org.nuxeo.ecm.platform.publisher.task",
+    "org.nuxeo.ecm.platform.publisher.core",
     
     // Minimal EasySOA requirements
     "org.easysoa.registry.doctypes.api",
     "studio.extensions.easy-soa-open-wide",
-    "org.easysoa.registry.doctypes.core"
+    "org.easysoa.registry.doctypes.core",
+    
+    // Wall requirements
+    ///"org.nuxeo.ecm.activity",
+    ///"org.nuxeo.ecm.core.persistence",
+    
+    // Bundles that are required to be deployed by easysoa registry bundles
+    "org.nuxeo.ecm.webapp.base", // !!
+    "org.nuxeo.ecm.webapp.core", //
+    "org.nuxeo.ecm.platform.ui", //
+    "org.nuxeo.ecm.platform.web.common" // !!!
 })
 @LocalDeploy({"org.easysoa.registry.test:directory-config.xml"})
 public class EasySOAFeature extends SimpleFeature {

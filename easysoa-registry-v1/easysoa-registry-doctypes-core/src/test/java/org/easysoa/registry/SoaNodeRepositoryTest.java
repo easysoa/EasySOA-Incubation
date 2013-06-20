@@ -116,7 +116,7 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
         }
     }
     
-    @Test
+    //@Test
     public void testProxyCopy() throws Exception {
         // Create new system
         DocumentModel newSystemModel = documentService.create(documentManager,
@@ -141,7 +141,7 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
         assertAllProxiesAreSetOnTheSources(proxies);
     }
 
-    @Test
+    //@Test
     public void testSourceCopy() throws Exception {
         // Create a third system
         DocumentModel thirdSystemModel = documentService.create(documentManager,

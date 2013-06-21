@@ -41,13 +41,13 @@
 		<#assign currentTagIds=[]/>
 		<#if service['proxies']?has_content>
 		<ul>
-        <#list service['proxies'] as serviceProxy>zou
+        <#list service['proxies'] as serviceProxy>
                     <li>
             <#-- in Specifications, can also be : IntelligentSystem, BusinessService, BusinessService, Folder  -->
-            <#if serviceProxy['parent'].type = 'TaggingFolder'>
+            <#if serviceProxy['parent'].facets?seq_contains('SoaNode')><#-- serviceProxy['parent'].type = 'TaggingFolder' -->
                     <@displayTagShort serviceProxy['parent'] subprojectId visibility/>
             <#else>
-                    <@displayDocShort serviceProxy['parent']/>
+                    <@displayDocShort serviceProxy['parent']/><#-- TODO display in this case ?? -->
             </#if>
              -
                     <form method="POST" action="${Root.path}/proxy/${serviceProxy.id}?subprojectId=${subprojectId}&visibility=${visibility}">

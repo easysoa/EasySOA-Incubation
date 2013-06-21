@@ -246,7 +246,7 @@
 		<#if service['proxies']?has_content>
 		<ul>
 		<#list service['proxies'] as serviceProxy>
-			<#if serviceProxy['parent'].type = 'TaggingFolder'>
+			<#if serviceProxy['parent'].facets?seq_contains('SoaNode')><#-- serviceProxy['parent'].type = 'TaggingFolder' -->
 					<li><@displayTagShort serviceProxy['parent'] subprojectId visibility/></li>
 			</#if>
 		</#list>

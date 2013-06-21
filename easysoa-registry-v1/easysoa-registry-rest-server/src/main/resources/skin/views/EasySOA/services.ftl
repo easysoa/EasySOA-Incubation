@@ -2,19 +2,24 @@
 <html>
 
 <head>
-	<title>EasySOA REST Services Documentation</title>
-	<meta charset="utf-8" />
-	<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />
-	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" /> 
-	<script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
-	<style type="text/css">
-	  .clickable:hover { cursor: pointer; background-color: #FFC; }
-	  .id { display: none }
-	  .selected { background-color: #CFC; }
-	</style>
-        <!-- Bootstrap default style and scripts -->
-        <link href="/nuxeo/site/easysoa/skin/css/bootstrap.css" rel="stylesheet" media="screen">
-        <script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>
+   <title>EasySOA Cartographie - Documentation</title>
+   <meta charset="utf-8" />
+   
+   <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
+   
+   <!-- custom style and scripts -->
+   <link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />
+   <link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" /> 
+   
+   <style type="text/css">
+     .clickable:hover { cursor: pointer; background-color: #FFC; }
+     .id { display: none }
+     .selected { background-color: #CFC; }
+   </style>
+    
+    <!-- Bootstrap default style and scripts -->
+    <link href="/nuxeo/site/easysoa/skin/css/bootstrap.css" rel="stylesheet" media="screen">
+    <script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>
 </head>
 
 <body>
@@ -22,70 +27,92 @@
         <#include "/views/EasySOA/macros.ftl">
         <#include "/views/EasySOA/docMacros.ftl">
     
-	<div id="header">
-		<div id="headerContents">
-		    <div id="logoLink">&nbsp;</div>
-	    	<div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
-			EasySOA REST Services Documentation
-	    </div>
-	</div>
+   <div id="header">
+      <div id="headerContents">
+          <div id="logoLink">&nbsp;</div>
+          <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
+          EasySOA Cartographie - Documentation
+       </div>
+   </div>
+   <br/>
 
-	<div id="container">
+   <div class="container" id="container">
+      <ul class="thumbnails">
+         <!-- Context bar -->
+         <#assign visibility=visibility!"">
+         <#assign subprojectId=subprojectId!"">
+         <@displayContextBar subprojectId contextInfo visibility "false"/>
 
-                <!-- Context bar -->
-                <#assign visibility=visibility!"">
-                <#assign subprojectId=subprojectId!"">
-                <@displayContextBar subprojectId contextInfo visibility "false"/>
-                
-		<h2>Services</h2>
+         <li class="span12">
+            <div class="thumbnail">
+               <img data-src="holder.js/300x200" alt="">
+               <h3>Documentation des services</h3>
+      
+      <p/>
+      <@displayServicesShort services subprojectId visibility/>
+      <p/>
 
-		<@displayServicesShort services subprojectId visibility/>
+            </div>
+         </li>
 
-		<h2>By tags</h2>
 
-		<#list tags as tag>
-		<#if tagId2Services?keys?seq_contains(tag.id)>
-		<h3>Services (${tagId2Services[tag.id]?size}) of tag <@displayTagShort tag subprojectId visibility/></h3>
+         <li class="span12">
+            <div class="thumbnail">
+               <img data-src="holder.js/300x200" alt="">
+               
+      <h3>Par tags</h3>
+      <p/>
+
+      <#list tags as tag>
+      <#if tagId2Services?keys?seq_contains(tag.id)>
+      <h4>Services (${tagId2Services[tag.id]?size}) du tag <@displayTagShort tag subprojectId visibility/></h4>
         <#-- Inlining to handle non-service cases. TODO LATER more generic ?? -->
-		    <#-- @displayServicesShort tagId2Services[tag.id] subprojectId visibility/ -->
-			<#if services?size = 0>
-		        No services.
-		    <#else>
-		    <ul>
-		        <#list tagId2Services[tag.id] as service>
-		            <li>
-		            <#-- handling non-service tagged things. TODO or none, or wider ?? -->
-		            <#if service.type = 'InformationService'>
-				        <@displayServiceShort service subprojectId visibility/>
-				    <#else>
-				        <@displayDocShort service/>
-				    </#if>
-		            </li>
-			    </#list>
-		    </ul>
-		    </#if>
-		</#if>
-		</#list>
+          <#-- @displayServicesShort tagId2Services[tag.id] subprojectId visibility/ -->
+         <#if services?size = 0>
+              Pas de services.
+          <#else>
+          <ul>
+              <#list tagId2Services[tag.id] as service>
+                  <li>
+                  <#-- handling non-SoaNode tagged things. TODO or less, or wider ?? -->
+                  <#if service.facets?seq_contains('SoaNode')>
+                    <@displaySoaNodeShort service subprojectId visibility/>
+                <#else>
+                    <@displayDocShort service/>
+                </#if>
+                  </li>
+             </#list>
+          </ul>
+          </#if>
+      </#if>
+      </#list>
+      <p/>
 
-		<h2>Untagged services (${untaggedServices?size})</h2>
+      <h3>Services sans tag (${untaggedServices?size})</h3>
+      <p/>
 
-		<@displayServicesShort untaggedServices subprojectId visibility/>
+      <@displayServicesShort untaggedServices subprojectId visibility/>
+      <p/>
 
-		<h2>Tags without services (${tags?size - tagId2Services?keys?size})</h2>
+      <h3>Tags non utilisés (${tags?size - tagId2Services?keys?size})</h3>
+      <p/>
 
-		<ul>
-			<#list tags as tag>
-			<#if !tagId2Services?keys?seq_contains(tag.id)>
-			<li><@displayTagShort tag subprojectId visibility/></li>
-			</#if>
-			</#list>
-		</ul>
-
-	</div>
-
-        <div id="container">
-            <a href="${Root.path}/../?subprojectId=${subprojectId}&visibility=${visibility}">Back to dashboard</a>
-        </div>
+      <ul>
+         <#list tags as tag>
+         <#if !tagId2Services?keys?seq_contains(tag.id)>
+         <li><@displayTagShort tag subprojectId visibility/></li>
+         </#if>
+         </#list>
+      </ul>
+      <p/>
+      
+            </div>
+         </li>
+   
+         <@displayReturnToIndexButtonBar/>
+   
+      </ul>
+   </div>
 
 </body>
 

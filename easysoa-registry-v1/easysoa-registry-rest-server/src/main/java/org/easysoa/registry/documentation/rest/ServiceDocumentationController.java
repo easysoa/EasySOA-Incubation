@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -53,7 +52,6 @@ import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
-import org.easysoa.registry.types.Subproject;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.TaggingFolder;
 import org.easysoa.registry.types.adapters.SoaNodeAdapter;
@@ -65,7 +63,6 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.NuxeoPrincipal;
-import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
@@ -191,22 +188,30 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
     		@PathParam("name") String name, @PathParam("type") String type,
             @QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility)
             		throws Exception {
-    	if (type == null || type.length() == 0) {
-    		type = InformationService.DOCTYPE;
-    	}
     	
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
         SoaMetamodelService soaMetamodelService = Framework.getService(SoaMetamodelService.class);
+        
+    	if (type == null || type.length() == 0) {
+    		// default is iserv
+    		type = InformationService.DOCTYPE;
+    	}
 
         nodeSubprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, nodeSubprojectId);
-
-        String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
-
         DocumentModel soaNode = docService.findSoaNode(session, new SoaNodeId(nodeSubprojectId, type, name));
+    	
+    	if (soaMetamodelService.isAssignable(type, TaggingFolder.DOCTYPE)) {
+    		// allowing to serve tags under same pattern
+    		return doGetTagHTML(soaNode, subprojectId, visibility);
+    	} else if (!soaNode.getFacets().contains(InformationService.FACET_INFORIMATIONSERVICEDATA)) {
+    		return doGetSoaNodeHTML(soaNode, subprojectId, visibility);
+    	}
 
         Template view = getView("servicedoc");
         if (soaNode != null) { // TODO else "not found"
+
+            String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
 
     		DocumentModel service = null;
     		DocumentModel serviceimpl = null;
@@ -446,30 +451,44 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         return null;
 	}
 
+    private Object doGetSoaNodeHTML(DocumentModel soaNode, String subprojectId, String visibility) throws Exception {
+        CoreSession session = SessionFactory.getSession(request);
+
+        Template view = getView("soaNode");
+        return view
+                .arg("soaNode", soaNode)
+                .arg("new_f", new freemarker.template.utility.ObjectConstructor())
+                // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
+                // and not "new" else conflicts with Nuxeo's NewMethod helper
+                .arg("subprojectId", subprojectId)
+                .arg("visibility", visibility)
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
+    }
+
+	/*
 	@GET
     @Path("tag/path{tagSubprojectId:[^:]+}:{tagName:.+}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
     public Object doGetByTagHTML(@PathParam("tagSubprojectId") String tagSubprojectId, @PathParam("tagName") String tagName,
             @QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
+            */
+    private Object doGetTagHTML(DocumentModel tag, String subprojectId, String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
 
-        tagSubprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, tagSubprojectId);
-
         String subprojectPathCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
 
+        String tagSoaName = (String) tag.getPropertyValue(SoaNode.XPATH_SOANAME);
         String query = DocumentService.NXQL_SELECT_FROM
         		+ InformationService.DOCTYPE + DocumentService.NXQL_WHERE
-        		+ InformationService.XPATH_PARENTSIDS + "/* = '" + TaggingFolder.DOCTYPE + ":" + tagName + "'"
+        		+ InformationService.XPATH_PARENTSIDS + "/* = '" + tag.getType() + ":" + tagSoaName + "'" // TaggingFolder.DOCTYPE
         		+ subprojectPathCriteria;
         DocumentModelList tagServices = docService.query(session, query, true, false);
-        DocumentModel tag = docService.findSoaNode(session, new SoaNodeId(subprojectId, TaggingFolder.DOCTYPE, tagName));
 
         Template view = getView("tagServices");
         return view
                 .arg("tag", tag)
                 .arg("tagServices", tagServices)
-                .arg("subproject", tagSubprojectId)
                 .arg("new_f", new freemarker.template.utility.ObjectConstructor())
                 // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
                 // and not "new" else conflicts with Nuxeo's NewMethod helper
@@ -567,7 +586,7 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
     }
 
     @GET
-    @Path("matchingFull") // TODO encoding
+    @Path("matchingFull")
     @Produces(MediaType.TEXT_HTML)
     public Object doGetMatchingFullPageHTML(@QueryParam("subprojectId") String subprojectId,
     		@QueryParam("visibility") String visibility) throws Exception {

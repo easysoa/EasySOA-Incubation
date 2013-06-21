@@ -26,17 +26,15 @@
 		<div id="headerContents">
 		    <div id="logoLink">&nbsp;</div>
 	    	<div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
-			EasySOA Services Documentation
+			EasySOA REST Services Documentation
 	    </div>
 	</div>
 
 	<div id="container">
 
-      <h3>Services (${tagServices?size}) du tag <@displayTagShort tag subprojectId visibility/></h3>
-      <@displayServicesShort tagServices subprojectId visibility/>
+      <h3><@displaySoaNodeShort soaNode subprojectId visibility/></h3>
 
-      <h3>Détails du tag</h3>
-      <@displayDoc tag/>
+      <@displayDoc soaNode/>
 
 	</div>
 

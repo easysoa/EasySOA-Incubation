@@ -1,5 +1,6 @@
     
     <#include "/views/EasySOA/macros.ftl">
+    <#include "/views/EasySOA/urlMacros.ftl">
     
     <#-- Document Macros -->
     
@@ -24,20 +25,88 @@
     </#macro>
 
     <#macro displayServiceTitle service subprojectId visibility>
-        <#-- NB.  to create a new object, see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html -->
-        <#assign providerActorTitle = ""/>
+        <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">
+        
+        <#assign phaseName =  Root.parseSubprojectId(service['spnode:subproject']).getSubprojectName()/>
+        <#if phaseName == 'Specifications'>
         <#if service['iserv:providerActor']?has_content>
+            <#-- NB.  to create a new object, see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html -->
             <#assign providerActor = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['iserv:providerActor']))/>
-            <#assign providerActorTitle = providerActor.title + ' / '/>
+        <#else>
+            <#assign providerActor = ""/>
         </#if>
-        <#assign componentTitle = ""/>
         <#if service['acomp:componentId']?has_content>
             <#assign component = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['acomp:componentId']))/>
-            <#assign componentTitle = component.title + ' / '/>
+        <#else>
+            <#assign component = ""/>
         </#if>
-        <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">
-        ${providerActorTitle} ${componentTitle}</span> <span title="SOA ID: ${service['soan:name']}">${service.title}
+        <@displaySoaNodeTitle providerActor ""/> / <@displaySoaNodeTitle component ""/>
+        <#elseif phaseName == 'Realisation'>
+            <#-- "technical" service -->
+            <#assign actualImpls = Root.getDocumentService().getActualImplementationsOfService(service, service['spnode:subproject'])/>
+            <#if actualImpls?has_content && actualImpls?is_sequence>
+                <#assign deliverable = Root.getDocumentService().getSoaNodeParent(actualImpls[0], 'Deliverable')/>
+                <#if deliverable?has_content && !deliverable?is_string>
+                    <#assign applicationName = deliverable['del:application']/>
+                </#if>
+            </#if>
+            <img src="/nuxeo/icons/application.png" alt="application"/>
+            <#if applicationName?has_content && applicationName?is_string && applicationName?length != 0>
+               ${applicationName}
+            <#else>
+               (inconnu)
+            </#if>
+        <#else><#-- if phaseName == 'Deploiement' -->
+            <img src="/nuxeo/icons/deliverable.png" alt="serveur"/>
+            <!-- TODO -->
+            (inconnu)
+        </#if>
+        
+        / </span>
+        <span title="SOA ID: ${service['soan:name']}"><@displaySoaNodeTitle service ""/>
         </span> - <@displayPhaseIfOutsideContext service['spnode:subproject']/> (v${service.versionLabel})
+    </#macro>
+    
+    <#macro displayActorLink actor>
+        <a href="<@urlToLocalNuxeoDocumentsUi actor/>"/><@displayActorTitle actor/></a>
+    </#macro>
+    
+    <#macro displayActorTitle actor>
+        <@displaySoaNodeTitle actor ""/>
+    </#macro>
+    
+    <#macro displayComponentLink component>
+        <a href="<@urlToLocalNuxeoDocumentsUi component/>"/><@displayComponentTitle component/></a>
+    </#macro>
+    
+    <#macro displayComponentTitle component>
+        <@displaySoaNodeTitle component ""/>
+    </#macro>
+    
+    <#macro displaySoaNodeLink soaNode type>
+       <#if soaNode?is_string>
+         (inconnu)
+       <#else>
+         <a href="<@urlToLocalNuxeoDocumentsUi soaNode/>"/><@displaySoaNodeTitle soaNode/></a>
+       </#if>
+    </#macro>
+    
+    <#macro displaySoaNodeTitle soaNode iconType>
+       <#if soaNode?is_string>
+          (inconnu)
+       <#else>
+          <#if iconType?length = 0>
+              <#assign type = soaNode.type/>
+          <#else>
+              <#assign type = iconType/>
+          </#if>
+          <#if soaNode?has_content>
+             <#assign soaNodeTitle = soaNode.title/>
+          <#else>
+             <#assign soaNodeTitle = '(inconnu)'/>
+          </#if>
+          <img src="/nuxeo/icons/${type?lower_case}.png" alt="${type}"/>${soaNodeTitle}
+       </#if>
     </#macro>
 
     <#macro displayImplementationTitle serviceimpl subprojectId visibility>
@@ -46,20 +115,22 @@
         <#else>
             <#assign providerActorTitle = '(no actor)'/>
         </#if>
-        <#if component?has_content>
+        <#if serviceimpl['impl:ismock'] = '1'><#-- TODO test component... -->
+            <#assign componentTitle = '(test component)'/>
+        <#elseif component?has_content>
             <#assign componentTitle = component.title/>
         <#else>
             <#assign componentTitle = '(no component)'/>
         </#if>
         <#assign deliverable = Root.getDocumentService().getSoaNodeParent(serviceimpl, 'Deliverable')/>
         <#if deliverable?has_content>
-            <#assign deliverableTitle = deliverable['del:application'] + ' / ' + deliverable['soan:name']/>
+            <#assign deliverableTitle = '(' + deliverable['del:application'] + ') / ' + deliverable['soan:name']/>
         <#else>
-            <#assign deliverableTitle = '(no deliverable)'/>
+            <#assign deliverableTitle = '/ (no deliverable)'/>
         </#if>
         <span title="Phase : <@displayPhase serviceimpl['spnode:subproject']/>" style="color:grey; font-style: italic;">
-        ${providerActorTitle} / ${componentTitle} / ${deliverableTitle} /</span>
-        <span title="SOA ID: ${serviceimpl['soan:name']}">${serviceimpl.title}</span>
+        ${providerActorTitle} / ${componentTitle} ${deliverableTitle}</span>
+        / <span title="SOA ID: ${serviceimpl['soan:name']}">${serviceimpl.title}</span>
         - <@displayPhaseIfOutsideContext serviceimpl['spnode:subproject']/> (v${serviceimpl.versionLabel})
     </#macro>
 
@@ -83,41 +154,81 @@
             <#assign applicationTitle = providerActorTitle + '/' + componentTitle/>
         </#if>
         <span title="Phase : <@displayPhase endpoint['spnode:subproject']/>" style="color:grey; font-style: italic;">
-        ${endpoint['env:environment']} / ${applicationTitle} /</span>
-        <span title="SOA ID: ${endpoint['soan:name']}">${endpoint.title}</span>
+        <img src="/nuxeo/icons/environment.png" alt="Environment"/>${endpoint['env:environment']} / <img src="/nuxeo/icons/application.png" alt="Application"/>${applicationTitle}</span>
+        / <span title="SOA ID: ${endpoint['soan:name']}">${endpoint.title}</span>
         - <@displayPhaseIfOutsideContext endpoint['spnode:subproject']/> (v${endpoint.versionLabel})
     </#macro>
     
     <#macro displayServiceShort service subprojectId visibility>
-        <a href="${Root.path}/path${service['spnode:subproject']?xml}::${service['soan:name']?xml}?subproject=${service['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayServiceTitle service subprojectId visibility/></a>
+        <a href="<@urlToFicheSOA service subprojectId visibility/>"><@displayServiceTitle service subprojectId visibility/></a>
         <a href="<@urlToLocalNuxeoDocumentsUi service/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
     </#macro>
     
     <#macro displayImplementationShort serviceimpl subprojectId visibility>
-        <a href="${Root.path}/path${serviceimpl['spnode:subproject']?xml}:${serviceimpl.type}:${serviceimpl['soan:name']?xml}?subproject=${serviceimpl['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayImplementationTitle serviceimpl subprojectId visibility/></a>
+        <a href="<@urlToFicheSOA serviceimpl subprojectId visibility/>"><@displayImplementationTitle serviceimpl subprojectId visibility/></a>
         <a href="<@urlToLocalNuxeoDocumentsUi serviceimpl/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
     </#macro>
     
     <#macro displayEndpointShort endpoint subprojectId visibility>
-        <a href="${Root.path}/path${endpoint['spnode:subproject']?xml}:${endpoint.type}:${endpoint['soan:name']?xml}?subproject=${endpoint['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayEndpointTitle endpoint subprojectId visibility/></a>
+        <a href="<@urlToFicheSOA endpoint subprojectId visibility/>"><@displayEndpointTitle endpoint subprojectId visibility/></a>
         <a href="<@urlToLocalNuxeoDocumentsUi endpoint/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
     </#macro>
 
     <#macro displayServicesShort services subprojectId visibility>
     <#if services?size = 0>
-    No services.
+    Pas de services.
     <#else>
     <ul>
         <#list services as service>
             <li><@displayServiceShort service subprojectId visibility/></li>
-	</#list>
+        </#list>
+    </ul>
+    </#if>
+    </#macro>
+
+    <#macro displayImplementationsShort impls subprojectId visibility>
+    <#if impls?size = 0>
+    Pas d'implémentations de services.
+    <#else>
+    <ul>
+        <#list impls as impl>
+            <li><@displayImplementationShort impls subprojectId visibility/></li>
+        </#list>
+    </ul>
+    </#if>
+    </#macro>
+
+    <#macro displayEndpointsShort endpoints subprojectId visibility>
+    <#if endpoints?size = 0>
+    Pas de services déployés.
+    <#else>
+    <ul>
+        <#list endpoints as endpoint>
+            <li><@displayEndpointShort endpoint subprojectId visibility/></li>
+        </#list>
     </ul>
     </#if>
     </#macro>
 
     <#macro displayTagShort tag subprojectId visibility>
-         <a href="${Root.path}/tag${tag['spnode:subproject']?xml}:${tag['soan:name']?xml}?subprojectId=${subprojectId}&visibility=${visibility}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - <@displayPhaseIfOutsideContext tag['spnode:subproject']/> (v${tag.versionLabel})</a>
+         <#-- ${Root.path}/tag${tag['spnode:subproject']?xml}:${tag['soan:name']?xml}?subprojectId=${subprojectId}&visibility=${visibility} -->
+         <a href="<@urlToFicheSOA tag subprojectId visibility/>">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - <@displayPhaseIfOutsideContext tag['spnode:subproject']/> (v${tag.versionLabel})</a>
          <a href="<@urlToLocalNuxeoDocumentsUi tag/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
+    </#macro>
+
+    <#macro displaySoaNodeShort soaNode subprojectId visibility>
+        <#if soaNode.schemas?seq_contains('endpoint')>
+           <@displayEndpointShort soaNode subprojectId visibility/>
+        <#elseif soaNode.facets?seq_contains('ServiceImplementationData')>
+           <@displayImplementationShort soaNode subprojectId visibility/>
+        <#elseif soaNode.facets?seq_contains('InformationServiceData')>
+           <@displayServiceShort soaNode subprojectId visibility/>
+        <#elseif soaNode.facets?seq_contains('System')>
+           <@displayTagShort soaNode subprojectId visibility/>
+        <#else>
+           <a href="<@urlToFicheSOA soaNode subprojectId visibility/>">${soaNode.title} - <@displayPhaseIfOutsideContext soaNode['spnode:subproject']/> (v${soaNode.versionLabel})</a>
+           <a href="<@urlToLocalNuxeoDocumentsUi soaNode/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
+        </#if>
     </#macro>
 
     <#macro displayDocShort doc>

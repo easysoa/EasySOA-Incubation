@@ -8,6 +8,7 @@ import java.util.List;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 
@@ -16,6 +17,9 @@ public class NuxeoListUtils {
     /** to help List.toArray() */
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
+    public static final DocumentModelList EMPTY_DOCUMENT_MODEL_LIST = EmptyDocumentModelList.INSTANCE;
+    
+    
     public static ArrayList<DocumentModel> list(DocumentModel...objs) {
         ArrayList<DocumentModel> list = new ArrayList<DocumentModel>(objs.length);
         for (DocumentModel obj : objs) {

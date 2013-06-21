@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.easysoa.registry.InvalidDoctypeException;
 import org.easysoa.registry.SoaMetamodelService;
-import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;

@@ -916,7 +916,8 @@
           <!-- property name="required">true</property -->
         </properties>
       </widget>
-      <widget name="serviceimpl_documentation" type="textarea"><!-- htmltext -->
+      <widget name="serviceimpl_documentation" type="textarea"><!-- not htmltext because all on one line,
+        TODO template putting both's forces together by checking first whether it contains lt/gt -->
         <labels>
           <label mode="any">label.easysoa.layout.serviceimpl.documentation</label>
         </labels>
@@ -981,7 +982,8 @@
           <widget>servicecons_isTest</widget>
         </row>
       </rows>
-      <widget name="servicecons_documentation" type="textarea"><!-- htmltext -->
+      <widget name="servicecons_documentation" type="textarea"><!-- not htmltext because all on one line,
+        TODO template putting both's forces together by checking first whether it contains lt/gt -->
         <labels>
           <label mode="any">label.easysoa.layout.servicecons.documentation</label>
         </labels>

@@ -37,7 +37,7 @@
         </#if>
         <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">
         ${providerActorTitle} ${componentTitle}</span> <span title="SOA ID: ${service['soan:name']}">${service.title}
-        </span> - <@displayPhaseIfOutsideContext service['spnode:subproject']/> (((${service.versionLabel})))
+        </span> - <@displayPhaseIfOutsideContext service['spnode:subproject']/> (v${service.versionLabel})
     </#macro>
 
     <#macro displayImplementationTitle serviceimpl subprojectId visibility>
@@ -60,7 +60,7 @@
         <span title="Phase : <@displayPhase serviceimpl['spnode:subproject']/>" style="color:grey; font-style: italic;">
         ${providerActorTitle} / ${componentTitle} / ${deliverableTitle} /</span>
         <span title="SOA ID: ${serviceimpl['soan:name']}">${serviceimpl.title}</span>
-        - <@displayPhaseIfOutsideContext serviceimpl['spnode:subproject']/> (((${serviceimpl.versionLabel})))
+        - <@displayPhaseIfOutsideContext serviceimpl['spnode:subproject']/> (v${serviceimpl.versionLabel})
     </#macro>
 
     <#macro displayEndpointTitle endpoint subprojectId visibility>
@@ -85,19 +85,22 @@
         <span title="Phase : <@displayPhase endpoint['spnode:subproject']/>" style="color:grey; font-style: italic;">
         ${endpoint['env:environment']} / ${applicationTitle} /</span>
         <span title="SOA ID: ${endpoint['soan:name']}">${endpoint.title}</span>
-        - <@displayPhaseIfOutsideContext endpoint['spnode:subproject']/> (((${endpoint.versionLabel})))
+        - <@displayPhaseIfOutsideContext endpoint['spnode:subproject']/> (v${endpoint.versionLabel})
     </#macro>
     
     <#macro displayServiceShort service subprojectId visibility>
         <a href="${Root.path}/path${service['spnode:subproject']?xml}::${service['soan:name']?xml}?subproject=${service['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayServiceTitle service subprojectId visibility/></a>
+        <a href="<@urlToLocalNuxeoDocumentsUi service/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
     </#macro>
     
     <#macro displayImplementationShort serviceimpl subprojectId visibility>
         <a href="${Root.path}/path${serviceimpl['spnode:subproject']?xml}:${serviceimpl.type}:${serviceimpl['soan:name']?xml}?subproject=${serviceimpl['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayImplementationTitle serviceimpl subprojectId visibility/></a>
+        <a href="<@urlToLocalNuxeoDocumentsUi serviceimpl/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
     </#macro>
     
     <#macro displayEndpointShort endpoint subprojectId visibility>
         <a href="${Root.path}/path${endpoint['spnode:subproject']?xml}:${endpoint.type}:${endpoint['soan:name']?xml}?subproject=${endpoint['spnode:subproject']}&subprojectId=${subprojectId}&visibility=${visibility}"><@displayEndpointTitle endpoint subprojectId visibility/></a>
+        <a href="<@urlToLocalNuxeoDocumentsUi endpoint/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
     </#macro>
 
     <#macro displayServicesShort services subprojectId visibility>
@@ -113,15 +116,17 @@
     </#macro>
 
     <#macro displayTagShort tag subprojectId visibility>
-         <a href="${Root.path}/tag${tag['spnode:subproject']?xml}:${tag['soan:name']?xml}?subprojectId=${subprojectId}&visibility=${visibility}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - <@displayPhaseIfOutsideContext tag['spnode:subproject']/> (((${tag.versionLabel})))</a>
+         <a href="${Root.path}/tag${tag['spnode:subproject']?xml}:${tag['soan:name']?xml}?subprojectId=${subprojectId}&visibility=${visibility}">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - <@displayPhaseIfOutsideContext tag['spnode:subproject']/> (v${tag.versionLabel})</a>
+         <a href="<@urlToLocalNuxeoDocumentsUi tag/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
     </#macro>
 
     <#macro displayDocShort doc>
         <#if doc['spnode:subproject']?has_content>
-         ${doc['title']} - <@displayPhaseIfOutsideContext doc['spnode:subproject']/> (((${doc.versionLabel})))
+         ${doc['title']} - <@displayPhaseIfOutsideContext doc['spnode:subproject']/> (v${doc.versionLabel})
         <#else>
          ${doc['title']} - ${doc['path']} (${doc.versionLabel})
         </#if>
+        <a href="<@urlToLocalNuxeoDocumentsUi doc/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
     </#macro>
 		
     <#macro displayDocsShort docs>

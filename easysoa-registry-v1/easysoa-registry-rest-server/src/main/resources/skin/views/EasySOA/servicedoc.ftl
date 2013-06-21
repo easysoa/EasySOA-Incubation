@@ -193,12 +193,16 @@
 		<p/>
 		-->
 		
-		<#if actualImpls?has_content && actualImpls?size != 0>
+      <#if productionImpl?has_content>
+         <#assign impl_operations=productionImpl['impl:operations']>
+      <#elseif serviceimpl?has_content>
+         <#assign impl_operations=serviceimpl['impl:operations']>
+		<#elseif actualImpls?has_content && actualImpls?size != 0>
 		   <#assign impl_operations=actualImpls[0]['impl:operations']>
 		<#else>
 		   <#assign impl_operations="none">
 		</#if>
-        <@displayOperations service['iserv:operations'] impl_operations/>
+      <@displayOperations service['iserv:operations'] impl_operations/>
 		<p/>
 		
 		TODO LATER OPT du WSDL de l'endpoint OR BELOW ON ENDPOINT :<p/>
@@ -360,13 +364,16 @@
 		<p/>
 		</#if>
 		
-        <#if mockImpls?has_content>
+      <#if mockImpls?has_content>
 		<br/><b>Implémentations de test (mocks) :</b><br/>
-		<#-- @displayDocsShort mockImpls/ -->
-        <@displayDocs mockImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
-		<#-- TODO TEST ismock : ${mockImpls[0]['impl:ismock']} -->
-        <p/>
-        </#if>
+      <#-- @displayDocs mockImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/ -->
+      <#-- @displayDocsShort mockImpls/ -->
+		<#list mockImpls as mockImpl>
+		  <#-- @displayDocShort mockImpl/ -->
+        <@displayImplementationShort mockImpl subprojectId visibility/>
+		</#list>
+      <p/>
+      </#if>
 
 
 		<h3>Services déployés (endpoints)</h3>
@@ -424,10 +431,21 @@
 		<p/>
 		
 		<#if productionImpl?has_content>
+		
+		  Fournit par l'Application :
         <#assign productionDeliverable = Root.getDocumentService().getSoaNodeParent(productionImpl, 'Deliverable')/>
-		Fournit par l'Application ${actorTitle} / ${componentTitle} (${productionDeliverable['del:application']}) (TODO jars)
-		<br/>
-		nécessitant les services :
+        <#if productionDeliverable?is_string>
+           <#assign productionDeliverableApplication = "délivrable inconnu"/>
+        <#else>
+           <#assign productionDeliverableApplication = productionDeliverable['del:application']/>
+        </#if>
+		  ${actorTitle} / ${componentTitle} (${productionDeliverableApplication}) (TODO jars)
+		  <br/>
+		  
+		  nécessitant les services :
+        <#if productionDeliverable?is_string>
+           (délivrable inconnu)
+        <#else>
 		<ul>
 		<!-- TODO list deliverables by application -->
 		<#assign productionDelConsumptions = Root.getDocumentService().getDeliverableConsumptions(productionDeliverable)/>
@@ -446,7 +464,8 @@
               </#if>
            </#if>
 		</#list>
-		</ul>
+		</ul
+		  </#if>
 		<p/>
 		</#if>
 		

@@ -33,7 +33,7 @@
                         </tr -->
                         <#-- in/out (message) style operation display : -->
                         <#-- finding corresponding operation in (first) non mock impl : -->
-                        <#if impl_operations?is_hash>
+                        <#if impl_operations?is_sequence>
                             <#list impl_operations as impl_operation_cur>
                                 <#if impl_operation_cur['operationName'] = iserv_operation['operationName']>
                                     <#assign impl_operation = impl_operation_cur>

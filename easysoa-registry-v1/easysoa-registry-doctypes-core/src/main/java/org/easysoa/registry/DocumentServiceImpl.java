@@ -578,9 +578,9 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 	}
 	@Override
 	public DocumentModel getSoaNodeParent(DocumentModel soaNodeModel, String type) throws ClientException {
-		Endpoint endpointAdapter = soaNodeModel.getAdapter(Endpoint.class);
+		SoaNode soaNodeAdapter = soaNodeModel.getAdapter(SoaNode.class);
 		try {
-			SoaNodeId parentSoaNodeId = endpointAdapter.getParentOfType(type);
+			SoaNodeId parentSoaNodeId = soaNodeAdapter.getParentOfType(type);
 			if (parentSoaNodeId != null) {
 				return this.findSoaNode(soaNodeModel.getCoreSession(), parentSoaNodeId);
 			}
@@ -886,7 +886,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 	public List<DocumentModel> getEndpointsOfImplementationInCriteria(DocumentModel serviceImpl, String subprojectCriteria) throws ClientException {
             List<DocumentModel> endpoints = this.getSoaNodeChildren(serviceImpl, Endpoint.DOCTYPE);
             if(endpoints == null || endpoints.isEmpty()){
-                return null;
+                return NuxeoListUtils.EMPTY_DOCUMENT_MODEL_LIST;
             }
             return this.query(serviceImpl.getCoreSession(), DocumentService.NXQL_SELECT_FROM
         		+ Endpoint.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND

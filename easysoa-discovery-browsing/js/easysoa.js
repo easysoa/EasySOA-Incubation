@@ -36,7 +36,7 @@ var webServer = http.createServer(app);
 var networkIPAddress;
 
 // Gets network (non local 0.0.0.0) IP
-// TODO BETTER USE request.headers.host ex. 192.168.2.163:8083
+// TODO BETTER USE request.headers.host ex. 192.168.2.163:8083 OK!!!
 // Works by opening a socket with google
 // NB. alternatives :
 // * os.networkInterfaces() BUT doesn't work on Windows (in dec 2012)

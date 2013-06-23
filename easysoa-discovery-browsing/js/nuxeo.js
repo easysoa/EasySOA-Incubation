@@ -170,7 +170,11 @@ exports.areCredentialsValid = areCredentialsValid = function(username, password,
 	runAutomationRequest({username: username, password: password},
 		null, null, null,
 		function(data) {
-			callback(data[0] == "{"); // If login succeeded, we get the automation doc
+		    var isAutomationDoc = data[0] == "{";
+		    if (isAutomationDoc) {
+		    	ready = true; // this is also proof that Nuxeo is ready
+		    }
+			callback(isAutomationDoc); // If login succeeded, we get the automation doc
 		},
 		method='GET'
 	);
@@ -182,14 +186,16 @@ exports.startConnectionChecker = function() {
 };
 
 checkConnection = function() {
-	areCredentialsValid('Administrator', 'Administrator', function(valid) { // TODO : credential hard coded here ??
-		if (valid) {
+	//areCredentialsValid('Administrator', 'Administrator', function(valid) { // TODO : credential hard coded here ??
+		//if (valid) {
+		if (ready) { // merely checking from time to time if at least a successful connection has been made
 			console.log('Nuxeo is ready.');
-			ready = true;
+			//ready = true;
 		}
 		else {
 			console.log("...");
-			setTimeout(checkConnection, 2000);
+			//setTimeout(checkConnection, 2000);
+			setTimeout(checkConnection, 20000);
 		}
-	});
+	//});
 };

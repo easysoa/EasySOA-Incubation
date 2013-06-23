@@ -56,7 +56,7 @@ authFilter = function(request, response, next) {
 login = function(request, response, next) {
 	var params = (request.body && request.body.username) ? request.body : request.query;
 	if (params && params.username && params.password) {
-		if (nuxeo.isReady()) {
+		//if (nuxeo.isReady()) { // not checking anymore, since it's a valid connection that will make it ready
 			try {
 				nuxeo.areCredentialsValid(
 					params.username,
@@ -93,9 +93,9 @@ login = function(request, response, next) {
 				console.log("ERROR:", error);
 				redirectToLoginForm(request, response);
 			}
-		} else {
+		/*} else {
 			redirectToLoginForm(request, response, false, true);
-		}
+		}*/
 	} else {
 		// No credentials provided
 		if (params.callback) {

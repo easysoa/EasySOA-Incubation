@@ -92,7 +92,7 @@ public class SoftwareComponentIndicatorProvider extends IndicatorProviderBase {
         DocumentModelList deliverableInNoSoftwareComponent = session.query(DocumentService.NXQL_SELECT_FROM + Deliverable.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY
                 + getNotInLiteralIfAnyCriteria("ecm:uuid", getProxiedIdLiteralList(session, deliverableProxyInASoftwareComponent)) + subprojectPathCriteria);
         int deliverableInNoSoftwareComponentCount = deliverableInNoSoftwareComponent.size();
-        int deliverableCount = computedIndicators.get(DoctypeCountProvider.getName(Deliverable.DOCTYPE)).getCount();
+        long deliverableCount = computedIndicators.get(DoctypeCountProvider.getName(Deliverable.DOCTYPE)).getCount();
         ///indicators.put("deliverableInNoSoftwareComponent", 
         ///        new IndicatorValue(deliverableInNoSoftwareComponentCount,
         ///        (deliverableCount > 0) ? 100 * deliverableInNoSoftwareComponentCount / deliverableCount : -1));
@@ -110,10 +110,8 @@ public class SoftwareComponentIndicatorProvider extends IndicatorProviderBase {
                 + " AND ecm:path STARTSWITH '" + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/" + Deliverable.DOCTYPE + "'");
         DocumentModelList implementationInNoDeliverable = session.query(DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY
                 + getNotInLiteralIfAnyCriteria("ecm:uuid", getProxiedIdLiteralList(session, implementationProxyInADeliverable)) + subprojectPathCriteria);
-        int serviceImplCount = computedIndicators.get(DoctypeCountProvider.getName(ServiceImplementation.DOCTYPE)).getCount();
-        indicators.put("implementationInNoDeliverable", 
-                new IndicatorValue("", "", implementationInNoDeliverable.size(),
-                        (serviceImplCount > 0) ? 100 * implementationInNoDeliverable.size() / serviceImplCount : -1)); // TODO i.e. deliverable is unknown / placeholder
+        long serviceImplCount = computedIndicators.get(DoctypeCountProvider.getName(ServiceImplementation.DOCTYPE)).getCount();
+        super.newIndicator(indicators, "implementationInNoDeliverable", implementationInNoDeliverable.size(), serviceImplCount); // TODO i.e. deliverable is unknown / placeholder
         
         ArrayList<DocumentModel> implementationInNoDeliverableOrWhoseIsInNoSoftwareComponent = new ArrayList<DocumentModel>(implementationInNoDeliverable);
         implementationInNoDeliverableOrWhoseIsInNoSoftwareComponent.addAll(deliverableInNoSoftwareComponentsImplementations);
@@ -126,14 +124,14 @@ public class SoftwareComponentIndicatorProvider extends IndicatorProviderBase {
                 + " AND ecm:path STARTSWITH '" + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/" + InformationService.DOCTYPE + "'"
                 // + " AND ecm:proxyTargetId IN " + getProxiedIdLiteralList(session, implementationInNoDeliverableOrWhoseIsInNoSoftwareComponent)); // TODO soaid for proxies
                 + " AND ecm:uuid IN " + toLiteral(getProxyIds(session, implementationInNoDeliverableOrWhoseIsInNoSoftwareComponent, null)) + subprojectPathCriteria); // TODO soaid for proxies
-        int serviceCount = computedIndicators.get(DoctypeCountProvider.getName(ServiceImplementation.DOCTYPE)).getCount();
+        long serviceCount = computedIndicators.get(DoctypeCountProvider.getName(ServiceImplementation.DOCTYPE)).getCount();
         HashSet<String> implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentServiceIdSet = new HashSet<String>(
                 getParentIds(implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentServiceProxy));
         ///indicators.put("implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentService",
         ///        new IndicatorValue(implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentServiceIdSet.size(),
         ///                (serviceCount > 0) ? 100 * implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentServiceIdSet.size() / serviceCount : -1));
        
-        HashSet<String> serviceWhithoutImplementationIdSet = new HashSet<String>(serviceCount);
+        HashSet<String> serviceWhithoutImplementationIdSet = new HashSet<String>((int) Math.min(serviceCount, Integer.MAX_VALUE));
         DocumentModelList serviceList = session.query(DocumentService.NXQL_SELECT_FROM + InformationService.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY + subprojectPathCriteria);
         DocumentService documentService = Framework.getService(DocumentService.class);
         for (DocumentModel service : serviceList) {
@@ -144,9 +142,7 @@ public class SoftwareComponentIndicatorProvider extends IndicatorProviderBase {
         }
         HashSet<String> serviceInNoSoftwareComponentIdSet = new HashSet<String>(implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentServiceIdSet);
         serviceInNoSoftwareComponentIdSet.addAll(serviceWhithoutImplementationIdSet);
-        indicators.put("serviceInNoSoftwareComponent", 
-                new IndicatorValue("", "", serviceInNoSoftwareComponentIdSet.size(),
-                (serviceCount > 0) ? 100 * serviceInNoSoftwareComponentIdSet.size() / serviceCount : -1));
+        super.newIndicator(indicators, "serviceInNoSoftwareComponent", serviceInNoSoftwareComponentIdSet.size(), serviceCount);
         
         
         // whose software component if any is not in any Tagging Folder ("Business Process") :
@@ -162,7 +158,7 @@ public class SoftwareComponentIndicatorProvider extends IndicatorProviderBase {
                 + " AND ecm:path STARTSWITH '" + RepositoryHelper.getRepositoryPath(session, subprojectId) + "/" + TaggingFolder.DOCTYPE + "'" + subprojectPathCriteria);
         DocumentModelList softwareComponentInNoTaggingFolder = session.query(DocumentService.NXQL_SELECT_FROM + "SoftwareComponent" + DocumentService.NXQL_WHERE_NO_PROXY
                 + getNotInLiteralIfAnyCriteria("ecm:uuid", getProxiedIdLiteralList(session, softwareComponentProxyInATaggingFolder)) + subprojectPathCriteria); // TODO bof
-        int softwareComponentCount = computedIndicators.get(DoctypeCountProvider.getName(SoftwareComponent.DOCTYPE)).getCount();
+        long softwareComponentCount = computedIndicators.get(DoctypeCountProvider.getName(SoftwareComponent.DOCTYPE)).getCount();
         ///indicators.put("softwareComponentInNoTaggingFolder",
         ///        new IndicatorValue(softwareComponentInNoTaggingFolder.size(),
         ///                (softwareComponentCount > 0) ? 100 * softwareComponentInNoTaggingFolder.size() / softwareComponentCount : -1));
@@ -206,9 +202,7 @@ public class SoftwareComponentIndicatorProvider extends IndicatorProviderBase {
         
         HashSet<String> serviceInNoTaggingFolderIds = new HashSet<String>(implementationInNoDeliverableOrWhoseIsInNoSoftwareComponentOrWhoseIsInNoTaggingFolderServiceIds);
         serviceInNoTaggingFolderIds.addAll(serviceWhithoutImplementationIdSet);
-        indicators.put("serviceInNoTaggingFolder", 
-                new IndicatorValue("", "", serviceInNoTaggingFolderIds.size(),
-                (serviceCount > 0) ? 100 * serviceInNoTaggingFolderIds.size() / serviceCount : -1));
+        super.newIndicator(indicators, "serviceInNoTaggingFolder", serviceInNoTaggingFolderIds.size(), serviceCount);
         
         return indicators;
     }

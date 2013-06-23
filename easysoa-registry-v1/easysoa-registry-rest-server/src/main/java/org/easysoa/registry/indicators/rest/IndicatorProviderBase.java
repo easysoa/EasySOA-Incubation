@@ -20,6 +20,7 @@
 
 package org.easysoa.registry.indicators.rest;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -45,16 +46,88 @@ public abstract class IndicatorProviderBase implements IndicatorProvider {
 		return null;
 	}
 
+	/**
+	 * Creates and adds a count indicator and computes its percentage
+	 * @param indicators
+	 * @param name
+	 * @param count
+	 * @param percentageTotal
+	 * @param description
+	 * @return
+	 */
 	protected IndicatorValue newIndicator( Map<String, IndicatorValue> indicators,
-			String name, int count, int percentage, String description) {
-		IndicatorValue indicator = new IndicatorValue(name, category, count, percentage, description);
+			String name, double count, long percentageTotal, String description) {
+		IndicatorValue indicator = new IndicatorValue(name, category, count, percentageTotal, description);
 		indicators.put(name, indicator);
 		return indicator;
 	}
 
+	/**
+	 * Creates and adds a percentage-only indicator
+	 * @param indicators
+	 * @param name
+	 * @param percentage
+	 * @param description
+	 * @return
+	 */
 	protected IndicatorValue newIndicator( Map<String, IndicatorValue> indicators,
-			String name, int count, int percentage) {
-		return newIndicator(indicators, name, count, percentage, null);
+			String name, int percentage, String description) {
+		IndicatorValue indicator = new IndicatorValue(name, category, percentage, description);
+		indicators.put(name, indicator);
+		return indicator;
+	}
+
+	/**
+	 * Creates and adds a date-only indicator
+	 * @param indicators
+	 * @param name
+	 * @param percentage
+	 * @param description
+	 * @return
+	 */
+	protected IndicatorValue newIndicator( Map<String, IndicatorValue> indicators,
+			String name, Date date, String description) {
+		IndicatorValue indicator = new IndicatorValue(name, category, -1, description);
+		indicator.setDate(date);
+		indicators.put(name, indicator);
+		return indicator;
+	}
+
+	/**
+	 * Creates and adds a count indicator and computes its percentage
+	 * @param indicators
+	 * @param name
+	 * @param count
+	 * @param percentageTotal
+	 * @return
+	 */
+	protected IndicatorValue newIndicator( Map<String, IndicatorValue> indicators,
+			String name, double count, long percentageTotal) {
+		return newIndicator(indicators, name, count, percentageTotal, null);
+	}
+
+	/**
+	 * Creates and adds a percentage-only indicator
+	 * @param indicators
+	 * @param name
+	 * @param percentage
+	 * @return
+	 */
+	protected IndicatorValue newIndicator( Map<String, IndicatorValue> indicators,
+			String name, int percentage) {
+		return newIndicator(indicators, name, percentage, null);
+	}
+
+	/**
+	 * Creates and adds a date-only indicator
+	 * @param indicators
+	 * @param name
+	 * @param percentage
+	 * @return
+	 */
+	protected IndicatorValue newIndicator( Map<String, IndicatorValue> indicators,
+			String name, Date date) {
+		return newIndicator(indicators, name, date, null);
 	}
 
 }

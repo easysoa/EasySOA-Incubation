@@ -23,6 +23,7 @@ package org.easysoa.registry.indicators.rest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.integration.EndpointStateServiceImpl;
 import org.easysoa.registry.rest.integration.EndpointStateService;
@@ -66,11 +67,10 @@ public class ServiceDefaultCountIndicatorProvider extends IndicatorProviderBase 
         
         // For each endpoint, get the SLA/OLA indicators : check the violation and increase or not the counter
         int countValue = 0;
-        int percentValue = -1;
         int totalNumberOfIndicators = 0;
         
         for(DocumentModel endpoint : endpointsList){
-            // TODO : take only the latest indicator ?
+            // TODO : take only the latest indicator ? YES
             List<SlaOrOlaIndicator> slaOlaIndicators = endpointStateService.getSlaOrOlaIndicators(endpoint.getId(), "", null, null, 10, 0).getSlaOrOlaIndicatorList();
             for(SlaOrOlaIndicator indicator : slaOlaIndicators){
                 totalNumberOfIndicators++;
@@ -79,14 +79,9 @@ public class ServiceDefaultCountIndicatorProvider extends IndicatorProviderBase 
                 }
             }
         }
-
-        // Compute the percentage
-        if(totalNumberOfIndicators > 0){
-            percentValue = countValue * 100 / totalNumberOfIndicators;
-        }
         
         // Set the indicator 
-        newIndicator(indicators, "serviceInViolation", countValue, percentValue);
+        newIndicator(indicators, "serviceInViolation", countValue, totalNumberOfIndicators);
         
         return indicators;
     }

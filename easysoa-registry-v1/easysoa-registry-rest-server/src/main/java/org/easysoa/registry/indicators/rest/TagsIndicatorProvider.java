@@ -91,8 +91,7 @@ public class TagsIndicatorProvider extends IndicatorProviderBase {
         
         // Register indicators
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
-        newIndicator(indicators, "serviceWithoutUserTag", notTaggedServices,
-                        (serviceModels.size() > 0) ? 100 * notTaggedServices / serviceModels.size() : -1);
+        newIndicator(indicators, "serviceWithoutUserTag", notTaggedServices, serviceModels.size());
         newIndicator(indicators, "userTagAverage",
                         (userCount > 0) ? taggingFolderCountValue.getCount() / userCount : -1, -1);
         

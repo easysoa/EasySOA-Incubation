@@ -78,8 +78,7 @@ public class LastCodeDiscoveryIndicatorProvider extends IndicatorProviderBase {
         	Date lastModificationDate = appToModifiedMap.get(application);
             // TODO : modify the IndicatorValue to be able to pass dates as value
         	// TODO : i18n
-            newIndicator(indicators, "Date de la dernière découverte code/analyse pour l'application " + application, -1, -1)
-                .setDate(lastModificationDate);;
+            newIndicator(indicators, "Date de la dernière découverte code/analyse pour l'application " + application, lastModificationDate);
         }
         
         return indicators;

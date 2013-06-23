@@ -59,18 +59,14 @@ public abstract class QueryCountIndicator extends Indicator {
         IterableQueryResult queryResult = session.queryAndFetch(valueQuery + subprojectCriteria, NXQL.NXQL);
         try {
             if (this.totalQuery == null) {
-                return new IndicatorValue(this.getName(), this.getCategory(), (int) queryResult.size(), -1);
+                return new IndicatorValue(this.getName(), this.getCategory(), queryResult.size(), -1);
             } else {
                 IterableQueryResult totalQueryResult = null;
                 try {
                     totalQueryResult = session.queryAndFetch(totalQuery, NXQL.NXQL);
-
-                    // Compute the percentage value
-                    int percentage = Math.round(queryResult.size() * 100 / totalQueryResult.size());
                     
                     //TODO : Total query stored in the percentage value - how is calculated the percentage ??
-                    //return new IndicatorValue((int) queryResult.size(), (int) totalQueryResult.size());
-                    return new IndicatorValue(this.getName(), this.getCategory(), (int) queryResult.size(), percentage);
+                    return new IndicatorValue(this.getName(), this.getCategory(), queryResult.size(), totalQueryResult.size());
                 } finally {
                     if (totalQueryResult != null) {
                         totalQueryResult.close();

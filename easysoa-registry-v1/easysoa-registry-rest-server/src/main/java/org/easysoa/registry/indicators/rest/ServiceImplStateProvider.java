@@ -72,7 +72,7 @@ public class ServiceImplStateProvider extends IndicatorProviderBase {
         // Count indicators - ServiceImplementation-specific
         final int IDEAL_DOCUMENTATION_LINES = 40, DOCUMENTATION_LINES_TOLERANCE = 20;
         int undocumentedServiceImpls = 0, documentationLines = 0;
-        int serviceImplCount = computedIndicators.get(SERVICEIMPL_DOCTYPE_INDICATOR).getCount();
+        long serviceImplCount = computedIndicators.get(SERVICEIMPL_DOCTYPE_INDICATOR).getCount();
         int serviceImplsDocQuality = 0;
         Map<Serializable, Boolean> hasMock = new HashMap<Serializable, Boolean>();
         int mockedImplsCount = 0, testedImplsCount = 0, nonMockImplsCount = 0;
@@ -140,14 +140,12 @@ public class ServiceImplStateProvider extends IndicatorProviderBase {
         
         //% de doc seulement sur les services qui en ont / Qualité de doc moyenne en%
         //indicateurs documentation : % d'éléments doc'és (pour service, impl ; non test ; LATER pour consumer)
-        newIndicator(indicators, "serviceImplementationWithoutDocumentation", undocumentedServiceImpls, -1);
-        newIndicator(indicators, "serviceImplementationDocumentationLineAverage", (serviceImplCount - undocumentedServiceImpls > 0) ? (documentationLines / (serviceImplCount - undocumentedServiceImpls)) : -1, -1);
-        newIndicator(indicators, "serviceImplementationWithoutMock", nonMockImplsCount - mockedImplsCount,
-                        (nonMockImplsCount > 0) ? (100 * (nonMockImplsCount - mockedImplsCount) / nonMockImplsCount) : -1);
-        newIndicator(indicators, "serviceImplementationWithoutTest", nonMockImplsCount - testedImplsCount,
-                        (nonMockImplsCount > 0) ? (100 * (nonMockImplsCount - testedImplsCount) / nonMockImplsCount) : -1);
-        newIndicator(indicators, "documentedServiceImplementationDocumentationQuality", -1, (serviceImplCount - undocumentedServiceImpls > 0) ?
-                        (100 * serviceImplsDocQuality / ((IDEAL_DOCUMENTATION_LINES - DOCUMENTATION_LINES_TOLERANCE) * (serviceImplCount - undocumentedServiceImpls))) : -1);
+        newIndicator(indicators, "serviceImplementationWithoutDocumentation", undocumentedServiceImpls, serviceImplCount);
+        newIndicator(indicators, "serviceImplementationDocumentationLineAverage", (serviceImplCount - undocumentedServiceImpls > 0) ? (int) (documentationLines / (serviceImplCount - undocumentedServiceImpls)) : -1);
+        newIndicator(indicators, "serviceImplementationWithoutMock", nonMockImplsCount - mockedImplsCount, nonMockImplsCount);
+        newIndicator(indicators, "serviceImplementationWithoutTest", nonMockImplsCount - testedImplsCount, nonMockImplsCount);
+        newIndicator(indicators, "documentedServiceImplementationDocumentationQuality", (serviceImplCount - undocumentedServiceImpls > 0) ?
+                        (int) (100 * serviceImplsDocQuality / ((IDEAL_DOCUMENTATION_LINES - DOCUMENTATION_LINES_TOLERANCE) * (serviceImplCount - undocumentedServiceImpls))) : -1);
 
         // TODO model consistency ex. impl without service
         // TODO for one ex. impl of ONE service => prop to query

@@ -70,7 +70,7 @@ public class ServiceStateProvider extends IndicatorProviderBase {
                 + InformationService.DOCTYPE + subprojectCriteria, true, false);
 
         // Count indicators - Service-specific
-        int servicesCount = computedIndicators.get(SERVICE_DOCTYPE_INDICATOR).getCount();
+        long servicesCount = computedIndicators.get(SERVICE_DOCTYPE_INDICATOR).getCount();
         int serviceWithoutActorNb = 0;
         int serviceWithoutInterfaceNb = 0;
         int serviceWithoutComponentNb = 0;
@@ -154,45 +154,32 @@ public class ServiceStateProvider extends IndicatorProviderBase {
         }
 
         // Indicators results registration
-        newIndicator(indicators, "serviceWithoutActor", serviceWithoutActorNb,
-                        (servicesCount > 0) ? (100 * serviceWithoutActorNb / servicesCount) : 0);
-        newIndicator(indicators, "serviceWithoutInterface", serviceWithoutInterfaceNb,
-                        (servicesCount > 0) ? (100 * serviceWithoutInterfaceNb / servicesCount) : 0);
-        newIndicator(indicators, "serviceWithoutComponent", serviceWithoutComponentNb,
-                        (servicesCount > 0) ? (100 * serviceWithoutComponentNb / servicesCount) : 0);
+        newIndicator(indicators, "serviceWithoutActor", serviceWithoutActorNb, servicesCount);
+        newIndicator(indicators, "serviceWithoutInterface", serviceWithoutInterfaceNb, servicesCount);
+        newIndicator(indicators, "serviceWithoutComponent", serviceWithoutComponentNb, servicesCount);
 
         // TODO "main" vs "test" implementation
-        newIndicator(indicators, "serviceWithoutImplementation", serviceWithoutImplementationNb,
-                        (servicesCount > 0) ? (100 * serviceWithoutImplementationNb / servicesCount) : 0);
-        int serviceWithImplementationNb = servicesCount - serviceWithoutImplementationNb;
-        newIndicator(indicators, "serviceWithImplementation", serviceWithImplementationNb,
-                        (servicesCount > 0) ? (100 * serviceWithImplementationNb / servicesCount) : 0); // for governance completion
+        newIndicator(indicators, "serviceWithoutImplementation", serviceWithoutImplementationNb, servicesCount);
+        long serviceWithImplementationNb = servicesCount - serviceWithoutImplementationNb;
+        newIndicator(indicators, "serviceWithImplementation", serviceWithImplementationNb, servicesCount); // for governance completion
 
-        newIndicator(indicators, "serviceWithMockImplementation", serviceWithMockImplementationNb,
-                        (servicesCount > 0) ? (100 * serviceWithMockImplementationNb / servicesCount) : 0); // for governance completion
-        newIndicator(indicators, "serviceWithTestedImplementation", serviceWithTestedImplementationNb,
-                        (servicesCount > 0) ? (100 * serviceWithTestedImplementationNb / servicesCount) : 0); // for governance completion
+        newIndicator(indicators, "serviceWithMockImplementation", serviceWithMockImplementationNb, servicesCount); // for governance completion
+        newIndicator(indicators, "serviceWithTestedImplementation", serviceWithTestedImplementationNb, servicesCount); // for governance completion
         
         // TODO "test", "integration", "staging" ("design", "dev")
-        newIndicator(indicators, "serviceWithImplementationWhithoutEndpoint", serviceWithImplementationWhithoutEndpointNb,
-                        (servicesCount - serviceWithoutImplementationNb > 0) ? (100 * serviceWithImplementationWhithoutEndpointNb / serviceWithImplementationNb) : 0);
+        newIndicator(indicators, "serviceWithImplementationWhithoutEndpoint", serviceWithImplementationWhithoutEndpointNb, serviceWithImplementationNb);
 
-        newIndicator(indicators, "serviceWithImplementationWhithoutProductionEndpoint", serviceWithImplementationWhithoutProductionEndpointNb,
-                        (servicesCount - serviceWithoutImplementationNb > 0) ? (100 * serviceWithImplementationWhithoutProductionEndpointNb / serviceWithImplementationNb) : 0);
+        newIndicator(indicators, "serviceWithImplementationWhithoutProductionEndpoint", serviceWithImplementationWhithoutProductionEndpointNb, serviceWithImplementationNb);
 
         int serviceWhithoutEndpointNb = serviceWithoutImplementationNb + serviceWithImplementationWhithoutEndpointNb;
-        newIndicator(indicators, "serviceWithoutEndpoint", serviceWhithoutEndpointNb,
-                        (servicesCount > 0) ? (100 * serviceWhithoutEndpointNb / servicesCount) : 0);
-        int serviceWithEndpointNb = servicesCount - serviceWhithoutEndpointNb;
-        newIndicator(indicators, "serviceWithEndpoint", serviceWithEndpointNb,
-                        (servicesCount > 0) ? (100 * serviceWithEndpointNb / servicesCount) : 0); // for governance completion
+        newIndicator(indicators, "serviceWithoutEndpoint", serviceWhithoutEndpointNb, servicesCount);
+        long serviceWithEndpointNb = servicesCount - serviceWhithoutEndpointNb;
+        newIndicator(indicators, "serviceWithEndpoint", serviceWithEndpointNb,  servicesCount); // for governance completion
 
         int serviceWhithoutProductionEndpointNb = serviceWithoutImplementationNb + serviceWithImplementationWhithoutProductionEndpointNb;
-        newIndicator(indicators, "serviceWithoutProductionEndpoint", serviceWhithoutProductionEndpointNb,
-                        (servicesCount > 0) ? (100 * serviceWhithoutProductionEndpointNb / servicesCount) : 0);
-        int serviceWithProductionEndpointNb = servicesCount - serviceWhithoutProductionEndpointNb;
-        newIndicator(indicators, "serviceWithProductionEndpoint", serviceWithProductionEndpointNb,
-                        (servicesCount > 0) ? (100 * serviceWithProductionEndpointNb / servicesCount) : 0); // for governance completion
+        newIndicator(indicators, "serviceWithoutProductionEndpoint", serviceWhithoutProductionEndpointNb, servicesCount);
+        long serviceWithProductionEndpointNb = servicesCount - serviceWhithoutProductionEndpointNb;
+        newIndicator(indicators, "serviceWithProductionEndpoint", serviceWithProductionEndpointNb, servicesCount); // for governance completion
 
         return indicators;
     }

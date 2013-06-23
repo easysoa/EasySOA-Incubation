@@ -156,7 +156,7 @@ public class IndicatorsController extends EasysoaModuleRoot {
      * @return A map containing the indicators values
      * @throws Exception If a problem occurs
      */
-    public Map<String, IndicatorValue> computeIndicators(CoreSession session, HashMap<String, Integer> nbMap, HashMap<String, Integer> percentMap, String subprojectId, String visibility) throws Exception {
+    public Map<String, IndicatorValue> computeIndicators(CoreSession session, HashMap<String, Long> nbMap, HashMap<String, Integer> percentMap, String subprojectId, String visibility) throws Exception {
 
         // using all subprojects or getting default one is let to indicator impls TODO better
         //subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(session, subprojectId);
@@ -169,7 +169,7 @@ public class IndicatorsController extends EasysoaModuleRoot {
 
         // Create and return view
         if (nbMap == null) {
-            nbMap = new HashMap<String, Integer>();
+            nbMap = new HashMap<String, Long>();
         }
         if (percentMap == null) {
             percentMap = new HashMap<String, Integer>();
@@ -199,7 +199,7 @@ public class IndicatorsController extends EasysoaModuleRoot {
         CoreSession session = SessionFactory.getSession(request);
 
         // Init maps
-        HashMap<String, Integer> nbMap = new HashMap<String, Integer>();
+        HashMap<String, Long> nbMap = new HashMap<String, Long>();
         HashMap<String, Integer> percentMap = new HashMap<String, Integer>();
 
         // Compute the indicators

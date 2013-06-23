@@ -33,25 +33,68 @@ public class IndicatorValue {
     private String name;
     private String description;
     private Set<String> categories = new HashSet<String>(); // TODO : several categories ??
-    private int count;
+    private long count;
     private int percentage;
+    private long percentageTotal;
     private Date date = null;
 
-    /**
-     * 
-     * @param count The indicator value, or -1 if not relevant
-     * @param percentage The indicator value in percents, or -1 if not relevant
-     */
-    public IndicatorValue(String name, String category, int count, int percentage, String description) {
+    public IndicatorValue(String name, String category, String description) {
         this.name= name;
         this.description = description;
         addCategory(category);
-        this.count = count;
-        this.percentage = percentage;
+    }
+    
+    /**
+     * Creates a count indicator and computes its percentage
+     * @param count The indicator value, or -1 if not relevant
+     * @param percentageTotal The total count allowing to compute the percentage
+     * (the indicator value in percents), or -1 if not relevant
+     */
+    public IndicatorValue(String name, String category, double count, long percentageTotal, String description) {
+    	this(name, category, description);
+        this.count = Math.round(count);
+        this.percentageTotal = percentageTotal;
+        if(this.percentageTotal <= 0) { // -1 or 0
+        	this.percentage = -1;
+        } else {
+            // Compute the percentage value
+        	this.percentage = (int) Math.round(100 * count / percentageTotal);
+        }
     }
 
-    public IndicatorValue(String name, String category, int count, int percentage) {
-		this(name, category, count, percentage, null);
+    /**
+     * Creates a percentage-only indicator
+     * @param name
+     * @param category
+     * @param percentage
+     * @param description
+     */
+    public IndicatorValue(String name, String category, int percentage, String description) {
+    	this(name, category, description);
+        this.count = -1;
+        this.percentageTotal = -1;
+    	this.percentage = percentage;
+	}
+
+    /**
+     * Creates a percentage-only indicator
+     * @param name
+     * @param category
+     * @param percentage
+     */
+    public IndicatorValue(String name, String category, int percentage) {
+		this(name, category, percentage, null);
+    }
+
+    /**
+     * Creates a count indicator and computes its percentage
+     * @param name
+     * @param category
+     * @param count
+     * @param percentageTotal
+     */
+    public IndicatorValue(String name, String category, double count, long percentageTotal) {
+		this(name, category, count, percentageTotal, null);
 	}
 
 	/**
@@ -103,7 +146,7 @@ public class IndicatorValue {
      * 
      * @return The indicator value, or -1 if not relevant
      */
-    public int getCount() {
+    public long getCount() {
         return count;
     }
     
@@ -115,11 +158,16 @@ public class IndicatorValue {
         return percentage;
     }
     
+    public long getPercentageTotal() {
+        return percentageTotal;
+    }
+    
     @Override
     public String toString() {
-        String countString = (count != -1) ? Integer.toString(count) : "N.A.";
+        String countString = (count != -1) ? Long.toString(count) : "N.A.";
+        String percentageTotalString = (percentageTotal != -1) ? Long.toString(percentageTotal) + "%" : "N.A.";
         String percentageString = (percentage != -1) ? Integer.toString(percentage) + "%" : "N.A.";
-        return "[" + countString + " / " + percentageString + "]";
+        return "[" + countString + " / " + percentageTotalString + " : " + percentageString + "%]";
     }
 
     /**

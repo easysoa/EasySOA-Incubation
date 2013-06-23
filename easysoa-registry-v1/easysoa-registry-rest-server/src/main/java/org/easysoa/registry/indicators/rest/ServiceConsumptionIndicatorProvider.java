@@ -24,12 +24,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.easysoa.registry.DocumentService;
-import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceConsumption;
 import org.easysoa.registry.types.ids.SoaNodeId;
-import org.easysoa.registry.utils.ContextVisibility;
 import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -72,7 +71,7 @@ public class ServiceConsumptionIndicatorProvider extends IndicatorProviderBase {
         }
         
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
-        newIndicator(indicators, "serviceWithoutConsumption", unconsumedServiceIds.size(), (servicesIds.size() > 0) ? 100 * unconsumedServiceIds.size() / servicesIds.size() : -1);
+        newIndicator(indicators, "serviceWithoutConsumption", unconsumedServiceIds.size(), servicesIds.size());
         
         return indicators;
     }

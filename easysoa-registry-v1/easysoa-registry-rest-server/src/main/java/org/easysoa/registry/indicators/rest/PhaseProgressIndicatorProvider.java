@@ -58,23 +58,22 @@ public class PhaseProgressIndicatorProvider extends IndicatorProviderBase {
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
 
         // Count indicators - Service-specific
-        int servicesCount = computedIndicators.get(InformationService.DOCTYPE).getCount();
-        int serviceWithoutActorNb = computedIndicators.get("serviceWithoutActor").getCount();
-        int serviceWithoutInterfaceNb = computedIndicators.get("serviceWithoutInterface").getCount();
-        int serviceWithoutComponentNb = computedIndicators.get("serviceWithoutComponent").getCount();
-        int serviceWithImplementationNb = computedIndicators.get("serviceWithImplementation").getCount();
-        int serviceWithoutImplementationNb = computedIndicators.get("serviceWithoutImplementation").getCount();
-        int serviceWithMockImplementationNb = computedIndicators.get("serviceWithMockImplementation").getCount();
-        int serviceWithTestedImplementationNb = computedIndicators.get("serviceWithTestedImplementation").getCount();
-        int serviceWithProductionEndpointNb = computedIndicators.get("serviceWithProductionEndpoint").getCount();
-        int serviceWithoutProductionEndpointNb = computedIndicators.get("serviceWithoutProductionEndpoint").getCount();
-        int serviceWithEndpointNb = computedIndicators.get("serviceWithEndpoint").getCount();
+        long servicesCount = computedIndicators.get(InformationService.DOCTYPE).getCount();
+        long serviceWithoutActorNb = computedIndicators.get("serviceWithoutActor").getCount();
+        long serviceWithoutInterfaceNb = computedIndicators.get("serviceWithoutInterface").getCount();
+        long serviceWithoutComponentNb = computedIndicators.get("serviceWithoutComponent").getCount();
+        long serviceWithImplementationNb = computedIndicators.get("serviceWithImplementation").getCount();
+        long serviceWithoutImplementationNb = computedIndicators.get("serviceWithoutImplementation").getCount();
+        long serviceWithMockImplementationNb = computedIndicators.get("serviceWithMockImplementation").getCount();
+        long serviceWithTestedImplementationNb = computedIndicators.get("serviceWithTestedImplementation").getCount();
+        long serviceWithProductionEndpointNb = computedIndicators.get("serviceWithProductionEndpoint").getCount();
+        long serviceWithoutProductionEndpointNb = computedIndicators.get("serviceWithoutProductionEndpoint").getCount();
+        long serviceWithEndpointNb = computedIndicators.get("serviceWithEndpoint").getCount();
 		
         // specifications can't be complete without all interfaces, provider actors, components)
-        int specificationsProgress = 3 * servicesCount
+        double specificationsProgress = 3 * servicesCount
         		- (serviceWithoutActorNb + serviceWithoutInterfaceNb + serviceWithoutComponentNb);
-        newIndicator(indicators, "specificationsProgress", specificationsProgress,
-                        (servicesCount > 0) ? (100 * specificationsProgress / 3 / servicesCount) : 0,
+        newIndicator(indicators, "specificationsProgress", specificationsProgress, 3 * servicesCount,
                         		"3 * servicesCount - (serviceWhithoutActorNb + serviceWhithoutInterfaceNb + serviceWhithoutComponentNb");
         /*
                         		"3 * servicesCount[" + servicesCount + "] - (serviceWhithoutActorNb["
@@ -83,10 +82,9 @@ public class PhaseProgressIndicatorProvider extends IndicatorProviderBase {
                         */
 
         // realisation can't be complete without all actual impls, but tested impls & mock impls help closing half the gap
-        int realisationProgress = 4 * servicesCount * serviceWithImplementationNb
+        long realisationProgress = 4 * servicesCount * serviceWithImplementationNb
         		+ serviceWithoutImplementationNb * (serviceWithMockImplementationNb + serviceWithTestedImplementationNb);
-        newIndicator(indicators, "realisationProgress", realisationProgress,
-                        (servicesCount > 0) ? (100 * realisationProgress / 4 / servicesCount / servicesCount) : 0,
+        newIndicator(indicators, "realisationProgress", realisationProgress, 4 * servicesCount * servicesCount,
                                 "4 * servicesCount * serviceWithImplementationNb + serviceWhithoutImplementationNb * (serviceWhithMockImplementationNb + serviceWhithTestedImplementationNb)");
         /*
                         "4 * servicesCount[" + servicesCount + "] * serviceWithImplementationNb[" + serviceWithImplementationNb
@@ -95,10 +93,9 @@ public class PhaseProgressIndicatorProvider extends IndicatorProviderBase {
                         		*/
         
         // deploiement can't be complete without all production endpoints, but non-production endpoints help closing half the gap
-        int deploiementProgress = 2 * servicesCount * serviceWithProductionEndpointNb
+        long deploiementProgress = 2 * servicesCount * serviceWithProductionEndpointNb
         		+ serviceWithoutProductionEndpointNb * serviceWithEndpointNb;
-        newIndicator(indicators, "deploiementProgress", deploiementProgress,
-                        (servicesCount > 0) ? (100 * deploiementProgress / 2 / servicesCount / servicesCount) : 0,
+        newIndicator(indicators, "deploiementProgress", deploiementProgress, 2 * servicesCount * servicesCount,
                         		"2 * servicesCount * serviceWithProductionEndpointNb + serviceWhithoutProductionEndpointNb * serviceWithEndpointNb");
         /*
                         		"2 * servicesCount[" + servicesCount + "] * serviceWithProductionEndpointNb["

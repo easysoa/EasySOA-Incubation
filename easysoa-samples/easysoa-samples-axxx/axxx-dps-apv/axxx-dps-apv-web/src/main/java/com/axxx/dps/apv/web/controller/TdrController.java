@@ -57,6 +57,7 @@ public class TdrController {
         tdrTdb.setSommeUtilisee(0); // already 0 for tdr precompte
         tdrTdb.setMontantDisponible(tdrTdb.getDotationGlobale() - tdrTdb.getSommeUtilisee()); // = dotationglobale - sommeutilisee
         tdrService.update(tdr);
+        tdrService.publish(tdr);
         return "redirect:/tdr/details/" + tdr.getId();
     }    
     

@@ -118,7 +118,6 @@ public class TdrServiceImpl extends GenericEntityServiceImpl<Tdr> implements Tdr
         // Update TDR
         // TODO : problem TdrTdb is not updated ....
         this.update(tdr);
-        this.publish(tdr);
     }
 
     @Override

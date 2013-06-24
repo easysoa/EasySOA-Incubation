@@ -88,6 +88,8 @@ and the database driver has to be added as a maven dependency in pom.xml ;
 and the database driver has to be added in the webapp's WEB-INF/lib or in your application server's
 shared library directory.
 
+To enable APV calls to Pivotal to be proxied by EasySOA HTTP Proxy (once it is installed), uncomment
+the HTTP Conduit definition in WEB-INF/classes/axxx-dps-apv-core-deploy-context.xml .
 
 ### How to develop :
 

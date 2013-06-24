@@ -54,8 +54,12 @@
 		</cxf:features>
 	</cxf:bus>
 
+   <!-- EasySOA HTTP Proxy configuration
+   (for monitoring discovery, record / replay, events...) -->
+   <!-- Uncomment in axxx-dps-apv-core-deploy-context.xml to enable once EasySOA HTTP Proxy is deployed -->
 	<!-- http-conf:conduit name="*.http-conduit">
-		<http-conf:client ProxyServer="localhost" ProxyServerPort="8082" ProxyServerType="HTTP" />
+		<http-conf:client ProxyServer="${axxx.dps.apv.ws.httpProxy.host}"
+         ProxyServerPort="${axxx.dps.apv.ws.httpProxy.port}" ProxyServerType="HTTP" />
 	</http-conf:conduit -->
 
 	<jaxws:endpoint id="com.axxx.dps.apv.ws.precomptePartenaireWebServiceImplEndpoint"

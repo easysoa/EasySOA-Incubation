@@ -133,6 +133,7 @@ public class ProjetController {
             projetService.update(projet);
             //tdrService.computeTdb(projet.getTdr());
             tdrService.computeTdb(tdrService.getById(projet.getTdr().getId()));
+            tdrService.publish(projet.getTdr());
         }
         catch(Exception ex){
             // TODO better error gestion

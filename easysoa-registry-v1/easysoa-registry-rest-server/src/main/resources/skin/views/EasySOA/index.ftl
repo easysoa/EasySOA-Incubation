@@ -50,6 +50,10 @@
                                 <a class="btn" href="${Root.path}/cartography/runDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte à l'éxécution</a>
                             </div>
                             </p>
+                            <div class="btn-group">
+                                <a class="btn" href="${nuxeoUrl}">IHM d'édition</a>
+                                <a class="btn" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation SOA</a>
+                            </div>
                         </p>
                         <p>
                             <table class="table table-bordered" width="100%">
@@ -135,17 +139,6 @@
                             </table>
                         </p>
                         <a class="btn btn-primary" href="${Root.path}/governance?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a><!-- TODO -->
-                    </div>
-                </li>
-
-                <li class="span12">
-                    <div class="thumbnail">
-                        <img data-src="holder.js/300x200" alt="">
-                        <p>
-                            <div class="btn-group">
-                                <a class="btn" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>
-                            </div>
-                        </p>
                     </div>
                 </li>
             </ul>

@@ -111,11 +111,53 @@
     <#macro displayResourceInfo resourceInfo>
         Resource : 
         <#if resourceInfo['rdi:url']?has_content>
-           externe de <a href="${resourceInfo['rdi:url']}">${v['rdi:url']}</a><!-- TODO shortened url display -->
+           externe de <a href="${resourceInfo['rdi:url']}">${resourceInfo['rdi:url']}</a><!-- TODO shortened url display -->
            par <#if resourceInfo['rdi:probeType']?has_content>${resourceInfo['rdi:probeType']}<#else>IHM</#if>
            (<#if resourceInfo['rdi:timestamp']?has_content>${resourceInfo['rdi:timestamp']}</#if>)
         <#else>
-           interne
+           interne (mise à jour par un utilisateur avec l'IHM) 
+        </#if>
+    </#macro>
+    
+    <#macro displayInterfaceResource service>
+        <#assign interfaceFile=service['file:content']/><!-- TODO using WsdlBlob -->
+        <#if interfaceFile?has_content>
+        
+        <span style="font-weight: bold;">Interface :</span>
+        spécifie un service
+        <#if service.facets?seq_contains('WsdlInfo') && service['wsdlinfo:wsdlPortTypeName']?has_content>
+            <b>SOAP</b> ${service['wsdlinfo:transport']} d'interface
+            <span title="nom : ${service['wsdlinfo:wsdlServiceName']}" style="color:grey;">${service['wsdlinfo:wsdlPortTypeName']}</span>
+            <br/>&nbsp;&nbsp;&nbsp;dans une définition
+            <#if interfaceFile?has_content && interfaceFile['filename']?has_content
+                    && interfaceFile['filename']?ends_with('.wsdl')>
+                <b>WSDL</b> (fichier XML ${interfaceFile['filename']})
+            <#else>
+                de type inconnu (JAR JAXWS...)
+            </#if>
+        </#if>
+        <#if service.facets?seq_contains('RestInfo') && service['restinfo:path']?has_content>
+            <b>REST</b> de chemin
+            <span title="${service['restinfo:accepts']} => ${service['restinfo:contentType']}" style="color:grey;">${service['restinfo:path']}</span>
+            <br/>&nbsp;&nbsp;&nbsp;dans une définition
+            <#if interfaceFile?has_content && interfaceFile['filename']?has_content
+                    && interfaceFile['filename']?ends_with('.jar')>
+                <b>JAXRS</b> (fichier JAR ${interfaceFile['filename']})
+            <#else>
+                de type inconnu (Swagger...)
+            </#if>
+        </#if>
+        <a href="<@urlToLocalNuxeoPreview service/>">preview</a>, <a href="<@urlToLocalNuxeoDownload service/>">download</a>, <a href="<@urlToLocalNuxeoDocumentsUi service/>">edit</a>, <a href="<@urlToLocalNuxeoPrint service/>">print</a>
+        <#if fstudio_enabled>
+            , <a href="">Mock impl client in FraSCAti Studio</a>
+        </#if>
+        <br/>
+        &nbsp;&nbsp;&nbsp;de <@displayResourceInfo service/>
+        
+        <#elseif service['rdi:url']?has_content>
+            Pas de définition d'interface reconnue, mais une <@displayResourceInfo service/>
+        <#else>
+            Pas de définition d'interface présente.
         </#if>
     </#macro>
 
@@ -132,10 +174,10 @@
               </#if>
            </#list>
            <#if foundTestServiceCons?has_content>
-              <li><span title="${deliverable['title']} / ${foundTestServiceCons['javasc:consumerClass']}">TESTED
-              (${foundTestServiceCons['javasc:consumerClass']?substring(foundTestServiceCons['javasc:consumerClass']?last_index_of('.') + 1, foundTestServiceCons['javasc:consumerClass']?length)})</span></li> 
+              <span title="${deliverable['title']} / ${foundTestServiceCons['javasc:consumerClass']}" style="color:grey;">testée
+              (${foundTestServiceCons['javasc:consumerClass']?substring(foundTestServiceCons['javasc:consumerClass']?last_index_of('.') + 1, foundTestServiceCons['javasc:consumerClass']?length)})</span> 
            <#else>
-              <li>not tested</li>
+              <b><span style="color:red;">NON TESTEE</span></b>
            </#if>
         </#macro>
 		

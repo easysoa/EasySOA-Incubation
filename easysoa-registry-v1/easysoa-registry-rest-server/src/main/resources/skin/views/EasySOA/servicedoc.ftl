@@ -45,94 +45,103 @@
 
          <li class="span12">
             <div class="thumbnail">
-               <img data-src="holder.js/300x200" alt="">
+               <img data-src="holder.js/300x200" alt=""></img>
                
 		<h3><@displayServiceTitle service subprojectId visibility/></h3>
+
+      <#-- h3>description</h3 -->
+      <@formatTextToHtml service['dc:description']/>
 		<p/>
 
+      <#assign parsedServiceSubprojectId = Root.parseSubprojectId(service['spnode:subproject'])/>
+      
+      <#if !consumerActor?has_content><#assign consumerActor = ""/></#if>
+      <#if !providerActor?has_content><#assign providerActor = ""/></#if>
+      <#if !component?has_content><#assign component = ""/></#if>
 
-		<#-- h3>description</h3 -->
-		<@formatTextToHtml service['dc:description']/>
+            </div>
+         </li>
+      
+      
+      <#if parsedServiceSubprojectId.getSubprojectName() = 'Specifications'>
+
+
+         <li class="span12">
+            <div class="thumbnail">
+               <img data-src="holder.js/300x200" alt=""></img>
 		
 		
 		<h3>Métier</h3><!-- ((sert à)) -->
-		
+      
 		<#if businessService?has_content>
-		  Fournit le service business <a href="<@urlToLocalNuxeoDocumentsUi businessService/>"><@displayDocShort businessService/></a> :<br/>
-          <#if businessService['businessservice:consumerActor']?has_content>
+          <#-- if businessService['businessservice:consumerActor']?has_content>
             <#assign bsConsumerActor = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', businessService['businessservice:consumerActor']))/>
-          </#if>
-          <span style="font-weight: bold;">Acteur consommateur :</span>
-            <#if bsConsumerActor?has_content>
-                <a href="<@urlToLocalNuxeoDocumentsUi bsConsumerActor/>">${bsConsumerActor.title}</a>
-            <#else>
-                <span style="color: red;">MANQUANT</span> (<a href="<@urlToLocalNuxeoDocumentsUi businessService/>">résoudre</a>)
-            </#if>
-            <br/>
-            <span style="font-weight: bold;">Acteur fournisseur :</span>
-            <#if providerActor?has_content>
-                <a href="<@urlToLocalNuxeoDocumentsUi providerActor/>">${providerActor.title}</a>
-            <#else>
-                <span style="color: red;">MANQUANT</span> (<a href="<@urlToLocalNuxeoDocumentsUi businessService/>">résoudre</a>)
-            </#if>
-            <br/>
-           SLAs :
-           <#assign slas = Root.getDocumentService().getSoaNodeChildren(businessService, 'SLA')/>
-           <#if slas?size = 0>
-               aucun
-           <#else>
-               <#list slas as sla>
-                   <a href="<@urlToLocalNuxeoDocumentsUi sla/>">${sla.title}</a>
-                   <#if sla_index != slas?size - 1>, </#if>
-               </#list>
-           </#if>
+          </#if -->
+		    Fournit le service business <a href="<@urlToLocalNuxeoDocumentsUi businessService/>"><@displayDocShort businessService/></a> :
+          <br/>
+          
+           &nbsp;&nbsp;&nbsp;<@displayActor consumerActor 'Acteur consommateur' businessService/>
            <br/>
-           OLAs :
-           <#assign olas = Root.getDocumentService().getSoaNodeChildren(businessService, 'OLA')/>
-           <#if olas?size = 0>
-               aucun
-           <#else>
-               <#list olas as ola>
-                   <a href="<@urlToLocalNuxeoDocumentsUi ola/>">${ola.title}</a>,
-                   <#if ola_index != olas?size - 1>, </#if> 
-               </#list>
-           </#if>
+           &nbsp;&nbsp;&nbsp;<@displayActor providerActor 'Acteur fournisseur' businessService/>
            <br/>
-           Documents de spécification :
-          <#assign businessServiceRef = new_f('org.nuxeo.ecm.core.api.IdRef', service['iserv:linkedBusinessService'])/>
-           <#assign specDocs = Session.getChildren(businessServiceRef, 'Document')/>
-           <#if specDocs?size = 0>
-               aucun
-           <#else>
-               <#list specDocs as specDoc>
-                   <a href="<@urlToLocalNuxeoDocumentsUi ola/>">${specDoc.title}</a>,
-                   <#if specDoc_index != specDoc?size - 1>, </#if> 
-               </#list>
-           </#if>
+           &nbsp;&nbsp;&nbsp;<@displaySoaNodeChildrenShort businessService, 'SLA'/>
            <br/>
+           &nbsp;&nbsp;&nbsp;<@displaySoaNodeChildrenShort businessService, 'OLA'/>
            <br/>
+           &nbsp;&nbsp;&nbsp;Documents de spécification métier :
+           <#-- assign businessServiceRef = new_f('org.nuxeo.ecm.core.api.IdRef', service['iserv:linkedBusinessService'])/ -->
+           <@displayChildrenShort businessService 'Document'/>
 		<#else>
-		   Service intermédiaire (ne fournit pas de service business) ((TODO sert à = consumptions ??))
+		   Service intermédiaire (ne fournit pas de service business)
+		   <!-- ((TODO sert à = consumptions ??)) -->
 		</#if>
-		<br/>
+		<p/>
+		<p/>
 		
-		<span style="font-weight: bold;">Acteur fournisseur :</span>
-        <#if providerActor?has_content>
-            <a href="<@urlToLocalNuxeoDocumentsUi providerActor/>">${providerActor.title}</a>
-        <#else>
-            aucun
-        </#if>
-        <br/>
-        
-        <span style="font-weight: bold;">Composant :</span>
-        <#if providerActor?has_content>
-            <a href="<@urlToLocalNuxeoDocumentsUi component/>">${component.title}</a>
-        <#else>
-            <span style="color: red;">MANQUANT</span> (<a href="<@urlToLocalNuxeoDocumentsUi service/>">résoudre</a>)
-        </#if>
-        <br/>
-        
-        <p/>
+            </div>
+         </li>
+
+
+      </#if>
+      
+
+         <li class="span12">
+            <div class="thumbnail">
+               <img data-src="holder.js/300x200" alt=""></img>
+               
+		<h3>Service</h3>
+		<p/>
+
+      <#-- h3>Interface(s)</h3 -->
+      <@displayInterfaceResource service/>
+      <p/>
+		
+		<#if parsedSubprojectIdToDisplay.getSubprojectName() = 'Specifications'>
+		
+          <!-- TODO CONFIGURATION & LISTALL -->
+          Définitions d'exigences formelles opérationnelles i.e.
+          <@displaySoaNodeChildrenShort service, 'OLA'/>
+          <p/>
+      
+		    <#if !businessService?has_content>
+              <@displayActor providerActor 'Acteur fournisseur' service/>
+              <p/>
+          </#if>
+              
+          <@displayComponent component service/>
+          <p/>
+          
+      <#else>
+          Service technique (ayant émergé lors de la phase de réalisation)
+      </#if>
+
+            </div>
+         </li>
+
+
+         <li class="span12">
+            <div class="thumbnail">
+               <img data-src="holder.js/300x200" alt=""></img>
 
 		<h3>Documentation</h3>
 		
@@ -167,45 +176,56 @@
       <@displayOperations service['iserv:operations'] impl_operations/>
 		<p/>
 		
-		TODO LATER OPT du WSDL de l'endpoint OR BELOW ON ENDPOINT :<p/>
+		<!-- TODO LATER OPT du WSDL de l'endpoint OR BELOW ON ENDPOINT :<p/ -->
+		
 		
 		<h4>Documentation - manuelle :</h4>
-		TODO lister les non-SoaNodes fils du InformationService NON les fichiers joints, ou sinon du BusinessService<p/>
+		<!-- lister les non-SoaNodes fils du InformationService NON les fichiers joints, ou sinon du BusinessService -->
 		<#-- @displayProp service 'files:files'/><p/ -->
 		
-		Attached files :<br/>
+		Fichiers joints :<br/>
 		<@displayFiles service['files:files']/>
-		
-        Child documents :<br/>
-		<#list Session.getChildren(new_f('org.nuxeo.ecm.core.api.IdRef', service['id']), "Document") as childDocument>
-            <@displayDocShort childDocument/>
-		</#list>
-		
-        TODO CONFIGURATION & LISTALL Child Resources :<br/>
-        <#list Root.getDocumentService().getChildren(service, "Resource") as childResource>
-            <@displayDocShort childResource/>
-        </#list>
+      <p/>		
+      
+      <!-- TODO CONFIGURATION & LISTALL -->
+      Fichiers fils de 
+      <@displaySoaNodeChildrenShort service, 'Resource'/><!-- TODO displayResource -->
+      <p/>
+        
+      Tous les documents fils :<br/>
+		<@displayChildrenShort service 'Document'/>
 		<p/>
 
+            </div>
+         </li>
+
+
+         <li class="span12">
+            <div class="thumbnail">
+               <img data-src="holder.js/300x200" alt=""></img>
 
 		<h3>Usages</h3>
-		oé (applications : le déployant ; architecture : le consommant)<p/>
+		<!-- (applications : le déployant ; architecture : le consommant)<p/ -->
 
-		<#-- IntelligentSystems tagging it, since only Applications from now : -->
-		<b>Applications :</b><br/>
-		<#if service['proxies']?has_content>
+		<#-- IntelligentSystems tagging it, since only Applications from now NOOO ALSO Folders : -->
+		<#-- b>Applications :</b><br/ -->
+		<b>Rangé dans les classifications :</b><br/>
+		<#if service['proxies']?has_content && service['proxies']?size != 0>
 		<ul>
 		<#list service['proxies'] as serviceProxy>
 			<#if serviceProxy['parent'].type = 'IntelligentSystem'>
-					<li><@displayDocShort serviceProxy/></li>al
+					<li><@displayDocShort serviceProxy/></li>
 			</#if>
 		</#list>
 		</ul>
+      <#else>
+      Aucune.
 		</#if>
 
 		<#-- TaggingFolder tagging it, since only Applications from now : -->
-		<br/><b>Business Processes :</b><br/>
-		<#if service['proxies']?has_content>
+      <#-- br/><b>Business Processes :</b><br/ -->
+		<br/><b>Taggé dans :</b><br/>
+		<#if service['proxies']?has_content && service['proxies']?size != 0>
 		<ul>
 		<#list service['proxies'] as serviceProxy>
 			<#if serviceProxy['parent'].facets?seq_contains('SoaNode')><#-- serviceProxy['parent'].type = 'TaggingFolder' -->
@@ -213,38 +233,17 @@
 			</#if>
 		</#list>
 		</ul>
+      <#else>
+      Aucun.
 		</#if>
 
-		<br/><a href="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}/tags?subprojectId=${subprojectId}&visibility=${visibility}">Also tag in...</a>
+		<br/><a href="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}/tags?subprojectId=${subprojectId}&visibility=${visibility}">Tagger aussi dans...</a>
 
-		<br/>exemples d'appel
+		<#-- br/>exemples d'appel --><!-- TODO -->
 
-		<br/>(autres tags)
+		<#-- br/>(autres tags) --><!-- TODO -->
+      <p/>
 
-
-		<h3>Interface(s)</h3>
-		<!-- TODO LATER resource -->
-        <#assign interfaceFile=service['file:content']/><!-- TODO using WsdlBlob -->
-		<#if service.facets?seq_contains('WsdlInfo') && service['wsdlinfo:wsdlPortTypeName']?has_content>
-		SOAP Web Service ${service['wsdlinfo:wsdlPortTypeName']} ${service['wsdlinfo:wsdlServiceName']} ${service['wsdlinfo:transport']}
-        <#if interfaceFile?has_content && interfaceFile['filename']?has_content
-              && interfaceFile['filename']?ends_with('.wsdl')>
-        WSDL XML ${interfaceFile['filename']}
-        </#if>
-		</#if>
-        <#if service.facets?seq_contains('RestInfo') && service['restinfo:path']?has_content>
-        REST
-        <#if interfaceFile?has_content && interfaceFile['filename']?has_content
-              && interfaceFile['filename']?ends_with('.jar')>
-        JAXRS Java ${interfaceFile['filename']}
-        </#if>
-        </#if>
-        <br/>
-		<a href="<@urlToLocalNuxeoPreview service/>">preview</a>, <a href="<@urlToLocalNuxeoDownload service/>">download</a>, <a href="<@urlToLocalNuxeoDocumentsUi service/>">edit</a>, <a href="<@urlToLocalNuxeoPrint service/>">print</a>
-        <br/>
-        <#if fstudio_enabled>Mock impl client in FraSCAti Studio</#if>
-        <br/>
-        <@displayResourceInfo service/>
 		
             </div>
          </li>
@@ -252,92 +251,75 @@
 
          <li class="span12">
             <div class="thumbnail">
-               <img data-src="holder.js/300x200" alt="">
+               <img data-src="holder.js/300x200" alt=""></img>
 		
-		<h3>Implémentations de service (y compris de test)</h3>
-		et consomme, dépend de (en mode non test)
-		<br/>
+		<h3>Implémentations de service<#-- (y compris de test) --></h3>
+		<#-- et consomme, dépend de (en mode non test) <br/ -->
 		
         <#if serviceimpl?has_content>
           Cette implémentation : <@displayImplementationShort serviceimpl subprojectId visibility/>
           <br/>
-          Documentation :<br/>
+          <b>Documentation :</b><br/>
           <@formatTextToHtml serviceimpl['impl:documentation']/>
-          <br/>
+          <p/>
+          
+          <#-- @displayDocShort actualImpl/ -->
+          <@displayImplementationDetail serviceimpl/>
+          <p/>
 		  </#if>
 		  
         <#if !serviceimpl?has_content || !endpoint?has_content || endpoint['env:environment'] != 'Production'>
-          Implémenté en Production par
+          Implémenté en <b>Production</b> par
           <#if productionImpl?has_content>
             <@displayImplementationShort productionImpl subprojectId visibility/>
              <br/>
-             Documentation :<br/>
+             <b>Documentation :</b><br/>
              <@formatTextToHtml productionImpl['impl:documentation']/>
-             <br/>
+             <p/>
+          
+             <#-- @displayDocShort actualImpl/ -->
+             <@displayImplementationDetail productionImpl/>
+             <p/>
           <#else>
             (aucun)
           </#if>
-          <br/>
+          <p/>
         </#if>
         <p/>
         
         <#if isUserConsumer>
-          Vos implémentations de test :
+          Vos implémentations de test en tant que <b>consommateur</b> :
           <#list userConsumerImpls as userConsumerImpl>
-            <@displayImplementationShort userConsumerImpl subprojectId visibility/>
+             <@displayImplementationShort userConsumerImpl subprojectId visibility/>
              <br/>
-             Documentation :<br/>
+             <b>Documentation :</b><br/>
              <@formatTextToHtml serviceimpl['impl:documentation']/>
-            <br/>
+             <p/>
+          
+             <#-- @displayDocShort actualImpl/ -->
+             <@displayImplementationDetail serviceimpl/>
+             <p/>
           </#list>
         </#if>
         <p/>
 		
-		<#if actualImpls?has_content>
+		<#if actualImpls?has_content && actualImpls?size != 0>
 		<b>Autres implémentations :</b><br/>
 		<#list actualImpls as actualImpl>
 		   <#if (!productionImpl?has_content || productionImpl.id != actualImpl.id) && (!serviceimpl?has_content || serviceimpl.id != actualImpl.id)>
 		   
-          Documentation :<br/>
+          <b>Documentation :</b><br/>
           <@formatTextToHtml actualImpl['impl:documentation']/>
-          <br/> 
+          <p/>
           
-        <#-- @displayDocShort actualImpl/ -->
-        <@displayDoc actualImpl shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
-        <br/>
-        
-		   <@displayImplementationShort actualImpl subprojectId visibility/>
-		   <br/>
-           <@displayTested actualImpl/><br/>
-           <b>Son délivrable :</b></br>
-           <#assign deliverable = Root.getDocumentService().getSoaNodeParent(actualImpl, 'Deliverable')/>
-		   dépend de : <#list deliverable['del:dependencies'] as dependency>${dependency}, </#list>
-		   <br/>
-           <!-- TODO consumptions of : separate internal impls from external services -->
-		   <#assign delConsumptions = Root.getDocumentService().getDeliverableConsumptions(deliverable)/>
-           ((consomme les classes d'implémentations :
-		   <#list delConsumptions as delConsumption>
-		      <@displayDocsShort Root.getDocumentService().getConsumedInterfaceImplementationsOfJavaConsumption(delConsumption, subprojectId, true, false)/>
-              <#if delConsumption_index != delConsumptions?size - 1> ;</#if>
-		   </#list>))
-		   <br/>
-           consomme les services :
-           <#list delConsumptions as delConsumption>
-              <#assign delConsumedService = Root.getDocumentService().getConsumedJavaInterfaceService(delConsumption, subprojectId)/>
-              <#if delConsumedService?has_content>
-                 <@displayDocShort delConsumedService/>
-              <#else>
-                 ${delConsumption['wsdlinfo:wsdlPortTypeName']}
-              </#if>
-              (java ${delConsumption['javasc:consumedInterface']})
-              <#if delConsumption_index != delConsumptions?size - 1> ;</#if>
-           </#list>
-           <p/>
+          <#-- @displayDocShort actualImpl/ -->
+          <@displayImplementationDetail actualImpl/>
+          <p/>
            
            </#if>
 		</#list>
-		Découverte :
-        <a href="${Root.path}/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Source</a>
+		</p>
+		<@displayImplementationTools subprojectId visibility/>
 		<p/>
 		</#if>
 		
@@ -358,122 +340,111 @@
 
          <li class="span12">
             <div class="thumbnail">
-               <img data-src="holder.js/300x200" alt="">
+               <img data-src="holder.js/300x200" alt=""></img>
 
-		<h3>Services déployés (endpoints)</h3>
+		<h3>Services déployés<#-- (endpoints) --></h3>
 		
         <#if endpoint?has_content>
-          Cet endpoint est déployé en ${endpoint['env:environment']} à
+          Cet endpoint est déployé en <b>${endpoint['env:environment']}</b> à
           <a href="${endpoint['endp:url']}">${endpoint['endp:url']}</a>
           par <@displayEndpointTitle endpoint subprojectId visibility/>
           <br/>
-           
-           <@displayResourceInfo endpoint/>
-           <p/>
+          Description: <@formatTextToHtml endpoint['dc:description']/>
+          <p/>
+          <@displayEndpointTools endpoint subprojectId visibility/>
+          <p/>
+          <@displayInterfaceResource endpoint/>
+          <p/>
         </#if>
         
         <#if !endpoint?has_content || endpoint['env:environment'] != 'Production'>
-          Déployé en Production à
+          Déployé en <b>Production</b> à
           <#if productionEndpoint?has_content>
-            <a href="${productionEndpoint['endp:url']}">${productionEndpoint['endp:url']}</a> par <@displayEndpointShort productionEndpoint subprojectId visibility/>
+              <a href="${productionEndpoint['endp:url']}">${productionEndpoint['endp:url']}</a>
+              par <@displayEndpointShort productionEndpoint subprojectId visibility/>
+              <br/>
+             Description: <@formatTextToHtml productionEndpoint['dc:description']/>
+             <p/>
+             <@displayEndpointTools productionEndpoint subprojectId visibility/>
+             <p/>
+             <@displayInterfaceResource productionEndpoint/>
+             <p/>
           <#else>
-            (aucun)
+             (aucun)
           </#if>
-          <br/>
+          <p/>
         </#if>
-        <p/>
+      
+        <#if productionImpl?has_content>
+            <@displayProductionImplementationDetail productionImpl/>
+            <p/>
+        </#if>
         
         <#if isUserConsumer>
           <b>Vos endpoints de test :</b><br/>
           <#list userConsumerEndpoints as userConsumerEndpoint>
             <@displayEndpointShort userConsumerEndpoint subprojectId visibility/>
             <br/>
+            Description: <@formatTextToHtml endpoint['dc:description']/>
+            <p/>
+            <@displayInterfaceResource userConsumerEndpoint/>
+            <p/>
+            <@displayEndpointTools userConsumerEndpoint subprojectId visibility/>
+            <br/>
           </#list>
+          <p/>
         </#if>
-		<br/>
-		
-		Découverte :
-		<a href="${web_discovery_url}?subprojectId=${subprojectId}&visibility=${visibility}">Web</a>, <!-- TODO pass as probe params : Environment (, iserv/endpoint (, user, component)) -->
-      <a href="<@urlToProxyManagementGetInstance subprojectId 'Production'/>">Monitoring</a>,  <!-- TODO HTTP Proxy host prop, url to probe IHM, pass as probe params : subproject / Phase, Environment (, iserv/endpoint (, component)) -->
-      (<a href="${Root.path}/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Source</a>)
-		<br/>
-		Monitoring :
-		<a href="<@urlToEndpointState productionEndpoint subprojectId visibility/>">Usage</a>, 
-		<a href="${Root.path}/../monitoring/jasmine/?subprojectId=${subprojectId}&visibility=${visibility}">Statistiques</a>
-		<br/>
-		Tester avec :
-        <a href="<@urlToServiceScaffolder productionEndpoint/>">Service Scaffolder</a>, <!-- TODO light.js, or function, rather endpointUrl?wsdl ?? -->
-        <a href="">SOAPUI</a>,
-        <a href="frascatiStudio_url + '/easySoa/GeneratedAppService'">FraSCAti Studio new application</a>
-        <!-- a href="">FraSCAti Studio application A</a -->
-		<p/>
-		
-		<#if productionImpl?has_content>
-		
-		  Fournit par l'Application :
-        <#assign productionDeliverable = Root.getDocumentService().getSoaNodeParent(productionImpl, 'Deliverable')/>
-        <#if productionDeliverable?is_string>
-           <#assign productionDeliverableApplication = "délivrable inconnu"/>
-        <#else>
-           <#assign productionDeliverableApplication = productionDeliverable['del:application']/>
-        </#if>
-		  ${actorTitle} / ${componentTitle} (${productionDeliverableApplication}) (TODO jars)
-		  <br/>
-		  
-		  nécessitant les services :
-        <#if productionDeliverable?is_string>
-           (délivrable inconnu)
-        <#else>
-		<ul>
-		<!-- TODO list deliverables by application -->
-		<#assign productionDelConsumptions = Root.getDocumentService().getDeliverableConsumptions(productionDeliverable)/>
-		<#list productionDelConsumptions as servicecons>
-		   <#if servicecons['sc:isTest'] != 'true'>
-		      <#list Root.getDocumentService().getSoaNodeChildren(productionDeliverable, 'ServiceImplementation') as serviceimpl>
-		         <#if servicecons['javasc:consumedInterface'] = serviceimpl['javasi:implementedInterface'] && serviceimpl['serviceimpl:ismock'] != 'true'>
-		            <#assign foundLocalNonMockConsumedServiceImpl = serviceimpl/>
-		            <!-- TODO + location -->
-		         </#if>
-		      </#list>
-		      <#if !foundLocalNonMockConsumedServiceImpl?has_content>
-                 <li>externe au délivrable ${servicecons['title']} through ${servicecons['javasc:consumedInterface']}</li> 
-              <#else>
-                 <li>(interne au délivrable ${servicecons['title']} par l'implémentation ${foundLocalNonMockConsumedServiceImpl['title']} d'interface ${servicecons['javasc:consumedInterface']})</li>
-              </#if>
-           </#if>
-		</#list>
-		</ul
-		  </#if>
-		<p/>
-		</#if>
 		
         <#if actualEndpoints?has_content>
         <b>Autres déploiements :</b><br/>
-		<#-- @displayDocsShort actualEndpoints/ -->
+		  <#-- @displayDocsShort actualEndpoints/ -->
         <#-- @displayDocs actualEndpoints shortDocumentPropNames + endpointPropNames/ -->
-		<#list actualEndpoints as actualEndpoint>
-           <#if (!productionEndpoint?has_content || productionEndpoint.id != actualEndpoint.id) && (!endpoint?has_content || endpoint.id != actualEndpoint.id)>
-              <@displayEndpointShort actualEndpoint subprojectId visibility/>
-              <br/>
-              <@displayDoc actualEndpoint shortDocumentPropNames + endpointPropNames/>
-           </#if>
+		  <#list actualEndpoints as actualEndpoint>
+            <#if (!productionEndpoint?has_content || productionEndpoint.id != actualEndpoint.id) && (!endpoint?has_content || endpoint.id != actualEndpoint.id)>
+                <@displayEndpointShort actualEndpoint subprojectId visibility/>
+                Description: <@formatTextToHtml actualEndpoint['dc:description']/>
+                <p/>
+                <#-- @displayInterfaceResource service/>
+                <p/>
+                <@displayEndpointTools actualEndpoint subprojectId visibility/ -->
+                <#-- br/>
+                <@displayDoc actualEndpoint shortDocumentPropNames + endpointPropNames/>
+                <p/ -->
+            </#if>
         </#list>
         <p/>
         </#if>
         
         <#if userConsumerEndpoints?has_content>
-        <b>Vos déploiements de test :</b><br/>
-        <#-- @displayDocsShort userConsumerEndpoints/ -->
-        <@displayDocs userConsumerEndpoints shortDocumentPropNames + endpointPropNames/>
-        <p/>
+            <b>Vos déploiements de test :</b><br/>
+            <#-- @displayDocsShort userConsumerEndpoints/ -->
+            <#list userConsumerEndpoints as userConsumerEndpoint>
+                <@displayEndpointShort userConsumerEndpoint subprojectId visibility/>
+                Description: <@formatTextToHtml userConsumerEndpoint['dc:description']/>
+                <p/>
+                <@displayInterfaceResource userConsumerEndpoint/>
+                <#-- p/>
+                <@displayEndpointTools userConsumerEndpoint subprojectId visibility/ -->
+                <#-- br/>
+                <@displayDoc userConsumerEndpoint shortDocumentPropNames + endpointPropNames/>
+                <p/ -->
+            </#list>
         <#elseif mockEndpoints?has_content>
-        <b>Déploiements de test :</b><br/>
-        <#-- @displayDocsShort mockEndpoints/ -->
-        <@displayDocs mockEndpoints shortDocumentPropNames + endpointPropNames/>
-        <p/>
+            <b>Déploiements de test :</b><br/>
+            <#list mockEndpoints as mockEndpoint>
+                <@displayEndpointShort mockEndpoint subprojectId visibility/>
+                Description: <@formatTextToHtml userConsumerEndpoint['dc:description']/>
+                <p/>
+                <#-- @displayInterfaceResource mockEndpoint/>
+                <p/>
+                <@displayEndpointTools mockEndpoint subprojectId visibility/ -->
+                <#-- br/>
+                <@displayDoc mockEndpoint shortDocumentPropNames + endpointPropNames/>
+                <p/ -->
+            </#list>
         </#if>
         
-        TODO LATER endpoint consumptions (like service ones)
+        <!-- TODO LATER endpoint consumptions (like service ones) -->
 
 
             </div>
@@ -494,7 +465,7 @@
 
          <li class="span12">
             <div class="thumbnail">
-               <img data-src="holder.js/300x200" alt="">
+               <img data-src="holder.js/300x200" alt=""></img>
         
 		<h3>test</h3>
 		

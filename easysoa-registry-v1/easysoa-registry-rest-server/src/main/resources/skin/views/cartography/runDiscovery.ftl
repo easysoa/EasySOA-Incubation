@@ -81,10 +81,17 @@
                         </p>                            
                         
                         
-                        <h3>Configuration</h3>
+                        <h3>Usage</h3>
                         <a id="runManager"></a>
                         <p>
-                            Une <a href="#">interface de pilotage</a> est disponible pour démarrer et arrèter une session d'enregistrement. Les services découverts sont automatiquement enregistrés dans le registre des services EasySOA.
+                            Une <a href="${proxy_management_url}">interface de gestion des sondes (proxy)</a> de découvertes par monitoring est disponible pour configurer et <b>réserver une sonde</b> pour l'utilisateur, le projet en cours et <a href="<@urlToProxyManagementGetInstance subprojectId 'Production'/>">par exemple l'environnement de Production</a>.
+                            Les services découverts sont automatiquement enregistrés dans le registre des services EasySOA.
+                        </p>
+                        <p>
+                            <img src="/nuxeo/site/easysoa/skin/img/proxyManagementInstance.png" alt="Interface de gestion des sondes">
+                        </p>
+                        <p>
+                            Une <a href="#">interface de pilotage</a> est également disponible pour démarrer et arrèter une session d'enregistrement. Celle-ci peut être réjouée plus tard, telle quelle ou dans une version modifiée, et permet aussi de générer une simulation automatique du service écouté.
                         </p>
                         <p>
                             <img src="/nuxeo/site/easysoa/skin/img/runManager.jpg" alt="Interface de pilotage">

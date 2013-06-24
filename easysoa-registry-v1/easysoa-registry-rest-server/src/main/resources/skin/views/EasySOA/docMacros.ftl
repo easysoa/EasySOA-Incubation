@@ -214,6 +214,74 @@
     </#if>
     </#macro>
 
+
+    <#macro displayImplementationDetail actualImpl>
+        <#-- @displayDoc actualImpl shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
+        <br/ -->
+        Ecrite en ${actualImpl['impl:language']} expose le service par ${actualImpl['impl:technology']}
+        et est <@displayTested actualImpl/>
+        <p/>
+         
+         <#assign deliverable = Root.getDocumentService().getSoaNodeParent(actualImpl, 'Deliverable')/>
+         <b>Son délivrable</b> ${deliverable.title}<!-- : <br/ -->
+         a <span title="<#list deliverable['del:dependencies'] as dependency>${dependency}, </#list>" style="color:grey;">${deliverable['del:dependencies']?size} dépendances (détail)</span>
+         <!-- br/ -->
+         <!-- TODO consumptions of : separate internal impls from external services -->
+         <#assign delConsumptions = Root.getDocumentService().getDeliverableConsumptions(deliverable)/>
+         <#-- ((consomme les classes d'implémentations :
+         <#list delConsumptions as delConsumption>
+            <@displayDocsShort Root.getDocumentService().getConsumedInterfaceImplementationsOfJavaConsumption(delConsumption, subprojectId, true, false)/>
+              <#if delConsumption_index != delConsumptions?size - 1> ;</#if>
+         </#list>))
+         <br/ -->
+           et consomme les services :
+           <#list delConsumptions as delConsumption>
+              <#assign delConsumedService = Root.getDocumentService().getConsumedJavaInterfaceService(delConsumption, subprojectId)/>
+              <#if delConsumedService?has_content>
+                 <br/>&nbsp;-&nbsp;&nbsp;<@displayServiceShort delConsumedService subprojectId visibility/>
+              <#else>
+                 <br/>&nbsp;-&nbsp;&nbsp;${delConsumption['wsdlinfo:wsdlPortTypeName']}
+              </#if>
+              (java ${delConsumption['javasc:consumedInterface']})
+              <#if delConsumption_index != delConsumptions?size - 1> ;</#if>
+           </#list>
+    </#macro>
+    
+    <#macro displayProductionImplementationDetail productionImpl>
+        Fournit par l'<b>Application</b> :
+        <#assign productionDeliverable = Root.getDocumentService().getSoaNodeParent(productionImpl, 'Deliverable')/>
+        <#if productionDeliverable?is_string>
+           <#assign productionDeliverableApplication = "délivrable inconnu"/>
+        <#else>
+           <#assign productionDeliverableApplication = productionDeliverable['del:application']/>
+        </#if>
+        ${actorTitle} / ${componentTitle} (${productionDeliverableApplication})<#-- (TODO jars) -->
+        nécessitant les services :
+        <#if productionDeliverable?is_string>
+           (délivrable inconnu)
+        <#else>
+         <!-- TODO list deliverables by application -->
+         <#assign productionDelConsumptions = Root.getDocumentService().getDeliverableConsumptions(productionDeliverable)/>
+         <#list productionDelConsumptions as servicecons>
+            <#if servicecons['sc:isTest'] != 'true'>
+               <#list Root.getDocumentService().getSoaNodeChildren(productionDeliverable, 'ServiceImplementation') as serviceimpl>
+                  <#if servicecons['javasc:consumedInterface'] = serviceimpl['javasi:implementedInterface'] && serviceimpl['serviceimpl:ismock'] != 'true'>
+                     <#assign foundLocalNonMockConsumedServiceImpl = serviceimpl/>
+                     <!-- TODO + location -->
+                  </#if>
+               </#list>
+               <#if !foundLocalNonMockConsumedServiceImpl?has_content>
+                    <br/>&nbsp;-&nbsp;&nbsp;externe au délivrable ${servicecons['title']} (par l'interface ${servicecons['javasc:consumedInterface']})
+                 <#else>
+                    <br/>&nbsp;-&nbsp;&nbsp;(interne au délivrable ${servicecons['title']}, par l'implémentation ${foundLocalNonMockConsumedServiceImpl['title']} d'interface ${servicecons['javasc:consumedInterface']})
+                 </#if>
+              </#if>
+         </#list>
+        </#if>
+        <p/>
+    </#macro>
+    
+
     <#macro displayTagShort tag subprojectId visibility>
          <#-- ${Root.path}/tag${tag['spnode:subproject']?xml}:${tag['soan:name']?xml}?subprojectId=${subprojectId}&visibility=${visibility} -->
          <a href="<@urlToFicheSOA tag subprojectId visibility/>">${tag['title']} (<#if tag.children?has_content>${tag['children']?size}<#else>0</#if>) - <@displayPhaseIfOutsideContext tag['spnode:subproject']/> (v${tag.versionLabel})</a>
@@ -234,6 +302,47 @@
            <a href="<@urlToLocalNuxeoDocumentsUi soaNode/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
         </#if>
     </#macro>
+    
+    
+    <#macro displayActor actor actorKind parentObject>
+            <span style="font-weight: bold;">${actorKind} :</span>
+            <#if actor?has_content && !actor?is_string>
+                <a href="<@urlToLocalNuxeoDocumentsUi actor/>">${actor.title}</a>
+            <#else>
+                <span style="color: red;">MANQUANT</span> (<a href="<@urlToLocalNuxeoDocumentsUi parentObject/>">résoudre</a>)
+            </#if>
+    </#macro>
+    <#macro displayComponent component parentObject>
+        <@displayActor component 'Component' parentObject/>
+    </#macro>
+    
+    
+    <#macro displaySoaNodeChildrenShort businessService childType>
+           <span style="font-weight: bold;">${childType}s :</span>
+           <#assign olas = Root.getDocumentService().getSoaNodeChildren(businessService, childType)/>
+           <#if olas?size = 0>
+               aucun
+           <#else>
+               <#list olas as ola>
+                   <a href="<@urlToLocalNuxeoDocumentsUi ola/>">${ola.title}</a>
+                   <#if ola_index != olas?size - 1>, </#if> 
+               </#list>
+           </#if>
+    </#macro>
+    
+    <#macro displayChildrenShort businessService childType>
+           <#assign businessServiceRef = new_f('org.nuxeo.ecm.core.api.IdRef', businessService.ref)/>
+           <#assign specDocs = Session.getChildren(businessServiceRef, childType)/>
+           <#if specDocs?size = 0>
+               aucun
+           <#else>
+               <#list specDocs as specDoc>
+                   <a href="<@urlToLocalNuxeoDocumentsUi ola/>">${specDoc.title}</a>,
+                   <#if specDoc_index != specDoc?size - 1>, </#if> 
+               </#list>
+           </#if>
+    </#macro>
+    
 
     <#macro displayDocShort doc>
         <#if doc['spnode:subproject']?has_content>

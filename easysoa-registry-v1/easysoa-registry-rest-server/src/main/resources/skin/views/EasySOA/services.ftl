@@ -46,9 +46,10 @@
          <li class="span12">
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt="">
+               
                <h3>Documentation des services</h3>
-      
       <p/>
+      
       <@displayServicesShort services subprojectId visibility/>
       <p/>
 

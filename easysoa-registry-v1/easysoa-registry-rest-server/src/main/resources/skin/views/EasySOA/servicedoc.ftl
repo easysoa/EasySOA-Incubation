@@ -1,19 +1,24 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-	<title>EasySOA REST Services Documentation</title>
+   <title>EasySOA Cartographie - Documentation</title>
 	<meta charset="utf-8" />
+	
+   <!-- custom style and scripts -->
 	<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />
-	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" /> 
+	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" />
+	 
 	<script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
+	
 	<style type="text/css">
 	  .clickable:hover { cursor: pointer; background-color: #FFC; }
 	  .id { display: none }
 	  .selected { background-color: #CFC; }
 	</style>
-        <!-- Bootstrap default style and scripts -->
-        <link href="/nuxeo/site/easysoa/skin/css/bootstrap.css" rel="stylesheet" media="screen">
-        <script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>
+    
+    <!-- Bootstrap default style and scripts -->
+    <link href="/nuxeo/site/easysoa/skin/css/bootstrap.css" rel="stylesheet" media="screen">
+    <script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>
 </head>
 
 <body>
@@ -22,79 +27,36 @@
         <#include "/views/EasySOA/docMacros.ftl">
         <#include "/views/EasySOA/soaMacros.ftl">
     
-	<div id="header">
-		<div id="headerContents">
-		    <div id="logoLink">&nbsp;</div>
-	    	<div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
-			EasySOA REST Services Documentation
-	    </div>
-	</div>
+   <div id="header">
+      <div id="headerContents">
+          <div id="logoLink">&nbsp;</div>
+          <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
+          EasySOA Cartographie - Documentation
+       </div>
+   </div>
+   <br/>
 
-	<div id="container">
+   <div class="container" id="container">
+      <ul class="thumbnails">
+         <!-- Context bar -->
+         <#assign visibility=visibility!"">
+         <#assign subprojectId=subprojectId!"">
+         <@displayContextBar subprojectId contextInfo visibility "false"/>
 
-            <!-- Context bar -->
-                <#assign visibility=visibility!"">
-                <#assign subprojectId=subprojectId!"">
-                <@displayContextBar subprojectId contextInfo visibility "false"/>
-
-		<h2>Service <@displayServiceTitle service subprojectId visibility/></h2>
-
-
-        <!-- 1. Display focus part according to role
-        (profile ex. Developer, relationship ex. providerActor, phase ex. Specifications -->
+         <li class="span12">
+            <div class="thumbnail">
+               <img data-src="holder.js/300x200" alt="">
+               
+		<h3><@displayServiceTitle service subprojectId visibility/></h3>
+		<p/>
 
 
-		Vous voulez :
-		<ul>
-			<li>vous en servir par une application (applications et leurs IHMs, notamment web)</li>
-			<li>(prototyper (créer des implémentations de test, des clients de test)</li>
-			<li>développer avec (interface, documentation d'utilisation, exemples, essai en ligne, test endpoint, simulation)</li>
-			<li>le développer(specs, protos(mocks) / générer client de test)</li>
-            <li>le découvrir (découverte web/monit(/source/OPTimport) OPT scopée sur ce service/impl/endpoint)</li>
-            <li>le définir (fournir l'interface, la prendre de l'impl/endpoint, LATER l'extraire d'échanges, OPT importer l'architecture)</li>
-		</ul>
+		<#-- h3>description</h3 -->
+		<@formatTextToHtml service['dc:description']/>
 		
-        Vous êtes Concepteur et vous voulez (ce service) :
-        <ul>
-            <li>(prototyper (créer des implémentations de test, des clients de test)</li>
-            <li>le découvrir (découverte web/monit(/source/OPTimport) OPT scopée sur ce service/impl/endpoint)</li>
-            <li>le définir (fournir l'interface, la prendre de l'impl/endpoint, LATER l'extraire d'échanges, OPT importer l'architecture)</li>
-            <li>voir ses statistiques d'usage métier (répond-il aux attentes ?)</li>
-        </ul>
 		
-        Vous êtes Développeur et vous voulez (cette serviceimpl) :
-        <ul>
-            <li>développer avec (interface, documentation d'utilisation, exemples, essai en ligne, test endpoint, simulation)</li>
-            <li>(rôle consommateur) réutiliser / instancier l'impl (doc d'impl, deliverable et dépendances / application)</li>
-            <li>(rôle fournisseur) le développer(specs, protos(mocks) / générer client de test)</li>
-            <li>le découvrir (découverte source)</li>
-            <li>(tous les autres, "ouvrables")</li>
-        </ul>
-        
-        Vous êtes Exploitant et vous voulez (cet endpoint) :
-        <ul>
-            <li>le déployer : appli et services dépendants</li>
-            <li>(vous en servir par une application (applications et leurs IHMs, notamment web))</li>
-            <li>le découvrir (découverte web/monit(/source/OPTimport) OPT scopée sur ce service/impl/endpoint)</li>
-            <li>voir ses statistiques d'usage techniques</li>
-            <li>LATER gérer sa configuration (politiques)</li>
-        </ul>
-        
-        Vous êtes Utilisateur et vous voulez (ce service) :
-        <ul>
-            <li>vous en servir par une application (applications et leurs IHMs, notamment web) TODO appli:urlUiWeb</li>
-        </ul>
-
-
-
-        <!-- 2. Display all global parts, and expand one (some) according to profile (role ??) -->
-
-
-
-		<h3>(description)</h3>
-		${service['dc:description']}
+		<h3>Métier</h3><!-- ((sert à)) -->
 		
-		<h3>Métier ((sert à))</h3>
 		<#if businessService?has_content>
 		  Fournit le service business <a href="<@urlToLocalNuxeoDocumentsUi businessService/>"><@displayDocShort businessService/></a> :<br/>
           <#if businessService['businessservice:consumerActor']?has_content>
@@ -282,15 +244,15 @@
         <br/>
         <#if fstudio_enabled>Mock impl client in FraSCAti Studio</#if>
         <br/>
-        Resource : 
-        <#if service['rdi:url']?has_content>
-           external at <a href="${service['rdi:url']}">${service['rdi:url']}</a><!-- TODO shortened url display -->
-           from <#if service['rdi:probeType']?has_content>${service['rdi:probeType']}<#else>IHM</#if>
-           (<#if service['rdi:timestamp']?has_content>${service['rdi:timestamp']}</#if>)
-        <#else>
-           internal
-        </#if>
+        <@displayResourceInfo service/>
 		
+            </div>
+         </li>
+
+
+         <li class="span12">
+            <div class="thumbnail">
+               <img data-src="holder.js/300x200" alt="">
 		
 		<h3>Implémentations de service (y compris de test)</h3>
 		et consomme, dépend de (en mode non test)
@@ -298,12 +260,20 @@
 		
         <#if serviceimpl?has_content>
           Cette implémentation : <@displayImplementationShort serviceimpl subprojectId visibility/>
-		</#if>
-		<br/>
+          <br/>
+          Documentation :<br/>
+          <@formatTextToHtml serviceimpl['impl:documentation']/>
+          <br/>
+		  </#if>
+		  
         <#if !serviceimpl?has_content || !endpoint?has_content || endpoint['env:environment'] != 'Production'>
           Implémenté en Production par
           <#if productionImpl?has_content>
             <@displayImplementationShort productionImpl subprojectId visibility/>
+             <br/>
+             Documentation :<br/>
+             <@formatTextToHtml productionImpl['impl:documentation']/>
+             <br/>
           <#else>
             (aucun)
           </#if>
@@ -315,6 +285,9 @@
           Vos implémentations de test :
           <#list userConsumerImpls as userConsumerImpl>
             <@displayImplementationShort userConsumerImpl subprojectId visibility/>
+             <br/>
+             Documentation :<br/>
+             <@formatTextToHtml serviceimpl['impl:documentation']/>
             <br/>
           </#list>
         </#if>
@@ -325,6 +298,10 @@
 		<#list actualImpls as actualImpl>
 		   <#if (!productionImpl?has_content || productionImpl.id != actualImpl.id) && (!serviceimpl?has_content || serviceimpl.id != actualImpl.id)>
 		   
+          Documentation :<br/>
+          <@formatTextToHtml actualImpl['impl:documentation']/>
+          <br/> 
+          
         <#-- @displayDocShort actualImpl/ -->
         <@displayDoc actualImpl shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
         <br/>
@@ -375,6 +352,13 @@
       <p/>
       </#if>
 
+            </div>
+         </li>
+
+
+         <li class="span12">
+            <div class="thumbnail">
+               <img data-src="holder.js/300x200" alt="">
 
 		<h3>Services déployés (endpoints)</h3>
 		
@@ -383,7 +367,11 @@
           <a href="${endpoint['endp:url']}">${endpoint['endp:url']}</a>
           par <@displayEndpointTitle endpoint subprojectId visibility/>
           <br/>
+           
+           <@displayResourceInfo endpoint/>
+           <p/>
         </#if>
+        
         <#if !endpoint?has_content || endpoint['env:environment'] != 'Production'>
           Déployé en Production à
           <#if productionEndpoint?has_content>
@@ -402,29 +390,19 @@
             <br/>
           </#list>
         </#if>
-        <p/>
-        
-        Resource : 
-        <#if productionEndpoint['rdi:url']?has_content>
-           external at <a href="${productionEndpoint['rdi:url']}">${productionEndpoint['rdi:url']}</a><!-- TODO shortened url display -->
-           from <#if productionEndpoint['rdi:probeType']?has_content>${productionEndpoint['rdi:probeType']}<#else>IHM</#if>
-           (<#if productionEndpoint['rdi:timestamp']?has_content>${productionEndpoint['rdi:timestamp']}</#if>)
-        <#else>
-           internal
-        </#if>
 		<br/>
 		
 		Découverte :
 		<a href="${web_discovery_url}?subprojectId=${subprojectId}&visibility=${visibility}">Web</a>, <!-- TODO pass as probe params : Environment (, iserv/endpoint (, user, component)) -->
-        <a href="${httpproxy_app_instance_factory_url}?subprojectId=${subprojectId}&visibility=${visibility}&user=${Root.currentUser}&environment=Production'}">Monitoring</a>,  <!-- TODO HTTP Proxy host prop, url to probe IHM, pass as probe params : subproject / Phase, Environment (, iserv/endpoint (, component)) -->
-        (<a href="${Root.path}/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Source</a>)
+      <a href="<@urlToProxyManagementGetInstance subprojectId 'Production'/>">Monitoring</a>,  <!-- TODO HTTP Proxy host prop, url to probe IHM, pass as probe params : subproject / Phase, Environment (, iserv/endpoint (, component)) -->
+      (<a href="${Root.path}/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Source</a>)
 		<br/>
 		Monitoring :
-		<a href="${Root.path}/../monitoring/envIndicators/${productionEndpoint.id}?subprojectId=${subprojectId}&visibility=${visibility}">Usage</a>, 
+		<a href="<@urlToEndpointState productionEndpoint subprojectId visibility/>">Usage</a>, 
 		<a href="${Root.path}/../monitoring/jasmine/?subprojectId=${subprojectId}&visibility=${visibility}">Statistiques</a>
 		<br/>
 		Tester avec :
-        <a href="${web_discovery_url + '/scaffoldingProxy/?wsdlUrl=' + productionEndpoint['rdi:url']}">Service Scaffolder</a>, <!-- TODO light.js, or function, rather endpointUrl?wsdl ?? -->
+        <a href="<@urlToServiceScaffolder productionEndpoint/>">Service Scaffolder</a>, <!-- TODO light.js, or function, rather endpointUrl?wsdl ?? -->
         <a href="">SOAPUI</a>,
         <a href="frascatiStudio_url + '/easySoa/GeneratedAppService'">FraSCAti Studio new application</a>
         <!-- a href="">FraSCAti Studio application A</a -->
@@ -498,6 +476,10 @@
         TODO LATER endpoint consumptions (like service ones)
 
 
+            </div>
+         </li>
+
+         <@displayReturnToIndexButtonBar/>
 
 
         <#if Root.isDevModeSet()>
@@ -508,10 +490,15 @@
         <p>&nbsp;</p>
         <p>&nbsp;</p>
         <p>&nbsp;</p>
+
+
+         <li class="span12">
+            <div class="thumbnail">
+               <img data-src="holder.js/300x200" alt="">
         
-		<h2>test</h2>
+		<h3>test</h3>
 		
-		<h3>User</h3>
+		<h4>User</h4>
 		(actual) user name & company : ${Context.getPrincipal().getName()} ${Context.getPrincipal().getCompany()}<br/>
         (test) user & groups : ${user.getName()} '<#list user.getGroups() as groupName>${groupName}, </#list>)<br/>
         isUserConsumer : ${isUserConsumer?string} (${userConsumerGroupName})<br/>
@@ -527,7 +514,7 @@
            <#if otherUser_index != otherUsers?size - 1>, </#if>
         </#list>
 
-		<h3>Contenu dans</h3>
+		<h4>Contenu dans</h4>
 		<#if service['proxies']?has_content><#list service['proxies'] as proxy><@displayDocShort proxy['parent']/> ; </#list></#if>
 
 		<h3>Contient</h3>
@@ -547,13 +534,69 @@
 		Platform :
 		<p/>
 		<@displayPropsAll service platformPropNames/>
-	</div>
+		
+		
+		<h4>UI Draft</h4>
+		
+        <h4>1. Display focus part according to role</h4>
+        (profile ex. Developer, relationship ex. providerActor, phase ex. Specifications -->
 
-        <div id="container">
-            <a href="${Root.path}?subprojectId=${subprojectId}&visibility=${visibility}">Back to services</a>
-        </div>
+
+      Vous voulez :
+      <ul>
+         <li>vous en servir par une application (applications et leurs IHMs, notamment web)</li>
+         <li>(prototyper (créer des implémentations de test, des clients de test)</li>
+         <li>développer avec (interface, documentation d'utilisation, exemples, essai en ligne, test endpoint, simulation)</li>
+         <li>le développer(specs, protos(mocks) / générer client de test)</li>
+            <li>le découvrir (découverte web/monit(/source/OPTimport) OPT scopée sur ce service/impl/endpoint)</li>
+            <li>le définir (fournir l'interface, la prendre de l'impl/endpoint, LATER l'extraire d'échanges, OPT importer l'architecture)</li>
+      </ul>
+      
+        Vous êtes Concepteur et vous voulez (ce service) :
+        <ul>
+            <li>(prototyper (créer des implémentations de test, des clients de test)</li>
+            <li>le découvrir (découverte web/monit(/source/OPTimport) OPT scopée sur ce service/impl/endpoint)</li>
+            <li>le définir (fournir l'interface, la prendre de l'impl/endpoint, LATER l'extraire d'échanges, OPT importer l'architecture)</li>
+            <li>voir ses statistiques d'usage métier (répond-il aux attentes ?)</li>
+        </ul>
+      
+        Vous êtes Développeur et vous voulez (cette serviceimpl) :
+        <ul>
+            <li>développer avec (interface, documentation d'utilisation, exemples, essai en ligne, test endpoint, simulation)</li>
+            <li>(rôle consommateur) réutiliser / instancier l'impl (doc d'impl, deliverable et dépendances / application)</li>
+            <li>(rôle fournisseur) le développer(specs, protos(mocks) / générer client de test)</li>
+            <li>le découvrir (découverte source)</li>
+            <li>(tous les autres, "ouvrables")</li>
+        </ul>
+        
+        Vous êtes Exploitant et vous voulez (cet endpoint) :
+        <ul>
+            <li>le déployer : appli et services dépendants</li>
+            <li>(vous en servir par une application (applications et leurs IHMs, notamment web))</li>
+            <li>le découvrir (découverte web/monit(/source/OPTimport) OPT scopée sur ce service/impl/endpoint)</li>
+            <li>voir ses statistiques d'usage techniques</li>
+            <li>LATER gérer sa configuration (politiques)</li>
+        </ul>
+        
+        Vous êtes Utilisateur et vous voulez (ce service) :
+        <ul>
+            <li>vous en servir par une application (applications et leurs IHMs, notamment web) TODO appli:urlUiWeb</li>
+        </ul>
+
+
+
+        <h4>2. Display all global parts, and expand one (some) according to profile (role ??)</h4>
+
+
+            </div>
+         </li>
+         
         
         </#if>
+   
+   
+      </ul>
+   </div>
 
 </body>
 

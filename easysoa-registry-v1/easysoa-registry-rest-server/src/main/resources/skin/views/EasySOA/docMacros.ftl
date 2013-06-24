@@ -20,7 +20,8 @@
             </#if> 
             ${parsedSubprojectIdToDisplay.getSubprojectName()}
             <#assign version = parsedSubprojectIdToDisplay.getVersion()/>
-            (version <#if version?length == 0>en cours<#else>${version}</#if>)
+            <#-- (version <#if version?length == 0>en cours<#else>${version}</#if>) -->
+            <#if version?length == 0>en cours<#else>${version}</#if>
         </#if>
     </#macro>
 
@@ -64,7 +65,8 @@
         
         / </span>
         <span title="SOA ID: ${service['soan:name']}"><@displaySoaNodeTitle service ""/>
-        </span> - <@displayPhaseIfOutsideContext service['spnode:subproject']/> (v${service.versionLabel})
+        </span> - <@displayPhaseIfOutsideContext service['spnode:subproject']/>
+        <#--  (v${service.versionLabel}) -->
     </#macro>
     
     <#macro displayActorLink actor>
@@ -131,7 +133,8 @@
         <span title="Phase : <@displayPhase serviceimpl['spnode:subproject']/>" style="color:grey; font-style: italic;">
         ${providerActorTitle} / ${componentTitle} ${deliverableTitle}</span>
         / <span title="SOA ID: ${serviceimpl['soan:name']}">${serviceimpl.title}</span>
-        - <@displayPhaseIfOutsideContext serviceimpl['spnode:subproject']/> (v${serviceimpl.versionLabel})
+        - <@displayPhaseIfOutsideContext serviceimpl['spnode:subproject']/>
+        <#--  (v${serviceimpl.versionLabel}) -->
     </#macro>
 
     <#macro displayEndpointTitle endpoint subprojectId visibility>
@@ -156,7 +159,8 @@
         <span title="Phase : <@displayPhase endpoint['spnode:subproject']/>" style="color:grey; font-style: italic;">
         <img src="/nuxeo/icons/environment.png" alt="Environment"/>${endpoint['env:environment']} / <img src="/nuxeo/icons/application.png" alt="Application"/>${applicationTitle}</span>
         / <span title="SOA ID: ${endpoint['soan:name']}">${endpoint.title}</span>
-        - <@displayPhaseIfOutsideContext endpoint['spnode:subproject']/> (v${endpoint.versionLabel})
+        - <@displayPhaseIfOutsideContext endpoint['spnode:subproject']/>
+        <#--  (v${endpoint.versionLabel}) -->
     </#macro>
     
     <#macro displayServiceShort service subprojectId visibility>
@@ -363,3 +367,7 @@
             <@displayDoc doc propNames/>
 	</#list>
     </#macro>
+    
+    <#macro formatTextToHtml text><#if text?matches('.*<[a-zA-Z]+/?>.*', 's')>${text}<#else>${text?replace('\n+', '<p/>')?replace('\n', '<br/>')}</#if></#macro>
+    <#-- ex. matches "g<b>j\nb" -->
+    

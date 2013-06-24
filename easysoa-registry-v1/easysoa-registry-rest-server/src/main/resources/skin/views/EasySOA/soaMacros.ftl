@@ -107,6 +107,17 @@
             <#-- TODO LATER also children documents -->
             </table>
 		</#macro>
+		
+    <#macro displayResourceInfo resourceInfo>
+        Resource : 
+        <#if resourceInfo['rdi:url']?has_content>
+           externe de <a href="${resourceInfo['rdi:url']}">${v['rdi:url']}</a><!-- TODO shortened url display -->
+           par <#if resourceInfo['rdi:probeType']?has_content>${resourceInfo['rdi:probeType']}<#else>IHM</#if>
+           (<#if resourceInfo['rdi:timestamp']?has_content>${resourceInfo['rdi:timestamp']}</#if>)
+        <#else>
+           interne
+        </#if>
+    </#macro>
 
 
         <#macro displayTested serviceimpl>

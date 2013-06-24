@@ -2,7 +2,7 @@
 <html>
 
 <head>
-	<title>EasySOA REST Services Documentation</title>
+   <title>EasySOA Cartographie - Documentation</title>
 	<meta charset="utf-8" />
 	<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />
 	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" /> 

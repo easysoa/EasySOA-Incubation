@@ -26,11 +26,6 @@ Available context variables are :
 
 -->
 
-    <#-- URL Constants -->
-    <#assign web_discovery_url= Root.getWebDiscoveryUrl() /><!-- VM : owsi-vm-easysoa-axxx-registry -->
-    <#assign httpproxy_app_instance_factory_url= 'http://localhost:8082' /><!-- TODO proxy war or FStudio ?? VM : owsi-vm-easysoa-axxx-registry -->
-    <#assign jasmine_url= Root.getJasmineUrl() /><!-- VM : owsi-vm-easysoa-axxx-pivotal -->
-
     <#-- Macros -->
 
     <#include "/views/context/macros.ftl"><!-- to display Phase (displayContextBar) -->

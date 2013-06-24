@@ -90,6 +90,7 @@
                         <p>
                             <img src="/nuxeo/site/easysoa/skin/img/proxyManagementInstance.png" alt="Interface de gestion des sondes">
                         </p>
+                        <p>&nbsp;</p>
                         <p>
                             Une <a href="#">interface de pilotage</a> est également disponible pour démarrer et arrèter une session d'enregistrement. Celle-ci peut être réjouée plus tard, telle quelle ou dans une version modifiée, et permet aussi de générer une simulation automatique du service écouté.
                         </p>

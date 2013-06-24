@@ -51,7 +51,19 @@
                             </div>
                             </p>
                             <div class="btn-group">
-                                <a class="btn" href="${nuxeoUrl}">IHM d'édition</a>
+                                <#if subprojectId>
+                                    <#assign nuxeoUrl = "/nuxeo/nxdoc/default/"
+                                        + Session.query("select * from Subproject where spnode:subproject='" + subprojectId + "'")[0].id
+                                        + "/view_documents"/>
+                                    <#if !subprojectId?ends_with("_v")>
+                                        <#assign nuxeoUrl = nuxeoUrl + "?version=true" />
+                                    </#if>
+                                <#else>
+                                    <#assign nuxeoUrl = "/nuxeo/nxpath/default/default-domain@view_documents"/>
+                                </#if>
+
+                                <a class="btn" href="${nuxeoUrl}">Edition collaborative du modèle SOA</a>
+                                <!-- TODO make it work for versions -->
                                 <a class="btn" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation SOA</a>
                             </div>
                         </p>

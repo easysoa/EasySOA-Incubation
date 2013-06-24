@@ -1,0 +1,67 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          nuxeo
+# Required-Start:    $local_fs $remote_fs $network $syslog
+# Required-Stop:     $local_fs $remote_fs $network $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start/stop Nuxeo
+### END INIT INFO
+ 
+DESC="Nuxeo"
+ 
+NUXEO_USER=axxx
+SOA_HOME="/home/axxx"
+#NUXEOCTL="$SOA_HOME/install/nuxeo-cap-5.7-I20130111_0115-tomcat/bin/nuxeoctl"
+NUXEOCTL="$SOA_HOME/install/nuxeo-cap-5.7-I20130610_0116-tomcat/bin/nuxeoctl"
+# OBSOLETE using default conf for embedded db rather than psql 8.4 which "bad value for long" in SQLDirectory
+NUXEO_CONF="$SOA_HOME/bin/nuxeo.conf"
+export NUXEO_CONF
+ 
+. /lib/init/vars.sh
+. /lib/lsb/init-functions
+ 
+ 
+create_pid_dir() {
+    mkdir -p /var/run/nuxeo
+    chown $NUXEO_USER:$NUXEO_USER /var/run/nuxeo
+}
+ 
+# Change ulimit to minimum needed by Nuxeo
+ulimit -n 2048
+ 
+case "$1" in
+  start)
+        log_daemon_msg "Starting" "$DESC\n"
+        create_pid_dir
+        su $NUXEO_USER -c "$NUXEOCTL --quiet startbg"
+        ES=$?
+        log_end_msg $ES
+        ;;
+  stop)
+        log_daemon_msg "Stopping" "$DESC\n"
+        su $NUXEO_USER -c "$NUXEOCTL --quiet stop"
+        ES=$?
+        log_end_msg $ES
+        ;;
+  restart)
+        create_pid_dir
+        su $NUXEO_USER -c "$NUXEOCTL --quiet restart"
+        ES=$?
+        log_end_msg $ES
+        ;;
+  force-reload)
+        create_pid_dir
+        su $NUXEO_USER -c "$NUXEOCTL --quiet restart"
+        ES=$?
+        log_end_msg $ES
+        ;;
+  status)
+        su $NUXEO_USER -c "$NUXEOCTL --quiet status"
+        exit $?
+        ;;
+  *)
+        echo "Usage: $0 {start|stop|restart|force-reload|status}" >&2
+        exit 3
+        ;;
+esac

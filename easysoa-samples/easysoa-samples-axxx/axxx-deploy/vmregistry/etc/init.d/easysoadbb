@@ -1,0 +1,36 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          easysoadbb
+# Required-Start:    $remote_fs
+# Required-Stop:     $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: EasySOA DBB initscript
+# Description:       This file should be used to construct scripts to be
+#                    placed in /etc/init.d.
+### END INIT INFO
+
+# Author: Openwide <contact@openwide.fr>
+#
+
+# package conf
+EASYSOADBB_INSTALL_PATH=/home/axxx/dev/easysoa/workspace/EasySOA-Incubation/easysoa-discovery-browsing
+SCRIPTNAME=easysoadbb
+
+case "$1" in
+  start)
+        PWD=`pwd`
+        cd $EASYSOADBB_INSTALL_PATH
+        sudo -u axxx nohup ./start-web.sh 1>/var/log/$SCRIPTNAME.log 2> /var/log/$SCRIPTNAME.err.log &
+        cd $PWD
+        #sudo -u axxx nohup /home/axxx/bin/easysoadbb 1>/var/log/easysoadbb.log 2> /var/log/easysoadbb.err.log &
+        ;;
+  stop)
+        echo Not supported
+        ;;
+  *)
+        echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload}" >&2
+        exit 3
+        ;;
+esac
+

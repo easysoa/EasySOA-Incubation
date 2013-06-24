@@ -1,0 +1,43 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          tomcat
+# Required-Start:    $remote_fs
+# Required-Stop:     $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: tomcat initscript
+# Description:       This file should be used to construct scripts to be
+#                    placed in /etc/init.d.
+### END INIT INFO
+
+# Author: Openwide <contact@openwide.fr>
+#
+
+# package conf
+AXXX_INSTALL_PATH=/home/axxx/install
+AXXX_TOMCAT_NAME="apache-tomcat-6.0.36"
+AXXX_TOMCAT_INSTALL_PATH=$AXXX_INSTALL_PATH/$AXXX_TOMCAT_NAME
+SCRIPTNAME=tomcat
+
+case "$1" in
+  start)
+	#sudo -u axxx cd $AXXX_TOMCAT_INSTALL_PATH
+	#sudo -u axxx sh ./bin/catalina.sh start
+        #sudo -u axxx sh $AXXX_TOMCAT_INSTALL_PATH/bin/catalina.sh start
+        PWD=`pwd`
+        cd $AXXX_TOMCAT_INSTALL_PATH
+	#sudo -u axxx nohup /home/axxx/bin/tomcat 1>/var/log/tomcat.log 2> /var/log/tomcat.err.log &
+        sudo -u axxx nohup ./bin/catalina.sh run 1>/var/log/$SCRIPTNAME.log 2> /var/log/$SCRIPTNAME.err.log &
+        cd $PWD
+        ;;
+  stop)
+        PWD=`pwd`
+        cd $AXXX_TOMCAT_INSTALL_PATH
+        sudo -u axxx sh ./bin/catalina.sh stop
+        cd $PWD
+        ;;
+  *)
+        echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload}" >&2
+        exit 3
+        ;;
+esac

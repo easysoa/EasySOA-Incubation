@@ -55,6 +55,7 @@ PIDDIR="/home/axxx/install/TESB_SE-V5.1.2/container/data"
 #  the JVM and is not useful in situations where a privileged resource or
 #  port needs to be allocated prior to the user being changed.
 #RUN_AS_USER=
+RUN_AS_USER=axxx
 
 # The following two lines are used by the chkconfig command. Change as is
 #  appropriate for your application.  They should remain commented.

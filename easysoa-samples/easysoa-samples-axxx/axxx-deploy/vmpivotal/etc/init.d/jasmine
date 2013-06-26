@@ -1,0 +1,38 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          jasmine
+# Required-Start:    $remote_fs
+# Required-Stop:     $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: tomcat initscript
+# Description:       This file should be used to construct scripts to be
+#                    placed in /etc/init.d.
+### END INIT INFO
+
+# Author: Openwide <contact@openwide.fr>
+#
+
+# conf
+INSTALL_PATH="/home/axxx/install/JASMINe_Monitoring_V2"
+SCRIPTNAME=jasmine
+
+case "$1" in
+  start)
+        PWD=`pwd`
+        cd $INSTALL_PATH
+        sudo -u axxx nohup ./jasmine.sh $@ 1>/var/log/$SCRIPTNAME.log 2> /var/log/$SCRIPTNAME.err.log &
+        cd $PWD
+        ;;
+  stop)
+        PWD=`pwd`
+        cd $INSTALL_PATH
+        sudo -u axxx nohup ./jasmine.sh $@ 1>/var/log/$SCRIPTNAME.log 2> /var/log/$SCRIPTNAME.err.log &
+        cd $PWD
+        ;;
+  *)
+        echo "Usage: $SCRIPTNAME {start|stop}" >&2
+        exit 3
+        ;;
+esac
+

@@ -6,6 +6,7 @@ echo "EasySOA Web Servers"
 echo "(Default static server configuration: Host=127.0.0.1, Port=8083"
 echo " Default proxy configuration: Host=127.0.0.1, Port=8081)"
 echo "DEPENDENCIES: Service registry (to log in)"
+echo path : `pwd`
 echo $LINE
 
 # Checking 32 or 64 bits

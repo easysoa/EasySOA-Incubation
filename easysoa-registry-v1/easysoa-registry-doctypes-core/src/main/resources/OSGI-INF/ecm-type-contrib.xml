@@ -4,7 +4,7 @@
   <!-- ============ -->
   <!-- ECM Doctypes -->
   <!-- ============ -->
-  
+
   <extension target="org.nuxeo.ecm.platform.types.TypeService" point="types">
 
     <!-- Systems hierarchies -->
@@ -163,7 +163,7 @@
         <type>Folder</type>
         <type>SystemTreeRoot</type>
         <type>IntelligentSystemTreeRoot</type>
-        
+
         <!-- to allow creation of SoaNodes : -->
         <!-- type>InformationService</type>
         <type>SoftwareComponent</type>
@@ -176,7 +176,7 @@
         <type>Endpoint</type -->
       </subtypes>
     </type>
-    
+
     <!-- to allow creation of SoaNodes : -->
     <type id="Folder">
         <subtypes>
@@ -185,19 +185,19 @@
             <type>InformationService</type>
             <type>Platform</type>
             <!-- type>SoftwareComponent</type -->
-            
+
             <!-- NB. JavaServiceImplementation/Consumption are in easysoa-registry-doctypes-java-core -->
             <!-- type>EndpointConsumer</type -->
             <type>Deliverable</type>
             <type>ServiceImplementation</type>
             <type>ServiceConsumption</type>
-            
+
             <type>DeployedDeliverable</type>
             <type>Endpoint</type>
             <type>EndpointConsumption</type>
         </subtypes>
     </type>
-    
+
     <type id="SystemTreeRoot" coretype="SystemTreeRoot">
       <label>System Tree Root</label>
       <icon>/icons/workspace.gif</icon>
@@ -278,7 +278,7 @@
       <subtypes>
         <type>File</type>
         <type>TaggingFolder</type>
-        
+
         <!-- to allow creation of SoaNodes : -->
         <type>RequirementsDocument</type>
         <type>BusinessService</type>
@@ -288,13 +288,13 @@
         <type>Component</type>
         <type>Platform</type>
         <!-- type>SoftwareComponent</type -->
-        
+
         <!-- NB. JavaServiceImplementation/Consumption are in easysoa-registry-doctypes-java-core -->
         <!-- type>EndpointConsumer</type -->
         <type>Deliverable</type>
         <type>ServiceImplementation</type>
         <type>ServiceConsumption</type>
-        
+
         <type>DeployedDeliverable</type>
         <type>Endpoint</type>
         <type>EndpointConsumption</type>
@@ -517,6 +517,7 @@
         <layout>subprojectnode</layout>
         <layout>soanode</layout>
         <layout>servicecons</layout>
+        <layout>endpointcons</layout>
         <layout>wsdlinfo</layout>
         <layout>restinfo</layout>
         <layout>files</layout>

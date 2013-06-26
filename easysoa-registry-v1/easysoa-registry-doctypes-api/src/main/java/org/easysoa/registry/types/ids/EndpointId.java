@@ -10,7 +10,7 @@ import org.easysoa.registry.types.Endpoint;
 
 @JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE, setterVisibility=Visibility.NONE)
 public class EndpointId extends SoaNodeId {
-	
+
 	@JsonIgnore
 	private final String environment;
 
@@ -33,26 +33,26 @@ public class EndpointId extends SoaNodeId {
 		this.environment = environment;
 		this.url = url;
 	}
-	
+
 	private static String buildName(String environment, String url) {
 		return environment + ":" + url;
 	}
-	
+
 	@Override
 	public Map<String, Serializable> getDefaultPropertyValues() {
 		Map<String, Serializable> properties = super.getDefaultPropertyValues();
 		properties.put(Endpoint.XPATH_ENDP_ENVIRONMENT, environment);
 		properties.put(Endpoint.XPATH_URL, url);
-		properties.put(Endpoint.XPATH_TITLE, url);
+		properties.put(Endpoint.XPATH_TITLE, environment + " - " + url); // TODO more generic
 		return properties;
 	}
 
 	public Object getEnvironment() {
 		return environment;
 	}
-	
+
 	public String getUrl() {
 		return url;
 	}
-	
+
 }

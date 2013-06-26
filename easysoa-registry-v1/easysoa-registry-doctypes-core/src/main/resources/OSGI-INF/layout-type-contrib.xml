@@ -4,10 +4,10 @@
   <!-- ======= -->
   <!-- Layouts -->
   <!-- ======= -->
-  
+
   <extension target="org.nuxeo.ecm.platform.forms.layout.WebLayoutManager"
     point="layouts">
-    
+
     <!-- Layout for subproject schema -->
     <layout name="subproject">
       <templates>
@@ -72,9 +72,9 @@
            <property name="template">/widgets/multiple_document_suggestion_widget_template.xhtml</property>
          </properties>
       </widget>
-      
+
     </layout>
-    
+
     <!-- Layout for subproject-node schema -->
     <layout name="subprojectnode">
       <templates>
@@ -101,9 +101,9 @@
            <property name="template">/widgets/phase_document_id_link_template.xhtml</property>
          </properties>
       </widget>
-      
+
     </layout>
-    
+
     <!-- Layout for soanode schema -->
     <layout name="soanode">
       <templates>
@@ -142,9 +142,9 @@
           <mode value="edit">hidden</mode>
          </widgetModes>
       </widget>
-      
+
     </layout>
-    
+
     <!-- Layout for soaversion schema -->
     <layout name="soaversion">
       <templates>
@@ -165,7 +165,7 @@
         </fields>
       </widget>
     </layout>
-    
+
     <!-- Layout for component schema -->
     <layout name="component">
       <templates>
@@ -204,7 +204,7 @@
         </properties>
       </widget>
     </layout>
-    
+
     <!-- Layout for information service schema -->
     <layout name="informationservice">
       <templates>
@@ -286,7 +286,7 @@
         </properties>
       </widget>
     </layout>
-    
+
     <!-- Layout for deliverable schema -->
     <layout name="deliverable">
       <templates>
@@ -372,7 +372,7 @@
         </properties>
       </widget>
     </layout>
-    
+
     <!-- Layout for environment schema -->
     <layout name="environment">
       <templates>
@@ -401,7 +401,7 @@
         </properties>
       </widget>
     </layout>
-    
+
     <!-- Layout for endpoint schema -->
     <layout name="endpoint">
       <templates>
@@ -568,7 +568,7 @@
         </properties>
       </widget>
     </layout>
-    
+
     <!-- Layout for platform schema -->
     <layout name="platform">
       <templates>
@@ -770,7 +770,7 @@
         </fields>
       </widget>
     </layout>
-      
+
     <!-- Layout for serviceimpl schema -->
     <layout name="serviceimpl">
       <templates>
@@ -968,7 +968,7 @@
         </properties>
       </widget>
     </layout>
-      
+
     <!-- Layout for servicecons schema -->
     <layout name="servicecons">
       <templates>
@@ -1002,7 +1002,64 @@
         </fields>
       </widget>
     </layout>
-    
+
+    <!-- Layout for endpointscons schema -->
+    <layout name="endpointcons">
+      <templates>
+        <template mode="any">/layouts/layout_default_template.xhtml</template>
+      </templates>
+      <rows>
+        <row>
+          <widget>endpointcons_consumerHost</widget>
+        </row>
+        <row>
+          <widget>endpointcons_consumerIp</widget>
+        </row>
+        <row>
+          <widget>endpointcons_consumedUrl</widget>
+        </row>
+        <row>
+          <widget>endpointcons_consumedEnvironment</widget>
+        </row>
+      </rows>
+      <widget name="endpointcons_consumerHost" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpointcons.consumerHost</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>ec:consumerHost</field>
+        </fields>
+      </widget>
+      <widget name="endpointcons_consumerIp" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpointcons_consumerIp</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>ec:consumerIp</field>
+        </fields>
+      </widget>
+      <widget name="endpointcons_consumedUrl" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpointcons_consumedUrl</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>ec:consumedUrl</field>
+        </fields>
+      </widget>
+      <widget name="endpointcons_consumedEnvironment" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpointcons_consumedEnvironment</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>ec:consumedEnvironment</field>
+        </fields>
+      </widget>
+    </layout>
+
     <!-- Layout for wsdlinfo schema -->
     <layout name="wsdlinfo">
       <templates>
@@ -1059,7 +1116,7 @@
         </fields>
       </widget>
     </layout>
-    
+
     <!-- Layout for restinfo schema -->
     <layout name="restinfo">
       <templates>
@@ -1104,7 +1161,7 @@
         </fields>
       </widget>
     </layout>
-    
+
     <!-- Layout for resource download info schema -->
     <layout name="resourcedownloadinfo">
       <templates>
@@ -1125,7 +1182,7 @@
         </row>
         <row>
           <widget>resourcedownloadinfo_probe_instance_id</widget>
-        </row>        
+        </row>
       </rows>
       <widget name="resourcedownloadinfo_url" type="text">
         <labels>
@@ -1187,9 +1244,9 @@
           <mode value="create">hidden</mode>
           <mode value="edit">hidden</mode>
         </widgetModes>
-      </widget>      
-    </layout>    
-    
+      </widget>
+    </layout>
+
   </extension>
-  
+
 </component>

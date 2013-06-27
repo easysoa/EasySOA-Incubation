@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <component name="org.easysoa.registry.doctypes.core.soametamodel.contrib" version="1.0">
-  
+
   <extension target="org.easysoa.registry.SoaMetamodelService" point="types">
     <soaNodeType name="TaggingFolder">
         <subtype>Platform</subtype>
@@ -11,15 +11,15 @@
         <subtype>DeployedDeliverable</subtype>
         <subtype>Endpoint</subtype>
     </soaNodeType>
-    
+
     <soaNodeType name="Platform">
         <subtype>Component</subtype>
     </soaNodeType>
-    
+
     <soaNodeType name="SoftwareComponent">
         <subtype>Deliverable</subtype>
     </soaNodeType>
-    
+
     <soaNodeType name="Deliverable">
         <subtype>ServiceImplementation</subtype>
         <subtype>DeployedDeliverable</subtype>
@@ -31,11 +31,11 @@
     <soaNodeType name="JavaServiceImplementation"><!-- explicitly handling inheritance -->
         <subtype>Endpoint</subtype>
     </soaNodeType>
-    
+
     <soaNodeType name="DeployedDeliverable">
         <subtype>Endpoint</subtype>
     </soaNodeType>
-    
+
     <soaNodeType name="Endpoint">
       <soaNameFormat>${document.environment.environment}:${document.endpoint.url}</soaNameFormat>
       <idProperties>
@@ -43,8 +43,12 @@
         <property>env:environment</property>
       </idProperties>
     </soaNodeType>
+
+    <soaNodeType name="EndpointConsumption">
+        <subtype>Endpoint</subtype>
+    </soaNodeType>
   </extension>
-  
+
   <extension target="org.easysoa.registry.SoaMetamodelService" point="inheritedFacets">
     <!-- SubprojectData inheritance in subproject tree :
     NO done in custom listener (to handle versioning time...)
@@ -58,7 +62,7 @@
         <selector type="children" />
       </transfer>
     </inheritedFacet -->
-    
+
     <!-- Inheritance of InformationServiceData from service down -->
     <inheritedFacet facetName="InformationServiceData">
       <transfer>
@@ -74,7 +78,7 @@
         <selector type="children" /><!-- TODO uuidInTarget -->
       </transfer>
     </inheritedFacet>
-    
+
     <!-- Inheritance of ServiceImplementationData from impl down -->
     <inheritedFacet facetName="ServiceImplementationData">
       <transfer>
@@ -90,7 +94,7 @@
         <selector type="children" />
       </transfer>
     </inheritedFacet>
-    
+
     <inheritedFacet facetName="ComponentData">
       <transfer>
         <from>Component</from>
@@ -112,7 +116,7 @@
         <selector type="children" /><!-- TODO uuidInTarget -->
       </transfer>
     </inheritedFacet>
-    
+
     <inheritedFacet facetName="PlatformData">
       <transfer>
         <from>Platform</from>
@@ -126,7 +130,7 @@
           <parameter name="metadata">acomp:linkedInformationService</parameter>
         </selector>
       </transfer>
-      
+
       <!-- PlatformData inheritance from service down :
       TODO should it really be done ? or using other metadata ? -->
       <transfer>

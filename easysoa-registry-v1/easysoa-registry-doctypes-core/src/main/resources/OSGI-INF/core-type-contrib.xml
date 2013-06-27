@@ -20,6 +20,7 @@
     <schema name="informationservice" src="schemas/information-service.xsd" prefix="iserv" />
     <schema name="serviceimpl" src="schemas/serviceimpl.xsd" prefix="impl" />
     <schema name="servicecons" src="schemas/service-consumption.xsd" prefix="sc" />
+    <schema name="endpointcons" src="schemas/endpoint-consumption.xsd" prefix="ec" />
     <schema name="endpoint" src="schemas/endpoint.xsd" prefix="endp" />
     <schema name="wsdlinfo" src="schemas/wsdlinfo.xsd" prefix="wsdl" />
     <schema name="restinfo" src="schemas/restinfo.xsd" prefix="rest" />
@@ -31,7 +32,7 @@
   <!-- ============= -->
   <!-- Core doctypes -->
   <!-- ============= -->
-  
+
   <extension target="org.nuxeo.ecm.core.schema.TypeService" point="doctype">
 
     <facet name="SubprojectNode" >
@@ -42,7 +43,7 @@
       <schema name="soanode" />
     </facet>
     <facet name="System" />
-    
+
     <!-- TODO in Studio ? -->
     <facet name="PlatformData" >
       <schema name="platform" />
@@ -52,7 +53,7 @@
       <facet name="Folderish" />
       <facet name="SubprojectNode" /><!-- TODO other types ? or always add dynamically ? -->
     </doctype>
-    
+
     <!-- Resource framework -->
     <!-- TODO LATER move WsdlInfo & RestInfo to separate Resource Documents -->
     <facet name="ResourceDownloadInfo" >
@@ -64,7 +65,7 @@
     <facet name="RestInfo" >
       <schema name="restinfo" />
     </facet>
-    
+
     <!-- Abstract doctypes -->
     <doctype extends="Document" name="SoaNode">
       <schema name="uid" />
@@ -82,7 +83,7 @@
     <doctype extends="SoaNode" name="EndpointConsumer">
       <facet name="Folderish" />
     </doctype>
-    
+
     <!-- Project & Systems hierarchies -->
     <doctype extends="Folder" name="Project">
       <schema name="common" />
@@ -123,7 +124,7 @@
       <facet name="System" />
       <facet name="SuperSpace" />
     </doctype>
-    
+
     <!-- Architecture level -->
     <doctype extends="SoaNode" name="SoftwareComponent">
       <facet name="Folderish" />
@@ -177,6 +178,10 @@
       <facet name="RestInfo" />
     </doctype>
     <doctype extends="ServiceConsumption" name="EndpointConsumption">
+        <schema name="endpointcons" />
+        <facet name="Folderish" /><!-- to put consumed endpoints in -->
+        <!--<facet name="WsdlInfo" />-->
+        <facet name="ResourceDownloadInfo" />
     </doctype>
 
     <!-- Deployment level -->
@@ -208,7 +213,7 @@
     <doctype extends="PolicyResource" name="EasiFabJasminePolicyResource" /><!-- LATER push it from source & parse it -->
     <doctype extends="Resource" name="ConfigurationResource" />
     <doctype extends="ConfigurationResource" name="ScaConfigurationResource" /><!-- LATER (push it from source &) update SCA import feature (NB. this is NOT for SCA for Design / Specifications but only for Realisation/Deploiement) -->
-    
+
   </extension>
 
 </component>

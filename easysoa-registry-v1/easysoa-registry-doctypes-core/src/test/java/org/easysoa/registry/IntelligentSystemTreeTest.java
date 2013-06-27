@@ -21,7 +21,7 @@ import org.nuxeo.runtime.test.runner.LocalDeploy;
 import com.google.inject.Inject;
 
 /**
- * 
+ *
  * @author mkalam-alami
  *
  */
@@ -51,49 +51,50 @@ public class IntelligentSystemTreeTest extends AbstractRegistryTest {
                 new EndpointId("Production", "MyEndpoint"),
                 systemModel.getPathAsString());
         documentManager.saveDocument(endpointModel);
-        
+
         documentManager.save();
-        
+
         repositoryLogger.logAllRepository();
-        
+
         // Make sure that there are now 3 proxies of the endpoint,
         // one in the manual tree, the others in the intelligent trees
-        
+
         // By environment
-        
+
         DocumentModel istrModel = documentService.findDocument(documentManager,
                 defaultSubprojectId, IntelligentSystemTreeRoot.DOCTYPE, "environment:environment");
         Assert.assertNotNull("A By Environment intelligent system tree root must have been created",
                 istrModel);
         Assert.assertEquals("The By Environment STR must contain 1 system", 1, documentManager.getChildren(istrModel.getRef()).size());
-        
+
         DocumentModel productionSystem = documentService.findDocument(documentManager,
                 defaultSubprojectId, IntelligentSystem.DOCTYPE, "Production");
         Assert.assertNotNull("A 'Production' system must have been created", productionSystem);
 
         DocumentModelList productionSystemChildren = documentManager.getChildren(productionSystem.getRef());
         Assert.assertEquals("The 'Production' system must have a child", 1, productionSystemChildren.size());
-        
+
         DocumentModel childModel = productionSystemChildren.get(0);
         Assert.assertTrue("The document in the 'Production' system must be the expected endpoint",
-                Endpoint.DOCTYPE.equals(childModel.getType()) && 
+                Endpoint.DOCTYPE.equals(childModel.getType()) &&
                 "MyEndpoint".equals(childModel.getPropertyValue(Endpoint.XPATH_URL)));
-        
+
         // By alphabetical order
-        
+
         endpointModel = documentManager.getDocument(new PathRef(
                 DocumentModelHelper.getWorkspacesPath(documentManager, defaultSubprojectId)
-                + "/alphabeticalOrder:first2Letters/M/Y/Production:MyEndpoint"));
+                //+ "/alphabeticalOrder:first2Letters/M/Y/Production:MyEndpoint"));
+                + "/alphabeticalOrder:first2Letters/P/R/Production:MyEndpoint"));
         Assert.assertNotNull("The endpoint must be classified by alphabetical order " +
         		"(= in a multiple-levels hierarchy defined with parameters)", endpointModel);
-        
+
         // Flat documents
-        
+
         endpointModel = documentManager.getDocument(new PathRef(
                 DocumentModelHelper.getWorkspacesPath(documentManager, defaultSubprojectId)
                 + "/everythingFlat:everythingFlat/Production:MyEndpoint"));
         Assert.assertNotNull("The endpoint must be added to the flat document list", endpointModel);
-       
+
     }
-    
+
 }

@@ -444,6 +444,9 @@
         <row>
           <widget>endpoint_linkedPlatform</widget>
         </row>
+        <row>
+          <widget>endpoint_host</widget>
+        </row>
       </rows>
       <widget name="endpoint_url" type="text">
         <labels>
@@ -566,6 +569,15 @@
         <properties widgetMode="edit">
           <property name="template">/widgets/single_document_suggestion_widget_template.xhtml</property>
         </properties>
+      </widget>
+      <widget name="endpoint_host" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpoint.host</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>endp:host</field>
+        </fields>
       </widget>
     </layout>
 

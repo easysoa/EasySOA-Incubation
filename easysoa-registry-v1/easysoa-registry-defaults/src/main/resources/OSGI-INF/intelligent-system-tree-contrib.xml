@@ -7,8 +7,9 @@
       <classifier name="implementationsList">org.easysoa.registry.systems.ImplementationsListClassifier</classifier>
       <classifier name="application">org.easysoa.registry.systems.ApplicationClassifier</classifier>
       <classifier name="actors">org.easysoa.registry.systems.ActorsClassifier</classifier>
+      <classifier name="host">org.easysoa.registry.systems.HostClassifier</classifier>
   </extension>
-  
+
   <extension target="org.easysoa.registry.systems.IntelligentSystemTreeService" point="intelligentSystemTrees">
       <intelligentSystemTree name="environment">
         <title>Environments</title>
@@ -30,6 +31,10 @@
         <title>Specif. by actor</title>
         <classifier>actors</classifier>
       </intelligentSystemTree>
+      <intelligentSystemTree name="hosts">
+        <title>Hosts</title>
+        <classifier>host</classifier>
+      </intelligentSystemTree>
   </extension>
-  
+
 </component>

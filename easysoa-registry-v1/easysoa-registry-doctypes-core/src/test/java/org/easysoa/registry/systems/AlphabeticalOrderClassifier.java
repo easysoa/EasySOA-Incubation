@@ -7,11 +7,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 
 public class AlphabeticalOrderClassifier implements IntelligentSystemTreeClassifier {
-    
+
     public static final String DEFAULT_ENVIRONMENT = "Unspecified";
-    
+
     private int depth = 1;
-    
+
     @Override
     public void initialize(Map<String, String> params) {
         if (params.containsKey("depth")) {
@@ -22,15 +22,15 @@ public class AlphabeticalOrderClassifier implements IntelligentSystemTreeClassif
     @Override
     public String classify(CoreSession documentManager, DocumentModel model) throws ClientException {
         String title = model.getTitle();
-        
+
         // NOTE: Even paths with leading and trailing slashes must work
         String classification = "/";
         for (int i = 0; i < depth; i++) {
             classification += title.charAt(i) + "/";
         }
-        
+
         return classification.toUpperCase();
-        
+
     }
 
 }

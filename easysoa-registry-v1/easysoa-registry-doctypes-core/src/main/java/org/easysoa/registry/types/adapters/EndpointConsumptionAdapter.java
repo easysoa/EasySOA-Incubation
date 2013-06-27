@@ -18,7 +18,7 @@ import org.nuxeo.runtime.api.Framework;
 
 
 /**
- * 
+ *
  * @author mkalam-alami
  *
  */
@@ -73,5 +73,10 @@ public class EndpointConsumptionAdapter extends ServiceConsumptionAdapter implem
         }
         return consumableServiceImpls;
     }
-    
+
+    @Override
+    public String getHost() throws PropertyException, ClientException {
+        return (String) documentModel.getPropertyValue(XPATH_CONSUMER_HOST);
+    }
+
 }

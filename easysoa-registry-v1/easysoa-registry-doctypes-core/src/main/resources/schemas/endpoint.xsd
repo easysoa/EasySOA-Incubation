@@ -26,5 +26,6 @@
   <xs:element name="linkedPlatform" type="xs:string" />
 
   <xs:element name="host" type="xs:string" />
+  <xs:element name="ipAddress" type="xs:string" />
 
 </xs:schema>

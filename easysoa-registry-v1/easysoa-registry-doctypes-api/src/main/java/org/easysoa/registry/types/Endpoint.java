@@ -27,6 +27,7 @@ public interface Endpoint extends SoaNode, RestInfoFacet, WsdlInfoFacet,
     static final String XPATH_ENDP_APP_SERVER_RUNTIME = "endp:appServerRuntime";
 
     static final String XPATH_ENDP_HOST = "endp:host";
+    static final String XPATH_ENDP_IPADDRESS = "endp:ipAddress";
 
     static final String ENV_PRODUCTION = "Production"; // TODO or in Environment ?
     static final String ENV_STAGING = "Staging";

@@ -447,6 +447,9 @@
         <row>
           <widget>endpoint_host</widget>
         </row>
+        <row>
+          <widget>endpoint_ipAddress</widget>
+        </row>
       </rows>
       <widget name="endpoint_url" type="text">
         <labels>
@@ -577,6 +580,15 @@
         <translated>true</translated>
         <fields>
           <field>endp:host</field>
+        </fields>
+      </widget>
+      <widget name="endpoint_ipAddress" type="text">
+        <labels>
+          <label mode="any">label.easysoa.layout.endpoint.ipAddress</label>
+        </labels>
+        <translated>true</translated>
+        <fields>
+          <field>endp:ipAddress</field>
         </fields>
       </widget>
     </layout>

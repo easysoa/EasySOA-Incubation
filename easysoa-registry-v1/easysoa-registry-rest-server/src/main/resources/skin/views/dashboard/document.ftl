@@ -14,10 +14,8 @@
             Service: ${document['wsdl:wsdlServiceName']}<br />
         </#if>
    	<#if document.type == 'InformationService'>
-   	    <#assign providerActor = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', document['iserv:providerActor']))/>
-   	    Fournisseur: ${providerActor.title}<br />
-          <#assign component = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', document['acomp:componentId']))/>
-          Composant: ${component.title}<br />
+   	    Fournisseur: <@displayComponentOfService document/>
+          Composant: <@displayComponentOfService document/>
       <#elseif document.type?ends_with('ServiceImplementation')>
           Langage : ${document['impl:language']}<br />
           <#if document['impl:ismock'] = 'true'>

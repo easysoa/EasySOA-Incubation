@@ -32,18 +32,26 @@
     </#macro>
     
     <#macro displayProviderActorAndComponent service subprojectId visibility>
+        <@displayProviderActorOfService service/> / <@displayComponentOfService service/>
+    </#macro>
+    
+    <#macro displayProviderActorOfService service>
         <#if service['iserv:providerActor']?has_content>
             <#-- NB. to create a new object, see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html -->
             <#assign providerActor = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['iserv:providerActor']))/>
+            <@displaySoaNodeTitle providerActor ""/>
         <#else>
-            <#assign providerActor = ""/>
+            <@displaySoaNodeTitle "" "Actor"/>
         </#if>
+    </#macro>
+    
+    <#macro displayComponentOfService service>
         <#if service['acomp:componentId']?has_content>
             <#assign component = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['acomp:componentId']))/>
+            <@displaySoaNodeTitle component ""/>
         <#else>
-            <#assign component = ""/>
+            <@displaySoaNodeTitle "" "Component"/>
         </#if>
-        <@displaySoaNodeTitle providerActor ""/> / <@displaySoaNodeTitle component ""/>
     </#macro>
 
     <#macro displayServiceTitle service subprojectId visibility>
@@ -84,7 +92,7 @@
     </#macro>
     
     <#macro displayActorTitle actor>
-        <@displaySoaNodeTitle actor ""/>
+        <@displaySoaNodeTitle actor "Actor"/>
     </#macro>
     
     <#macro displayComponentLink component>
@@ -92,11 +100,12 @@
     </#macro>
     
     <#macro displayComponentTitle component>
-        <@displaySoaNodeTitle component ""/>
+        <@displaySoaNodeTitle component "Component"/>
     </#macro>
     
     <#macro displayDeliverableTitle deliverable subprojectId visibility>
-        <#if deliverable['del:application']?has_content && deliverable['del:application']?length != 0>
+        <#if deliverable['del:application']?has_content && !deliverable?is_string
+                && deliverable['del:application']?length != 0>
             <@displayApplication deliverable['del:application']/>
         <#else>
             <@displayApplication '(inconnu)'/>
@@ -116,7 +125,7 @@
        <#if soaNode?is_string>
          (inconnu)
        <#else>
-         <a href="<@urlToLocalNuxeoDocumentsUi soaNode/>"/><@displaySoaNodeTitle soaNode/></a>
+         <a href="<@urlToLocalNuxeoDocumentsUi soaNode/>"/><@displaySoaNodeTitle soaNode type/></a>
        </#if>
     </#macro>
     

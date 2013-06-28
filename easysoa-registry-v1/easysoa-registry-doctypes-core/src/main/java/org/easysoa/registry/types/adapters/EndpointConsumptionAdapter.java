@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.InvalidDoctypeException;
+import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.EndpointConsumption;
-import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.RelationsHelper;
 import org.nuxeo.ecm.core.api.ClientException;
@@ -37,6 +37,12 @@ public class EndpointConsumptionAdapter extends ServiceConsumptionAdapter implem
         return EndpointConsumption.DOCTYPE;
     }
 
+    /**
+     * @obsolete works using Relations that are never set,
+     * so use rather DocumentService getSoaNodeChildren & getSoaNodeParents
+     * on Endpoint(Consumption).
+     * TODO LATER rewrite it, for now let it be for DoctypesTest.testEndpointConsumptionRelations()
+     */
     @Override
     public SoaNodeId getConsumedEndpoint() throws Exception {
         DocumentModelList outgoingRelations = RelationsHelper.getOutgoingRelations(documentManager, documentModel, PREDICATE_CONSUMES);
@@ -49,6 +55,12 @@ public class EndpointConsumptionAdapter extends ServiceConsumptionAdapter implem
         }
     }
 
+    /**
+     * @obsolete works using Relations that are never set,
+     * so use rather DocumentService getSoaNodeChildren & getSoaNodeParents
+     * on Endpoint(Consumption).
+     * TODO LATER rewrite it, for now let it be for DoctypesTest.testEndpointConsumptionRelations()
+     */
     @Override
     public void setConsumedEndpoint(SoaNodeId consumedEndpoint) throws Exception {
         RelationsHelper.deleteOutgoingRelations(documentManager, documentModel, PREDICATE_CONSUMES);
@@ -63,14 +75,17 @@ public class EndpointConsumptionAdapter extends ServiceConsumptionAdapter implem
     public List<SoaNodeId> getConsumableServiceImpls() throws Exception {
         List<SoaNodeId> consumableServiceImpls = new LinkedList<SoaNodeId>();
         DocumentService documentService = Framework.getService(DocumentService.class);
-        DocumentModel foundEndpoint = documentService.findSoaNode(documentManager, getConsumedEndpoint());
-        DocumentModelList endpointParents = documentService.findAllParents(documentManager, foundEndpoint);
-        for (DocumentModel endpointParent : endpointParents) {
-            if (ServiceImplementation.DOCTYPE.equals(endpointParent)) {
-                consumableServiceImpls.add(documentService.createSoaNodeId(endpointParent));
-                break;
-            }
+        // NB. not using getConsumedEndpoint(), which works using Relations that are never set
+        //DocumentModel foundEndpoint = documentService.findSoaNode(documentManager, getConsumedEndpoint());
+        List<DocumentModel> consumedEndpointRes = documentService.getSoaNodeChildren(documentModel, Endpoint.DOCTYPE);
+        if (consumedEndpointRes.isEmpty()) {
+        	return consumableServiceImpls;
         }
+        DocumentModel foundEndpoint = consumedEndpointRes.get(0); // EndpointConsumption has only one consumed endpoint
+        DocumentModel endpointImpl = documentService.getParentServiceImplementation(foundEndpoint);
+        if (endpointImpl != null) {
+            consumableServiceImpls.add(documentService.createSoaNodeId(endpointImpl));
+        } // else no impl, ex. endpoint not matched to it
         return consumableServiceImpls;
     }
 

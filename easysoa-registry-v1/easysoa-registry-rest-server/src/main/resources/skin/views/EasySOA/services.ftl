@@ -52,6 +52,22 @@
       
       <@displayServicesShort services subprojectId visibility/>
       <p/>
+      <p/>
+               
+               <#-- TODO LATER uncomment
+               but when deliverable = getSoaNodeParent(impl) returns null, Freemarker can't unwrap it !!
+               so has to put deliverable etc. as view args or in adapters... -->
+               <h3>Implémentations de services</h3>
+               <p/>
+               
+               <@displayImplementationsShort impls subprojectId visibility/>
+               <p/>
+      <p/>
+               <h3>Déploiements de services</h3>
+               <p/>
+               
+               <@displayEndpointsShort endpoints subprojectId visibility/>
+               <p/>
 
             </div>
          </li>

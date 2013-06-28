@@ -12,6 +12,15 @@ import org.easysoa.registry.types.SoaNode;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.adapter.DocumentAdapterFactory;
 
+
+/**
+ * To subclass adapters in other projects, let their factory replace this one
+ * for the subclassed interface and register it after this one.
+ *  NB. can't support more than one adapter subclassing project !! TODO LATER better 
+ * 
+ * @author mkalam-alami, mdutoo
+ *
+ */
 public class CoreDoctypesAdapterFactory implements DocumentAdapterFactory {
     
     private static Logger logger = Logger.getLogger(CoreDoctypesAdapterFactory.class);
@@ -41,6 +50,7 @@ public class CoreDoctypesAdapterFactory implements DocumentAdapterFactory {
                 if (EndpointConsumption.DOCTYPE.equals(doc.getType())) {
                     return new EndpointConsumptionAdapter(doc);
                 }
+                // NB. can't support more than one ServiceConsumption subclassing project !! TODO LATER better
             }
             if (DeployedDeliverable.class.equals(itf)) {
                 return new DeployedDeliverableAdapter(doc);

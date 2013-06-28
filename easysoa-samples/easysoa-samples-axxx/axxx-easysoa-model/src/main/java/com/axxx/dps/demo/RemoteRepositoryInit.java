@@ -16,8 +16,10 @@ import org.easysoa.registry.rest.integration.ServiceLevelHealth;
 import org.easysoa.registry.rest.integration.SimpleRegistryService;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicators;
+import org.easysoa.registry.rest.marshalling.OperationResult;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.Endpoint;
+import org.easysoa.registry.types.EndpointConsumption;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.Platform;
 import org.easysoa.registry.types.Project;
@@ -25,6 +27,7 @@ import org.easysoa.registry.types.Repository;
 import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.easysoa.registry.types.Subproject;
 import org.easysoa.registry.types.SubprojectNode;
+import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.automation.client.Constants;
 import org.nuxeo.ecm.automation.client.OperationRequest;
@@ -447,6 +450,13 @@ public class RemoteRepositoryInit {
 
 		// manually : do a web discovery
 		    
+        createEndpoint(deploiementSubprojectId, Endpoint.ENV_INTEGRATION,
+        		"http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService",
+        		"../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
+        createEndpoint(deploiementSubprojectId, Endpoint.ENV_INTEGRATION,
+        		"http://" + getPivotalHost() + ":7080/WS/ContactSvc.asmx",
+        		"../axxx-dcv-pivotal/src/main/resources/api/ContactSvc.asmx.wsdl");
+		    
         createEndpoint(deploiementSubprojectId, Endpoint.ENV_PRODUCTION,
         		"http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService",
         		"../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
@@ -456,6 +466,13 @@ public class RemoteRepositoryInit {
         createEndpoint(deploiementSubprojectId, Endpoint.ENV_PRODUCTION,
         		"http://" + getPivotalHost() + ":7080/WS/ContactSvc.asmx",
         		"../axxx-dcv-pivotal/src/main/resources/api/ContactSvc.asmx.wsdl");
+
+        createEndpoint(deploiementSubprojectId, Endpoint.ENV_PRODUCTION,
+        		"http://" + getPivotalHost() + ":8040/services/PrecomptePartenaireService",
+        		"../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl");
+        //createEndpoint(deploiementSubprojectId, Endpoint.ENV_PRODUCTION,
+        //		"http://" + getApvHost() + ":8040/services/ContactSvc.asmx",
+        //		"../axxx-dcv-pivotal/src/main/resources/api/ContactSvc.asmx.wsdl"); // TODO impl Orchestration_DPS
         
         // TODO Cré_Précpte, Projet_Vacances with component / platform
         
@@ -480,13 +497,53 @@ public class RemoteRepositoryInit {
 	        createSoaNode(olaPrecomptePartenaireServiceId);
 	        
 	        // copied from Deploiement
-	        SoaNodeId precomptePartenaireServiceProdEndpointId = new SoaNodeId(deploiementSubprojectId, Endpoint.DOCTYPE,
-	        		Endpoint.ENV_PRODUCTION + ":http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService");//TODO host
-	        String precomptePartenaireServiceProdEndpointPath = createSoaNode(precomptePartenaireServiceProdEndpointId);
-	        //String precomptePartenaireServiceProdEndpointNuxeoId = getIdRef(precomptePartenaireServiceProdEndpointId); // alt, does not work in jasmine
-	        String precomptePartenaireServiceProdEndpointNuxeoId = registryApi.get(precomptePartenaireServiceProdEndpointId.getSubprojectId(),
-	                precomptePartenaireServiceProdEndpointId.getType(), precomptePartenaireServiceProdEndpointId.getName()).getUuid();
 	        
+	        EndpointId intApvPrecompteEndpointId = new EndpointId(deploiementSubprojectId, Endpoint.ENV_INTEGRATION,
+	        		"http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService");
+	        EndpointId intPivotalContactEndpointId = new EndpointId(deploiementSubprojectId, Endpoint.ENV_INTEGRATION,
+	        		"http://" + getPivotalHost() + ":7080/WS/ContactSvc.asmx");
+	        
+	        EndpointId prodEsbDcvPrecompteEndpointId = new EndpointId(deploiementSubprojectId, Endpoint.ENV_PRODUCTION,
+	        		"http://" + getPivotalHost() + ":8040/services/PrecomptePartenaireService");
+	        EndpointId prodUniservContactEndpointId = new EndpointId(deploiementSubprojectId, Endpoint.ENV_PRODUCTION,
+	        		fromEnc("iuuq;00xxx/ebub.rvbmjuz.tfswjdf/dpn0npdlxtr5220tfswjdft0JoufsobujpobmQptubmWbmjebujpo/JoufsobujpobmQptubmWbmjebujpoIuuqTpbq22Foeqpjou0")); //checkAddressProdEndpoint
+	        EndpointId prodApvPrecompteEndpointId = new EndpointId(deploiementSubprojectId, Endpoint.ENV_PRODUCTION,
+	        		"http://" + getApvHost() + ":7080/apv/services/PrecomptePartenaireService");
+	        //EndpointId prodEsbDpsContactEndpointId = new EndpointId(deploiementSubprojectId, Endpoint.ENV_PRODUCTION,
+	        //		"http://" + getPivotalHost() + ":8040/services/ContactSvc.asmx"); // TODO LATER
+	        EndpointId prodPivotalContactEndpointId = new EndpointId(deploiementSubprojectId, Endpoint.ENV_PRODUCTION,
+	        		"http://" + getPivotalHost() + ":7080/WS/ContactSvc.asmx");
+	        
+	        String precomptePartenaireServiceProdEndpointPath = createSoaNode(prodApvPrecompteEndpointId);
+	        //String precomptePartenaireServiceProdEndpointNuxeoId = getIdRef(precomptePartenaireServiceProdEndpointId); // alt, does not work in jasmine
+	        String precomptePartenaireServiceProdEndpointNuxeoId = registryApi.get(prodApvPrecompteEndpointId.getSubprojectId(),
+	        		prodApvPrecompteEndpointId.getType(), prodApvPrecompteEndpointId.getName()).getUuid();
+	        
+	        // endpoint consumptions
+	        createEndpointConsumption(deploiementSubprojectId, intApvPrecompteEndpointId,
+	        		"../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl",
+	        		getPivotalHost());
+	        createEndpointConsumption(deploiementSubprojectId, intPivotalContactEndpointId,
+	        		"../axxx-dcv-pivotal/src/main/resources/api/ContactSvc.asmx.wsdl",
+	        		getApvHost());
+
+	        createEndpointConsumption(deploiementSubprojectId, prodEsbDcvPrecompteEndpointId,
+	        		"../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl",
+	        		getPivotalHost());
+	        createEndpointConsumption(deploiementSubprojectId, prodUniservContactEndpointId,
+	        		"../axxx-easysoa-model/src/main/resources/InternationalPostalValidation_nourl.wsdl",
+	        		getPivotalHost());
+	        createEndpointConsumption(deploiementSubprojectId, prodApvPrecompteEndpointId,
+	        		"../axxx-dps-apv/axxx-dps-apv-core/src/main/resources/api/PrecomptePartenaireService.wsdl",
+	        		getPivotalHost());
+	        //createEndpointConsumption(deploiementSubprojectId, prodEsbDpsContactEndpointId,
+	        //		"../axxx-dcv-pivotal/src/main/resources/api/ContactSvc.asmx.wsdl",
+	        //		getApvHost()); // TODO LATER
+	        createEndpointConsumption(deploiementSubprojectId, prodPivotalContactEndpointId,
+	        		"../axxx-dcv-pivotal/src/main/resources/api/ContactSvc.asmx.wsdl",
+	        		getApvHost());
+	        
+	        // business indicators
 	        SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();
 	        slaOrOlaIndicators.setSlaOrOlaIndicatorList(new ArrayList<SlaOrOlaIndicator>());
 	        SlaOrOlaIndicator slaOrOlaIndicator = new SlaOrOlaIndicator();
@@ -676,7 +733,11 @@ public class RemoteRepositoryInit {
 			String[] splitProperty = property.split("=");
 			soaNode.setProperty(splitProperty[0], splitProperty[1]);
 		}
-		registryApi.post(soaNode);
+		OperationResult res = registryApi.post(soaNode);
+		if (!res.isSuccessful()) {
+			throw new Exception(((res.getMessage() == null) ? ""
+					: res.getMessage() + ":\n") + Arrays.asList(res.getStacktrace()));
+		}
 		return getPath(soaNodeId);
 	}
 	
@@ -689,10 +750,45 @@ public class RemoteRepositoryInit {
 			String[] splitProperty = property.split("=");
 			soaNode.setProperty(splitProperty[0], splitProperty[1]);
 		}
-		registryApi.post(soaNode);
+		OperationResult res = registryApi.post(soaNode);
+		if (!res.isSuccessful()) {
+			throw new Exception(((res.getMessage() == null) ? ""
+					: res.getMessage() + ":\n") + Arrays.asList(res.getStacktrace()));
+		}
 		return getPath(soaNodeId);
 	}
 
+
+	public static SoaNodeId createEndpointConsumption(String subprojectId,
+			EndpointId consumedEndpointId, String wsdlPath, String remoteHost) throws Exception {
+		String environment = consumedEndpointId.getEnvironment();
+		String endpointUrl = consumedEndpointId.getUrl();
+		new URL(endpointUrl).toString(); // checking url
+        SoaNodeId ecId = new SoaNodeId(subprojectId, EndpointConsumption.DOCTYPE,
+        		environment + ':' + remoteHost + '>' + environment + ':' + endpointUrl);
+        
+        ArrayList<String> props = new ArrayList<String>();
+        props.add(EndpointConsumption.XPATH_CONSUMER_HOST + "=" + remoteHost);
+        props.add(EndpointConsumption.XPATH_CONSUMER_IP + "=127.0.0.1");
+        props.add(EndpointConsumption.XPATH_CONSUMED_URL+ "=" + endpointUrl);
+        props.add(EndpointConsumption.XPATH_CONSUMED_ENVIRONMENT + "=" + environment);
+        //props.add(Endpoint.XPATH_ENDP_TRANSPORT_PROTOCOL + "=HTTP"); // TODO LATER
+        //props.add(Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService");
+        if (uploadUsingResourceUpdate) {
+            URL wsdlUrl = new URL("file://" + new File(wsdlPath).getAbsolutePath());
+        	props.add(ResourceDownloadInfo.XPATH_URL + "=" + wsdlUrl);
+        }
+        
+        String ecPath = createSoaNode(ecId, (String) null, props.toArray(new String[0]));
+		if (!uploadUsingResourceUpdate) {
+            uploadWsdl(ecPath, wsdlPath);
+        }
+		
+		// giving it as parent to endpoint :
+		createSoaNode(consumedEndpointId, ecPath);
+		return ecId;
+    }
+	
 	public static SoaNodeId createEndpoint(String subprojectId,
 			String environment, String endpointUrl, String wsdlPath) throws Exception {
 		new URL(endpointUrl).toString(); // checking url
@@ -702,6 +798,9 @@ public class RemoteRepositoryInit {
         ArrayList<String> props = new ArrayList<String>();
         props.add(Endpoint.XPATH_ENDP_ENVIRONMENT + "=" + environment); // required even with soaname else integrity check fails
         props.add(Endpoint.XPATH_URL + "=" + endpointUrl); // required even with soaname else integrity check fails
+        props.add(Endpoint.XPATH_ENDP_HOST + "=" + new URL(endpointUrl).getHost());
+        ///props.add(Endpoint.XPATH_ENDP_IP + "=127.0.0.1"); // TODO
+        props.add(Endpoint.XPATH_ENDP_TRANSPORT_PROTOCOL + "=HTTP");
         //props.add(Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService");
         if (uploadUsingResourceUpdate) {
             URL wsdlUrl = new URL("file://" + new File(wsdlPath).getAbsolutePath());

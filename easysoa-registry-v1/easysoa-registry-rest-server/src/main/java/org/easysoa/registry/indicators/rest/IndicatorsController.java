@@ -277,8 +277,7 @@ public class IndicatorsController extends EasysoaModuleRoot {
                             indicators = indicatorProvider
                                     .computeIndicators(session, subprojectId, computedIndicators, visibility);
                         } catch (Exception e) {
-                            logger.error("Failed to compute indicator '" + indicatorProvider.toString() + "': " + e.getMessage());
-                            e.printStackTrace();
+                            logger.error("Failed to compute indicator '" + indicatorProvider.toString() + "': " + e.getMessage(), e);
                         }
                         if (indicators != null) {
                             //categoryIndicators.putAll(indicators);

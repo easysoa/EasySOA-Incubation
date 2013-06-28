@@ -85,7 +85,7 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 			DocumentModelList unmatchedEndpoints = docService.query(session,
 					DocumentService.NXQL_SELECT_FROM + Endpoint.DOCTYPE + subprojectCriteria
 					+ DocumentService.NXQL_AND + Endpoint.XPATH_PARENTSIDS + " NOT LIKE '%"
-					+ ServiceImplementation.DOCTYPE + ":%' ", true, false);
+					+ ServiceImplementation.DOCTYPE + ":%' ", true, false); // TODO not updated on delete endpoint proxy ?!!R
 			view.arg("endpointWithoutImpl", unmatchedEndpoints);
 			
 			// List impls without infoservice
@@ -93,10 +93,14 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 					 DocumentService.NXQL_SELECT_FROM + ServiceImplementation.DOCTYPE + subprojectCriteria
 					 + DocumentService.NXQL_AND + ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE
 					 + " IS NULL ", true, false);
-			view.arg("servWithoutSpecs", servWithoutSpecs);
-			view.arg("subprojectId", subprojectId);
-                        view.arg("visibility", visibility);
-                        view.arg("contextInfo", ContextData.getVersionData(session, subprojectId));
+			
+			view.arg("servWithoutSpecs", servWithoutSpecs)
+			
+                .arg("new_f", new freemarker.template.utility.ObjectConstructor())
+                
+			    .arg("subprojectId", subprojectId)
+                .arg("visibility", visibility)
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
 			return view;
 		} catch (Exception e) {
 			logger.debug(e);
@@ -113,11 +117,15 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 		Template view = viewDashboard(subprojectId, visibility);
 		DocumentModel modelElement = session.getDocument(new IdRef(uuid));
 		List<DocumentModel> suggestedComponents = fetchComponents(session, modelElement);
-		view.arg("components", suggestedComponents);
-		view.arg("selectedModel", uuid);
-                view.arg("subprojectId", subprojectId);
-                view.arg("visibility", visibility);
-                view.arg("contextInfo", ContextData.getVersionData(session, subprojectId));
+		
+		view.arg("components", suggestedComponents)
+		    .arg("selectedModel", uuid)
+		    
+            .arg("new_f", new freemarker.template.utility.ObjectConstructor())
+                
+		    .arg("subprojectId", subprojectId)
+            .arg("visibility", visibility)
+            .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
 		return view;
 	}
 	
@@ -142,10 +150,13 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 		}
 		
 		// Arg: selected document
-		view.arg("selectedModel", uuid);
-		view.arg("subprojectId", subprojectId);
-                view.arg("visibility", visibility);
-                view.arg("contextInfo", ContextData.getVersionData(session, subprojectId));
+		view.arg("selectedModel", uuid)
+		
+            .arg("new_f", new freemarker.template.utility.ObjectConstructor())
+		
+		    .arg("subprojectId", subprojectId)
+            .arg("visibility", visibility)
+            .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
 		return view;
 	}
 
@@ -200,10 +211,13 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 		}
 		
 		// Arg: selected document
-		view.arg("selectedModel", uuid);
-		view.arg("subprojectId", subprojectId);
-                view.arg("visibility", visibility);
-                view.arg("contextInfo", ContextData.getVersionData(session, subprojectId));
+		view.arg("selectedModel", uuid)
+		
+            .arg("new_f", new freemarker.template.utility.ObjectConstructor())
+            
+		    .arg("subprojectId", subprojectId)
+            .arg("visibility", visibility)
+            .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
 		return view;
 	}
 	
@@ -251,15 +265,20 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 				}
 				else { // isEndpoint
 		    		EndpointMatchingService matchingService = Framework.getService(EndpointMatchingService.class);
-					matchingService.linkServiceImplementation(session,
-							docService.createSoaNodeId(model),
-							((newTargetId != null) ? docService.createSoaNodeId(session.getDocument(new IdRef(newTargetId))) : null),
-							true/*, "strict"*/);
+					DocumentModel targetModel = (newTargetId != null) ? session.getDocument(new IdRef(targetId)) : null;
+		    		if (soaMetamodelService.isAssignable(targetModel.getType(), ServiceImplementation.DOCTYPE)) {
+						matchingService.linkServiceImplementation(session, docService.createSoaNodeId(model),
+								((newTargetId != null) ? docService.createSoaNodeId(session.getDocument(new IdRef(newTargetId))) : null),
+								true/*, "strict"*/);
+		    		} else { // InformationService target, through placeholder
+						matchingService.linkInformationServiceThroughPlaceholder(session, model, targetModel, true);
+		    		}
 				}
 				return viewDashboard(subprojectId, visibility);
 	    	}
 	    	else {
-	    		throw new Exception("Service Implementation not selected");
+	    		// error Service Implementation not selected, merely redisplay the page
+				return viewDashboard(subprojectId, visibility);
 	    	}
 		} catch (Exception e) {
 			logger.debug(e);
@@ -300,8 +319,15 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 			// Run matching service according to doctype
 			if (Endpoint.DOCTYPE.equals(model.getType())) {
 				EndpointMatchingService matchingService = Framework.getService(EndpointMatchingService.class);
-				return matchingService.findServiceImplementations(session,
+				List<DocumentModel> matchingImpls = matchingService.findServiceImplementations(session,
 				        model, componentUuid, skipPlatformMatching, false);
+				ServiceMatchingService serviceMatchingService = Framework.getService(ServiceMatchingService.class);
+				List<DocumentModel> matchingServices = serviceMatchingService.findInformationServices(session,
+				        model, componentUuid, skipPlatformMatching, false);
+				List<DocumentModel> res = new ArrayList<DocumentModel>(matchingImpls.size() + matchingServices.size());
+				res.addAll(matchingImpls);
+				res.addAll(matchingServices);
+				return res;
 			}
 			else { // ServiceImplementation
 				ServiceMatchingService matchingService = Framework.getService(ServiceMatchingService.class);

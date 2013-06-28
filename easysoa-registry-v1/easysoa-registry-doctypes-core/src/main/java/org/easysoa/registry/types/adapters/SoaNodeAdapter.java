@@ -84,6 +84,25 @@ public class SoaNodeAdapter extends AbstractDocumentAdapter implements SoaNode {
 		return null;
 	}
 
+	public List<SoaNodeId> getParentsOfType(String doctype) throws ClientException {
+    	SoaMetamodelService soaMetamodelService;
+		try {
+			soaMetamodelService = Framework.getService(SoaMetamodelService.class);
+		} catch (Exception e) {
+			throw new ClientException("Can't get SoaMetamodelService", e);
+		}
+		
+		Serializable[] parentsIdsArray = (Serializable[]) documentModel.getPropertyValue(XPATH_PARENTSIDS);
+		List<SoaNodeId> res = new ArrayList<SoaNodeId>(parentsIdsArray.length);
+		for (Serializable parentIdString : parentsIdsArray) {
+			 SoaNodeId parentId = SoaNodeId.fromString((String) parentIdString);
+			if (soaMetamodelService.isAssignable(parentId.getType(), doctype)) {
+				res.add(parentId);
+			}
+		}
+		return res;
+	}
+
 	public void setParentIds(List<SoaNodeId> parentIds) throws PropertyException, ClientException {
 		List<String> parentsIdsStringList = new ArrayList<String>();
 		for (SoaNodeId parentId : parentIds) {

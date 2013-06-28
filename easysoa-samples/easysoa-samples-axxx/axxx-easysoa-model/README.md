@@ -58,5 +58,14 @@ Running :
  * 
  * mvn clean install exec:java -Dexec.mainClass="com.axxx.dps.demo.RemoteRepositoryInit" -Dexec.args="clean Specifications Realisation username=Administrator password=Administrator"
  * 
+ * then building (in the upper folder) all AXXX applications will discover their service
+ * implementations, consumptions and their deliverables, register them in the Registry and
+ * match them against the previously filled Specifications :
+ * pushd ..
+ * mvn clean install
+ *
+ * simulating deployment and operational exploitation can then be done by going back here and:
+ *  mvn clean install exec:java -Dexec.mainClass="com.axxx.dps.demo.RemoteRepositoryInit" -Dexec.args="Deploiement Exploitation username=Administrator password=Administrator"
+ * 
  * WARNING: Requires a running EasySOA Registry on port 8080 (or at least a launched Nuxeo DM
  * with the Nuxeo Studio project "EasySOA" deployed)

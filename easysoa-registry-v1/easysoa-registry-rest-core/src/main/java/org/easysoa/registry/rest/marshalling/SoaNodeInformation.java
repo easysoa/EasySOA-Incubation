@@ -141,6 +141,19 @@ public class SoaNodeInformation implements SoaNode {
         return null;
     }
 
+	@Override
+	public List<SoaNodeId> getParentsOfType(String doctype) throws Exception {
+        Serializable[] parentsIdsArray = (Serializable[]) properties.get(XPATH_PARENTSIDS);
+		List<SoaNodeId> res = new ArrayList<SoaNodeId>(parentsIdsArray.length);
+        for (Serializable parentIdString : parentsIdsArray) {
+            SoaNodeId parentId = SoaNodeId.fromString((String) parentIdString);
+            if (parentId.getType().equals(doctype)) {
+                res.add(parentId);
+            }
+        }
+        return res;
+	}
+
     @Override
     public void setParentIds(List<SoaNodeId> parentIds) throws Exception {
         List<String> parentsIdsStringList = new ArrayList<String>();

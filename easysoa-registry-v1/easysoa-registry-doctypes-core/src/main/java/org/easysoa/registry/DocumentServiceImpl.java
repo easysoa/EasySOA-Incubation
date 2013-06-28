@@ -4,12 +4,14 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.easysoa.registry.facets.ServiceImplementationDataFacet;
+import org.easysoa.registry.matching.MatchingHelper;
 import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.Endpoint;
@@ -30,9 +32,11 @@ import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.Filter;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.PathRef;
 import org.nuxeo.ecm.core.api.impl.DocumentModelListImpl;
+import org.nuxeo.ecm.core.api.impl.LifeCycleFilter;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.core.api.model.PropertyNotFoundException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
@@ -44,6 +48,7 @@ import org.nuxeo.runtime.model.DefaultComponent;
 public class DocumentServiceImpl extends DefaultComponent implements DocumentService {
 
 	private Properties properties;
+	private Filter deletedDocumentFilter = new LifeCycleFilter("deleted", false);
 
     @Override
     public void activate(ComponentContext context) throws Exception {
@@ -340,8 +345,10 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
             parentModel = findSoaNode(documentManager, createSoaNodeId(parentModel));
         }
 
-        // Find proxy among children
-        DocumentModelList childrenModels = documentManager.getChildren(parentModel.getRef());
+		// Find proxy among children
+        DocumentModelList childrenModels = documentManager.getChildren(parentModel.getRef(),
+        		identifier.getType(), deletedDocumentFilter , null); // else returns also deleted ones !
+        // TODO so rather getSoaNodeChildren ??
         for (DocumentModel childModel : childrenModels) {
             if (this.isSoaNode(documentManager, childModel.getType()) // else case of .doc in biz archi along BS
                     && createSoaNodeId(childModel).equals(identifier)) {
@@ -590,6 +597,20 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 		return null;
 	}
 	@Override
+	public List<DocumentModel> getSoaNodeParents(DocumentModel soaNodeModel, String type) throws ClientException {
+		List<DocumentModel> res = new ArrayList<DocumentModel>();
+		SoaNode soaNodeAdapter = soaNodeModel.getAdapter(SoaNode.class);
+		try {
+			List<SoaNodeId> parentSoaNodeIds = soaNodeAdapter.getParentsOfType(type);
+			for (SoaNodeId parentSoaNodeId : parentSoaNodeIds ) {
+				res.add(this.findSoaNode(soaNodeModel.getCoreSession(), parentSoaNodeId));
+			}
+		} catch (Exception e) {
+			throw new ClientException(e);
+		}
+		return res;
+	}
+	@Override
 	public List<DocumentModel> getSoaNodeChildren(DocumentModel soaNodeModel, String type) throws ClientException {
 		if (soaNodeModel.isProxy()) {
 			soaNodeModel = findSoaNode(soaNodeModel.getCoreSession(), this.createSoaNodeId(soaNodeModel));
@@ -628,6 +649,21 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 		return getByTypeInCriteria(session, Endpoint.DOCTYPE, subprojectCriteria);
 	}
 
+	@Override
+	public List<DocumentModel> getInformationServicesProvidedBy(DocumentModel actorModel, String subprojectId) throws ClientException {
+        return getInformationServicesProvidedByInCriteria(actorModel,
+        		NXQLQueryHelper.buildSubprojectCriteria(actorModel.getCoreSession(), subprojectId, true));
+	}
+	@Override
+	public List<DocumentModel> getInformationServicesProvidedByInCriteria(DocumentModel actorModel, String subprojectCriteria) throws ClientException {
+		CoreSession session = actorModel.getCoreSession();
+		// mock impls :
+        List<DocumentModel> services = this.query(session, DocumentService.NXQL_SELECT_FROM
+        		+ InformationService.DOCTYPE + subprojectCriteria + DocumentService.NXQL_AND
+                + InformationService.XPATH_PROVIDER_ACTOR + "='" + actorModel.getId() + "'", true, false);
+        return services;
+	}
+	
 	@Override
 	public List<DocumentModel> getImplementationsOfService(DocumentModel serviceModel, String subprojectId) throws ClientException {
 		return getImplementationsOfServiceInCriteria(serviceModel,
@@ -761,6 +797,7 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
         		+ "JavaServiceImplementation" + subprojectCriteria + DocumentService.NXQL_AND
                 + "javasi:implementationClass" + "='" +consumerJavaClass + "'" + DocumentService.NXQL_AND
                 + "javasi:implementedInterfaceLocation" + "='" + consumedJavaInterfaceLocation + "'", true, false);
+        // TODO use sc:isTest to check whether is mock rather than doing it in getConsumerImplementationsOfJavaConsumptions()
         // TODO move to JavaServiceImplementation project by using an adapter, use JavaServiceImplementation & JavaServiceConsumption constants
         // TODO handle maven dependencies ??
         if (!res.isEmpty()) {
@@ -842,6 +879,51 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 			return null;
 		}
 		return getParentInformationService(impl);
+	}
+
+	@Override
+	public List<DocumentModel> getJavaServiceConsumptions(
+			DocumentModel serviceModel, String subprojectId) throws ClientException {
+		return getJavaServiceConsumptionsInCriteria(serviceModel,
+				NXQLQueryHelper.buildSubprojectCriteria(serviceModel.getCoreSession(), subprojectId, true));
+	}
+	@Override
+	public List<DocumentModel> getJavaServiceConsumptionsInCriteria(DocumentModel serviceModel,
+			String subprojectCriteria) throws ClientException {
+		String interfaceCriteria = "";
+		if (MatchingHelper.isWsdlInfo(serviceModel)) {
+			String serviceInterface = (String) serviceModel.getPropertyValue(InformationService.XPATH_WSDL_PORTTYPE_NAME);
+			interfaceCriteria = ServiceConsumption.XPATH_WSDL_PORTTYPE_NAME + "='" + serviceInterface + "'";
+		} else if (MatchingHelper.isRestInfo(serviceModel)) {
+			String serviceInterface = (String) serviceModel.getPropertyValue(InformationService.XPATH_REST_PATH);
+			interfaceCriteria = ServiceConsumption.XPATH_REST_PATH + "='" + serviceInterface + "'";
+		}
+		// TODO impl platform criteria : split InformationServiceData facet (& layout),
+		// fill info in source disco, merge with matching algo
+        DocumentModelList javaSCs = this.query(serviceModel.getCoreSession(), DocumentService.NXQL_SELECT_FROM
+        		+ "JavaServiceConsumption" + subprojectCriteria + DocumentService.NXQL_AND
+                + interfaceCriteria, true, false);
+        return javaSCs;
+	}
+
+	@Override
+	public List<DocumentModel> getJavaServiceConsumptions(
+			List<DocumentModel> serviceModels, String subprojectId) throws ClientException {
+		if (serviceModels.isEmpty()) {
+			return NuxeoListUtils.EMPTY_DOCUMENT_MODEL_LIST;
+		}
+		return getJavaServiceConsumptionsInCriteria(serviceModels,
+				NXQLQueryHelper.buildSubprojectCriteria(serviceModels.get(0).getCoreSession(), subprojectId, true));
+	}
+	@Override
+	public List<DocumentModel> getJavaServiceConsumptionsInCriteria(List<DocumentModel> serviceModels,
+			String subprojectCriteria) throws ClientException {
+		HashSet<DocumentModel> javaSCSet = new HashSet<DocumentModel>();
+		for (DocumentModel serviceModel : serviceModels) {
+			List<DocumentModel> javaSCs = getJavaServiceConsumptionsInCriteria(serviceModel, subprojectCriteria);
+			javaSCSet.addAll(javaSCs);
+		}
+        return new ArrayList<DocumentModel>(javaSCSet);
 	}
 	
 

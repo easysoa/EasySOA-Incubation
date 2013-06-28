@@ -72,9 +72,13 @@
       		<interface.java interface="com.axxx.dps.apv.PrecomptePartenaireService"/>
       		<!-- injecting remote APV service :
       		using local wsdl not to block at startup, & externally configured url -->
-      		<binding.ws wsdlElement="http://www.axxx.com/dps/apv#wsdl.port(PrecomptePartenaireServiceImpl/PrecomptePartenairePort)"
+      		<!-- binding.ws wsdlElement="http://www.axxx.com/dps/apv#wsdl.port(PrecomptePartenaireServiceImpl/PrecomptePartenairePort)"
       		    uri="http://vmapv:7080/apv/services/PrecomptePartenaireService"
-      		    wsdli:wsdlLocation="axxx-dps-apv/PrecomptePartenaireService.wsdl"/><!-- from classpath ! -->
+      		    wsdli:wsdlLocation="axxx-dps-apv/PrecomptePartenaireService.wsdl"/ --><!-- from classpath ! -->
+                <!-- Using DCV Orchestration on vmpivotal's Talend ESB instead : -->
+                <binding.ws wsdlElement="http://www.axxx.com/dps/apv#wsdl.port(PrecomptePartenaireServiceImpl/PrecomptePartenairePort)"
+                    uri="http://vmpivotal:8040/services/PrecomptePartenaireService"
+                    wsdli:wsdlLocation="axxx-dps-apv/PrecomptePartenaireService.wsdl"/>
     	</reference>
   	</component>
 

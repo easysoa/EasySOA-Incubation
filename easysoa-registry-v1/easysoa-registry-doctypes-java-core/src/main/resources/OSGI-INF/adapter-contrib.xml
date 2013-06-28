@@ -1,6 +1,9 @@
 <?xml version="1.0" ?>
 <component name="org.easysoa.registry.doctypes.java.adapter.contrib">
 
+  <!-- override to replace factory of subclassed adapters -->
+  <require>org.easysoa.registry.doctypes.core.adapter.contrib</require>
+
   <!-- ======== -->
   <!-- Adapters -->
   <!-- ======== -->
@@ -13,6 +16,5 @@
     <adapter class="org.easysoa.registry.types.java.JavaServiceConsumption"
      factory="org.easysoa.registry.types.adapters.java.JavaDoctypesAdapterFactory" />
   </extension>
-
 
 </component>

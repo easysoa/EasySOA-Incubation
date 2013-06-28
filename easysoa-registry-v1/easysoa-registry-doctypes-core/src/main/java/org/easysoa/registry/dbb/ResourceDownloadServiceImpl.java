@@ -77,7 +77,8 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
 	    	Properties props = documentService.getProperties();
 	    	if (props != null) {
 		    	delegateResourceDownloadServiceUrl = props.getProperty(
-                    "ResourceDownloadServiceImpl.delegateResourceDownloadServiceUrl", "http://localhost:7080/get");
+                    "ResourceDownloadServiceImpl.delegateResourceDownloadServiceUrl",
+                    "http://localhost:7080/ResourceDownloadServices/get");
 	    	}
 		} catch (Exception e) {
 			throw new RuntimeException("Unable to get DocumentService", e);
@@ -109,8 +110,9 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
 	        }
 	        catch(Exception ex){
 	            // Error or timeout, try the second donwload method
-                logger.warn("unable to get the resource with delegated downloader, trying local downloader !");
-                //isDelegatedDownloadDisabled = true;
+                logger.warn("unable to get the resource with delegated downloader, "
+                		+ "disabling it and trying local downloader !");
+                isDelegatedDownloadDisabled = true;
 	        }
         }
         if(file == null){
@@ -155,8 +157,9 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
 	        }
 	        catch(Exception ex){
 	            // Error or timeout, try the second donwload method
-                logger.warn("unable to get the resource with delegated downloader, trying local downloader !");
-                //isDelegatedDownloadDisabled = true;
+                logger.warn("unable to get the resource with delegated downloader, "
+                		+ "disabling it and trying local downloader !");
+                isDelegatedDownloadDisabled = true;
 	        }
         }
         if(file == null){

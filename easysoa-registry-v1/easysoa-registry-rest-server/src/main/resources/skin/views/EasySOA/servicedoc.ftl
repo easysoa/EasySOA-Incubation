@@ -47,13 +47,26 @@
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt=""></img>
                
-		<h3><@displayServiceTitle service subprojectId visibility/></h3>
+      <#if endpoint?has_content>
+          <h3>Déploiement <@displayEndpointTitle endpoint subprojectId visibility/></h3>
+      <#elseif serviceimpl?has_content>
+          <h3>Implémentation <@displayImplementationTitle serviceimpl subprojectId visibility/></h3>
+      <#else>
+		    <h3>Définition <@displayServiceTitle service subprojectId visibility/></h3>
+		</#if>
+
 
       <#-- h3>description</h3 -->
-      <@formatTextToHtml service['dc:description']/>
+      <#if service?has_content>
+          <@displayDocumentation service['dc:description']/>
+          <#assign parsedServiceSubprojectId = Root.parseSubprojectId(service['spnode:subproject'])/>
+      <#elseif serviceimpl?has_content>
+          <@displayDocumentation serviceimpl['dc:description']/>
+      <#else>
+          <@displayDocumentation endpoint['dc:description']/>
+      </#if>
 		<p/>
 
-      <#assign parsedServiceSubprojectId = Root.parseSubprojectId(service['spnode:subproject'])/>
       
       <#if !consumerActor?has_content><#assign consumerActor = ""/></#if>
       <#if !providerActor?has_content><#assign providerActor = ""/></#if>
@@ -63,7 +76,7 @@
          </li>
       
       
-      <#if parsedServiceSubprojectId.getSubprojectName() = 'Specifications'>
+      <#if service?has_content && parsedServiceSubprojectId.getSubprojectName() = 'Specifications'>
 
 
          <li class="span12">
@@ -78,8 +91,9 @@
             <#assign bsConsumerActor = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', businessService['businessservice:consumerActor']))/>
           </#if -->
 		    Fournit le service business <a href="<@urlToLocalNuxeoDocumentsUi businessService/>"><@displayDocShort businessService/></a> :
-          <br/>
           
+          <#if !serviceimpl?has_content?has_content && !endpoint?has_content?has_content || isUserBusinessAnalyst>
+          <br/>
            &nbsp;&nbsp;&nbsp;<@displayActor consumerActor 'Acteur consommateur' businessService/>
            <br/>
            &nbsp;&nbsp;&nbsp;<@displayActor providerActor 'Acteur fournisseur' businessService/>
@@ -91,6 +105,7 @@
            &nbsp;&nbsp;&nbsp;Documents de spécification métier :
            <#-- assign businessServiceRef = new_f('org.nuxeo.ecm.core.api.IdRef', service['iserv:linkedBusinessService'])/ -->
            <@displayChildrenShort businessService 'Document'/>
+           </#if>
 		<#else>
 		   Service intermédiaire (ne fournit pas de service business)
 		   <!-- ((TODO sert à = consumptions ??)) -->
@@ -103,7 +118,7 @@
 
 
       </#if>
-      
+
 
          <li class="span12">
             <div class="thumbnail">
@@ -111,6 +126,19 @@
                
 		<h3>Service</h3>
 		<p/>
+      
+      
+      <#if !service?has_content>
+          Pas de service reliée.
+      <#else>
+      
+      
+      <#if serviceimpl?has_content || endpoint?has_content>
+          La définition de service reliée est <@displayServiceShort service subprojectId visibility/>.
+      <#else>
+          Ce service est <@displayServiceTitle service subprojectId visibility/>.
+      </#if>
+      <p/>
 
       <#-- h3>Interface(s)</h3 -->
       <@displayInterfaceResource service/>
@@ -196,6 +224,10 @@
 		<@displayChildrenShort service 'Document'/>
 		<p/>
 
+      <h4>Exemples d'appel :</h4>
+      (aucun)
+      <!-- TODO -->
+      
             </div>
          </li>
 
@@ -239,14 +271,78 @@
 
 		<br/><a href="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}/tags?subprojectId=${subprojectId}&visibility=${visibility}">Tagger aussi dans...</a>
 
-		<#-- br/>exemples d'appel --><!-- TODO -->
-
 		<#-- br/>(autres tags) --><!-- TODO -->
+      <p/>
+      &nbsp;<p/>
+      
+      <b>Utilisé par :</b>
+      <p/>
+      <!-- bsConsumerActor (ses Components et evt leurs Applications) -->
+      <i>par les acteurs consommateurs et leurs composants :</i>
+      <br/>
+      <#if consumerActor?has_content>
+          &nbsp;&nbsp;-&nbsp;L'acteur <@displayActorLink consumerActor/>
+          qui fournit les Composants
+          <#assign consumerServices = Root.getDocumentService().getInformationServicesProvidedBy(consumerActor, subprojectId)/>
+          <#if consumerServices?size = 0>
+              (aucun)
+          <#else>
+              <#list consumerServices as consumerService>
+                 <#if consumerService['acomp:componentId']?has_content>
+                     <@displayComponentLink Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['acomp:componentId']))/>
+                 <#else>
+                     inconnu du service <@displayServiceTitle consumerService subprojectId visibility/>
+                 </#if>
+                 <#if consumerService_index != consumerServices?size - 1>, </#if>
+              </#list>
+          </#if>
+      </#if>
+      <p/>
+      <i>par les déploiements et leurs serveurs :</i>
+      <br/>
+      <!-- EndpointConsumptions (son host voire l'application des endpoints déployés dessus / son providerActor) consommant son endpoint Production (sinon Staging...) et sinon un non mock -->
+      <#if productionEndpoint?has_content><!-- TODO if endpoint != null -->
+          <#assign ecs = Root.getDocumentService().getSoaNodeParents(productionEndpoint, 'EndpointConsumption')/>
+      <#elseif endpoint?has_content && endpoint['imlp:ismock'] != 'true'>
+          <#assign ecs = Root.getDocumentService().getSoaNodeParents(endpoint, 'EndpointConsumption')/>
+      <#elseif actualEndpoints?has_content && actualEndpoints?size != 0>
+          <#assign ecs = Root.getDocumentService().getSoaNodeParents(actualEndpoints[0], 'EndpointConsumption')/>
+      </#if>
+      <#if ecs?has_content && ecs?size != 0>
+          <#list ecs as ec>
+              &nbsp;&nbsp;-&nbsp;<@displayEndpointConsumptionLink ec/>
+              <br/>
+          </#list>
+      <#else>
+          (aucun)
+      </#if>
+      <p/>
+      <i>enfin, un service compatible est consommé par les implémentations et leurs applications :</i>
+      <br/>
+      <!-- candidats JavaServiceConsumptions non de test (sa classe / délivérable / application / providerActor matchant) consommant son interface -->
+      <#assign javaSCs = Root.getDocumentService().getJavaServiceConsumptions(service, subprojectId)/>
+      <#if javaSCs?has_content && javaSCs?size != 0>
+          <#list javaSCs as javaSC>
+              <#if javaSC['sc:isTest'] != 'true'>
+              <#assign javaSCDel = Root.getDocumentService().getSoaNodeParent(javaSC, 'Deliverable')/>
+              &nbsp;&nbsp;-&nbsp;<a href="<@urlToLocalNuxeoDocumentsUi javaSCDel/>"/><@displayDeliverableTitle javaSCDel subprojectId visibility/></a>
+              (par <a href="<@urlToLocalNuxeoDocumentsUi javaSC/>">injection dans la classe ${javaSC['javasc:consumerClass']}</a>)
+              <br/>
+              </#if>
+          </#list>
+      <#else>
+          (aucun)
+      </#if>
+      
       <p/>
 
 		
             </div>
          </li>
+
+
+
+      </#if>
 
 
          <li class="span12">
@@ -257,49 +353,57 @@
 		<#-- et consomme, dépend de (en mode non test) <br/ -->
 		
         <#if serviceimpl?has_content>
-          Cette implémentation : <@displayImplementationShort serviceimpl subprojectId visibility/>
-          <br/>
-          <b>Documentation :</b><br/>
-          <@formatTextToHtml serviceimpl['impl:documentation']/>
+          <div style="margin-bottom:30px;">
+          Cette implémentation
+          <#if serviceimpl['impl:ismock'] = 'true'><b>de test</b></#if>
+          <#if productionImpl?has_content && productionImpl.id = serviceimpl.id><b>de Production</b></#if>
+          est
+          <@displayImplementationShort serviceimpl subprojectId visibility/>
+          <@displayDocumentation serviceimpl['impl:documentation']/>
           <p/>
           
           <#-- @displayDocShort actualImpl/ -->
           <@displayImplementationDetail serviceimpl/>
-          <p/>
+          </div>
 		  </#if>
 		  
-        <#if !serviceimpl?has_content || !endpoint?has_content || endpoint['env:environment'] != 'Production'>
+		  <#-- Production as default preferred deployment ; TODO others according to role -->
+        <#if !serviceimpl?has_content || productionImpl?has_content && productionImpl.id != serviceimpl.id>
+          <div style="margin-bottom:30px;">
           Implémenté en <b>Production</b> par
           <#if productionImpl?has_content>
-            <@displayImplementationShort productionImpl subprojectId visibility/>
-             <br/>
-             <b>Documentation :</b><br/>
-             <@formatTextToHtml productionImpl['impl:documentation']/>
+             <@displayImplementationShort productionImpl subprojectId visibility/>
+             <@displayDocumentation productionImpl['impl:documentation']/>
              <p/>
           
              <#-- @displayDocShort actualImpl/ -->
              <@displayImplementationDetail productionImpl/>
              <p/>
           <#else>
-            (aucun)
+             (aucun)
           </#if>
-          <p/>
+          </div>
         </#if>
         <p/>
         
-        <#if isUserConsumer>
-          Vos implémentations de test en tant que <b>consommateur</b> :
+        <#if (isUserConsumer || !isUserProvider) && !(serviceimpl?has_content && serviceimpl['impl:ismock'] = 'true')>
+          <div style="margin-bottom:30px;">
+          <#if isUserConsumer>
+          <b>En tant que consommateur</b>, vos implémentations de test sont :
+          <#elseif !isUserProvider>
+          <b>N'étant pas fournisseur</b>, vous pouvez utiliser des implémentations de test : 
+          </#if>
+          <br/>
           <#list userConsumerImpls as userConsumerImpl>
-             <@displayImplementationShort userConsumerImpl subprojectId visibility/>
-             <br/>
-             <b>Documentation :</b><br/>
-             <@formatTextToHtml serviceimpl['impl:documentation']/>
+             &nbsp;&nbsp;-&nbsp;<@displayImplementationShort userConsumerImpl subprojectId visibility/>
+             <@displayDocumentation userConsumerImpl['impl:documentation']/>
              <p/>
           
              <#-- @displayDocShort actualImpl/ -->
-             <@displayImplementationDetail serviceimpl/>
+             <@displayImplementationDetail userConsumerImpl/>
              <p/>
           </#list>
+          </div>
         </#if>
         <p/>
 		
@@ -308,8 +412,8 @@
 		<#list actualImpls as actualImpl>
 		   <#if (!productionImpl?has_content || productionImpl.id != actualImpl.id) && (!serviceimpl?has_content || serviceimpl.id != actualImpl.id)>
 		   
-          <b>Documentation :</b><br/>
-          <@formatTextToHtml actualImpl['impl:documentation']/>
+		   &nbsp;&nbsp;-&nbsp;<@displayImplementationShort actualImpl subprojectId visibility/>
+		   <@displayDocumentation actualImpl['impl:documentation']/>
           <p/>
           
           <#-- @displayDocShort actualImpl/ -->
@@ -323,13 +427,16 @@
 		<p/>
 		</#if>
 		
-      <#if mockImpls?has_content>
-		<br/><b>Implémentations de test (mocks) :</b><br/>
+      <#if mockImpls?has_content && !(isUserConsumer || !isUserProvider)>
+		<br/><b>Autres implémentations de test (mocks) :</b><br/>
       <#-- @displayDocs mockImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/ -->
       <#-- @displayDocsShort mockImpls/ -->
 		<#list mockImpls as mockImpl>
-		  <#-- @displayDocShort mockImpl/ -->
-        <@displayImplementationShort mockImpl subprojectId visibility/>
+		   <#if !serviceimpl?has_content || serviceimpl.id != mockImpl.id>
+		      <#-- @displayDocShort mockImpl/ -->
+            &nbsp;&nbsp;-&nbsp;<@displayImplementationShort mockImpl subprojectId visibility/>
+            <p/>
+         </#if>
 		</#list>
       <p/>
       </#if>
@@ -345,82 +452,92 @@
 		<h3>Services déployés<#-- (endpoints) --></h3>
 		
         <#if endpoint?has_content>
-          Cet endpoint est déployé en <b>${endpoint['env:environment']}</b> à
+          <div style="margin-bottom:30px;">
+          Ce service déployé en <b>${endpoint['env:environment']}</b> à
           <a href="${endpoint['endp:url']}">${endpoint['endp:url']}</a>
           par <@displayEndpointTitle endpoint subprojectId visibility/>
-          <br/>
-          Description: <@formatTextToHtml endpoint['dc:description']/>
+          <@displayDocumentation endpoint['dc:description']/>
           <p/>
           <@displayEndpointTools endpoint subprojectId visibility/>
           <p/>
           <@displayInterfaceResource endpoint/>
           <p/>
+          <#if endpoint['env:environment'] = 'Production' && productionImpl?has_content>
+              <@displayProductionImplementationDetail productionImpl/>
+              <p/>
+          </#if>
+          </div>
         </#if>
         
         <#if !endpoint?has_content || endpoint['env:environment'] != 'Production'>
+          <div style="margin-bottom:30px;">
           Déployé en <b>Production</b> à
           <#if productionEndpoint?has_content>
-              <a href="${productionEndpoint['endp:url']}">${productionEndpoint['endp:url']}</a>
-              par <@displayEndpointShort productionEndpoint subprojectId visibility/>
-              <br/>
-             Description: <@formatTextToHtml productionEndpoint['dc:description']/>
+             <a href="${productionEndpoint['endp:url']}">${productionEndpoint['endp:url']}</a>
+             par <@displayEndpointShort productionEndpoint subprojectId visibility/>
+             <@displayDocumentation productionEndpoint['dc:description']/>
              <p/>
              <@displayEndpointTools productionEndpoint subprojectId visibility/>
              <p/>
              <@displayInterfaceResource productionEndpoint/>
              <p/>
+             <#if productionImpl?has_content>
+                 <@displayProductionImplementationDetail productionImpl/>
+                 <p/>
+             </#if>
           <#else>
              (aucun)
           </#if>
-          <p/>
-        </#if>
-      
-        <#if productionImpl?has_content>
-            <@displayProductionImplementationDetail productionImpl/>
-            <p/>
+          </div>
         </#if>
         
-        <#if isUserConsumer>
-          <b>Vos endpoints de test :</b><br/>
+        <#if (isUserConsumer || !isUserProvider) && !(serviceimpl?has_content && serviceimpl['impl:ismock'] = 'true')>
+          <div style="margin-bottom:30px;">
+          <#if isUserConsumer>
+          En tant que <b>consommateur</b>, vos déploiements de test sont :
+          <#elseif !isUserProvider>
+          N'étant <b>pas fournisseur</b>, vous pouvez utiliser des déploiements de test :
+          </#if>
+          <br/>
           <#list userConsumerEndpoints as userConsumerEndpoint>
-            <@displayEndpointShort userConsumerEndpoint subprojectId visibility/>
-            <br/>
-            Description: <@formatTextToHtml endpoint['dc:description']/>
+            &nbsp;&nbsp;-&nbsp;<@displayEndpointShort userConsumerEndpoint subprojectId visibility/>
+            <@displayDocumentation userConsumerEndpoint['dc:description']/>
             <p/>
             <@displayInterfaceResource userConsumerEndpoint/>
             <p/>
             <@displayEndpointTools userConsumerEndpoint subprojectId visibility/>
             <br/>
           </#list>
-          <p/>
+          </div>
         </#if>
 		
         <#if actualEndpoints?has_content>
-        <b>Autres déploiements :</b><br/>
+        <b>Autres déploiements :</b><p/>
 		  <#-- @displayDocsShort actualEndpoints/ -->
         <#-- @displayDocs actualEndpoints shortDocumentPropNames + endpointPropNames/ -->
 		  <#list actualEndpoints as actualEndpoint>
             <#if (!productionEndpoint?has_content || productionEndpoint.id != actualEndpoint.id) && (!endpoint?has_content || endpoint.id != actualEndpoint.id)>
-                <@displayEndpointShort actualEndpoint subprojectId visibility/>
-                Description: <@formatTextToHtml actualEndpoint['dc:description']/>
+                &nbsp;&nbsp;-&nbsp;<@displayEndpointShort actualEndpoint subprojectId visibility/>
+                <#-- @displayDocumentation actualEndpoint['dc:description']/>
                 <p/>
-                <#-- @displayInterfaceResource service/>
+                <@displayInterfaceResource service/>
                 <p/>
                 <@displayEndpointTools actualEndpoint subprojectId visibility/ -->
                 <#-- br/>
-                <@displayDoc actualEndpoint shortDocumentPropNames + endpointPropNames/>
-                <p/ -->
+                <@displayDoc actualEndpoint shortDocumentPropNames + endpointPropNames/ -->
+                <p/>
             </#if>
         </#list>
         <p/>
         </#if>
         
-        <#if userConsumerEndpoints?has_content>
-            <b>Vos déploiements de test :</b><br/>
+        <#if userConsumerEndpoints?has_content && !(serviceimpl?has_content && serviceimpl['impl:ismock'] = 'true')>
+            <div style="margin-bottom:30px;">
+            <b>Vos déploiements de test en tant que consommateur :</b><br/>
             <#-- @displayDocsShort userConsumerEndpoints/ -->
             <#list userConsumerEndpoints as userConsumerEndpoint>
-                <@displayEndpointShort userConsumerEndpoint subprojectId visibility/>
-                Description: <@formatTextToHtml userConsumerEndpoint['dc:description']/>
+                &nbsp;&nbsp;-&nbsp;<@displayEndpointShort userConsumerEndpoint subprojectId visibility/>
+                <@displayDocumentation userConsumerEndpoint['dc:description']/>
                 <p/>
                 <@displayInterfaceResource userConsumerEndpoint/>
                 <#-- p/>
@@ -429,19 +546,22 @@
                 <@displayDoc userConsumerEndpoint shortDocumentPropNames + endpointPropNames/>
                 <p/ -->
             </#list>
-        <#elseif mockEndpoints?has_content>
+            </div>
+        <#elseif mockEndpoints?has_content && !(isUserConsumer || !isUserProvider)>
+            <div style="margin-bottom:30px;">
             <b>Déploiements de test :</b><br/>
             <#list mockEndpoints as mockEndpoint>
-                <@displayEndpointShort mockEndpoint subprojectId visibility/>
-                Description: <@formatTextToHtml userConsumerEndpoint['dc:description']/>
+                &nbsp;&nbsp;-&nbsp;<@displayEndpointShort mockEndpoint subprojectId visibility/>
+                <#-- @displayDocumentation userConsumerEndpoint['dc:description']/>
                 <p/>
-                <#-- @displayInterfaceResource mockEndpoint/>
+                <@displayInterfaceResource mockEndpoint/>
                 <p/>
                 <@displayEndpointTools mockEndpoint subprojectId visibility/ -->
                 <#-- br/>
-                <@displayDoc mockEndpoint shortDocumentPropNames + endpointPropNames/>
-                <p/ -->
+                <@displayDoc mockEndpoint shortDocumentPropNames + endpointPropNames/ -->
+                <p/>
             </#list>
+            </div>
         </#if>
         
         <!-- TODO LATER endpoint consumptions (like service ones) -->
@@ -485,19 +605,34 @@
            <#if otherUser_index != otherUsers?size - 1>, </#if>
         </#list>
 
+      <#if service?has_content>
 		<h4>Contenu dans</h4>
-		<#if service['proxies']?has_content><#list service['proxies'] as proxy><@displayDocShort proxy['parent']/> ; </#list></#if>
+		<#if service['proxies']?has_content><#list service['proxies'] as proxy><@displayDocShort proxy['parent']/> ; </#list><p/></#if>
 
 		<h3>Contient</h3>
-		<#if service['children']?has_content><@displayDocsShort service['children']/></#if>
+		<#if service['children']?has_content><@displayDocsShort service['children']/><p/></#if>
 
 		<h3>log : all props</h3>
+		
 		<@displayDoc service/>
 		<p/>
-		Information Service:
+		&nbsp;<p/>
+		<b>Information Service:</b>
 		<p/>
 		<@displayPropsAll service informationServicePropNames/>
 		<p/>
+      Resource :
+      <p/>
+      <@displayPropsAll service resourcePropNames/>
+      <p/>
+      WsdlInfo :
+      <p/>
+      <@displayPropsAll service wsdlInfoPropNames/>
+      <p/>
+      RestInfo :
+      <p/>
+      <@displayPropsAll service restInfoPropNames/>
+      <p/>
 		Architecture Component :
 		<p/>
 		<@displayPropsAll service architectureComponentPropNames/>
@@ -505,6 +640,47 @@
 		Platform :
 		<p/>
 		<@displayPropsAll service platformPropNames/>
+		<p/>
+      &nbsp;<p/>
+      </#if>
+		
+		<#if serviceimpl?has_content>
+      <b>Implementation :</b>
+      <@displayPropsAll serviceimpl serviceImplementationPropNames/>
+      <p/>
+      WsdlInfo :
+      <p/>
+      <@displayPropsAll serviceimpl wsdlInfoPropNames/>
+      <p/>
+      RestInfo :
+      <p/>
+      <@displayPropsAll serviceimpl restInfoPropNames/>
+      <p/>
+		Deliverable type :
+      <@displayPropsAll serviceimpl deliverableTypePropNames/>
+		<p/>
+		&nbsp;<p/>
+		</#if>
+		
+      <#if endpoint?has_content>
+      <b>Endpoint :</b>
+      <p/>
+      <@displayPropsAll endpoint endpointPropNames/>
+      <p/>
+      Resource :
+      <p/>
+      <@displayPropsAll endpoint resourcePropNames/>
+      <p/>
+      WsdlInfo :
+      <p/>
+      <@displayPropsAll endpoint wsdlInfoPropNames/>
+      <p/>
+      RestInfo :
+      <p/>
+      <@displayPropsAll endpoint restInfoPropNames/>
+      <p/>
+      &nbsp;<p/>
+      </#if>
 		
 		
 		<h4>UI Draft</h4>

@@ -303,11 +303,14 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
             
             if (service != null) {
                 productionEndpoint = docService.getEndpointOfServiceInCriteria(service, Endpoint.ENV_PRODUCTION, subprojectCriteria);
-            	productionImpl = docService.getServiceImplementationFromEndpoint(productionEndpoint);
+                if (productionEndpoint != null) {
+                	productionImpl = docService.getServiceImplementationFromEndpoint(productionEndpoint);
+                }
             } else if (serviceimpl != null) { // & !Endpoint.ENV_PRODUCTION.equals(endpoint.getPropertyValue("env:environment"))
                 productionEndpoint = docService.getEndpointOfImplementation(serviceimpl, Endpoint.ENV_PRODUCTION, subprojectCriteria);
                 productionImpl = serviceimpl;
-            } else if (actualImpls != null && !actualImpls.isEmpty()) {
+            }
+            if (productionEndpoint == null && actualImpls != null && !actualImpls.isEmpty()) {
             	productionImpl = actualImpls.get(0); // TODO also check it matches component
             }
             

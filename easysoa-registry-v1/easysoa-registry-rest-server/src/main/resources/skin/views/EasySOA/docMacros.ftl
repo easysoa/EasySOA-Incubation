@@ -247,7 +247,7 @@
 
 
     <#macro displayImplementationDetail actualImpl>
-        <#if productionImpl['soan:isplaceholder'] = 'true'>
+        <#if actualImpl['soan:isplaceholder'] = 'true'>
         est <b>inconnue</b>
         <#else>
         <#-- @displayDoc actualImpl shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>

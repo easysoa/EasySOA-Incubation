@@ -235,9 +235,18 @@ public interface DocumentService {
      * @return
      * @throws ClientException
      */
-	DocumentModel getSoaNodeParent(DocumentModel soaNodeModel, String type)
-			throws ClientException;
-
+	DocumentModel getSoaNodeParent(DocumentModel soaNodeModel, String type) throws ClientException;
+	/**
+     * Does model.getAdapter(Endpoint.class).getParentsOfType(type)
+	 * (which is for now, as for all proxy parent classified SOA nodes, the fastest way)
+     * then resolves SOA id to DocumentModel
+	 * @param soaNodeModel
+	 * @param type
+	 * @return
+	 * @throws ClientException
+	 */
+	List<DocumentModel> getSoaNodeParents(DocumentModel soaNodeModel, String type) throws ClientException;
+	
 	/**
 	 * Gets actual (non-proxy) model then does getChildren(type)
 	 * @param soaNodeModel
@@ -375,6 +384,9 @@ public interface DocumentService {
 	// Model helper methods
 	
 	// TODO move them in appropriate Adapters
+
+	List<DocumentModel> getInformationServicesProvidedBy(DocumentModel actorModel, String subprojectCriteria) throws ClientException;
+	List<DocumentModel> getInformationServicesProvidedByInCriteria(DocumentModel actorModel, String subprojectCriteria) throws ClientException;
 	
 	List<DocumentModel> getImplementationsOfService(DocumentModel serviceModel, String subprojectId) throws ClientException;
 	List<DocumentModel> getImplementationsOfServiceInCriteria(DocumentModel serviceModel, String subprojectCriteria) throws ClientException;
@@ -403,6 +415,11 @@ public interface DocumentService {
 	DocumentModel getConsumedJavaInterfaceService(DocumentModel javaConsumptionModel, String subprojectId) throws ClientException;
 	/** Returns the InformationService of the first non-mock impl of this java consumption's interface */
 	DocumentModel getConsumedJavaInterfaceServiceInCriteria(DocumentModel javaConsumptionModel, String subprojectCriteria) throws ClientException;
+	
+	List<DocumentModel> getJavaServiceConsumptions(DocumentModel serviceModel, String subprojectId) throws ClientException;
+	List<DocumentModel> getJavaServiceConsumptionsInCriteria(DocumentModel serviceModel, String subprojectCriteria) throws ClientException;
+	List<DocumentModel> getJavaServiceConsumptions(List<DocumentModel> serviceModels, String subprojectId) throws ClientException;
+	List<DocumentModel> getJavaServiceConsumptionsInCriteria(List<DocumentModel> serviceModels, String subprojectCriteria) throws ClientException;
 	
 	DocumentModel getServiceImplementationFromEndpoint(DocumentModel endpointModel) throws ClientException;
 

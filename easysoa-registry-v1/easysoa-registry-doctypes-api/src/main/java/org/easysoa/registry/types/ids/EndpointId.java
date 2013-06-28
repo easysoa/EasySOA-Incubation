@@ -47,7 +47,7 @@ public class EndpointId extends SoaNodeId {
 		return properties;
 	}
 
-	public Object getEnvironment() {
+	public String getEnvironment() {
 		return environment;
 	}
 

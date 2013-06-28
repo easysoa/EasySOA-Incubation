@@ -159,7 +159,10 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         DocumentModelList untaggedServices = docService.query(session, DocumentService.NXQL_SELECT_FROM
         		+ InformationService.DOCTYPE + subprojectCriteria + proxiedServicesCriteria, true, false);
 
-        // Indicators
+        List<DocumentModel> impls = docService.getServiceImplementationsInCriteria(session, subprojectCriteria);
+        List<DocumentModel> endpoints = docService.getEndpointsInCriteria(session, subprojectCriteria);
+        
+        // Indicators TODO are they required on this page ??
         IndicatorsController indicatorsController = new IndicatorsController();
         Map<String, IndicatorValue> indicators = indicatorsController.computeIndicators(session, null, null, subprojectId, visibility);
 
@@ -172,6 +175,10 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
                 .arg("new_f", new freemarker.template.utility.ObjectConstructor())
                 // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
                 // and not "new" else conflicts with Nuxeo's NewMethod helper
+                
+                .arg("impls", impls)
+                .arg("endpoints", endpoints)
+                
                 .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
                 .arg("indicators", indicators)
@@ -233,35 +240,44 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         	} else if (soaMetamodelService.isAssignable(type, Endpoint.DOCTYPE)) {
         		endpoint = soaNode;
         		serviceimpl = docService.getParentServiceImplementation(endpoint);
-        		service = docService.getParentInformationService(serviceimpl);
+        		if (serviceimpl != null) {
+        		    service = docService.getParentInformationService(serviceimpl);
+        		}
         	} // TODO else not supported, OR simple display
         	
+        	
         	// Business
-        	String businessServiceId = (String) service.getPropertyValue(InformationService.XPATH_LINKED_BUSINESS_SERVICE);
+        	SoaNodeAdapter serviceAdapter = null;
         	DocumentModel businessService = null;
         	DocumentModel consumerActor = null;
-        	if (businessServiceId != null && !businessServiceId.isEmpty()) {
-        		businessService = session.getDocument(new IdRef(businessServiceId));
-        		
-            	String businessConsumerActorId = (String) businessService.getPropertyValue(BusinessService.XPATH_CONSUMER_ACTOR);
-            	if (businessConsumerActorId != null && !businessConsumerActorId.isEmpty()) {
-            		consumerActor = session.getDocument(new IdRef(businessConsumerActorId));
-        		}
-        	}
-        	
-        	String providerActorId = (String) service.getPropertyValue(InformationService.XPATH_PROVIDER_ACTOR);
         	DocumentModel providerActor = null;
-        	if (providerActorId != null && !providerActorId.isEmpty()) {
-        		providerActor = session.getDocument(new IdRef(providerActorId));
-        	}
-        	String componentId = (String) service.getPropertyValue(InformationService.XPATH_COMPONENT_ID);
         	DocumentModel component = null;
-        	if (componentId != null && !componentId.isEmpty()) {
-        		component = session.getDocument(new IdRef(componentId));
-        	}
+			if (service != null) {
+        		serviceAdapter = service.getAdapter(SoaNodeAdapter.class);
+        	
+        	    String businessServiceId = (String) service.getPropertyValue(InformationService.XPATH_LINKED_BUSINESS_SERVICE);
+        	    if (businessServiceId != null && !businessServiceId.isEmpty()) {
+        		    businessService = session.getDocument(new IdRef(businessServiceId));
+        		
+            	    String businessConsumerActorId = (String) businessService.getPropertyValue(BusinessService.XPATH_CONSUMER_ACTOR);
+            	    if (businessConsumerActorId != null && !businessConsumerActorId.isEmpty()) {
+                		consumerActor = session.getDocument(new IdRef(businessConsumerActorId));
+            		}
+            	}
+        	
+        	    String providerActorId = (String) service.getPropertyValue(InformationService.XPATH_PROVIDER_ACTOR);
+        	    if (providerActorId != null && !providerActorId.isEmpty()) {
+        		    providerActor = session.getDocument(new IdRef(providerActorId));
+        	    }
+        	    String componentId = (String) service.getPropertyValue(InformationService.XPATH_COMPONENT_ID);
+        	    if (componentId != null && !componentId.isEmpty()) {
+        		    component = session.getDocument(new IdRef(componentId));
+        	    }
+        	
+            }
 
         	// Implementations
-            if (serviceimpl == null) {
+            if (serviceimpl == null && service != null) {
 	            mockImpls = docService.getMockImplementationsOfServiceInCriteria(service, subprojectCriteria);
 	            actualImpls = docService.getActualImplementationsOfServiceInCriteria(service, subprojectCriteria);
             } // else only displaying selected impl
@@ -285,11 +301,13 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
             	}
             } // else only displaying selected endpoint
             
-            productionEndpoint = docService.getEndpointOfServiceInCriteria(service, "Production", subprojectCriteria);
-            productionImpl = null;
-            if (productionEndpoint != null) {
+            if (service != null) {
+                productionEndpoint = docService.getEndpointOfServiceInCriteria(service, Endpoint.ENV_PRODUCTION, subprojectCriteria);
             	productionImpl = docService.getServiceImplementationFromEndpoint(productionEndpoint);
-            } else if (!actualImpls.isEmpty()) {
+            } else if (serviceimpl != null) { // & !Endpoint.ENV_PRODUCTION.equals(endpoint.getPropertyValue("env:environment"))
+                productionEndpoint = docService.getEndpointOfImplementation(serviceimpl, Endpoint.ENV_PRODUCTION, subprojectCriteria);
+                productionImpl = serviceimpl;
+            } else if (actualImpls != null && !actualImpls.isEmpty()) {
             	productionImpl = actualImpls.get(0); // TODO also check it matches component
             }
             
@@ -337,20 +355,29 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
             }*/
             
             
-            if (isUserConsumer && mockImpls != null) {
-            	userConsumerImpls = new ArrayList<DocumentModel>(mockImpls.size());
-            	userConsumerEndpoints = new ArrayList<DocumentModel>(endpoints.size());
-            	for (DocumentModel mockImpl : mockImpls) {
-                	DocumentModel mockImplDeliverable = docService.getSoaNodeParent(mockImpl, Deliverable.DOCTYPE);
-                	String mockImplDeliverableApp = (String) mockImplDeliverable.getPropertyValue(Deliverable.XPATH_APPLICATION);
-            		// checking if owner, by matching deliverable app to component app
-                	String actorAppPrefix = consumerActor.getName() + '/';
-                	if (mockImplDeliverableApp != null && mockImplDeliverableApp.startsWith(actorAppPrefix)) {
-                		// NB. consumerActor != null because isUserConsumer
-                		userConsumerImpls.add(mockImpl);
-                		userConsumerEndpoints.addAll(docService.getEndpointsOfImplementationInCriteria(mockImpl, subprojectCriteria));
-                	}
-            	} 
+            // if user consumer OR not provider (rarely consumer because on business
+            // service), display his mock impls :
+            if ((isUserConsumer || !isUserProvider)) {
+            	if (serviceimpl != null) {
+            		// NB. was not computed before in this case
+            		mockImpls = docService.getMockImplementationsOfServiceInCriteria(service, subprojectCriteria);
+            	}
+            	if (mockImpls != null && endpoints != null) { // TODO or sub if for endpoints null ??
+	            	userConsumerImpls = new ArrayList<DocumentModel>(mockImpls.size());
+	            	userConsumerEndpoints = new ArrayList<DocumentModel>(endpoints.size());
+	            	for (DocumentModel mockImpl : mockImpls) {
+	                	DocumentModel mockImplDeliverable = docService.getSoaNodeParent(mockImpl, Deliverable.DOCTYPE);
+	                	String mockImplDeliverableApp = (String) mockImplDeliverable.getPropertyValue(Deliverable.XPATH_APPLICATION);
+	            		// checking if owner, by matching deliverable app to component app
+	                	String actorAppPrefix = (!isUserConsumer) ? null : consumerActor.getName() + '/';
+	                	if (mockImplDeliverableApp != null && (!isUserConsumer
+	                			|| mockImplDeliverableApp.startsWith(actorAppPrefix))) {
+	                		// NB. consumerActor != null because isUserConsumer
+	                		userConsumerImpls.add(mockImpl);
+	                		userConsumerEndpoints.addAll(docService.getEndpointsOfImplementationInCriteria(mockImpl, subprojectCriteria));
+	                	}
+	            	}
+            	}
             }
             
             
@@ -390,7 +417,7 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
                     .arg("new_f", new freemarker.template.utility.ObjectConstructor())
                     // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
                     // and not "new" else conflicts with Nuxeo's NewMethod helper
-                    .arg("servicee", service.getAdapter(SoaNodeAdapter.class))
+                    .arg("servicee", serviceAdapter)
                     
                     .arg("subprojectId", subprojectId)
                     .arg("visibility", visibility)
@@ -399,6 +426,13 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
         return view;
     }
 
+    /**
+     * From actor name
+     * TODO rename actor groups from SI DPS to AXXX/SI DPS
+     * @param user
+     * @param actor
+     * @return
+     */
     private String getUserActorGroupName(NuxeoPrincipal user, DocumentModel actor) {
     	if (actor == null) {
     		return null;
@@ -420,19 +454,28 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
 		return null;
 	}
 
+    /**
+     * From (sub)project, company & global groups
+     * @param spId if null only company & global groups
+     * @param user
+     * @param roleName
+     * @return
+     */
 	private String getUserRoleGroupName(SubprojectId spId, NuxeoPrincipal user, String roleName) {
-        // (?) getting it from (TODO versioned ???) subproject-local group :
-        String subprojectWideGroupName = spId.getProjectName() + '/' + spId.getSubprojectName() + '/' + roleName;
-        if (user.isMemberOf(subprojectWideGroupName)) {
-        	return subprojectWideGroupName;
-        }
-        // TODO LATER also per component ??
-        
-        // (??) else getting it from project-local group :
-        String projectWideGroupName = spId.getProjectName() + '/' + roleName;
-        if (user.isMemberOf(projectWideGroupName)) {
-        	return projectWideGroupName;
-        }
+		if (spId != null) {
+	        // (?) getting it from (TODO versioned ???) subproject-local group :
+	        String subprojectWideGroupName = spId.getProjectName() + '/' + spId.getSubprojectName() + '/' + roleName;
+	        if (user.isMemberOf(subprojectWideGroupName)) {
+	        	return subprojectWideGroupName;
+	        }
+	        // TODO LATER also per component ??
+	        
+	        // (??) else getting it from project-local group :
+	        String projectWideGroupName = spId.getProjectName() + '/' + roleName;
+	        if (user.isMemberOf(projectWideGroupName)) {
+	        	return projectWideGroupName;
+	        }
+		}
         
         // LATER (?) else getting it from company / SI-wide group :
         boolean hasUserCompany = user.getCompany() != null && user.getCompany().length() != 0;

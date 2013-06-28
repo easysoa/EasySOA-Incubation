@@ -23,8 +23,8 @@
     <#macro urlToLocalNuxeoPrint doc>/nuxeo/site/admin/repository<@escapeUrl doc['path']/>/@views/print</#macro>
     
     <#-- EasySOA tool URLs -->
-    <#macro urlToFicheSOA soaNode subprojectId visibility>${Root.path}/path${soaNode['spnode:subproject']?xml}:${soaNode.type}:${soaNode['soan:name']?xml}?subprojectId=${subprojectId}&visibility=${visibility}</#macro>
-    <#macro urlToEndpointState endpoint subprojectId visibility>${Root.path}/../monitoring/envIndicators/${productionEndpoint.id}?subprojectId=${subprojectId}&visibility=${visibility}</#macro>
+    <#macro urlToFicheSOA soaNode subprojectId visibility>${Root.path}/../services/path${soaNode['spnode:subproject']?xml}:${soaNode.type}:${soaNode['soan:name']?xml}?subprojectId=${subprojectId}&visibility=${visibility}</#macro>
+    <#macro urlToEndpointState endpoint subprojectId visibility>${Root.path}/../monitoring/envIndicators/${endpoint.id}?subprojectId=${subprojectId}&visibility=${visibility}</#macro>
     <#macro urlToProxyManagementGetInstance subprojectId environment>${proxy_management_url}/management/getInstance.html?projectId=${subprojectId?url('ISO-8859-1')}&userLogin=${Root.currentUser?url('ISO-8859-1')}&environment=${environment?url('ISO-8859-1')}</#macro>
     <#macro urlToServiceScaffolder endpoint>${web_discovery_url + '/scaffoldingProxy/?wsdlUrl=' + endpoint['rdi:url']}</#macro>
     

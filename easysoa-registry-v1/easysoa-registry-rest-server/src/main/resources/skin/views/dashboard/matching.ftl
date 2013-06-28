@@ -21,7 +21,8 @@
                 <#if suggestions?? && selectedModel == unmatched.id>
                 <table class="table table-bordered" style="width: 500px; border: 1px solid black">
                     <tr>
-                        <th style="background-color: #FFA">Suggestion<!--Suggested--> ${targetDoctypeTitle}s <#if selectedComponentTitle??>depuis<!--from--> <i>${selectedComponentTitle}</i></#if></th>
+                        <th style="background-color: #FFA">Suggestions<!--Suggested--> <#-- ${targetDoctypeTitle}s NO would be wrong for iserv through placeholder -->
+                        <#if selectedComponentTitle??>depuis<!--from--> <i>${selectedComponentTitle}</i></#if></th>
                     </tr>
                     <#if suggestions?has_content>
                     <#list suggestions as suggestion>
@@ -38,7 +39,8 @@
                         </td>
                     </#if>
                     <tr>
-                        <th style="background-color: #FFA">Suggestion<!--Suggested--> ${targetDoctypeTitle} <#if selectedComponentTitle??>depuis<!--from--> <i>${selectedComponentTitle}</i></#if> (Toutes plateformes)<!--(any platform)--></th>
+                        <th style="background-color: #FFA">Suggestions<!--Suggested--> <#-- ${targetDoctypeTitle}s NO would be wrong for iserv through placeholder -->
+                        <#if selectedComponentTitle??>depuis<!--from--> <i>${selectedComponentTitle}</i></#if> (Toutes plateformes)<!--(any platform)--></th>
                     </tr>
                     <#if anyPlatformSuggestions?has_content>
                     <#list anyPlatformSuggestions as suggestion>
@@ -60,7 +62,8 @@
                     </#if>
                     <#if allFromComponent?? && allFromComponent?has_content>
                     <tr>
-                        <th style="background-color: #FFA">Tous les<!--All--> ${targetDoctypeTitle}s depuis<!--from--> <i>${selectedComponentTitle}</i></th>
+                        <th style="background-color: #FFA">Tous<!--All--> <#-- Tous les ${targetDoctypeTitle}s NO would be wrong for iserv through placeholder -->
+                        depuis<!--from--> <i>${selectedComponentTitle}</i></th>
                     </tr>
                     <#list allFromComponent as suggestion>
                     <tr>
@@ -94,8 +97,8 @@
 
     <form action="/nuxeo/site/easysoa/dashboard?subprojectId=${subprojectId}&visibility=${visibility}" method="post" style="float: left; width: 100%; margin-top: 10px">
         <fieldset style="width: 400px; padding: 10px;">
-            <!--Click on an a ${doctypeTitle} and a ${targetDoctypeTitle}, then click:<br />-->
-            Cliquez sur un(e) ${doctypeTitle} et sur un(e) ${targetDoctypeTitle}, ensuite cliquez sur :<br />
+            <!--Click on an a ${doctypeTitle} and a suggestion <#-- ${targetDoctypeTitle} NO would be wrong for iserv through placeholder -->, then click:<br />-->
+            Cliquez sur un(e) ${doctypeTitle} et sur une suggestion <#-- un(e) ${targetDoctypeTitle} NO would be wrong for iserv through placeholder -->, ensuite cliquez sur :<br />
             <!-- Create a link -->
             <input type="submit" value="Créer un lien" />
             <input id="${matchingPrefix}unmatchedModelId" name="unmatchedModelId" type="hidden" />

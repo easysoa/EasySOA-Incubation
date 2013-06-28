@@ -137,10 +137,18 @@ public class SubprojectServiceImpl {
         return sbuf.toString();
     }
     
+    /**
+     * 
+     * @param subprojectId
+     * @return null if not a subprojectId (ex. context without selected subproject)
+     */
     public static SubprojectId parseSubprojectId(String subprojectId) {
-    	int prefixLength = Repository.DEFAULT_DOMAIN_PATH.length();
     	int slashIndex = subprojectId.lastIndexOf('/');
     	int versionIndex = subprojectId.lastIndexOf('_'); // NB. always there at the end in "_v"
+    	if (slashIndex == -1 || versionIndex == -1) {
+    		return null; // not a subproject id
+    	}
+    	int prefixLength = Repository.DEFAULT_DOMAIN_PATH.length();
     	String projectName = subprojectId.substring(prefixLength + 1, slashIndex);
 		String subprojectName = subprojectId.substring(slashIndex + 1, versionIndex);
 		String version = subprojectId.substring(versionIndex + 2, subprojectId.length());

@@ -142,7 +142,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
     }
 
     /**
-     * 
+     * Static because used from EndpointMatchingService TODO better
      * @param documentManager
      * @param documentService
      * @param foundDocumentModel

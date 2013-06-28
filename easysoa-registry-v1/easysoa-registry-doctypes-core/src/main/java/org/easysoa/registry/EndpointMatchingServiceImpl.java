@@ -1,8 +1,10 @@
 package org.easysoa.registry;
 
 import java.io.Serializable;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.facets.ServiceImplementationDataFacet;
@@ -74,8 +76,8 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     	
     	// 1. IF A LINKED PLATFORM HAS BEEN PROVIDED FOR THE ENDPOINT BY THE PROBE EX. WEB DISCO
     	if (!skipPlatformMatching) {
-    	    if (endpoint.hasFacet(Endpoint.SCHEMA_ENDPOINT)
-    	            && endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM) != null) {
+    	    if (/*endpoint.hasSchema(Endpoint.SCHEMA_ENDPOINT) // always
+    	            && */endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM) != null) {
     	        
     		DocumentModel platformDocument = documentManager.getDocument(
     				new IdRef((String) endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM)));
@@ -113,7 +115,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 	    			Deliverable.XPATH_REPOSITORY_URL,
 	    			endpoint.getPropertyValue(Deliverable.XPATH_REPOSITORY_URL)); // TODO Q rather Endpoint.xx ?!?
     		
-	    	if (endpoint.hasFacet(Endpoint.SCHEMA_ENDPOINT)) {
+	    	//if (endpoint.hasSchema(Endpoint.SCHEMA_ENDPOINT)) { // always
     		// endpoint platform criteria : match those provided on the endpoint against required platform
     		String endpointServiceProtocol = (String) endpoint.getPropertyValue(Endpoint.XPATH_ENDP_SERVICE_PROTOCOL);
     		String endpointTansportProtocol = (String) endpoint.getPropertyValue(Endpoint.XPATH_ENDP_TRANSPORT_PROTOCOL);
@@ -123,7 +125,7 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 	    	query.addConstraintMatchCriteriaIfSet(Platform.XPATH_TRANSPORT_PROTOCOL, endpointTansportProtocol); // HTTP (HTTPS ?)...
 	    	query.addConstraintMatchCriteriaIfSet(Platform.XPATH_SERVICE_RUNTIME, endpointServiceRuntime); // CXF (, Axis2...)
 	    	query.addConstraintMatchCriteriaIfSet(Platform.XPATH_APP_SERVER_RUNTIME, endpointAppServerRuntime); // ApacheTomcat, Jetty...
-    	    }
+    	    //}
 	    	
     	    }
     	} // else find impl for "matchingFirst" impl (see DiscoveryService)
@@ -325,19 +327,52 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 			DocumentModel informationService, boolean save) throws Exception {
 		DocumentService docService = getDocumentService();
 		
-		// Create placeholder impl (in endpoint subproject) :
-		String portTypeName = (String) endpoint.getPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME);
+		if (informationService == null) {
+			// Remove link TODO useful ???
+			DocumentModel serviceimpl = docService.getServiceImplementationFromEndpoint(endpoint);
+			SoaNodeId endpointId = docService.createSoaNodeId(endpoint);
+			DocumentModelList endpointProxies = docService.findProxies(documentManager, endpointId );
+			for (DocumentModel endpointProxy : endpointProxies) {
+				DocumentModel proxyParent = documentManager.getParentDocument(endpointProxy.getRef());
+				if (ServiceImplementation.DOCTYPE.equals(proxyParent.getType())) {
+					documentManager.removeDocument(endpointProxy.getRef());
+				}
+			}
+			if (serviceimpl.getPropertyValue(ServiceImplementation.XPATH_ISPLACEHOLDER) == "true") {
+				List<DocumentModel> remainingEndpoints = docService.getEndpointsOfImplementation(serviceimpl, null); // in all subprojects (??)
+				if (remainingEndpoints.isEmpty()) {
+					// remove placeholder impl
+					docService.delete(documentManager, endpointId);
+				}
+			}
+			
+		} else { // else create link
+            
+            // Create placeholder impl (in endpoint subproject) :
+            HashMap<String, Serializable> nuxeoProperties = new HashMap<String, Serializable>(2);
+            nuxeoProperties.put(ServiceImplementation.XPATH_ISPLACEHOLDER, true);
+            String interfaceName;
+            if (MatchingHelper.isWsdlInfo(endpoint)) {
+                String portTypeName = (String) endpoint.getPropertyValue(Endpoint.XPATH_WSDL_PORTTYPE_NAME);
+                nuxeoProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
+                interfaceName = portTypeName;
+            } else if (MatchingHelper.isWsdlInfo(endpoint)) {
+                String restPath = (String) endpoint.getPropertyValue(Endpoint.XPATH_REST_PATH);
+                nuxeoProperties.put(ServiceImplementation.XPATH_REST_PATH, restPath);
+                interfaceName = restPath;
+            } else {
+            	// some meaningful default
+            	interfaceName = new URL((String) endpoint.getPropertyValue(Endpoint.XPATH_URL)).getPath();
+            }
 		String subprojectId = (String) endpoint.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
-		SoaNodeId implId = new SoaNodeId(subprojectId, ServiceImplementation.DOCTYPE, portTypeName);
+		SoaNodeId implId = new SoaNodeId(subprojectId, ServiceImplementation.DOCTYPE, interfaceName);
 		
-		HashMap<String, Serializable> nuxeoProperties = new HashMap<String, Serializable>(2);
-		nuxeoProperties.put(ServiceImplementation.XPATH_ISPLACEHOLDER, true);
-		nuxeoProperties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, portTypeName);
         // TODO also copy other impl-level platform metas. To be used when merging placeholder ? NOO rather delete placeholder and rematch endpoint
 		
         // NB. don't do a documentManager.create() here, else triggers documentCreated event
         // (and from there event loop) , even though properties have not been set yet
-        DocumentModel implModel = DiscoveryServiceImpl.createOrUpdate(documentManager, Framework.getService(DocumentService.class),
+        DocumentModel implModel = DiscoveryServiceImpl.createOrUpdate(documentManager,
+        		Framework.getService(DocumentService.class), // TODO more service-like
                 null, null, implId, nuxeoProperties, false);
 		
 		// Attach placeholder impl to information service
@@ -354,7 +389,8 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 				docService.createSoaNodeId(endpoint), 
 				docService.createSoaNodeId(implModel),
 				false);
-
+		}
+		
 		if (save) {
 			documentManager.save();
 		}

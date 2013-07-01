@@ -4,31 +4,35 @@
     
     <#-- Document Macros -->
     
-    <#macro displayPhase subprojectId>
-        <#assign phaseShortId = subprojectId?replace('/default-domain/', '')/>
-        <#assign phaseShortIdVersionIndex = phaseShortId?last_index_of('_v')/>
-        ${phaseShortId?substring(0, phaseShortIdVersionIndex)?replace('/', ' / ')}
-        (version <#if phaseShortId?ends_with('_v')>en cours<#else>${phaseShortId?substring(phaseShortIdVersionIndex + 2, phaseShortId?length)}</#if>)
+    <#macro displayPhase subprojectIdToDisplay>
+        <#if subprojectIdToDisplay?length != 0>
+           <#assign phaseShortId = subprojectIdToDisplay?replace('/default-domain/', '')/>
+           <#assign phaseShortIdVersionIndex = phaseShortId?last_index_of('_v')/>
+           ${phaseShortId?substring(0, phaseShortIdVersionIndex)?replace('/', ' / ')}
+           (version <#if phaseShortId?ends_with('_v')>en cours<#else>${phaseShortId?substring(phaseShortIdVersionIndex + 2, phaseShortId?length)}</#if>)
+        </#if><#-- else no perspective / context -->
     </#macro>
     
     <#macro displayPhaseIfOutsideContext subprojectIdToDisplay>
         <#assign parsedSubprojectIdToDisplay = Root.parseSubprojectId(subprojectIdToDisplay)/>
-        <#if !subprojectId?has_content || subprojectId?length == 0>
-            ${parsedSubprojectIdToDisplay.getProjectName()} /
-            ${parsedSubprojectIdToDisplay.getSubprojectName()}
-            <#assign version = parsedSubprojectIdToDisplay.getVersion()/>
-            <#-- (version <#if version?length == 0>en cours<#else>${version}</#if>) -->
-            <#if version?length == 0>en cours<#else>${version}</#if>
-        <#elseif subprojectIdToDisplay != subprojectId>
-            <#assign parsedSubprojectId = Root.parseSubprojectId(subprojectId)/>
-            <#if parsedSubprojectIdToDisplay.getProjectName() != parsedSubprojectId.getProjectName()>
-                ${parsedSubprojectIdToDisplay.getProjectName()} /
-            </#if> 
-            ${parsedSubprojectIdToDisplay.getSubprojectName()}
-            <#assign version = parsedSubprojectIdToDisplay.getVersion()/>
-            <#-- (version <#if version?length == 0>en cours<#else>${version}</#if>) -->
-            <#if version?length == 0>en cours<#else>${version}</#if>
-        </#if>
+        <#if parsedSubprojectIdToDisplay?has_content && !parsedSubprojectIdToDisplay?is_string>
+           <#if (!subprojectId?has_content || subprojectId?length == 0)>
+               ${parsedSubprojectIdToDisplay.getProjectName()} /
+               ${parsedSubprojectIdToDisplay.getSubprojectName()}
+               <#assign version = parsedSubprojectIdToDisplay.getVersion()/>
+               <#-- (version <#if version?length == 0>en cours<#else>${version}</#if>) -->
+               <#if version?length == 0>en cours<#else>${version}</#if>
+           <#elseif subprojectIdToDisplay != subprojectId>
+               <#assign parsedSubprojectId = Root.parseSubprojectId(subprojectId)/>
+               <#if parsedSubprojectIdToDisplay.getProjectName() != parsedSubprojectId.getProjectName()>
+                   ${parsedSubprojectIdToDisplay.getProjectName()} /
+               </#if> 
+               ${parsedSubprojectIdToDisplay.getSubprojectName()}
+               <#assign version = parsedSubprojectIdToDisplay.getVersion()/>
+               <#-- (version <#if version?length == 0>en cours<#else>${version}</#if>) -->
+               <#if version?length == 0>en cours<#else>${version}</#if>
+           </#if>
+        </#if><#-- else no perspective / context TODO passing subprojectIdToDisplayparam to displayPhaseIfOutsideContext doesn't work -->
     </#macro>
     
     <#macro displayProviderActorAndComponent service subprojectId visibility>

@@ -202,8 +202,9 @@ function sendWSDL(domElement) {
 
 	  var environmentName = jQuery('#easysoa-environment').attr('value');
 	  var endpointUrl = wsdlToSend.serviceURL.replace('?wsdl', '').replace('?WSDL', '');
-	  
-          var context = jQuery('#easysoa-context').attr('value');
+
+        var context = unescape(jQuery('#easysoa-context').attr('value'));
+
 		jQuery.ajax({
 			url : EASYSOA_WEB + '/nuxeo/registry/post',
 			dataType : 'jsonp',

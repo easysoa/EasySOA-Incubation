@@ -117,10 +117,10 @@ app.configure(function(){
     jsFile = jsFile.replace("#{host}", getClientHost(req)); // better than networkIPAddress because works offline
     jsFile = jsFile.replace("#{port}", webServer.address().port);
     jsFile = jsFile.replace("#{context-display}", utils.formatPhaseForDisplay(context)); // For display
-    jsFile = jsFile.replace("#{context}", context); // For input field
+    jsFile = jsFile.replace("#{context}", escape(context)); // For input field, escape required to avoid encoding problem
     // 3 following replace for matching dashboard link
     jsFile = jsFile.replace("#{nuxeoUrl}", NUXEO_URL);
-    jsFile = jsFile.replace("#{context}", context);
+    jsFile = jsFile.replace("#{context}", context); // Escape not required in this case (link to matching)
     jsFile = jsFile.replace("#{visibility}", visibility);
     res.writeHead(200);
     console.log("[DEBUG] ", "End of discovery.js template function");

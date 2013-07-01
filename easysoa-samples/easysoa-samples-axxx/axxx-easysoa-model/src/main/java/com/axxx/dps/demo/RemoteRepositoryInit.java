@@ -773,7 +773,7 @@ public class RemoteRepositoryInit {
         props.add(EndpointConsumption.XPATH_CONSUMED_URL+ "=" + endpointUrl);
         props.add(EndpointConsumption.XPATH_CONSUMED_ENVIRONMENT + "=" + environment);
         //props.add(Endpoint.XPATH_ENDP_TRANSPORT_PROTOCOL + "=HTTP"); // TODO LATER
-        //props.add(Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService");
+        //props.add(Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService"); // done auto by registry
         if (uploadUsingResourceUpdate) {
             URL wsdlUrl = new URL("file://" + new File(wsdlPath).getAbsolutePath());
         	props.add(ResourceDownloadInfo.XPATH_URL + "=" + wsdlUrl);
@@ -799,9 +799,9 @@ public class RemoteRepositoryInit {
         props.add(Endpoint.XPATH_ENDP_ENVIRONMENT + "=" + environment); // required even with soaname else integrity check fails
         props.add(Endpoint.XPATH_URL + "=" + endpointUrl); // required even with soaname else integrity check fails
         props.add(Endpoint.XPATH_ENDP_HOST + "=" + new URL(endpointUrl).getHost());
-        ///props.add(Endpoint.XPATH_ENDP_IP + "=127.0.0.1"); // TODO
+        props.add(Endpoint.XPATH_ENDP_IPADDRESS + "=127.0.0.1");
         props.add(Endpoint.XPATH_ENDP_TRANSPORT_PROTOCOL + "=HTTP");
-        //props.add(Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService");
+        //props.add(Endpoint.XPATH_WSDL_PORTTYPE_NAME + "={http://www.axxx.com/dps/apv}PrecomptePartenaireService"); // done auto by registry
         if (uploadUsingResourceUpdate) {
             URL wsdlUrl = new URL("file://" + new File(wsdlPath).getAbsolutePath());
         	props.add(ResourceDownloadInfo.XPATH_URL + "=" + wsdlUrl);

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sca:composite xmlns:sca="http://www.osoa.org/xmlns/sca/1.0"
+               xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+               xmlns:frascati="http://frascati.ow2.org/xmlns/sca/1.1"
+               xmlns:web="http://frascati.ow2.org/xmlns/web/1.0"
+               xmlns:tuscany="http://tuscany.apache.org/xmlns/sca/1.0" name="httpDiscoveryProxy">
+
+    <!-- HTTP Proxy -->
+    <!-- Run with default mode : Discovery -->
+    <sca:component name="httpProxyService">
+        <sca:implementation.java class="org.easysoa.proxy.HttpDiscoveryProxy" />
+        <sca:service name="httpServiceInput">
+            <sca:interface.java interface="javax.servlet.Servlet" /><!-- TODO not required because already said ? -->
+            <tuscany:binding.http uri="http://vmregistry:8082/" />
+        </sca:service>
+        <sca:reference name="handlerManager">
+            <sca:interface.java interface="org.easysoa.proxy.core.api.exchangehandler.HandlerManager" />
+        </sca:reference>
+        <sca:property name="proxyPort">8082</sca:property>
+        <sca:property name="forwardHttpConnexionTimeoutMs">30000</sca:property>
+        <sca:property name="forwardHttpSocketTimeoutMs">30000</sca:property>
+    </sca:component>
+
+    <sca:wire source="httpProxyService/handlerManager" target="handlerManagerServBaseComp/handlerManagerComponentService"/>
+
+    <!-- For tests only (see FraSCAti JIRA 105) -->
+    <!--<sca:component name="proxyIndex">
+        <sca:service name="Velocity">
+            <sca:interface.java interface="javax.servlet.Servlet" />
+            <tuscany:binding.http uri="/" />
+        </sca:service>
+        <web:implementation.velocity location="webContent" default="index.html" />
+    </sca:component>-->
+
+    <!-- Handler manager -->
+    <sca:component name="handlerManagerServBaseComp">
+        <sca:service name="handlerManagerComponentService">
+            <sca:interface.java interface="org.easysoa.proxy.core.api.exchangehandler.HandlerManager" />
+        </sca:service>
+        <sca:implementation.composite name="handlerManagerBase.composite"/>
+    </sca:component>
+
+    <!-- Run Manager driver binding configuration -->
+    <sca:component name="runManagerDriverServiceComponent">
+        <sca:service name="runManagerDriverService">
+            <sca:interface.java interface="org.easysoa.proxy.core.api.run.RunManagerDriver" />
+            <frascati:binding.rest uri="http://localhost:8084/" />
+        </sca:service>
+        <sca:implementation.composite name="runManagerDriver.composite"/>
+    </sca:component>
+    <sca:wire source="runManagerDriverServiceComponent/runManager" target="handlerManagerServBaseComp/runManagerService"/>
+
+    <sca:wire source="proxyConfigurationServiceComponent/handlerManager" target="handlerManagerServBaseComp/handlerManagerComponentService"/>
+
+    <!-- Proxy configuration service -->
+    <sca:component name="proxyConfigurationServiceComponent">
+        <sca:service name="proxyConfigurationService">
+            <sca:interface.java interface="org.easysoa.proxy.core.api.configuration.HttpProxyConfigurationService" />
+        </sca:service>
+        <sca:implementation.java class="org.easysoa.proxy.configuration.DefaultHttpProxyConfigurationService" />
+        <sca:reference name="handlerManager">
+            <sca:interface.java interface="org.easysoa.proxy.core.api.exchangehandler.HandlerManager" />
+        </sca:reference>
+    </sca:component>
+
+    <!-- Proxy creation strategy -->
+    <!--<sca:component name="proxyCreationStrategyComponent">
+        <sca:service name="proxyCreationStrategyService">
+            <sca:interface.java interface="org.easysoa.proxy.strategy.ProxyCreationStrategy" />
+        </sca:service>
+        <sca:implementation.java class="org.easysoa.proxy.strategy.EmbeddedProxyCreationStrategy" />
+        <sca:reference name="configurationService">
+            <sca:interface.java interface="org.easysoa.proxy.core.api.configuration.HttpProxyConfigurationService" />
+        </sca:reference>
+    </sca:component>-->
+
+    <!-- Embedded Proxy factory strategy -->
+    <sca:component name="embeddedEasySOAGeneratedAppIdFactoryStrategyComponent">
+        <sca:service name="embeddedEasySOAGeneratedAppIdFactoryStrategyService">
+            <sca:interface.java interface="org.easysoa.proxy.strategy.EasySOAGeneratedAppIdFactoryStrategy" />
+        </sca:service>
+        <sca:implementation.java class="org.easysoa.proxy.strategy.EmbeddedEasySOAGeneratedAppIdFactoryStrategy" />
+    </sca:component>
+
+    <!--<sca:wire source="proxyCreationStrategyComponent/configurationService" target="proxyConfigurationServiceComponent/proxyConfigurationService"/>-->
+    <sca:wire source="proxyInfoComponent/embeddedEasySOAGeneratedAppIdFactoryStrategy" target="embeddedEasySOAGeneratedAppIdFactoryStrategyComponent/embeddedEasySOAGeneratedAppIdFactoryStrategyService"/>
+    <sca:wire source="proxyInfoComponent/defaultHttpProxyInstanceConfigurationService" target="proxyConfigurationServiceComponent/proxyConfigurationService"/>
+
+    <!-- TODO : this component in a separated composite -->
+    <!-- discovery proxy started automatically with easysoa ? -->
+    <!-- Proxy Info SOAP service -->
+    <sca:service name="HttpProxyManagementService" promote="proxyInfoComponent/proxyInfo">
+        <sca:interface.java interface="org.easysoa.proxy.core.api.management.HttpProxyManagementService"/>
+        <!-- frascati:binding.rest uri="http://localhost:9089/easysoa-proxy/HttpProxyManagementService/" / -->
+        <frascati:binding.rest uri="http://vmregistry:9089/easysoa-proxy/HttpProxyManagementService/" /><!-- 9080 error address already in use, TODO better in props or pom.xml -->
+    </sca:service>
+
+    <sca:component name="proxyInfoComponent">
+        <sca:implementation.java class="org.easysoa.proxy.management.HttpProxyManagementServiceImpl" />
+        <sca:service name="proxyInfo">
+            <sca:interface.java interface="org.easysoa.proxy.core.api.management.HttpProxyManagementService"/>
+        </sca:service>
+        <sca:reference name="embeddedEasySOAGeneratedAppIdFactoryStrategy">
+            <sca:interface.java interface="org.easysoa.proxy.strategy.EasySOAGeneratedAppIdFactoryStrategy" />
+        </sca:reference>
+        <sca:reference name="defaultHttpProxyInstanceConfigurationService">
+            <sca:interface.java interface="org.easysoa.proxy.core.api.configuration.HttpProxyConfigurationService" />
+        </sca:reference>
+    </sca:component>
+
+    <!-- TODO move in a GUI dedicated project ?? -->
+    <!-- Regroup with other proxy project UI's ? -->
+    <!--<sca:component name="httpProxyManagementUIComponent">
+        <sca:service name="httpProxyManagementUIService">
+            <sca:interface.java interface="javax.servlet.Servlet" />
+            <sca:binding.http uri="/management" />
+        </sca:service>
+        <property name="title">Http proxy management</property>
+        <web:implementation.velocity location="webContent" default="httpProxyManagement.html" />
+    </sca:component>-->
+
+</sca:composite>

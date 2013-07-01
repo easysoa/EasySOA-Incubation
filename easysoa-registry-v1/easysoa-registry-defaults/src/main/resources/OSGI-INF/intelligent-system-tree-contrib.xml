@@ -8,6 +8,7 @@
       <classifier name="application">org.easysoa.registry.systems.ApplicationClassifier</classifier>
       <classifier name="actors">org.easysoa.registry.systems.ActorsClassifier</classifier>
       <classifier name="host">org.easysoa.registry.systems.HostClassifier</classifier>
+      <classifier name="ip">org.easysoa.registry.systems.IpClassifier</classifier>
   </extension>
 
   <extension target="org.easysoa.registry.systems.IntelligentSystemTreeService" point="intelligentSystemTrees">
@@ -34,6 +35,10 @@
       <intelligentSystemTree name="hosts">
         <title>Hosts</title>
         <classifier>host</classifier>
+      </intelligentSystemTree>
+      <intelligentSystemTree name="ip">
+        <title>IP address</title>
+        <classifier>ip</classifier>
       </intelligentSystemTree>
   </extension>
 

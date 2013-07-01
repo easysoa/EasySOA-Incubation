@@ -36,4 +36,6 @@ public interface Endpoint extends SoaNode, RestInfoFacet, WsdlInfoFacet,
 
     String getEnvironment() throws Exception;
 
+    String getHost() throws Exception;
+
 }

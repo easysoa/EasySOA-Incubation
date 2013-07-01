@@ -30,7 +30,9 @@ import org.nuxeo.ecm.core.api.DocumentModel;
  *
  * @author jguillemotte
  */
-public class HostClassifier implements IntelligentSystemTreeClassifier {
+public class IpClassifier implements IntelligentSystemTreeClassifier {
+
+    public static final String DEFAULT_IP = "";
 
     @Override
     public void initialize(Map<String, String> params) {
@@ -44,14 +46,17 @@ public class HostClassifier implements IntelligentSystemTreeClassifier {
                 && !Endpoint.DOCTYPE.equals(model.getType())) {
             return null;
         }
-
-        // Return application name
+        String ip;
         if(EndpointConsumption.DOCTYPE.equals(model.getType())){
-            EndpointConsumption endpointConsumption = model.getAdapter(EndpointConsumption.class);
-            return endpointConsumption.getHost();
+            ip =  (String) model.getPropertyValue(EndpointConsumption.XPATH_CONSUMER_IP);
         } else {
-            Endpoint endpoint = model.getAdapter(Endpoint.class);
-            return endpoint.getHost();
+            ip = (String) model.getPropertyValue(Endpoint.XPATH_ENDP_IPADDRESS);
+        }
+        if (ip == null) {
+            return DEFAULT_IP;
+        }
+        else {
+            return ip;
         }
     }
 

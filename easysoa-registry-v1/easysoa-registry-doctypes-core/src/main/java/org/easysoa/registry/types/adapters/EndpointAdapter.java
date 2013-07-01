@@ -8,7 +8,7 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 
 
 /**
- * 
+ *
  * @author mkalam-alami
  *
  */
@@ -23,8 +23,14 @@ public class EndpointAdapter extends SoaNodeAdapter implements Endpoint {
     public String getDoctype() {
         return Endpoint.DOCTYPE;
     }
-    
+
+    @Override
     public String getEnvironment() throws PropertyException, ClientException {
         return (String) documentModel.getPropertyValue(XPATH_ENDP_ENVIRONMENT);
+    }
+
+    @Override
+    public String getHost() throws PropertyException, ClientException {
+        return (String) documentModel.getPropertyValue(XPATH_ENDP_HOST);
     }
 }

@@ -162,10 +162,14 @@ public class RepositoryManagementListener extends EventListenerBase implements E
 	        }
         }
         
+        
         if (!DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName()) || sourceDocument.isProxy()) {
+            DocumentModel removedProxyDocumentIfAny = null;
+            
         	if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName()) && sourceDocument.isProxy()) {
 				// (TODO necessarily live) Proxy deleted, update the true document, TODO if it is live
-				sourceDocument = documentManager.getSourceDocument(sourceDocument.getRef());
+                removedProxyDocumentIfAny = sourceDocument;
+				sourceDocument = documentManager.getSourceDocument(removedProxyDocumentIfAny.getRef());
 				if (sourceDocument.isVersion()) {
 				    return;
 				    // since source document is version, can't modify it ; but no need either,
@@ -177,7 +181,8 @@ public class RepositoryManagementListener extends EventListenerBase implements E
     		// Update parents info
         	if (!DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
 		    	try {
-		    	    documentModified = updateParentIdsMetadata(documentManager, documentService, sourceDocument) || documentModified;
+		    	    documentModified = updateParentIdsMetadata(documentManager, documentService,
+		    	            sourceDocument, removedProxyDocumentIfAny) || documentModified;
 				} catch (Exception e) {
 		        	logger.error("Failed to maintain parents information", e);
 				}
@@ -262,22 +267,30 @@ public class RepositoryManagementListener extends EventListenerBase implements E
 		// If a document has been created through the Nuxeo UI, move it to the repository and leave only a proxy
 
 		DocumentModel parentModel = documentManager.getDocument(sourceDocument.getParentRef());
-		String parentRepositoryPath = RepositoryHelper.getRepositoryPath(documentManager, parentModel);
+		String sourceRepositoryPath = RepositoryHelper.getRepositoryPath(documentManager, sourceDocument);
 		// NB. if proxy, may be of a different subproject than parent, but anyway its place is in its parent's
-		String parentSourceFolderPath = documentService.getSourceFolderPathBelowSubprojectRepository(
-				parentRepositoryPath, sourceDocument.getType());
+        String sourceFolderPath = documentService.getSourceFolderPathBelowSubprojectRepository(
+                RepositoryHelper.getRepositoryPath(documentManager, sourceDocument), sourceDocument.getType());
+        DocumentModel parentParentModel = documentManager.getParentDocument(documentManager.getParentDocument(sourceDocument.getRef()).getRef());
 		
 		SoaNodeId soaNodeId = documentService.createSoaNodeId(sourceDocument);
-		// if it's not a proxy and it's not at its place in the ITS...
-		if (!sourceDocument.isProxy() && !parentModel.getPathAsString().equals(parentSourceFolderPath)
+		
+		// if it's not a proxy
+		if (!sourceDocument.isProxy()
+		        ///&& !(sourceDocument.getType().equals(parentModel.getName()) // TODO RepositoryHelper.isRepository()
+		        ///&& Repository.DOCTYPE.equals(parentParentModel.getType()))
+		        // and it's not at its place in any ITS ("any" to allow copy / paste BUT only in standard ITS)...
+		        && !parentModel.getPathAsString().equals(sourceFolderPath) // (especially including the sourceDocument's)
+		        // NB. subproject meta is updated by its listener BEFORE this code (RepositoryManagementListener) happens
+		        
 				// or if it's a proxy not in the Repository but having just been copied below a proxy of SoaNode (ex. TaggingFolder)...
 		        || sourceDocument.isProxy() && parentModel.hasSchema(SoaNode.SCHEMA) && parentModel.isProxy()
-		        && !sourceDocument.getPathAsString().startsWith(parentRepositoryPath)) {
+		        && !sourceDocument.getPathAsString().startsWith(sourceRepositoryPath)) {
 		    
 		    documentService.getSourceFolder(documentManager, sourceDocument); // ensuring it exists
 		    
 		    DocumentModel repositoryDocument = documentService.findSoaNode(documentManager, soaNodeId);
-		    if (repositoryDocument != null && repositoryDocument.getPath().toString().startsWith(parentRepositoryPath)) {
+		    if (repositoryDocument != null && repositoryDocument.getPath().toString().startsWith(sourceRepositoryPath)) {
 		    	if (!repositoryDocument.getRef().equals(sourceDocument.getRef()) // also equals if one proxies the other ?!?!
 		    			&& !sourceDocument.isProxy()) { // if proxy, no differences and nothing to do
 
@@ -312,9 +325,9 @@ public class RepositoryManagementListener extends EventListenerBase implements E
 		        }
 		    }
 		    else {
-		        // Move to repository otherwise
+		        // Move to (the sourceDocument's) repository otherwise
 		    	repositoryDocument = documentManager.move(sourceDocument.getRef(),
-		            new PathRef(parentSourceFolderPath), sourceDocument.getName()); // NB. stays the same doc
+		            new PathRef(sourceFolderPath), sourceDocument.getName()); // NB. stays the same doc
 			    // NB. save required after move before creating proxy (?!)
 			    // Create a proxy at the expected location
 			    if (parentModel.isProxy() && documentService.isSoaNode(documentManager, parentModel.getType())) {
@@ -333,18 +346,25 @@ public class RepositoryManagementListener extends EventListenerBase implements E
 	}
 
 	private boolean updateParentIdsMetadata(CoreSession documentManager,
-			DocumentService documentService, DocumentModel sourceDocument) throws Exception {
+			DocumentService documentService, DocumentModel sourceDocument,
+			DocumentModel removedProxyDocumentIfAny) throws Exception {
 		DocumentModelList parentModels = documentService.findAllParents(documentManager, sourceDocument);
 		SoaNode sourceSoaNode = sourceDocument.getAdapter(SoaNode.class);
 		boolean changed = false;
 		DocumentModelList soaNodeParentModels = new DocumentModelListImpl();
 		Iterator<SoaNodeId> oldParentIdIt = sourceSoaNode.getParentIds().iterator();
 		for (DocumentModel parentModel : parentModels) {
-			if (documentService.isSoaNode(documentManager, parentModel.getType())) {
-				soaNodeParentModels.add(parentModel);
-				if (!oldParentIdIt.hasNext() || !parentModel.equals(oldParentIdIt.next())) {
-				    changed = true;
-				}
+		    if (documentService.isSoaNode(documentManager, parentModel.getType())) {
+			    if (removedProxyDocumentIfAny != null && parentModel.getRef().equals(removedProxyDocumentIfAny.getParentRef())) {
+	                // don't re-add it ! happens on ABOUT_TO_REMOVE event because findAllParents() still
+	                // returns proxyDocumentIfAny because it's not yet been removed
+	                changed = true;
+			    } else {
+			        soaNodeParentModels.add(parentModel);
+    				if (!changed && (!oldParentIdIt.hasNext() || !parentModel.equals(oldParentIdIt.next()))) {
+    				    changed = true;
+    				}
+			    }
 			}
 		}
 		if (changed) {

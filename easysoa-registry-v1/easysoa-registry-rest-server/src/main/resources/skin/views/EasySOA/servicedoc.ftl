@@ -90,17 +90,17 @@
           <#-- if businessService['businessservice:consumerActor']?has_content>
             <#assign bsConsumerActor = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', businessService['businessservice:consumerActor']))/>
           </#if -->
-		    Fournit le service business <a href="<@urlToLocalNuxeoDocumentsUi businessService/>"><@displayDocShort businessService/></a> :
+		    Fournit le service business <@displaySoaNodeLink businessService ""/> :
           
-          <#if !serviceimpl?has_content?has_content && !endpoint?has_content?has_content || isUserBusinessAnalyst>
+          <#if !serviceimpl?has_content && !endpoint?has_content || isUserBusinessAnalyst>
           <br/>
-           &nbsp;&nbsp;&nbsp;<@displayActor consumerActor 'Acteur consommateur' businessService/>
+           &nbsp;&nbsp;&nbsp;<@displaySoaNodeProp consumerActor 'Acteur consommateur' businessService/>
            <br/>
-           &nbsp;&nbsp;&nbsp;<@displayActor providerActor 'Acteur fournisseur' businessService/>
+           &nbsp;&nbsp;&nbsp;<@displaySoaNodeProp providerActor 'Acteur fournisseur' businessService/>
            <br/>
-           &nbsp;&nbsp;&nbsp;<@displaySoaNodeChildrenShort businessService, 'SLA'/>
+           &nbsp;&nbsp;&nbsp;<@displaySoaNodeChildrenShort businessService, 'SLA', 'RequirementsDocument'/>
            <br/>
-           &nbsp;&nbsp;&nbsp;<@displaySoaNodeChildrenShort businessService, 'OLA'/>
+           &nbsp;&nbsp;&nbsp;<@displaySoaNodeChildrenShort businessService, 'OLA', 'RequirementsDocument'/>
            <br/>
            &nbsp;&nbsp;&nbsp;Documents de spécification métier :
            <#-- assign businessServiceRef = new_f('org.nuxeo.ecm.core.api.IdRef', service['iserv:linkedBusinessService'])/ -->
@@ -148,15 +148,15 @@
 		
           <!-- TODO CONFIGURATION & LISTALL -->
           Définitions d'exigences formelles opérationnelles i.e.
-          <@displaySoaNodeChildrenShort service, 'OLA'/>
+          <@displaySoaNodeChildrenShort service, 'OLA', 'RequirementsDocument'/>
           <p/>
       
 		    <#if !businessService?has_content>
-              <@displayActor providerActor 'Acteur fournisseur' service/>
+              <@displaySoaNodeProp providerActor 'Acteur fournisseur' service/>
               <p/>
           </#if>
               
-          <@displayComponent component service/>
+          <@displaySoaNodeProp component 'Component' service/>
           <p/>
           
       <#else>
@@ -192,10 +192,10 @@
 		<p/>
 		-->
 		
-      <#if productionImpl?has_content>
+      <#if serviceimpl?has_content>
+         <#assign impl_operations=serviceimpl['impl:operations']><#-- or after productionImpl ? -->
+      <#elseif productionImpl?has_content>
          <#assign impl_operations=productionImpl['impl:operations']>
-      <#elseif serviceimpl?has_content>
-         <#assign impl_operations=serviceimpl['impl:operations']>
 		<#elseif actualImpls?has_content && actualImpls?size != 0>
 		   <#assign impl_operations=actualImpls[0]['impl:operations']>
 		<#else>
@@ -217,7 +217,7 @@
       
       <!-- TODO CONFIGURATION & LISTALL -->
       Fichiers fils de 
-      <@displaySoaNodeChildrenShort service, 'Resource'/><!-- TODO displayResource -->
+      <@displaySoaNodeChildrenShort service, 'Resource', ''/><!-- TODO displayResource -->
       <p/>
         
       Tous les documents fils :<br/>

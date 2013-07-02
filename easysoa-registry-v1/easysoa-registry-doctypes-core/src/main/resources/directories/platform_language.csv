@@ -1,3 +1,8 @@
 "id","label","obsolete","ordering"
 "Java","Java","0","0"
 "JavaScript","JavaScript","0","1"
+"C#","C#","0","2"
+"Talend Open Studio","Talend Open Studio","0","3"
+"FraSCAti Studio","FraSCAti Studio","0","4"
+"Eclipse JWT","Eclipse JWT","0","5"
+"Nuxeo Studio","Nuxeo Studio","0","6"

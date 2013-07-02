@@ -580,10 +580,11 @@
         <layout>subprojectnode</layout>
         <layout>soanode</layout>
         <layout>endpoint</layout>
+        <layout>environment</layout>
         <layout>wsdlinfo</layout>
         <layout>restinfo</layout>
         <layout>resourcedownloadinfo</layout>
-        <layout>environment</layout>
+        <layout>serviceimpl</layout><!-- to allow to set "guiding" values for the matching algorithm -->
         <layout>file</layout><!-- for actual service interface definition ex. WSDL --><!-- TODO to allow upload using CMIS in JWT export -->
         <layout>files</layout>
       </layouts>

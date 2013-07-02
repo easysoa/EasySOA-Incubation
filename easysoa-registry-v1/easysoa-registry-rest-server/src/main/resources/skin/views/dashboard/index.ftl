@@ -115,6 +115,46 @@
                             </tr>
                             </#list>
                         </table>
+                        
+                        <!--<h2>My endpoints</h2>-->
+                        <h2>Mes services implémentés et déployés</h2>
+
+                        <table class="table table-bordered" style="border:1px solid black">
+                            <tr>
+                                <!--<th>Service Implementation</th>
+                                <th></th>
+                                <th>Endpoint</th>
+                                <th>Matching</th>-->
+                                <th>Implémentations</th>
+                                <th></th>
+                                <th>Déploiements</th>
+                                <!--<th>Correspondance</th>-->
+                                <th>Liaison</th>
+                            </tr>
+                            <#list matchedEndpoints as matchedEndpoint>
+                            <tr>
+                                <td>
+                                  <#assign document = Root.getDocumentService().getServiceImplementationFromEndpoint(matchedEndpoint)/>
+                                  <#include "/views/dashboard/document.ftl">
+                                </td>
+                                <td><b>&gt;</b></td>
+                                <td>
+                                  <#-- Displaying the button to break matched link always (and not only when incompatible) : -->
+                                  <#-- if document['wsdl:wsdlPortTypeName'] != matchedEndpoint['wsdl:wsdlPortTypeName'] -->
+                                  <form style="float: right" method="post" action="/nuxeo/site/easysoa/dashboard?subprojectId=${subprojectId}&visibility=${visibility}">
+                                        <input type="submit" value="X" style="width: 30px" />
+                                        <input type="hidden" name="unmatchedModelId" value="${matchedEndpoint.id}" />
+                                    <input type="hidden" name="targetId" value="" />
+                                  </form>
+                                  <#-- /#if -->
+                                  <#assign document = matchedEndpoint>
+                                  <#include "/views/dashboard/document.ftl">
+                                </td>
+                                <td><span class="icon-ok" style="color:green"></span></td>
+                            </tr>
+                            </#list>
+                            <#-- TODO list undeployed services ? NO TODO rather list iserv, impl & endpoint on a single line -->
+                        </table>
 
                         <script>
                         $(document).ready(function() {

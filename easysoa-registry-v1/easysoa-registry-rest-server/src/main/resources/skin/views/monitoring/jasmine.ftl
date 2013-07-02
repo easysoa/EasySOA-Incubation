@@ -69,7 +69,7 @@
                             3 sondes :
                             <ul>
                                 <li>qos_probe : Sonde de type QoS Event (collector QoS Event développé pour EasySOA) permettant de mesurer les temps de latence et de réponse du service.</li>
-                                <li>cxfServices : Sonde permettant d'afficher l'état et des statistiques sur le web service "PrecomptePartnaireService".</li>
+                                <li>cxfServices : Sonde permettant d'afficher l'état et des statistiques sur le web service "PrecomptePartenaireService".</li>
                                 <li>poll-cpusun-pivotal : Sonde permettant d'afficher le taux d'utilisation CPU sur la plate-forme AXXX Pivotal.</li>
                             </ul>
                             <br/>
@@ -81,7 +81,7 @@
                             Plusieurs indicateurs dont:
                             <ul>
                                 <li>qos : de type QoS Event utilisé dans qos_probe.</li>
-                                <li>PrecomptePartnaireServiceStatus, PrecomptePartnaireServiceStats : de type jmx permettant de déterminer l'état du service et des compteurs statistiques (nb invocations, temps de réponse moyenne) concernant le service "PrecomptePartnaireService", en utilisant des MBeans cxf (en effet PrecomptePartnaireService est un WEB service cxf dans Talend).</li>
+                                <li>PrecomptePartenaireServiceStatus, PrecomptePartenaireServiceStats : de type jmx permettant de déterminer l'état du service et des compteurs statistiques (nb invocations, temps de réponse moyenne) concernant le service "PrecomptePartenaireService", en utilisant des MBeans cxf (en effet PrecomptePartenaireService est un WEB service cxf dans Talend).</li>
                                 <li>Des indicateurs jmx et des indicateurs de calcul afin de déterminer différents paramètres concernant l'utilisation CPU de la target pivotal. Par exemple, l'indicateur "currentCpuLoad" permet de connaître la charge CPU de pivotal.</li>
                             </ul>
                             <br/>
@@ -98,7 +98,7 @@
                         <a id="MonitoringWidget"></a>
                         <h3>Widget Monitoring</h3>
                         <p>
-                            Ce module permet de visualiser par des graphes les valeurs qui arrivent dans le BUS du serveur JASMINe (live monitoring) ou rejouer des donées de la base de données JASMINe.
+                            Ce module permet de visualiser par des graphes les valeurs qui arrivent dans le BUS du serveur JASMINe (live monitoring) ou rejouer des données de la base de données JASMINe.
                             <br/>
                             <!--
                             - Le 1er mode (live monitoring) peut être utilisé pour visualiser les valeurs des indicateurs CPU collectées par la probe poll-cpusun-pivotal.
@@ -119,7 +119,7 @@
                                         <li>Dans la fenêtre ainsi ouverte (label qos), dérouler le menu afin de passer le monitoring "Stopped" à "Replay Database". On peut laisser la période par défaut</li>
                                         <li>Appuyer sur le bouton Start</li>
                                     </ul>
-                                    2 courbes sont affichées : "creerPrecompre SOA Latency" et "creerPrecompre Response Time" correspondant aux valeurs de QoS de l'opération "creerPrecompte" du service "PrecomptePartnaireService".
+                                    2 courbes sont affichées : "creerPrecompre SOA Latency" et "creerPrecompre Response Time" correspondant aux valeurs de QoS de l'opération "creerPrecompte" du service "PrecomptePartenaireService".
                                 </li>
                                 <br/>
                                 <li>karaf_cpu.xml

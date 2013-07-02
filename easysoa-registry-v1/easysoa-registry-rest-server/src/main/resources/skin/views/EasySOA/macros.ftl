@@ -1,6 +1,6 @@
 <!--
-Nuxeo Freemarker quick reference :
-(see also )
+
+### Nuxeo WebEngine Freemarker templates quick reference :
 
 Available context variables are :
 (as seen in AbstractWebContext and at http://doc.nuxeo.com/pages/viewpage.action?pageId=11044493 )
@@ -23,6 +23,16 @@ Available context variables are :
 * Adapter : the adapter of the first WebEngine resource having one, starting from the controller
 * Session : CoreSession
 * & what's put by controller
+
+
+### Nuxeo Freemarker good practices :
+
+* Freemarker doesn't support null. So use instead something different from your normal variable
+type, like "" (empty string) if it is an object, and test which one it is using builtins like
+?string and ?is_hash (for objects). Don't use ?is_string on Java objects, because the may return
+?is_string ==  true ! Also, calls to Java methods returning null actually return an empty string. 
+* macro don't support optional parameters, so pass instead something you can test not to be your
+normal variable type, like an empty string if it should be an object (see above).
 
 -->
 

@@ -1,3 +1,5 @@
 "id","label","obsolete","ordering"
-"JAX-WS","JAX-WS","0","0"
-"JAX-RS","JAX-RS","0","1"
+"","none","0","0"
+"JAX-WS","JAX-WS","0","1"
+"JAX-RS","JAX-RS","0","2"
+"C# Web Service","C# Web Service","0","3"

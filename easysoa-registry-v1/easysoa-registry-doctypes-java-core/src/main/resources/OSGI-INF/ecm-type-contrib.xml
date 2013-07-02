@@ -76,6 +76,9 @@
           document_trash_content
         </contentView>
       </contentViews>
+      <subtypes>
+        <type>Endpoint</type>
+      </subtypes>
     </type>
     
     <!-- to allow creation of SoaNodes : -->

@@ -383,7 +383,7 @@ public class DiscoveryServiceImpl implements DiscoveryService {
                         new SoaNodeId(parentDocumentId.getSubprojectId(), pathStepType, IdUtils.generateStringId()),
                         parentDocument.getPathAsString());
                 parentDocument.setPropertyValue(SoaNode.XPATH_TITLE, "(Placeholder)");
-                parentDocument.setPropertyValue(SoaNode.XPATH_ISPLACEHOLDER, "1");
+                parentDocument.setPropertyValue(SoaNode.XPATH_ISPLACEHOLDER, true);
             }
         }
         return parentDocument.getPathAsString();

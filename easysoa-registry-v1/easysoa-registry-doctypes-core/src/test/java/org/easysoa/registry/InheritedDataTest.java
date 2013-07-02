@@ -91,7 +91,7 @@ public class InheritedDataTest extends AbstractRegistryTest {
 		myServiceImpl2.setTests(Arrays.asList("org.easysoa.Test3"));
 		documentManager.saveDocument(myServiceImpl2Model);
 		endpointProxyModel = documentService.findProxies(documentManager, MYENDPOINT_ID).get(0);
-		documentManager.move(endpointProxyModel.getRef(), myServiceImpl2Model.getRef(), endpointProxyModel.getName());
+		endpointProxyModel = documentManager.move(endpointProxyModel.getRef(), myServiceImpl2Model.getRef(), endpointProxyModel.getName());
 		documentManager.save();
 
 		myEndpointModel = documentService.findSoaNode(documentManager, MYENDPOINT_ID);
@@ -133,12 +133,24 @@ public class InheritedDataTest extends AbstractRegistryTest {
 	@Test
 	public void testInheritanceOnDeletion() throws Exception {
 		// ...and when endpoint is removed from impl
+
+        DocumentModelList results = documentManager.query("SELECT * FROM " + Endpoint.DOCTYPE
+                + " WHERE " + NXQL.ECM_ISPROXY + " = 0 AND "
+                + Endpoint.XPATH_PARENTSIDS + "/* = '" + MYIMPL2_ID + "'");
+        Assert.assertEquals("Checking state before removal...", 1, results.size());
+        
 		documentManager.removeDocument(endpointProxyModel.getRef());
 		documentManager.save();
 		myEndpointModel = documentService.findSoaNode(documentManager, MYENDPOINT_ID);
 		myEndpointServiceImpl = myEndpointModel.getAdapter(ServiceImplementation.class);
 		Assert.assertEquals("Inherited facets' metadata must be reset when child is deleted",
 				0, myEndpointServiceImpl.getTests().size());
+        
+        // ...Before testing it with a query (look for "the endpoints that expose a certain serviceimpl")
+		results = documentManager.query("SELECT * FROM " + Endpoint.DOCTYPE
+                + " WHERE " + NXQL.ECM_ISPROXY + " = 0 AND "
+                + Endpoint.XPATH_PARENTSIDS + "/* = '" + MYIMPL2_ID + "'");
+        Assert.assertEquals("Query of parent IDs on Endpoints must work after removal", 0, results.size());
 	}
 	
 	@Test

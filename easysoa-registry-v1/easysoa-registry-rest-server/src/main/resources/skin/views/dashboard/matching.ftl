@@ -1,5 +1,5 @@
 <#if unmatched?has_content>
-    <h3 style="color: red; border-color: red">${doctypeTitle}s à classer <!-- to classify--></h3>
+    <h3 style="color: red; border-color: red">${doctypeTitle} à classer <!-- to classify--></h3>
     <#assign matchingPrefix = doctypeTitle?replace(" ", "_") + "_to_" + targetDoctypeTitle?replace(" ", "_") + "_">
 
     <table class="table table-bordered" style="width: 500px; border: 1px solid black">

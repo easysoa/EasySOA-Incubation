@@ -191,8 +191,10 @@ public class RemoteRepositoryInit {
         System.out.println("RemoteRepositoryInit Specifications");
         
         //String specificationsSubprojectId = (String) getDocByPath(specificationsPath).getProperties().get("spnode:subproject");
-        Document specificationsSubprojectDoc = getSubproject(specificationsPath + "_v");
-        if (specificationsSubprojectDoc == null) {
+        Document specificationsSubprojectDoc = getSubproject(specificationsPath + "_v"); // trying to reuse existing one
+        if (specificationsSubprojectDoc != null) {
+            System.out.println("   reusing existing Specifications subproject");
+        } else {
             /*String specificationsPath = */createSubproject(projectPath, Subproject.SPECIFICATIONS_SUBPROJECT_NAME, null);
             specificationsSubprojectDoc = getSubproject(specificationsPath + "_v");
         }
@@ -310,7 +312,7 @@ public class RemoteRepositoryInit {
                 Platform.XPATH_IDE + "=" + "Visual Studio",
                 ////Platform.XPATH_LANGUAGE + "=" + "C#", //// not to prevent our Pivotal on FStudio impl
                 //Platform.XPATH_BUILD + "=" + "", // Visual Studio ?
-                ////Platform.XPATH_SERVICE_LANGUAGE + "=" + "C#", // ? //// not to prevent our Pivotal on FStudio impl
+                ////Platform.XPATH_SERVICE_LANGUAGE + "=" + "C#", //// not to prevent our Pivotal on FStudio impl
                 //Platform.XPATH_DELIVERABLE_NATURE + "=" + "Maven", // ?
                 //Platform.XPATH_DELIVERABLE_REPOSITORY_URL + "=" + "http://owsi-vm-easysoa-axxx-registry.accelance.net/maven", // simulated CI // ?
                 Platform.XPATH_SERVICE_PROTOCOL + "=" + "SOAP",
@@ -347,7 +349,7 @@ public class RemoteRepositoryInit {
                 Platform.XPATH_SERVICE_PROTOCOL + "=" + "SOAP",
                 Platform.XPATH_TRANSPORT_PROTOCOL + "=" + "HTTP",
                 Platform.XPATH_SERVICE_RUNTIME + "=" + "CXF", // TODO Talend (CXF) ??
-                Platform.XPATH_APP_SERVER_RUNTIME + "=" + "Karaf" // TODO Talend, OSGi Karaf ??
+                Platform.XPATH_APP_SERVER_RUNTIME + "=" + "Jetty" // can be seen in HTTP headers (else Talend, OSGi Karaf ?)
                         );
 
         

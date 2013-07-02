@@ -8,22 +8,26 @@
         </i>
     </p>
     <p><!-- style="font-size: 80%" -->
-        Phase : <@displayPhase document['spnode:subproject']/><br />
-        <#if document.type == 'InformationService' || document.type == 'ServiceImplementation'>
-            Port type: ${document['wsdl:wsdlPortTypeName']}<br />
-            Service: ${document['wsdl:wsdlServiceName']}<br />
+        <#-- Phase : <@displayPhaseIfOutsideContext document['spnode:subproject']/><br / --><#-- displayed in title -->
+        <#if document.facets?seq_contains('WsdlInfo')
+               && document['wsdl:wsdlPortTypeName']?has_content && document['wsdl:wsdlPortTypeName']?length != 0>
+            WSDL Port type: <span style="color:grey;">${document['wsdl:wsdlPortTypeName']}</span><br />
+            <#-- WSDL Service: ${document['wsdl:wsdlServiceName']}<br / -->
+        <#elseif document.facets?seq_contains('RestInfo')
+               && document['rest:path']?has_content && document['rest:path']?length != 0>
+            REST path : <span style="color:grey;">${document['rest:path']}</span><br />
         </#if>
    	<#if document.type == 'InformationService'>
-   	    Fournisseur: <@displayComponentOfService document/>
+   	    Fournisseur: <@displayProviderActorOfService document/>
+   	    &nbsp;&nbsp;
           Composant: <@displayComponentOfService document/>
-      <#elseif document.type?ends_with('ServiceImplementation')>
-          Langage : ${document['impl:language']}<br />
-          <#if document['impl:ismock'] = 'true'>
-              de test<br />
-          </#if>
-          <#if document.type == 'JavaServiceImplementation'>
+      <#elseif document.type?ends_with('ServiceImplementation')><#-- TODO better -->
+          Langage : ${document['impl:language']}
+          &nbsp;&nbsp;
+          Build : ${document['impl:build']}<br />
+          <#-- if document.type == 'JavaServiceImplementation'>
           Classe : ${document['javasi:implementationClass']}<br />
-          </#if>
+          </#if -->
    	</#if>
     </p>
 </div>

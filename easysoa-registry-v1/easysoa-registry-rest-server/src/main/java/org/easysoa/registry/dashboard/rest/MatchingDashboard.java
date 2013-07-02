@@ -63,6 +63,7 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 			for (DocumentModel infoService : allInfoServices) {
 				infoServicesById.put(infoService.getId(), infoService);
 			}
+            view.arg("infoServicesById", infoServicesById);
  
 			// Find matched impls & their infoservice
 			DocumentModelList matchedImpls = docService.query(session, DocumentService.NXQL_SELECT_FROM
@@ -70,7 +71,6 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 					+ ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE + " IS NOT NULL ",
 					 true, false);
 			view.arg("matchedImpls", matchedImpls);
-			view.arg("infoServicesById", infoServicesById);
 
 			// List unimplemented services
 			Map<String, DocumentModel> unimplementedServsMap = new HashMap<String, DocumentModel>(infoServicesById);
@@ -81,11 +81,18 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 			}
 			view.arg("unimplementedServs", unimplementedServsMap.values());
 
+            // Find matched endpoints & their impls
+            DocumentModelList matchedEndpoints = docService.query(session,
+                    DocumentService.NXQL_SELECT_FROM + Endpoint.DOCTYPE + subprojectCriteria
+                    + DocumentService.NXQL_AND + Endpoint.XPATH_PARENTSIDS + " LIKE '%"
+                    + ServiceImplementation.DOCTYPE + ":%' ", true, false);
+            view.arg("matchedEndpoints", matchedEndpoints);
+
 			// List endpoints without impls
 			DocumentModelList unmatchedEndpoints = docService.query(session,
 					DocumentService.NXQL_SELECT_FROM + Endpoint.DOCTYPE + subprojectCriteria
 					+ DocumentService.NXQL_AND + Endpoint.XPATH_PARENTSIDS + " NOT LIKE '%"
-					+ ServiceImplementation.DOCTYPE + ":%' ", true, false); // TODO not updated on delete endpoint proxy ?!!R
+					+ ServiceImplementation.DOCTYPE + ":%' ", true, false); // TODO not updated on delete endpoint proxy ?!!
 			view.arg("endpointWithoutImpl", unmatchedEndpoints);
 			
 			// List impls without infoservice
@@ -266,11 +273,11 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 				else { // isEndpoint
 		    		EndpointMatchingService matchingService = Framework.getService(EndpointMatchingService.class);
 					DocumentModel targetModel = (newTargetId != null) ? session.getDocument(new IdRef(targetId)) : null;
-		    		if (soaMetamodelService.isAssignable(targetModel.getType(), ServiceImplementation.DOCTYPE)) {
+		    		if (targetModel != null && soaMetamodelService.isAssignable(targetModel.getType(), ServiceImplementation.DOCTYPE)) {
 						matchingService.linkServiceImplementation(session, docService.createSoaNodeId(model),
 								((newTargetId != null) ? docService.createSoaNodeId(session.getDocument(new IdRef(newTargetId))) : null),
 								true/*, "strict"*/);
-		    		} else { // InformationService target, through placeholder
+		    		} else { // InformationService target through placeholder, or delete
 						matchingService.linkInformationServiceThroughPlaceholder(session, model, targetModel, true);
 		    		}
 				}

@@ -82,7 +82,7 @@
                     </#if>
                     </a></td>
                     <td><@displayMimeType service_files_file['file']['mimeType']/></td>
-                    <td>${service_files_file['file']['length']}</td>
+                    <td>${service_files_file['file']['length']} MB</td>
                     <td><span style="color:grey" title="${service_files_file['file']['digest']}">digest</td>
                 </tr>
         </#macro>
@@ -174,8 +174,8 @@
               </#if>
            </#list>
            <#if foundTestServiceCons?has_content>
-              <span title="${deliverable['title']} / ${foundTestServiceCons['javasc:consumerClass']}" style="color:grey;">testée
-              (${foundTestServiceCons['javasc:consumerClass']?substring(foundTestServiceCons['javasc:consumerClass']?last_index_of('.') + 1, foundTestServiceCons['javasc:consumerClass']?length)})</span> 
+              <span title="${deliverable['title']} / ${foundTestServiceCons['javasc:consumerClass']}" style="color:green;"><b>testée</b></span>
+              <span style="color:gray;">(${foundTestServiceCons['javasc:consumerClass']?substring(foundTestServiceCons['javasc:consumerClass']?last_index_of('.') + 1, foundTestServiceCons['javasc:consumerClass']?length)})</span> 
            <#else>
               <b><span style="color:red;">NON TESTEE</span></b>
            </#if>

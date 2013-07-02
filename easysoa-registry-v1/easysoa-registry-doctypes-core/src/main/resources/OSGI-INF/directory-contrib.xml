@@ -12,7 +12,7 @@
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/deliverable_nature.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <createTablePolicy>always</createTablePolicy><!-- always on_missing_columns -->
     </directory>
     
     <directory name="platform_serviceLanguage">
@@ -24,7 +24,7 @@
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/platform_serviceLanguage.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <createTablePolicy>always</createTablePolicy><!-- always on_missing_columns -->
     </directory>
     
     <directory name="platform_language">
@@ -36,7 +36,7 @@
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/platform_language.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <createTablePolicy>always</createTablePolicy><!-- always on_missing_columns -->
     </directory>
     
     <directory name="platform_build">
@@ -48,7 +48,7 @@
       <idField>id</idField>
       <autoincrementIdField>false</autoincrementIdField>
       <dataFile>directories/platform_build.csv</dataFile>
-      <createTablePolicy>on_missing_columns</createTablePolicy>
+      <createTablePolicy>always</createTablePolicy><!-- always on_missing_columns -->
     </directory>
     
   </extension>

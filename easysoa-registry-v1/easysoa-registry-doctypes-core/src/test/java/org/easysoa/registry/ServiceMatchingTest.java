@@ -416,7 +416,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         		foundImpl.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
     	
     	// Discover another impl
-        implProperties.put(ServiceImplementation.XPATH_ISMOCK, "1");
+        implProperties.put(ServiceImplementation.XPATH_ISMOCK, "true");
         discoveryService.runDiscovery(documentManager, CSP_SECOND_SERVICEIMPL_ID, implProperties, null);
 
         // check
@@ -459,7 +459,7 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
     public void testSimpleDiscoveryWithCriteria() throws Exception {
         // Discover service impl that won't match platform criteria TODO SHOULD STILL MATCH AT IS LEVEL
     	HashMap<String, Object> implN1Properties = new HashMap<String, Object>();
-    	implN1Properties.put(ServiceImplementation.XPATH_ISMOCK, "1");
+    	implN1Properties.put(ServiceImplementation.XPATH_ISMOCK, "true");
     	implN1Properties.put(ServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
     	implN1Properties.put(ServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, "{namespace}name");
     	implN1Properties.put(ServiceImplementation.XPATH_IMPL_LANGUAGE, Platform.LANGUAGE_JAVASCRIPT); // differs

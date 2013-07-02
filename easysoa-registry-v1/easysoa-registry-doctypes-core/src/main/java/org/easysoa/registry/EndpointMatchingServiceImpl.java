@@ -18,11 +18,13 @@ import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.EmptyDocumentModelList;
+import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.ecm.core.model.NoSuchDocumentException;
 import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.runtime.api.Framework;
 
@@ -76,24 +78,31 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
     	
     	// 1. IF A LINKED PLATFORM HAS BEEN PROVIDED FOR THE ENDPOINT BY THE PROBE EX. WEB DISCO
     	if (!skipPlatformMatching) {
+    		String platformUuid = (String) endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM);
     	    if (/*endpoint.hasSchema(Endpoint.SCHEMA_ENDPOINT) // always
-    	            && */endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM) != null) {
-    	        
-    		DocumentModel platformDocument = documentManager.getDocument(
-    				new IdRef((String) endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM)));
-    		
-			for (String property : MatchingHelper.implPlatformPropsToMatch ) {
-		    	query.addConstraintMatchCriteriaIfSet(property,
-		    			platformDocument.getPropertyValue(property));
-    		}
-            // TODO up to runtime platform constraints
-			
-			// TODO rather match platform ID (if any) than criteria
-	    	//query.addConstraintMatchCriteriaWithAltIfSet("iserv:linkedPlatform", "impl:platform",
-	    	//		endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM));
+    	            && */platformUuid != null && platformUuid.length() != 0) {
+    	        try {
+    	            DocumentModel platformDocument = documentManager.getDocument(new IdRef(platformUuid));
+                    
+                    for (String property : MatchingHelper.implPlatformPropsToMatch ) {
+                        query.addConstraintMatchCriteriaIfSet(property,
+                                platformDocument.getPropertyValue(property));
+                    }
+                    // TODO up to runtime platform constraints
+                    
+                    // TODO rather match platform ID (if any) than criteria
+                    //query.addConstraintMatchCriteriaWithAltIfSet("iserv:linkedPlatform", "impl:platform",
+                    //		endpoint.getPropertyValue(Endpoint.XPATH_LINKED_PLATFORM));
+                    
+                } catch (ClientException cex) {
+                    if (cex.getCause() instanceof NoSuchDocumentException) {
+                       throw new ClientException("Can't find platform with id " + platformUuid
+                               + " looking for implementations of endpoint " + endpoint, cex);
+                    }
+                    throw cex;
+                }
+    	    }
 
-            }
-    	
     	// TODO ELSE MATCH DISCOVERED PLATFORM CRITERIA OF THE ENDPOINT
     	// AGAINST THE IMPL'S SERVICE'S PLATFORM IF ANY ELSE AGAINST THE IMPL'S DISCOVERED PLATFORM CRITERIA
     	// TODO make it possible in disco (?) & model (yes)
@@ -309,9 +318,10 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 			// Remove link
 			DocumentService docService = Framework.getService(DocumentService.class);
 			DocumentModelList endpointProxies = docService.findProxies(documentManager, endpointId);
+            SoaMetamodelService soaMetamodelService = Framework.getService(SoaMetamodelService.class);
 			for (DocumentModel endpointProxy : endpointProxies) {
 				DocumentModel proxyParent = documentManager.getParentDocument(endpointProxy.getRef());
-				if (ServiceImplementation.DOCTYPE.equals(proxyParent.getType())) {
+	            if (soaMetamodelService.isAssignable(proxyParent.getType(), ServiceImplementation.DOCTYPE)) {
 					documentManager.removeDocument(endpointProxy.getRef());
 				}
 			}
@@ -331,14 +341,15 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 			// Remove link TODO useful ???
 			DocumentModel serviceimpl = docService.getServiceImplementationFromEndpoint(endpoint);
 			SoaNodeId endpointId = docService.createSoaNodeId(endpoint);
-			DocumentModelList endpointProxies = docService.findProxies(documentManager, endpointId );
+			DocumentModelList endpointProxies = docService.findProxies(documentManager, endpointId);
+            SoaMetamodelService soaMetamodelService = Framework.getService(SoaMetamodelService.class);
 			for (DocumentModel endpointProxy : endpointProxies) {
 				DocumentModel proxyParent = documentManager.getParentDocument(endpointProxy.getRef());
-				if (ServiceImplementation.DOCTYPE.equals(proxyParent.getType())) {
+				if (soaMetamodelService.isAssignable(proxyParent.getType(), ServiceImplementation.DOCTYPE)) {
 					documentManager.removeDocument(endpointProxy.getRef());
 				}
 			}
-			if (serviceimpl.getPropertyValue(ServiceImplementation.XPATH_ISPLACEHOLDER) == "true") {
+			if ((Boolean) serviceimpl.getPropertyValue(ServiceImplementation.XPATH_ISPLACEHOLDER) != true) {
 				List<DocumentModel> remainingEndpoints = docService.getEndpointsOfImplementation(serviceimpl, null); // in all subprojects (??)
 				if (remainingEndpoints.isEmpty()) {
 					// remove placeholder impl

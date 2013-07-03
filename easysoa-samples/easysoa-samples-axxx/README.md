@@ -40,7 +40,8 @@ in rest-server, DashboardMatchingSamples fills registry with data that helps sho
 * on all VMs, add to the /etc/hosts file hostname definitions for vmregistry, vmpivotal & vmapv targeting their real IP (see example in the the axxx-deploy/hosts file)
 * do the remaining host configuration work. If you only want it to work on your own computer, the simplest is to put in your own /etc/hosts file the vmregistry, vmpivotal & vmapv hosts with their real IPs. But if you want it to work for all out of the box, you have to :
  * on vmregistry, in ~/install/nuxeo/nxserver/config/easysoa.properties , change the JASMINe URL to the REAL vmpivotal host : jasmine.url=http://REALHOST.NET:9100/jasmine/
- * on vmregistry, in ~/install/apache-tomcat-6.0.36-proxy/webapps/easysoa-proxy/WEB-INF/classes/httpDiscoveryProxy.composite, change the Proxy host to the REAL vmregistry host : ```<tuscany:binding.http uri="http://REALHOST.NET:8082/" />```. To do that, you have to first unarchive the Proxy WAR (ex. by starting Tomcat once) and remove it (else FraSCAti won't start up because of doubled definitions).
+ * on vmregistry, in ~/install/apache-tomcat-6.0.36-proxy/webapps/easysoa-proxy/WEB-INF/classes/httpDiscoveryProxy.properties , change the password (nuxeo.auth.password) to the real one
+ * NOT MANDATORY on vmregistry, in ~/install/apache-tomcat-6.0.36-proxy/webapps/easysoa-proxy/WEB-INF/classes/httpDiscoveryProxy.composite, change the Proxy host to the REAL vmregistry host : ```<tuscany:binding.http uri="http://REALHOST.NET:8082/" />```. To do that, you have to first unarchive the Proxy WAR (ex. by starting Tomcat once) and remove it (else FraSCAti won't start up because of doubled definitions).
 * start & test everything everything : check that processes are up, web UIs, web services URLs, click on all features from the http://vmregistry:8080/nuxeo/easysoa/site to test them.
  
 

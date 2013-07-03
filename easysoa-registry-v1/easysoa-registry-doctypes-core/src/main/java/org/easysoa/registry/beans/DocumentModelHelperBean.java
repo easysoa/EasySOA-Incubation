@@ -57,6 +57,9 @@ public class DocumentModelHelperBean {
     }
 
     public DocumentModel safeGetDocument(String pathOrId) throws Exception {
+        if (pathOrId == null || pathOrId.length() == 0) {
+            return null;
+        }
     	DocumentRef ref;
     	if (pathOrId.contains("/")) {
     		ref = new PathRef(pathOrId);

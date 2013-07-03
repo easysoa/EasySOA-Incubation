@@ -113,15 +113,18 @@ app.configure(function(){
     var context = unescape(req.param('subprojectId', ''));
     var visibility = unescape(req.param('visibility', ''));
     var jsFile = fs.readFileSync("../www/js/bookmarklet/discovery.js","utf8");
+    
+    // replacing variables of our poor man's template script :
+    // NB. /g regex flag allows to do a replaceAll, see http://stackoverflow.com/questions/1144783/replacing-all-occurrences-of-a-string-in-javascript
     //jsFile = jsFile.replace("#{host}", webServer.address().address); // this method webServer.address().address is useless, return always local loopback 0.0.0.0
-    jsFile = jsFile.replace("#{host}", getClientHost(req)); // better than networkIPAddress because works offline
-    jsFile = jsFile.replace("#{port}", webServer.address().port);
-    jsFile = jsFile.replace("#{context-display}", utils.formatPhaseForDisplay(context)); // For display
-    jsFile = jsFile.replace("#{context}", escape(context)); // For input field, escape required to avoid encoding problem
+    jsFile = jsFile.replace(/#{webDiscoveryUrl}/g, "http://" + getClientHost(req) + ":" + webServer.address().port);// better than networkIPAddress because works offline
+    jsFile = jsFile.replace(/#{context-escaped}/g, escape(context)); // For input field, escape required to avoid encoding problem
+    jsFile = jsFile.replace(/#{context-display}/g, escape(utils.formatPhaseForDisplay(context))); // For display, idem
     // 3 following replace for matching dashboard link
-    jsFile = jsFile.replace("#{nuxeoUrl}", NUXEO_URL);
-    jsFile = jsFile.replace("#{context}", context); // Escape not required in this case (link to matching)
-    jsFile = jsFile.replace("#{visibility}", visibility);
+    jsFile = jsFile.replace(/#{nuxeoUrl}/g, NUXEO_URL);
+    jsFile = jsFile.replace(/#{context}/g, context); // Escape not required in this case (link to matching)
+    jsFile = jsFile.replace(/#{visibility}/g, visibility);
+    
     res.writeHead(200);
     console.log("[DEBUG] ", "End of discovery.js template function");
     res.end(jsFile);

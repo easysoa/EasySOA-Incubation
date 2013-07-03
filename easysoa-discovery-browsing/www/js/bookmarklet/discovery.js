@@ -1,4 +1,11 @@
 /**
+ * Bookmarklet script template
+ * 
+ * rendered by easysoa.js
+ * params are : host, port, context, context-escaped, context-display, visibility
+ */
+
+/**
  * Globals & constants
  */
 
@@ -11,7 +18,7 @@ var frameDragged = false;
 
 var LIBS_POLLING_INTERVAL = 20;
 //var EASYSOA_WEB = 'http://localhost:8083';
-var EASYSOA_WEB = 'http://#{host}:#{port}';
+var EASYSOA_WEB = '#{webDiscoveryUrl}';
 
 /**
  * Load libs
@@ -148,7 +155,6 @@ function runServiceFinder(theUrl, localScrapingLinks, localScrapingIndex) {
 
 function appendWSDLs(data) {
 	var $resultsDiv = jQuery('#easysoa-tpl-results');
-	var wsdlEntryTpl = templates['wsdl'];
 	for (key in data.foundLinks) {
 		var newWSDL = {
 			id: wsdls.length,
@@ -162,7 +168,7 @@ function appendWSDLs(data) {
 		if (!wsdlMap[newWSDL.serviceURL]) {
 			wsdls.push(newWSDL);
 			wsdlMap[newWSDL.serviceURL] = newWSDL;
-			$resultsDiv.append(wsdlEntryTpl(newWSDL));
+			$resultsDiv.append(templates['wsdl'](newWSDL));
 			$resultsDiv.append(templates['afterWsdls'](null));
 		}
 	}
@@ -203,7 +209,7 @@ function sendWSDL(domElement) {
 	  var environmentName = jQuery('#easysoa-environment').attr('value');
 	  var endpointUrl = wsdlToSend.serviceURL.replace('?wsdl', '').replace('?WSDL', '');
 
-        var context = unescape(jQuery('#easysoa-context').attr('value'));
+        var context = jQuery('#easysoa-context').attr('value');
 
 		jQuery.ajax({
 			url : EASYSOA_WEB + '/nuxeo/registry/post',
@@ -290,9 +296,13 @@ function initTemplates() {
 
 	templates['afterWsdls'] = underscore.template(
 	'<div class="easysoa-doc">Environment name: <input type="text" id="easysoa-environment" value="Production" /></div>' +
-        '<div class="easysoa-doc">Phase: #{context-display}<input type="hidden" id="easysoa-context" value="#{context}"/></div>' +
-        '<div class="easysoa-doc"><a href="#{nuxeoUrl}/site/easysoa/dashboard/?subprojectId=#{context}&visibility=#{visibility}" target="_blank" title="Une fois enregistrés, vous pouvez regler la correspondance entre les services et leurs implémentations et définitions dans l\'outil de réconciliation">Mise en correspondance</a></div>'
+        '<div class="easysoa-doc">Phase: <%= unescape(\'#{context-display}\') %><input type="hidden" id="easysoa-context" value="<%= unescape(\'#{context-escaped}\') %>"/></div>' +
+        '<div class="easysoa-doc"><a href="#{nuxeoUrl}/site/easysoa/dashboard/?subprojectId=<%= unescape(\'#{context}\') %>&visibility=#{visibility}" target="_blank" title="Une fois enregistrés, vous pouvez regler la correspondance entre les services et leurs implémentations et définitions dans l\'outil de réconciliation">Mise en correspondance</a></div>'
 	);
+	// NB. the more in depth following code also works for display :
+	// '<% if (\'é\'.length==2) print(unescape(\'#{context}\')); else print(decodeURIComponent(\'#{context}\')); %>'
+	// i.e. if not utf8 unescape (which actually works also in the second case), else if utf8 decode
+	// see also http://benjol.blogspot.fr/2007/01/detect-bad-encoding-javascript-html-utf.html
 }
 
 function runTemplate(name, data) {

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-   <title>EasySOA Cartographie - Documentation</title>
+   <title>EasySOA Cartographie - Fiche Service</title>
    <meta charset="utf-8" />
    
    <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
@@ -47,23 +47,29 @@
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt="">
                
-               <h3>Documentation des services</h3>
+               <h3>Fiches Service</h3>
       <p/>
       
       <@displayServicesShort services subprojectId visibility/>
       <p/>
       <p/>
+
+            </div>
+         </li>
+
+
+         <li class="span12">
+            <div class="thumbnail">
+               <img data-src="holder.js/300x200" alt="">
                
-               <#-- TODO LATER uncomment
-               but when deliverable = getSoaNodeParent(impl) returns null, Freemarker can't unwrap it !!
-               so has to put deliverable etc. as view args or in adapters... -->
-               <h3>Implémentations de services</h3>
+               <h3>Accès direct à leurs...</h3>
+               <h4>implémentations</h4>
                <p/>
                
                <@displayImplementationsShort impls subprojectId visibility/>
                <p/>
       <p/>
-               <h3>Déploiements de services</h3>
+               <h4>déploiements</h4>
                <p/>
                
                <@displayEndpointsShort endpoints subprojectId visibility/>

@@ -59,8 +59,8 @@
             <@displaySoaNodeTitle "" "Component"/>
         </#if>
     </#macro>
-
-    <#macro displayServiceTitle service subprojectId visibility>
+    
+    <#macro displayServiceTitleWithoutPhase service subprojectId visibility>
         <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">
         
         <#assign phaseName =  Root.parseSubprojectId(service['spnode:subproject']).getSubprojectName()/>
@@ -90,9 +90,13 @@
         <span title="SOA ID: ${service['soan:name']}"><@displaySoaNodeTitle service ""/></span>
         </a>
         <#if service['soan:isplaceholder'] = 'true'> (inconnu)<#elseif phaseName != 'Specifications'> (technique)</#if>
+        </span>
+    </#macro>
+    
+    <#macro displayServiceTitle service subprojectId visibility>
+        <@displayServiceTitleWithoutPhase service subprojectId visibility/>
         <span style="color:grey; font-style: italic;"> - <@displayPhaseIfOutsideContext service['spnode:subproject']/>
         <#--  (v${service.versionLabel}) -->
-        </span>
     </#macro>
     
     <#macro displayActorLink actor>
@@ -143,6 +147,11 @@
           <img src="/nuxeo/icons/${iconType?lower_case}.png" alt="${iconType}"/>
           (inconnu)
        <#else>
+           <@displaySoaNodeText soaNode iconType soaNode.title/>
+       </#if>
+    </#macro>
+    
+    <#macro displaySoaNodeText soaNode iconType text>
           <#if iconType?length = 0>
               <#assign actualIconType = soaNode.type?lower_case/>
           <#else>
@@ -150,9 +159,8 @@
           </#if>
           <img src="/nuxeo/icons/${actualIconType}.png" alt="${soaNode.type}"/>
           <span title="<@displayPhaseIfOutsideContext soaNode['spnode:subproject']/>">
-          ${soaNode.title}
+          ${text}
           </span>
-       </#if>
     </#macro>
     
     <#macro displaySoaNodeName soaNode iconType>
@@ -173,7 +181,7 @@
        </#if>
     </#macro>
 
-    <#macro displayImplementationTitle serviceimpl subprojectId visibility>
+    <#macro displayImplementationTitleWithoutPhase serviceimpl subprojectId visibility>
         <span title="Phase : <@displayPhase serviceimpl['spnode:subproject']/>" style="color:grey; font-style: italic;">
         <#assign deliverable = Root.getDocumentService().getSoaNodeParent(serviceimpl, 'Deliverable')/>
         <#if deliverable?has_content && deliverable['del:application']?has_content && deliverable['del:application']?length != 0>
@@ -182,22 +190,26 @@
             <@displayProviderActorAndComponent serviceimpl subprojectId visibility/>
         </#if>
         / <@displaySoaNodeName deliverable 'Deliverable'/>
-        </span>
         /
+        </span>
         <a href="<@urlToFicheSOA serviceimpl subprojectId visibility/>">
         <span title="SOA ID: ${serviceimpl['soan:name']}"><@displaySoaNodeTitle serviceimpl "ServiceImplementation"/></span>
         </a>
         <#if serviceimpl['soan:isplaceholder'] = 'true'> (inconnue)</#if>
         <#if serviceimpl['impl:ismock'] = 'true'> (test)</#if>
+    </#macro>
+    
+    <#macro displayImplementationTitle serviceimpl subprojectId visibility>
+        <@displayImplementationTitleWithoutPhase serviceimpl subprojectId visibility/>
         <span style="color:grey; font-style: italic;"> - <@displayPhaseIfOutsideContext serviceimpl['spnode:subproject']/>
         <#--  (v${serviceimpl.versionLabel}) -->
         </span>
     </#macro>
 
-    <#macro displayEndpointTitle endpoint subprojectId visibility>
+    <#macro displayEndpointTitleWithoutPhase endpoint subprojectId visibility>
         <span title="Phase : <@displayPhase endpoint['spnode:subproject']/>" style="color:grey; font-style: italic;">
         <@displayEnvironment endpoint['env:environment']/> /
-        <@displayHost endpoint['endp:host']/> /  
+        <#-- @displayHost endpoint['endp:host']/> / --><#-- NO already in endp:url -->  
         
         <#assign serviceimpl = Root.getDocumentService().getServiceImplementationFromEndpoint(endpoint)/><#-- TODO if none ?? -->
         <#if serviceimpl?has_content>
@@ -208,13 +220,19 @@
         <#else>
             <@displayProviderActorAndComponent endpoint subprojectId visibility/>
         </#if>
-        </span>
         /
+        </span>
         <a href="<@urlToFicheSOA endpoint subprojectId visibility/>">
-        <span title="SOA ID: ${endpoint['soan:name']}"><@displaySoaNodeTitle endpoint ""/></span>
+        <span title="SOA ID: ${endpoint['soan:name']}">
+        <#-- @displaySoaNodeTitle endpoint ""/ --><@displaySoaNodeText endpoint "" endpoint['endp:url']/>
+        </span>
         </a>
         <#if endpoint['soan:isplaceholder'] = 'true'> (inconnu)</#if>
         <#if endpoint['impl:ismock'] = 'true'> (test)</#if>
+    </#macro>
+    
+    <#macro displayEndpointTitle endpoint subprojectId visibility>
+        <@displayEndpointTitleWithoutPhase endpoint subprojectId visibility/>
         <span style="color:grey; font-style: italic;"> - <@displayPhaseIfOutsideContext endpoint['spnode:subproject']/>
         <#--  (v${endpoint.versionLabel}) -->
         </span>

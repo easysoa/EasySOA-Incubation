@@ -17,6 +17,7 @@
         <@urlToLocalNuxeoDocumentsUiShort doc['path']/>
     </#macro>
     <#macro urlToLocalNuxeoDocumentsUiShort doc>/nuxeo/nxpath/default<@escapeUrl doc/>@view_documents</#macro>
+    <#macro urlToLocalNuxeoDocumentsUiEdit doc><@urlToLocalNuxeoDocumentsUiShort doc/>?tabIds=%3ATAB_EDIT</#macro>
     <#macro urlToLocalNuxeoDownload doc>/nuxeo/nxfile/default/${doc.id}/blobholder:0/${doc['file:content']['filename']}</#macro>
     <#macro urlToLocalNuxeoDownloadAttachment doc i>/nuxeo/nxfile/default/${doc.id}/files:files/${i}/file/${doc['files:files'][i]['filename']}</#macro>
     <#macro urlToLocalNuxeoPreview doc>/nuxeo/nxdoc/default/${doc.id}/preview_popup</#macro>

@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-   <title>EasySOA Cartographie - Documentation</title>
+   <title>EasySOA Cartographie - Fiche Service</title>
 	<meta charset="utf-8" />
 	
    <!-- custom style and scripts -->

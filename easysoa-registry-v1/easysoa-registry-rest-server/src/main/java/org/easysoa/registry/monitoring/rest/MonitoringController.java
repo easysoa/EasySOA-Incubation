@@ -101,7 +101,11 @@ public class MonitoringController extends EasysoaModuleRoot {
                 .arg("endpoints", endpoints)
                 .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
-                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId))
+                
+                .arg("new_f", new freemarker.template.utility.ObjectConstructor());
+                // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
+                // and not "new" else conflicts with Nuxeo's NewMethod helper
     }
 
     @GET
@@ -145,7 +149,7 @@ public class MonitoringController extends EasysoaModuleRoot {
             }*/
             // Get the SLA or OLA indicator in the Nuxeo registry
             slaOrOla = docService.findSoaNode(session, new SoaNodeId(slaOrOlaSubprojectId, org.easysoa.registry.types.SlaOrOlaIndicator.SLA_DOCTYPE, indicator.getSlaOrOlaName()), true);
-            if(slaOrOla == null){
+            if (slaOrOla == null){
                 slaOrOla = docService.findSoaNode(session, new SoaNodeId(slaOrOlaSubprojectId, org.easysoa.registry.types.SlaOrOlaIndicator.OLA_DOCTYPE, indicator.getSlaOrOlaName()), true);
             }
 
@@ -163,9 +167,13 @@ public class MonitoringController extends EasysoaModuleRoot {
         view.arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
                 .arg("contextInfo", ContextData.getVersionData(session, subprojectId))
-                .arg("service", service.getName())
+                .arg("service", service)
                 .arg("servicePath", service.getPathAsString())
-                .arg("endpoint", endpoint);
+                .arg("endpoint", endpoint)
+                
+                .arg("new_f", new freemarker.template.utility.ObjectConstructor());
+                // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
+                // and not "new" else conflicts with Nuxeo's NewMethod helper
 
         return view;
     }
@@ -186,7 +194,11 @@ public class MonitoringController extends EasysoaModuleRoot {
                 .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
                 .arg("indicators", indicators)
-                .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
+                .arg("contextInfo", ContextData.getVersionData(session, subprojectId))
+                
+                .arg("new_f", new freemarker.template.utility.ObjectConstructor());
+                // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
+                // and not "new" else conflicts with Nuxeo's NewMethod helper
     }
 
     @GET
@@ -199,7 +211,11 @@ public class MonitoringController extends EasysoaModuleRoot {
         Template view = getView("jasmine");
         view.arg("subprojectId", subProjectId)
                 .arg("visibility", visibility)
-                .arg("contextInfo", ContextData.getVersionData(session, subProjectId));
+                .arg("contextInfo", ContextData.getVersionData(session, subProjectId))
+                
+                .arg("new_f", new freemarker.template.utility.ObjectConstructor());
+                // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
+                // and not "new" else conflicts with Nuxeo's NewMethod helper
 
         return view;
     }

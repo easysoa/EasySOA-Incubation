@@ -168,16 +168,17 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
 
         return getView("services")
                 .arg("services", services)
+                .arg("impls", impls)
+                .arg("endpoints", endpoints)
+                
                 .arg("tags", tags)
                 .arg("tagId2Services", tagId2Services)
                 //.arg("tagId2ServiceNbs", tagId2ServiceNbs)
                 .arg("untaggedServices", untaggedServices)
+                
                 .arg("new_f", new freemarker.template.utility.ObjectConstructor())
                 // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
                 // and not "new" else conflicts with Nuxeo's NewMethod helper
-                
-                .arg("impls", impls)
-                .arg("endpoints", endpoints)
                 
                 .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)

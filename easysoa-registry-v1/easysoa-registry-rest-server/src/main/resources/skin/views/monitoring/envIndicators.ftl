@@ -17,6 +17,7 @@
 
     <body>
         <#include "/views/EasySOA/macros.ftl">
+        <#include "/views/EasySOA/docMacros.ftl">
         <#include "/views/monitoring/macros.ftl">
 	<div id="header">
             <div id="headerContents">
@@ -36,8 +37,11 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h2>Indicateurs pour le service ${service}<a href="<@urlToLocalNuxeoDocumentsUiShort servicePath/>" target="_blank"><i class="icon-file-alt"></i></a></h2>
-                        Déployé en ${endpoint['env:environment']} à ${endpoint['endp:url']}
+                        <h3>Indicateurs pour le service <@displayServiceTitleWithoutPhase service subprojectId visibility/><a href="<@urlToLocalNuxeoDocumentsUiShort servicePath/>" target="_blank"><i class="icon-file-alt"></i></a></h3>
+                        <span><#-- to solve img pb just below Bootstrap .thumbnail (actually display:block) -->
+                        <#-- OLD Déployé en <@displayEnvironment endpoint['env:environment']/> à ${endpoint['endp:url']} -->
+                        Déployé à <@displayEndpointTitleWithoutPhase endpoint subprojectId visibility/>
+                        </span>
                         <p>
                         <@displayIndicatorsShort indicators/>
                         </p>

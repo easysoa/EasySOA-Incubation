@@ -1,7 +1,7 @@
 
         
-    <#macro displayEndpointShort endpoint subprojectId visibility>
-         <li>Déployé en ${endpoint['env:environment']} à <a href="${Root.path}/envIndicators/${endpoint.id}?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint['endp:url']}</a></li>
+    <#macro displayEndpointEnvUrl endpoint subprojectId visibility>
+         Déployé en ${endpoint['env:environment']} à <a href="${Root.path}/envIndicators/${endpoint.id}?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint['endp:url']}</a>
     </#macro>
         
     <#macro displayEndpointsShort endpoints subprojectId visibility>
@@ -16,7 +16,7 @@
                     <div class="accordion-inner">
                         <ul>
                             <#list endpoints[service] as endpoint>
-                                <@displayEndpointShort endpoint subprojectId visibility/>
+                                <li><@displayEndpointEnvUrl endpoint subprojectId visibility/></li>
                             </#list>
                         </ul>
                     </div>
@@ -42,7 +42,7 @@
     <#macro displayIndicatorShort indicator>
         <tr>
             <td>
-                <a href="<@urlToLocalNuxeoDocumentsUiShort indicator.path/>?tabIds=%3ATAB_EDIT" target="_blank"><i class="icon-edit"></i></a>
+                <a href="<@urlToLocalNuxeoDocumentsUiEdit indicator.path/>" target="_blank"><i class="icon-edit"></i></a>
                 <a href="#" data-toggle="tooltip" data-placement="top" title="${indicator.description}">${indicator.slaOrOlaName}</a>
             </td>
             <td>${indicator.timestamp?datetime?string.long}</td>

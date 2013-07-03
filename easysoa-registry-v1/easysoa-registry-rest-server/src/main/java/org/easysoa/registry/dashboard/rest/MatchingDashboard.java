@@ -202,7 +202,7 @@ public class MatchingDashboard extends EasysoaModuleRoot {
 					ServiceImplementation.DOCTYPE : 
 					InformationService.DOCTYPE;
 			String modelElementSubprojectId = (String) model.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
-			String subprojectCriteria = " AND " + NXQLQueryHelper.buildSubprojectCriteria(session, modelElementSubprojectId, true);
+			String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, modelElementSubprojectId, true);
 			// TODO or according to model element type ??
 			// TODO or both subproject criteria intersected ?
 			//		NXQLQueryHelper.buildSubprojectPathCriteria(session, subprojectId, visibility));

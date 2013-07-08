@@ -15,6 +15,7 @@ import org.easysoa.registry.types.SoftwareComponent;
 import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
@@ -46,6 +47,20 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
     private static Map<String, Object> properties;
     
     private static DocumentModel foundEndpoint;
+
+    @Before
+    public void setUp() {
+        super.setUp();
+        if (documentService == null) {
+            throw new RuntimeException("documentService not inited");
+        }
+        if (discoveryService == null) {
+            throw new RuntimeException("discoveryService not inited");
+        }
+        if (soaMetamodelService == null) {
+            throw new RuntimeException("soaMetamodelService not inited");
+        }
+    }
     
     @Test
     public void testSimpleDiscovery() throws Exception {

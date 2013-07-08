@@ -10,6 +10,8 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.api.DocumentRef;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 
@@ -26,6 +28,8 @@ public class DocumentServiceTest extends AbstractRegistryTest {
     private static final SoaNodeId MYSYSTEM_ID = new SoaNodeId(TaggingFolder.DOCTYPE, "MySystem");
     
     private static final SoaNodeId MYOTHERSYSTEM_ID = new SoaNodeId(TaggingFolder.DOCTYPE, "MyOtherSystem");
+    
+    private static IdRef mySystemIdRef = null;
 
     @SuppressWarnings("unused")
     private static Logger logger = Logger.getLogger(DocumentServiceTest.class);
@@ -36,7 +40,16 @@ public class DocumentServiceTest extends AbstractRegistryTest {
     @Test
     public void testModelCreation() throws ClientException {
         DocumentModel systemModel = documentService.create(documentManager, MYSYSTEM_ID);
+        ///documentManager.saveDocument(systemModel);try{Thread.currentThread().sleep(5000);} catch (Exception e) {}
         documentManager.save();
+        
+        mySystemIdRef = new IdRef(systemModel.getId());
+        // TODO without this line or the next one, sometimes won't be found by SOA ID in testModelQuery() or even only in testModelDeletion() !?!!
+        ///Assert.assertTrue("Created system must be found by ref", documentManager.exists(mySystemIdRef));
+        Assert.assertTrue("Created system must be found by uuid query", !documentManager.query("SELECT * FROM TaggingFolder WHERE ecm:uuid = '" + mySystemIdRef.value + "'").isEmpty());
+        
+        systemModel = documentService.findSoaNode(documentManager, MYSYSTEM_ID);
+        Assert.assertNotNull("Created system must be found by name", systemModel);
         Assert.assertNotNull(systemModel);
         Assert.assertEquals(MYSYSTEM_ID.getName(), systemModel.getName());
         Assert.assertEquals(MYSYSTEM_ID.getName(), systemModel.getTitle());
@@ -54,9 +67,15 @@ public class DocumentServiceTest extends AbstractRegistryTest {
 
     @Test
     public void testModelDeletion() throws ClientException {
+        // TODO without this line or the next one, sometimes won't be found by SOA ID !?!!
+        ///Assert.assertTrue("Created system must be found by ref", documentManager.exists(mySystemIdRef));
+        Assert.assertTrue("Created system must be found by uuid query", !documentManager.query("SELECT * FROM TaggingFolder WHERE ecm:uuid = '" + mySystemIdRef.value + "'").isEmpty());
+        
+        DocumentModel systemModel = documentService.findSoaNode(documentManager, MYSYSTEM_ID);
+        Assert.assertNotNull("Created system must be found by name", systemModel);
         boolean success = documentService.delete(documentManager, MYSYSTEM_ID);
         Assert.assertTrue("Document deletion must be successful", success);
-        DocumentModel systemModel = documentService.findSoaNode(documentManager, MYSYSTEM_ID);
+        systemModel = documentService.findSoaNode(documentManager, MYSYSTEM_ID);
         Assert.assertNull("Deleted system must not be available after deletion", systemModel);
         documentManager.save();
         

@@ -34,6 +34,10 @@ public class AbstractRegistryTest {
 
     @Before
     public void setUp() {
+        if (documentManager == null) {
+            System.err.println("documentManager not inited");
+            throw new RuntimeException("documentManager not inited");
+        }
         repositoryLogger = new RepositoryLogger(documentManager);
     }
     

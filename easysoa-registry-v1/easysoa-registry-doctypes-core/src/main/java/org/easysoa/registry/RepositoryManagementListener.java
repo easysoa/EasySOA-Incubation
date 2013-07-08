@@ -1,6 +1,7 @@
 package org.easysoa.registry;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -31,7 +32,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class RepositoryManagementListener extends EventListenerBase implements EventListener {
 	
-	private static final String CONTEXT_REQUEST_REPOSITORY_ALREADY_MANAGED = "repositoryAlreadyManaged";
+	private static final String CONTEXT_REQUEST_REPOSITORY_MANAGEMENT_LOOP_COUNT = "repositoryManagementLoopCount";
 
 
     private static Logger logger = Logger.getLogger(RepositoryManagementListener.class);
@@ -49,12 +50,20 @@ public class RepositoryManagementListener extends EventListenerBase implements E
         
         // Prevent looping on source document changes
         // (required at least when changing SOA name)
-        if (context.hasProperty(CONTEXT_REQUEST_REPOSITORY_ALREADY_MANAGED)
-        		|| areListenersDisabled(context)) {
+        if (areListenersDisabled(context)) {
             return;
         }
+        int repositoryManagementLoopCount;
+        if (context.hasProperty(CONTEXT_REQUEST_REPOSITORY_MANAGEMENT_LOOP_COUNT)) {
+            repositoryManagementLoopCount = 1 + (Integer) context.getProperty(CONTEXT_REQUEST_REPOSITORY_MANAGEMENT_LOOP_COUNT);
+            if (repositoryManagementLoopCount > 10) {
+                throw new ClientException("RepositoryManagementListener : Infinite loop on " + sourceDocument);
+            }
+        } else {
+            repositoryManagementLoopCount = 1;
+        }
         sourceDocument.getContextData().putScopedValue(ScopeType.REQUEST,
-        		CONTEXT_REQUEST_REPOSITORY_ALREADY_MANAGED, true);
+                CONTEXT_REQUEST_REPOSITORY_MANAGEMENT_LOOP_COUNT, repositoryManagementLoopCount);
         
         if (!sourceDocument.hasSchema(SoaNode.SCHEMA)) {
             return; // nothing to do on non SOA nodes
@@ -108,15 +117,6 @@ public class RepositoryManagementListener extends EventListenerBase implements E
         boolean isCreationOnCheckin = isCreationOnCheckinMode && DocumentEventTypes.DOCUMENT_CHECKEDIN.equals(event.getName());
         boolean isCreation = isCreationOnCheckin
         		|| !isCreationOnCheckinMode && DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName());
-
-        if (DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
-        	try {
-	        	metamodelService.validateIntegrity(sourceDocument, false); // TODO [soaname change]
-			} catch (ModelIntegrityException e) {
-				logger.error("Aborting repository management on " + sourceDocument.getTitle() + ": " + e.getMessage());
-				return;
-			}
-        }
         
         if (isCreationOnCheckinMode && DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())) {
         	sourceDocument.setPropertyValue("dc:description", "jwtJustCreated");
@@ -134,6 +134,11 @@ public class RepositoryManagementListener extends EventListenerBase implements E
 	    		// Validate or set soaname
 				String newSoaName = metamodelService.validateIntegrity(sourceDocument,
 	        			DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName()));
+				// TODO not required if DocumentEventTypes.DOCUMENT_CREATED_BY_COPY : its soaname is already OK
+				// NB. true copy is unavailable (triggers proxying), save in different Phase / subproject
+                // because subproject meta is updated by its listener BEFORE this code (RepositoryManagementListener) happens
+				// TODO still change soaname in this case
+				// TODO LATER an alternative would be to have true "Create link / proxy" button in UI.
 	        	if (newSoaName != null) {
 	        		sourceDocument.setPropertyValue(SoaNode.XPATH_SOANAME, newSoaName); // TODO [soaname change]
 	                // NB. looping must be prevented here
@@ -142,12 +147,13 @@ public class RepositoryManagementListener extends EventListenerBase implements E
 	        	}
 	        	
 	            // Working copy/proxies management
-	            sourceDocument = manageRepositoryStructure(documentManager, documentService, sourceDocument);
+	            sourceDocument = manageRepositoryStructure(documentManager, documentService,
+	                    sourceDocument, repositoryManagementLoopCount);
 	            documentManager.save(); // else loops on classifySoaNode() within IST's handleDocumentModel() below
 	            
 	    		// Intelligent system trees update
-	            sourceDocument.getContextData().remove(ScopeType.REQUEST.getScopedKey(
-	            		CONTEXT_REQUEST_REPOSITORY_ALREADY_MANAGED)); // allowing one RML loop, else InheritedDataTest.testUuidSelectors() fails
+	            ///sourceDocument.getContextData().remove(ScopeType.REQUEST.getScopedKey(
+	            ///		CONTEXT_REQUEST_REPOSITORY_ALREADY_MANAGED)); // allowing one RML loop, else InheritedDataTest.testUuidSelectors() fails
 	    		IntelligentSystemTreeService intelligentSystemTreeServiceCache =
 	    		        Framework.getService(IntelligentSystemTreeService.class);
 	    		intelligentSystemTreeServiceCache.handleDocumentModel(documentManager, sourceDocument,
@@ -166,7 +172,7 @@ public class RepositoryManagementListener extends EventListenerBase implements E
         if (!DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName()) || sourceDocument.isProxy()) {
             DocumentModel removedProxyDocumentIfAny = null;
             
-        	if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName()) && sourceDocument.isProxy()) {
+        	if (DocumentEventTypes.ABOUT_TO_REMOVE.equals(event.getName())/* && sourceDocument.isProxy()*/) {
 				// (TODO necessarily live) Proxy deleted, update the true document, TODO if it is live
                 removedProxyDocumentIfAny = sourceDocument;
 				sourceDocument = documentManager.getSourceDocument(removedProxyDocumentIfAny.getRef());
@@ -179,7 +185,11 @@ public class RepositoryManagementListener extends EventListenerBase implements E
         	}
         	
     		// Update parents info
-        	if (!DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName())) {
+        	if (!DocumentEventTypes.DOCUMENT_UPDATED.equals(event.getName()) &&
+        	        (sourceDocument.isProxy() || removedProxyDocumentIfAny != null ||
+        	        // nothing to do if actual doc just created :
+        	        !DocumentEventTypes.DOCUMENT_CREATED.equals(event.getName())
+                    && !DocumentEventTypes.DOCUMENT_CREATED_BY_COPY.equals(event.getName()))) {
 		    	try {
 		    	    documentModified = updateParentIdsMetadata(documentManager, documentService,
 		    	            sourceDocument, removedProxyDocumentIfAny) || documentModified;
@@ -260,7 +270,8 @@ public class RepositoryManagementListener extends EventListenerBase implements E
      * @throws Exception
      */
 	private DocumentModel manageRepositoryStructure(CoreSession documentManager,
-			DocumentService documentService, DocumentModel sourceDocument)
+			DocumentService documentService, DocumentModel sourceDocument,
+			int repositoryManagementLoopCount)
 			throws ClientException, PropertyException, Exception {
 	    boolean structureChanged = false;
 		
@@ -279,25 +290,27 @@ public class RepositoryManagementListener extends EventListenerBase implements E
 		if (!sourceDocument.isProxy()
 		        ///&& !(sourceDocument.getType().equals(parentModel.getName()) // TODO RepositoryHelper.isRepository()
 		        ///&& Repository.DOCTYPE.equals(parentParentModel.getType()))
-		        // and it's not at its place in any ITS ("any" to allow copy / paste BUT only in standard ITS)...
-		        && !parentModel.getPathAsString().equals(sourceFolderPath) // (especially including the sourceDocument's)
-		        // NB. subproject meta is updated by its listener BEFORE this code (RepositoryManagementListener) happens
 		        
 				// or if it's a proxy not in the Repository but having just been copied below a proxy of SoaNode (ex. TaggingFolder)...
 		        || sourceDocument.isProxy() && parentModel.hasSchema(SoaNode.SCHEMA) && parentModel.isProxy()
 		        && !sourceDocument.getPathAsString().startsWith(sourceRepositoryPath)) {
 		    
-		    documentService.getSourceFolder(documentManager, sourceDocument); // ensuring it exists
-		    
 		    DocumentModel repositoryDocument = documentService.findSoaNode(documentManager, soaNodeId);
-		    if (repositoryDocument != null && repositoryDocument.getPath().toString().startsWith(sourceRepositoryPath)) {
+		    if (repositoryDocument != null
+		            && repositoryDocument.getPath().toString().startsWith(sourceRepositoryPath)) { // TODO else ???? & false (see above)
 		    	if (!repositoryDocument.getRef().equals(sourceDocument.getRef()) // also equals if one proxies the other ?!?!
 		    			&& !sourceDocument.isProxy()) { // if proxy, no differences and nothing to do
 
 		    		// If there is already a corresponding repositoryDocument, merge and only keep one
 			        repositoryDocument.copyContent(sourceDocument);
-			        documentManager.saveDocument(repositoryDocument); // may trigger a yet unprevented event
+			        repositoryDocument.getContextData().putScopedValue(ScopeType.REQUEST,
+			                CONTEXT_REQUEST_REPOSITORY_MANAGEMENT_LOOP_COUNT, repositoryManagementLoopCount);
+			        documentManager.saveDocument(repositoryDocument); // may trigger another event
 			        documentManager.removeDocument(sourceDocument.getRef());
+			        
+			        // If it's not already in its type's default Repository folder,
+			        if (!parentModel.getPathAsString().equals(sourceFolderPath)) {
+			        
 				    // Create a proxy at the expected location
 				    if (parentModel.isProxy() && documentService.isSoaNode(documentManager, parentModel.getType())) {
 				    	// make sure parent SOA node is not a proxy (may happen also in the second case)
@@ -312,20 +325,26 @@ public class RepositoryManagementListener extends EventListenerBase implements E
 				        	// happens if no child
 				        }*/
 				    }
+				    
 			        sourceDocument = documentManager.createProxy(repositoryDocument.getRef(), parentModel.getRef());
+			        }
 			        structureChanged = false;
 			        
-		    	} else if (sourceDocument.isProxy() && parentModel.isProxy()
+		    	} else if (!parentModel.getPathAsString().equals(sourceFolderPath)
+		    	        && sourceDocument.isProxy() && parentModel.isProxy()
 		    			&& documentService.isSoaNode(documentManager, parentModel.getType())) {
+		            documentService.getSourceFolder(documentManager, sourceDocument); // ensuring it exists
+		            
 		    		// if both proxies, move child under its parent's repository document (happens ?!?)
 			        DocumentModel actualParentModel = documentService.findSoaNode(documentManager, documentService.createSoaNodeId(parentModel));
 			        sourceDocument = documentManager.move(sourceDocument.getRef(),
 			        		actualParentModel.getRef(), sourceDocument.getName()); // NB. stays the same doc
 		            structureChanged = true;
-		        }
+		        } // else already at right place : nothing to do 
 		    }
-		    else {
+		    else if (!parentModel.getPathAsString().equals(sourceFolderPath)) {
 		        // Move to (the sourceDocument's) repository otherwise
+                documentService.getSourceFolder(documentManager, sourceDocument); // ensuring it exists
 		    	repositoryDocument = documentManager.move(sourceDocument.getRef(),
 		            new PathRef(sourceFolderPath), sourceDocument.getName()); // NB. stays the same doc
 			    // NB. save required after move before creating proxy (?!)
@@ -336,7 +355,7 @@ public class RepositoryManagementListener extends EventListenerBase implements E
 			    }
 		    	sourceDocument = documentManager.createProxy(repositoryDocument.getRef(), parentModel.getRef());
 	            structureChanged = true;
-		    }
+		    } // else already at right place
 		}
 		if (structureChanged) {
 		    documentManager.save();
@@ -348,8 +367,8 @@ public class RepositoryManagementListener extends EventListenerBase implements E
 	private boolean updateParentIdsMetadata(CoreSession documentManager,
 			DocumentService documentService, DocumentModel sourceDocument,
 			DocumentModel removedProxyDocumentIfAny) throws Exception {
-		DocumentModelList parentModels = documentService.findAllParents(documentManager, sourceDocument);
-		SoaNode sourceSoaNode = sourceDocument.getAdapter(SoaNode.class);
+        SoaNode sourceSoaNode = sourceDocument.getAdapter(SoaNode.class);
+	    List<DocumentModel> parentModels = documentService.findAllParents(documentManager, sourceDocument);
 		boolean changed = false;
 		DocumentModelList soaNodeParentModels = new DocumentModelListImpl();
 		Iterator<SoaNodeId> oldParentIdIt = sourceSoaNode.getParentIds().iterator();

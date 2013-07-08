@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.facets.ServiceImplementationDataFacet;
 import org.easysoa.registry.matching.MatchingHelper;
 import org.easysoa.registry.matching.MatchingQuery;
+import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
@@ -18,7 +19,6 @@ import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.EmptyDocumentModelList;
-import org.easysoa.registry.utils.NXQLQueryHelper;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -375,8 +375,29 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
             	// some meaningful default
             	interfaceName = new URL((String) endpoint.getPropertyValue(Endpoint.XPATH_URL)).getPath();
             }
-		String subprojectId = (String) endpoint.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
-		SoaNodeId implId = new SoaNodeId(subprojectId, ServiceImplementation.DOCTYPE, interfaceName);
+            
+            if (endpoint.hasFacet(ServiceImplementationDataFacet.FACET_SERVICEIMPLEMENTATIONDATA)) {
+                // set platform criteria matched by endpoint on impl TODO OR NOT ??
+                // (else a new placeholder is created each time, because can't be matched)
+                putPropertyIfNotEmpty(endpoint, ServiceImplementation.XPATH_IMPL_IDE, nuxeoProperties);
+                putPropertyIfNotEmpty(endpoint, ServiceImplementation.XPATH_IMPL_LANGUAGE, nuxeoProperties);
+                putPropertyIfNotEmpty(endpoint, ServiceImplementation.XPATH_IMPL_BUILD, nuxeoProperties);
+                putPropertyIfNotEmpty(endpoint, Deliverable.XPATH_NATURE, nuxeoProperties);
+                putPropertyIfNotEmpty(endpoint, Deliverable.XPATH_REPOSITORY_URL, nuxeoProperties);
+            }
+
+            if (endpoint.hasFacet(Component.FACET_ARCHITECTURECOMPONENT)) {
+                putPropertyIfNotEmpty(endpoint, Endpoint.XPATH_COMPONENT_ID, nuxeoProperties);
+            }
+            
+            // if SOA node id already exists, create a new one for placeholder
+            // (else would be merged in RepositoryManagementListener)
+            String subprojectId = (String) endpoint.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
+		    SoaNodeId implId = new SoaNodeId(subprojectId, ServiceImplementation.DOCTYPE, interfaceName);
+	        int i = 1;
+		    while (docService.findSoaNode(documentManager, implId) != null) {
+                implId = new SoaNodeId(subprojectId, ServiceImplementation.DOCTYPE, interfaceName + "_" + i++);
+            }
 		
         // TODO also copy other impl-level platform metas. To be used when merging placeholder ? NOO rather delete placeholder and rematch endpoint
 		
@@ -407,7 +428,16 @@ public class EndpointMatchingServiceImpl implements EndpointMatchingService {
 		}
 	}
 
-	private DocumentService getDocumentService() throws ClientException {
+	private void putPropertyIfNotEmpty(DocumentModel documentModel, String propXpath,
+            HashMap<String, Serializable> nuxeoProperties) throws ClientException {
+	    Serializable value = documentModel.getPropertyValue(propXpath);
+        if (value != null && !(value instanceof String && ((String) value).length() == 0)) {
+            nuxeoProperties.put(propXpath, value);
+        }
+    }
+
+
+    private DocumentService getDocumentService() throws ClientException {
 		try {
 			return Framework.getService(DocumentService.class);
 		} catch (Exception e) {

@@ -87,13 +87,17 @@ public class SubprojectNodeListener implements EventListener {
                 }
             }
             
-        } else if (DocumentEventTypes.ABOUT_TO_CREATE.equals(event.getName())) {
+        } else if (!DocumentEventTypes.BEFORE_DOC_UPDATE.equals(event.getName())) {
             // anything that is under a subproject
             
             DocumentModel parentDocument = documentManager.getDocument(sourceDocument.getParentRef());
             
             SubprojectServiceImpl.copySubprojectNodeProperties(parentDocument, sourceDocument);
-        }
+            
+            if (!DocumentEventTypes.ABOUT_TO_CREATE.equals(event.getName())) {
+                documentManager.saveDocument(sourceDocument);
+            } // else saved later
+        } // else assuming no change
     }
 
 }

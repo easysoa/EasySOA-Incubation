@@ -49,6 +49,9 @@
       priority="150">
       <event>aboutToCreate</event>
       <event>beforeDocumentModification</event><!-- TODO test -->
+      
+      <event>documentCreatedByCopy</event>
+      <!-- event>documentMoved</event --><!-- TODO first handle proxies to it... -->
     </listener>
     
     <!-- OBSOLETE replaced by logic before and after snapshotting, see SubprojectServiceImpl.createSubprojectVersion() -->

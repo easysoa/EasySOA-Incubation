@@ -571,9 +571,13 @@ public class ServiceMatchingTest extends AbstractRegistryTest {
         Assert.assertNotNull("Created endpoint must be linked to existing matching information service",
         		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
         
+        DocumentModel previousFoundEndpointImpl = documentService.getParentServiceImplementation(foundEndpoint);
+        
         // Discover endpoint that matches impl (TODO how, by parent ?? matching ?? component / platform ?)
         foundEndpoint = discoveryService.runDiscovery(documentManager,  new EndpointId("staging", "http://localhost:8080/cxf/WS3"), epProperties, null);
-        Assert.assertNotNull("Created endpoint must be linked to existing matching information service",
+        Assert.assertNotNull("Created endpoint must be linked to existing matching impl", previousFoundEndpointImpl != null
+                && previousFoundEndpointImpl.equals(documentService.getParentServiceImplementation(foundEndpoint)));
+        Assert.assertNotNull("Created endpoint must be linked to existing matching impl's service",
         		foundEndpoint.getPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE));
 
         

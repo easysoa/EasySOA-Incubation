@@ -96,7 +96,8 @@
     IMPORTANT change it also in easysoa-registry-marketplace (because it has a different parent)
     and axxx-easysoa-model (because it has no parent) -->
     <!-- nuxeo.version>5.7-I20130111_0115</nuxeo.version -->
-    <nuxeo.version>5.7-I20130610_0116</nuxeo.version>
+    <!-- nuxeo.version>5.7-I20130610_0116</nuxeo.version -->
+    <nuxeo.version>5.7.1</nuxeo.version>
     
     <!-- other nuxeo-compatible registry deps versions : -->
     <guava.version>13.0.1</guava.version>

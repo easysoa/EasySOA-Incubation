@@ -94,8 +94,8 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
 
     @Test
     public void testDuplicatesHandling() throws Exception {
-        System.out.println("\n\nAny hidden error ??\n");
-        try {
+        ///System.out.println("\n\nAny hidden error ??\n");
+        ///try {
         // Create already created system
         DocumentModel duplicateModel = documentService.create(documentManager,
                 new SoaNodeId(TaggingFolder.DOCTYPE, "MySystem"),
@@ -111,12 +111,12 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
                 sourceFound = true;
             }
         }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        ///} catch (Exception e) {
+        ///    e.printStackTrace();
+        ///}//TODO rm
     }
     
-    //@Test
+    @Test
     public void testProxyCopy() throws Exception {
         // Create new system
         DocumentModel newSystemModel = documentService.create(documentManager,
@@ -141,7 +141,7 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
         assertAllProxiesAreSetOnTheSources(proxies);
     }
 
-    //@Test
+    @Test
     public void testSourceCopy() throws Exception {
         // Create a third system
         DocumentModel thirdSystemModel = documentService.create(documentManager,

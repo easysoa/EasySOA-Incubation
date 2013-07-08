@@ -17,7 +17,8 @@
   <properties>
     <easysoa.registry.marketplace.version>1.0-SNAPSHOT</easysoa.registry.marketplace.version>
     <!-- nuxeo.distribution.version>5.7-I20130111_0115</nuxeo.distribution.version -->
-    <nuxeo.distribution.version>5.7-I20130610_0116</nuxeo.distribution.version>
+    <!-- nuxeo.distribution.version>5.7-I20130610_0116</nuxeo.distribution.version -->
+    <nuxeo.distribution.version>5.7.1</nuxeo.distribution.version>
   </properties>
   
   <profiles>

@@ -1,5 +1,6 @@
 # Target custom Nuxeo
-#NUXEO_PATH = '/home/username/nuxeo-cap-5.6.0-HF06-tomcat/'
+#NUXEO_PATH = '/home/mdutoo/dev/easysoa/nuxeo-cap-5.7.1-tomcat/'
+
 
 # Distrib config
 PACKAGE_NAME = 'easy-soa'

@@ -70,6 +70,11 @@ public abstract class AbstractDocumentAdapter implements Document {
     public DocumentModel getDocumentModel() {
         return documentModel;
     }
+
+    @Override
+    public String getUuid() throws Exception {
+        return documentModel.getId();
+    }
     
     public String getName() {
         return documentModel.getName();
@@ -81,7 +86,15 @@ public abstract class AbstractDocumentAdapter implements Document {
 
     public void setTitle(String title) throws PropertyException, ClientException {
         documentModel.setPropertyValue(Document.XPATH_TITLE, title);
-    };
+    }
+
+    public String getDescription() throws ClientException {
+        return (String) documentModel.getPropertyValue(Document.XPATH_DESCRIPTION);
+    }
+
+    public void setDescription(String description) throws PropertyException, ClientException {
+        documentModel.setPropertyValue(Document.XPATH_DESCRIPTION, description);
+    }
     
     public Object getProperty(String xpath) throws Exception {
         return documentModel.getPropertyValue(xpath);

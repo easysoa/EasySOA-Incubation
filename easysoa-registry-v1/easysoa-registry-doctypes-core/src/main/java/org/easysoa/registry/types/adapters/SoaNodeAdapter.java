@@ -110,10 +110,5 @@ public class SoaNodeAdapter extends AbstractDocumentAdapter implements SoaNode {
 		}
 		documentModel.setPropertyValue(XPATH_PARENTSIDS, (Serializable) parentsIdsStringList);
 	}
-
-	@Override
-	public String getUuid() throws Exception {
-		return documentModel.getId();
-	}
     
 }

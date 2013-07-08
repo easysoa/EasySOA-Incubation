@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -18,6 +19,8 @@ public class NuxeoListUtils {
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     public static final DocumentModelList EMPTY_DOCUMENT_MODEL_LIST = EmptyDocumentModelList.INSTANCE;
+
+    public static final List<SoaNodeId> EMPTY_SOANODEID_LIST = new ArrayList<SoaNodeId>(0);
     
     
     public static ArrayList<DocumentModel> list(DocumentModel...objs) {

@@ -98,6 +98,16 @@ public class SoaNodeInformation implements SoaNode {
         properties.put(SoaNode.XPATH_TITLE, title);
     }
 
+    @Override
+    public String getDescription() {
+        return (String) properties.get(SoaNode.XPATH_DESCRIPTION);
+    }
+
+    @Override
+    public void setDescription(String description) {
+        properties.put(SoaNode.XPATH_DESCRIPTION, description);
+    }
+
     @JsonIgnore
     @Override
     public boolean isPlaceholder() throws Exception {

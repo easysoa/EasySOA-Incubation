@@ -129,6 +129,9 @@ public class EndpointInformation/* extends WSDLInformation */{
     }
 
     /**
+     * WARNING it actually stores the dc:title
+     * (which is not ecm:name, which is not soan:name from which it is deduced)
+     * TODO LATER & also in FraSCAti Studio, refactor to getTitle() & add getName() for ecm:name
      * @return the name
      */
     public String getName() {
@@ -136,6 +139,9 @@ public class EndpointInformation/* extends WSDLInformation */{
     }
 
     /**
+     * WARNING it actually stores the dc:title
+     * (which is not ecm:name, which is not soan:name from which it is deduced)
+     * TODO LATER & also in FraSCAti Studio, refactor to setTitle() & add setName() for ecm:name
      * @param name the name to set
      */
     public void setName(String name) {

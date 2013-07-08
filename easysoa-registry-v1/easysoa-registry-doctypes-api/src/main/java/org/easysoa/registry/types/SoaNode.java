@@ -26,8 +26,6 @@ public interface SoaNode extends Document {
     public static final String XPATH_UUID = "ecm:uuid";
 
     public static final String FACET = "SoaNode";
-
-    String getUuid() throws Exception;
     
     SoaNodeId getSoaNodeId() throws Exception;
 

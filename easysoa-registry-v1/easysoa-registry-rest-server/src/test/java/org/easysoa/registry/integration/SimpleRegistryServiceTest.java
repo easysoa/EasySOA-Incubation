@@ -208,7 +208,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         Assert.assertNotNull(endpointInformations);
 
         EndpointInformation firstEndpointInformation = endpointInformations.getEndpointInformationList().get(0);
-        Assert.assertEquals(ENDPOINT_TEST_WITHOUT_POPRTTYPE_ID.getName(), firstEndpointInformation.getEnvironment() + ":" + firstEndpointInformation.getName());
+        Assert.assertEquals(ENDPOINT_TEST_WITHOUT_POPRTTYPE_ID.getName(), firstEndpointInformation.getSoaName());
         Assert.assertEquals("Test", firstEndpointInformation.getEnvironment());
         Assert.assertEquals(ENDPOINT_TEST_WITHOUT_POPRTTYPE_ID.getUrl(), firstEndpointInformation.getEndpointUrl());
     }
@@ -230,7 +230,7 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
         EndpointInformations endpointInformations = firstServiceInformation.getEndpoints();
         Assert.assertNotNull(endpointInformations);
         EndpointInformation firstEndpointInformation = endpointInformations.getEndpointInformationList().get(0);
-        Assert.assertEquals(ENDPOINT_TEST_WITH_PLATFORM_METAS_ID.getName(), firstEndpointInformation.getEnvironment() + ":" + firstEndpointInformation.getName());
+        Assert.assertEquals(ENDPOINT_TEST_WITH_PLATFORM_METAS_ID.getName(), firstEndpointInformation.getSoaName());
         
     }
     

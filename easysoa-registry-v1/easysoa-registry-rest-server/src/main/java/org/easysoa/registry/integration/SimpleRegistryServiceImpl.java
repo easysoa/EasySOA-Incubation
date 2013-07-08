@@ -11,6 +11,7 @@ import org.easysoa.registry.rest.integration.EndpointInformations;
 import org.easysoa.registry.rest.integration.ServiceInformation;
 import org.easysoa.registry.rest.integration.ServiceInformations;
 import org.easysoa.registry.rest.integration.SimpleRegistryService;
+import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.utils.ContextVisibility;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -143,7 +144,9 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
         // Fetch SoaNode list
         ArrayList<String> parameters = new ArrayList<String>(); 
         StringBuilder query = new StringBuilder(); 
-        query.append("SELECT * FROM Endpoint ");
+        query.append(DocumentService.NXQL_SELECT_FROM);
+        query.append(Endpoint.DOCTYPE);
+        query.append(" ");
 
         // Search parameter
         if(search != null && !"".equals(search)){
@@ -172,9 +175,9 @@ public class SimpleRegistryServiceImpl implements SimpleRegistryService {
                }
                
                if(searchParamIncluded){
-                   query.append(" AND ").append(subProjectCriterias);
+                   query.append(DocumentService.NXQL_AND).append(subProjectCriterias);
                } else {
-                   query.append(" WHERE ").append(subProjectCriterias);
+                   query.append(DocumentService.NXQL_WHERE).append(subProjectCriterias);
                }
             } else {
                 throw new Exception("subProjectId '" + subProjectId + "' is not a valid subproject !");

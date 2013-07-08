@@ -8,8 +8,10 @@ import java.util.Map;
 import org.easysoa.registry.matching.MatchingHelper;
 import org.easysoa.registry.rest.integration.EndpointInformation;
 import org.easysoa.registry.rest.integration.ServiceInformation;
+import org.easysoa.registry.types.Document;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;
+import org.easysoa.registry.types.SoaNode;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -92,10 +94,13 @@ public class SoaNodeInformationToWSDLInformationMapper {
         
         //mapCommonWsdlInformation(nodeModel, endpointInformation, nuxeoBaseUrl);
         // Filling object with document properties
-        endpointInformation.setSoaName((String)docModel.getPropertyValue("soan:name"));
+        endpointInformation.setSoaName((String)docModel.getPropertyValue(SoaNode.XPATH_SOANAME));
         endpointInformation.setProjectID(""); // Tag corresponding to project ID ??? Not implemented yet
-        endpointInformation.setName((String)docModel.getPropertyValue("dc:title"));
-        endpointInformation.setDescription((String)docModel.getPropertyValue("dc:description"));
+        endpointInformation.setName((String)docModel.getPropertyValue(Document.XPATH_TITLE));
+        // NB. WARNING name actually stores the dc:title
+        // (which is not ecm:name, which is not soan:name from which it is deduced)
+        // TODO LATER & also in FraSCAti Studio, refactor to getTitle() & add getName() for ecm:name
+        endpointInformation.setDescription((String)docModel.getPropertyValue(Document.XPATH_DESCRIPTION));
         endpointInformation.setNuxeoID(docModel.getId()); // the Nuxeo object ID
         endpointInformation.setObjectType(docModel.getType());
         

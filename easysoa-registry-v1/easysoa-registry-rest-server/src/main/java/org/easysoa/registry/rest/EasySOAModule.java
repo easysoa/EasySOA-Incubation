@@ -50,7 +50,8 @@ public class EasySOAModule extends WebEngineModule {
             ContextController.class,
             IndexController.class,
             GovernanceController.class,
-            CartographyController.class
+            CartographyController.class,
+            SoapUIConfRest.class
         };
     }
 

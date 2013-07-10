@@ -36,6 +36,9 @@ import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.soapui.SoapUIWSDL;
 import org.easysoa.registry.soapui.SoapUIWSDLFactory;
 import org.easysoa.registry.types.Endpoint;
+import org.easysoa.registry.types.EndpointConsumption;
+import org.easysoa.registry.types.Subproject;
+import org.easysoa.registry.utils.ContextData;
 import org.easysoa.registry.wsdl.WsdlBlob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
@@ -73,38 +76,76 @@ public class SoapUIConfRest extends EasysoaModuleRoot {
 
         // Init
         CoreSession session = SessionFactory.getSession(request);
+        DocumentService docService = Framework.getService(DocumentService.class);
+        List<SoapUIWSDL> wsdls = new ArrayList<SoapUIWSDL>();
         DocumentModel requestedDocumentModel = session.getDocument(new IdRef(docId)); // Get an InteligentSystem
 
-        // TODO : add a test to check if we are on an endpoint or on an its
-        // If endpoint, get the parent its for the environment
+        // Get context
+        ContextData data = ContextData.getVersionData(session, (String)requestedDocumentModel.getPropertyValue(Subproject.XPATH_SUBPROJECT));
+        // Get the environment
+        String environment = getEnvironment(requestedDocumentModel);
 
-        DocumentService docService = Framework.getService(DocumentService.class);
-
-        //DocumentModelList serviceModels = docService.findChildren(session, requestedDocumentModel, Service.DOCTYPE);
-        DocumentModelList serviceModels = docService.getChildren(session, requestedDocumentModel.getRef(), Endpoint.DOCTYPE);
+        // Set project name
+        StringBuilder soapUIProjectName = new StringBuilder();
+        soapUIProjectName.append(data.getProject());
+        soapUIProjectName.append(" / ");
+        soapUIProjectName.append(data.getPhase());
+        if(!"".equals(environment)){
+            soapUIProjectName.append(" / ");
+            soapUIProjectName.append(environment);
+        }
 
         // Set up params (= WSDLs)
-        List<SoapUIWSDL> wsdls = new ArrayList<SoapUIWSDL>();
         SoapUIWSDLFactory wsdlFactory = new SoapUIWSDLFactory();
-        for (DocumentModel documentModel : serviceModels) {
-
-            WsdlBlob wsdlBlob = new WsdlBlob(documentModel);
-            //Blob wsdlBlob = (Blob) documentModel.getPropertyValue("file:content");
-            //if (wsdlBlob != null) {
-                File tmpWsdlFile = File.createTempFile(documentModel.getTitle().replaceAll("/", "_"), "wsdl");
-                wsdlBlob.getBlob().transferTo(tmpWsdlFile);
-                SoapUIWSDL newWSDL = wsdlFactory.create(tmpWsdlFile, (String) documentModel.getPropertyValue(Endpoint.XPATH_URL));
-                wsdls.add(newWSDL);
-            /*}
-            else {
-                log.info("Could not generate full SoapUI config: a service WSDL is not available");
-            }*/
+        // TODO : add a test to check if we are on an endpoint or on an its
+        // If endpoint, get the parent its for the environment
+        if(Endpoint.DOCTYPE.equals(requestedDocumentModel.getType())){
+            addWdsl(requestedDocumentModel, wsdlFactory, wsdls);
+        }
+        // Assuming the requested document is a InteligentSystemTree
+        else {
+            DocumentModelList serviceModels = docService.getChildren(session, requestedDocumentModel.getRef(), Endpoint.DOCTYPE);
+            for (DocumentModel documentModel : serviceModels) {
+                addWdsl(documentModel, wsdlFactory, wsdls);
+            }
         }
 
         // Render
         Template view = getView("soapuiconf");
         view.arg("wsdls", wsdls);
+        view.arg("projectName", soapUIProjectName.toString());
         return view;
+    }
+
+    /**
+     * 
+     * @param document
+     * @return
+     * @throws Exception
+     */
+    private String getEnvironment(DocumentModel document) throws Exception {
+        // Environement is only available for Endpoints and EndpointConsumptions
+        if(Endpoint.DOCTYPE.equals(document.getType())){
+            return (String)document.getPropertyValue(Endpoint.XPATH_ENDP_ENVIRONMENT);
+        } else if(EndpointConsumption.DOCTYPE.equals(document.getType())) {
+            return (String)document.getPropertyValue(EndpointConsumption.XPATH_CONSUMED_ENVIRONMENT);
+        }
+        return "";
+    }
+
+    /**
+     *
+     * @param documentModel
+     * @param wsdlFactory
+     * @param wsdls
+     * @throws Exception
+     */
+    private void addWdsl(DocumentModel documentModel, SoapUIWSDLFactory wsdlFactory, List<SoapUIWSDL> wsdls) throws Exception {
+        WsdlBlob wsdlBlob = new WsdlBlob(documentModel);
+        File tmpWsdlFile = File.createTempFile(documentModel.getTitle().replaceAll("/", "_"), "wsdl");
+        wsdlBlob.getBlob().transferTo(tmpWsdlFile);
+        SoapUIWSDL newWSDL = wsdlFactory.create(tmpWsdlFile, (String) documentModel.getPropertyValue(Endpoint.XPATH_URL));
+        wsdls.add(newWSDL);
     }
 
 }

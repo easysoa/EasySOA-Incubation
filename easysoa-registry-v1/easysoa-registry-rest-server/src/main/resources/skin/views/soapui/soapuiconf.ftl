@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project name="Test" resourceRoot="" soapui-version="4.0.1" xmlns:con="http://eviware.com/soapui/config">
+<con:soapui-project name="${projectName}" resourceRoot="" soapui-version="4.0.1" xmlns:con="http://eviware.com/soapui/config">
   <con:settings />
 
   <#list wsdls as wsdl>
@@ -20,7 +20,7 @@
         <con:endpoint>${wsdl.getEndpointUrl()}</con:endpoint>
       </con:endpoints>
       <#list wsdl.getOperations() as operation>
-        <con:operation isOneWay="false" action="" name="${operation.getName()}" bindingOperationName="${operation.getName()}" 
+        <con:operation isOneWay="false" action="" name="${operation.getName()}" bindingOperationName="${operation.getName()}"
           type="Request-Response" outputName="${operation.getOutputName()}" inputName="${operation.getInputName()}"
           receivesAttachments="false" sendsAttachments="false" anonymous="optional">
           <con:settings />

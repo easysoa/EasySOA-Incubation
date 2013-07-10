@@ -50,7 +50,7 @@ public class WebEngineRedirectionBean {
 
     public void downloadSoapUIConfForCurrentDocument() throws Exception {
         String path = "/nuxeo/site/easysoa/soapui/"; // SoapUI service path
-        path +=  navigationContext.getCurrentDocument().getId(); // Param: doc ID
+        path +=  navigationContext.getCurrentDocument().getId(); // Param: doc ID // TODO LATER : replace the ID used as file name by environment...
         path += ".xml";
         redirect(path);
     }

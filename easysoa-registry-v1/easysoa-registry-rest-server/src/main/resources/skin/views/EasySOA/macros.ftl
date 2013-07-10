@@ -30,7 +30,7 @@ Available context variables are :
 * Freemarker doesn't support null. So use instead something different from your normal variable
 type, like "" (empty string) if it is an object, and test which one it is using builtins like
 ?string and ?is_hash (for objects). Don't use ?is_string on Java objects, because the may return
-?is_string ==  true ! Also, calls to Java methods returning null actually return an empty string. 
+?is_string ==  true ! Also, calls to Java methods returning null actually return an empty string.
 * macro don't support optional parameters, so pass instead something you can test not to be your
 normal variable type, like an empty string if it should be an object (see above).
 
@@ -64,7 +64,7 @@ normal variable type, like an empty string if it should be an object (see above)
                 </td>
             </tr>
     </#macro>
-    
+
     <#macro displayIndicatorInTable2 indicator>
             <tr>
                 <td width="80%" title="${indicator.description}">${Context.getMessage(indicator.name)}</td>
@@ -77,7 +77,7 @@ normal variable type, like an empty string if it should be an object (see above)
                 </td>
             </tr>
     </#macro>
-    
+
     <#macro displayIndicatorInTableWithDescription indicator>
             <tr>
                 <td width="30%" title="${indicator.description}">${Context.getMessage(indicator.name)}</td>
@@ -91,14 +91,14 @@ normal variable type, like an empty string if it should be an object (see above)
                 <td width="50%" title="${indicator.description}" style="color:grey; font-size: 85%">${indicator.description} %</td>
             </tr>
     </#macro>
-    
+
     <#macro displayIndicatorInTableShort indicator>
                                 <tr>
                                     <td width="80%" title="${indicator.description}">${Context.getMessage(indicator.name)} :</td>
                                     <td width="20%"><@displayIndicatorValue indicator/></td>
                                 </tr>
     </#macro>
-    
+
     <#macro displayIndicatorValue indicator>
                     <#if indicator.count != -1>
                         ${indicator.count}
@@ -106,7 +106,7 @@ normal variable type, like an empty string if it should be an object (see above)
                         ${indicator.date?date}
                     </#if>
     </#macro>
-    
+
     <#macro displayIndicatorPourcentage indicator>
                     <#if indicator.percentage != -1>
                             Pourcentage : <b>${indicator.percentage}%</b>
@@ -114,7 +114,7 @@ normal variable type, like an empty string if it should be an object (see above)
                             Pourcentage : <b>N.A.</b>
                     </#if>
     </#macro>
-    
+
 
     <#macro displayUserInfo user>
         <#if user == "">

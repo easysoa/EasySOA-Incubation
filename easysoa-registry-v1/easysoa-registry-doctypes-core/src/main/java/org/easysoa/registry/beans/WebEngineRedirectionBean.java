@@ -31,6 +31,9 @@ import org.jboss.seam.annotations.In;
 import org.jboss.seam.annotations.Install;
 import org.jboss.seam.annotations.Name;
 import org.jboss.seam.annotations.Scope;
+import org.nuxeo.ecm.core.api.ClientException;
+import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.platform.ui.web.api.NavigationContext;
 import org.nuxeo.ecm.platform.ui.web.rest.RestHelper;
 
@@ -47,6 +50,13 @@ public class WebEngineRedirectionBean {
 
     @In(create = true)
     NavigationContext navigationContext;
+
+    @In
+    private CoreSession documentManager;
+
+    public boolean isEnvironment(DocumentModel document) throws ClientException {
+        return "environment".equals(documentManager.getParentDocument(document.getRef()).getName());
+    }
 
     public void downloadSoapUIConfForCurrentDocument() throws Exception {
         String path = "/nuxeo/site/easysoa/soapui/"; // SoapUI service path

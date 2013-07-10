@@ -53,23 +53,6 @@
       </rule>
     </filter>
 
-    <filter id="isServiceContainer">
-      <rule grant="true">
-        <!-- Old registry types -->
-        <!--<type>Workspace</type>-->
-        <!--<type>Section</type>-->
-        <!--<type>AppliImpl</type>-->
-        <!--<type>ServiceAPI</type>-->
-        <!--<type>Service</type>-->
-        <type>ServiceImplementation</type><!-- if doesn't handle subtypes, rather facet ServiceImplementationData -->
-        <type>Endpoint</type>
-        <type>Subproject</type>
-        <condition>
-            #{documentManager.getParentDocument(document.getRef()).getName() = "Environments"}
-        </condition>
-      </rule>
-    </filter>
-
   </extension>
 
   <!-- ======= -->
@@ -180,11 +163,18 @@
       </filter>
     </action>
 
+
     <!-- SoapUi config download link -->
-    <action id="easysoaSoapUiLink" link="#{webEngineRedirection.downloadSoapUIConfForCurrentDocument}" label="label.easysoa.soapui.button" enabled="true">
-      <!--<category>SUBVIEW_UPPER_LIST</category>-->
+    <action id="easysoaSoapUiLink" link="#{webEngineRedirection.downloadSoapUIConfForCurrentDocument}" icon="/icons/soapui.png" label="label.easysoa.soapui.button">
       <category>DOCUMENT_UPPER_ACTION</category>
-      <filter-id>isServiceContainer</filter-id>
+      <filter id="isServiceContainer">
+        <rule grant="true">
+          <type>Subproject</type>
+          <type>Endpoint</type>
+          <facet>ServiceImplementationData</facet>
+          <!-- condition>?#${webEngineRedirection.isEnvironment(document)}</condition -->
+        </rule>
+      </filter>
     </action>
 
   </extension>

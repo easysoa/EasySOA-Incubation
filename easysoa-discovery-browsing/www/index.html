@@ -20,7 +20,7 @@
 	<script type="text/javascript" src="js/Descriptors.js"></script>
 	<script type="text/javascript" src="js/ServiceList.js"></script>
 	<script type="text/javascript" src="js/App.js"></script>
-        <script type="text/javascript" src="js/utils.js"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
 </head>
 
 <body>
@@ -41,7 +41,7 @@ function getUrlVars()
 
    $(window).load(function () {
 	    var visibility = getUrlVars()['visibility'];
-        $('#frame').attr('src', "default.html?subprojectId=" + getUrlVars()['subprojectId'] + "&visibility=" + visibility);
+        $('#frame').attr('src', "default.html?subprojectId=" + getUrlVars()['subprojectId'] + "&visibility=" + visibility + "&registryServerName=" + getUrlVars()['serverName']);
         // Display the current context
         if(typeof getUrlVars()["subprojectId"] != "undefined"){
         	try {
@@ -95,9 +95,9 @@ function getUrlVars()
   					<p id="submitSelectedWSDL">None.</p>
 
   					<h3>Service details</h3>
-                                        <div class="inputLabel">Perspective:</div>
-                                        <i><span id="context"></span></i><input type="hidden" id="easysoa-context" value=""/><br />
-                                        <br />
+                    <div class="inputLabel">Perspective:</div>
+                    <i><span id="context"></span></i><input type="hidden" id="easysoa-context" value=""/><br />
+                    <br />
   					<div class="inputLabel">Service Name:</div>
   					<input id="submitService" type="text" /><br />
   					<div class="inputLabel">Environment:</div>

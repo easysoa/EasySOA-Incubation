@@ -8,7 +8,7 @@ function loadJS(url) {
 }
 
 //loadJS("http://localhost:8083/js/bookmarklet/discovery.js");
-loadJS(escape("http://#{host}:#{port}/js/bookmarklet/discovery.js?subprojectId=#{context}&visibility=#{visibility}"));
+loadJS(escape("http://#{host}:#{port}/js/bookmarklet/discovery.js?subprojectId=#{context}&visibility=#{visibility}&registryServerName=#{registryServerName}"));
 
 
 setTimeout(function() {

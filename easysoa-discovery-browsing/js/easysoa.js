@@ -97,12 +97,14 @@ app.configure(function(){
   app.get('/js/bookmarklet/bookmarklet-min.js', function(req, res) {
     var context = unescape(req.param('subprojectId', ''));
     var visibility = unescape(req.param('visibility', ''));
+    var registryServerName = unescape(req.param('registryServerName', ''));
     var jsFile = fs.readFileSync("../www/js/bookmarklet/bookmarklet-min.js","utf8");
     //jsFile = jsFile.replace("#{host}", webServer.address().address); // this method webServer.address().address is useless, return always local loopback 0.0.0.0
     jsFile = jsFile.replace("#{host}", getClientHost(req)); // better than networkIPAddress because works offline
     jsFile = jsFile.replace("#{port}", webServer.address().port);
     jsFile = jsFile.replace("#{context}", context);
     jsFile = jsFile.replace("#{visibility}", visibility);
+    jsFile = jsFile.replace("#{registryServerName}", registryServerName);
     res.writeHead(200);
     res.end(jsFile);
   });
@@ -112,8 +114,9 @@ app.configure(function(){
     console.log("[DEBUG] ", "passing in discovery.js template function");
     var context = unescape(req.param('subprojectId', ''));
     var visibility = unescape(req.param('visibility', ''));
+    var registryServerName = unescape(req.param('registryServerName', ''));
     var jsFile = fs.readFileSync("../www/js/bookmarklet/discovery.js","utf8");
-    
+
     // replacing variables of our poor man's template script :
     // NB. /g regex flag allows to do a replaceAll, see http://stackoverflow.com/questions/1144783/replacing-all-occurrences-of-a-string-in-javascript
     //jsFile = jsFile.replace("#{host}", webServer.address().address); // this method webServer.address().address is useless, return always local loopback 0.0.0.0
@@ -124,21 +127,21 @@ app.configure(function(){
     jsFile = jsFile.replace(/#{nuxeoUrl}/g, NUXEO_URL);
     jsFile = jsFile.replace(/#{context}/g, context); // Escape not required in this case (link to matching)
     jsFile = jsFile.replace(/#{visibility}/g, visibility);
-    
+    jsFile = jsFile.replace(/#{registryServerName}/g, registryServerName);
+
     res.writeHead(200);
     console.log("[DEBUG] ", "End of discovery.js template function");
     res.end(jsFile);
   });
 
-  // To set dynamically the host and port in the bookmarklet template to generate the bookmarklet script
-  /*app.get('/index.html', function(req, res) {
+  // To set dynamically the nuxeo url and easysoa root url in index.html
+  /**app.get('/index.html', function(req, res) {
     var jsFile = fs.readFileSync("../www/index.html","utf8");
-    jsFile = jsFile.replace("#{nuxeoHost}", EASYSOA_ROOT_URL);
+    jsFile = jsFile.replace("#{easysoaRootUrl}", EASYSOA_ROOT_URL);
     jsFile = jsFile.replace("#{nuxeoUrl}", NUXEO_URL);
     res.writeHead(200);
     res.end(jsFile);
   });*/
-
 
 });
 webServer.listen(settings.WEB_PORT);

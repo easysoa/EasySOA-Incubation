@@ -1,6 +1,6 @@
 /**
  * Bookmarklet script template
- * 
+ *
  * rendered by easysoa.js
  * params are : host, port, context, context-escaped, context-display, visibility
  */
@@ -271,6 +271,12 @@ function exit() {
 
 function initTemplates() {
 
+    var registryServerName = "#{registryServerName}";
+    var serverDiv = "";
+    if("" !== registryServerName){
+       serverDiv = '<div class="easysoa-doc">Serveur: ' + registryServerName + '</div>';
+    }
+
 	templates['results'] = underscore.template(
 	'<div class="easysoa-frame" id="easysoa-tpl-results">\
 	  <div class="easysoa-exit" onclick="exit()"></div>\
@@ -296,6 +302,7 @@ function initTemplates() {
 
 	templates['afterWsdls'] = underscore.template(
 	'<div class="easysoa-doc">Environment name: <input type="text" id="easysoa-environment" value="Production" /></div>' +
+        serverDiv +
         '<div class="easysoa-doc">Phase: <%= unescape(\'#{context-display}\') %><input type="hidden" id="easysoa-context" value="<%= unescape(\'#{context-escaped}\') %>"/></div>' +
         '<div class="easysoa-doc"><a href="#{nuxeoUrl}/site/easysoa/dashboard/?subprojectId=<%= unescape(\'#{context}\') %>&visibility=#{visibility}" target="_blank" title="Une fois enregistrés, vous pouvez regler la correspondance entre les services et leurs implémentations et définitions dans l\'outil de réconciliation">Mise en correspondance</a></div>'
 	);

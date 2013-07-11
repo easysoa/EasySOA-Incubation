@@ -1,8 +1,8 @@
 // EasySOA Web
 // Copyright (c) 2011 Open Wide and others
-// 
+//
 // MIT licensed
-// 
+//
 // Contact : easysoa-dev@googlegroups.com
 
 /* ===================

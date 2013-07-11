@@ -1,6 +1,7 @@
 <html>
 <head>
 <script type="text/javascript" src="/lib/jquery.js"></script>
+<script type="text/javascript" src="js/utils.js"></script>
 
 <!-- Special style for Easysoa notification button -->
 <style rel="stylesheet" type="text/css">
@@ -78,8 +79,12 @@ $(document).ready(function() {
 
   //alert('ajax url : /js/bookmarklet/bookmarklet-min.js?subprojectId=' + decodeURI(getUrlVars()["subprojectId"])); // OK
   $.ajax({
-    url: '/js/bookmarklet/bookmarklet-min.js?subprojectId=' + decodeURIComponent(getUrlVars()["subprojectId"]) + "&visibility=" + getUrlVars()["visibility"],
+    url: '/js/bookmarklet/bookmarklet-min.js?subprojectId=' + decodeURIComponent(getUrlVars()["subprojectId"]) + "&visibility=" + getUrlVars()["visibility"] + "&registryServerName=" + getUrlVars()['registryServerName'],
     dataType: 'text', // Prevents JS execution
+    invokedata: {
+        host: getUrlVars()['registryServerName'],
+        subprojectId: decodeURIComponent(getUrlVars()["subprojectId"])
+    },
     success: function(data, status, xhr) {
       ///alert('ajax response : ' + xhr.responseText); // OK
       var js = encodeURI(xhr.responseText); // and not escape(), else é becomes %E9 (from UTF-8 u+00e9) instead of %C3%A9 (E9 encoded as 2 UTF-8 bytes), see http://stackoverflow.com/questions/5300803/how-to-encode-a-url-with-accent-characters-in-javascript
@@ -88,11 +93,16 @@ $(document).ready(function() {
         js = 'javascript:' + js;
       }
       //alert('encoded : ' + encodeURI(xhr.responseText));
-      //$('#bookmarklet').html('<a href="' + js + '">Find WSDLs</a>');
-      $('#bookmarklet').html('<a class="button" href="' + js + '" title="Glissez moi dans les favoris de votre navigateur">Notifier EasySOA</a>');
 
-      //$('#bookmarklet').html('<a class="button" ondragend="this.click();" href="javascript:if(top[\'webDiscoveryBookmarklet@easysoa.org\']){top[\'webDiscoveryBookmarklet@easysoa.org\'];}else{' + js + '}" title="Glissez moi dans les favoris de votre navigateur">Notifier EasySOA</a>');
-
+      var bookmarkletLink = '<a class="button" href="' + js + '" title="Glissez moi dans les favoris de votre navigateur">Notifier EasySOA';
+      if("" !== this.invokedata.host){
+          bookmarkletLink = bookmarkletLink + ' à ' + this.invokedata.host;
+      }
+      if("" !== this.invokedata.subprojectId){
+        $('#bookmarklet').html(bookmarkletLink + ' dans ' + formatPhaseForDisplay(this.invokedata.subprojectId) +'</a>');
+      } else {
+        $('#bookmarklet').html(bookmarkletLink + '</a>');
+      }
     }
   });
 

@@ -68,7 +68,8 @@ public class SoapUIConfRest extends EasysoaModuleRoot {
      */
     @GET
     @Path("/{id}")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    //@Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Produces("application/xml+soapui")
     public Object doGetSoapUIConf(@Context HttpServletRequest request,
             @PathParam("id") String docId) throws Exception {
 
@@ -118,7 +119,7 @@ public class SoapUIConfRest extends EasysoaModuleRoot {
     }
 
     /**
-     * 
+     *
      * @param document
      * @return
      * @throws Exception

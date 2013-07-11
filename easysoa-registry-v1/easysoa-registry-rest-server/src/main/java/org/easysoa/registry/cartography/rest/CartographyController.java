@@ -18,6 +18,7 @@
  */
 package org.easysoa.registry.cartography.rest;
 
+import java.net.InetAddress;
 import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -30,6 +31,7 @@ import org.easysoa.registry.rest.EasysoaModuleRoot;
 import org.easysoa.registry.utils.ContextData;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
+import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
@@ -51,11 +53,20 @@ public class CartographyController extends EasysoaModuleRoot {
         IndicatorsController indicatorsController = new IndicatorsController();
         Map<String, IndicatorValue> indicators = indicatorsController.computeIndicators(session, null, null, subprojectId, visibility);
 
-        return getView("cartography")
-            .arg("subprojectId", subprojectId)
+        Template view = this.getView("cartography");
+        view.arg("subprojectId", subprojectId)
             .arg("visibility", visibility)
             .arg("indicators", indicators)
             .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
+
+        // Set only the registry host name in dev mode
+        if(this.isDevModeSet()){
+            view.arg("serverName", InetAddress.getLocalHost().getHostName());
+        } else {
+            view.arg("serverName", "");
+        }
+
+        return view;
     }
 
     @GET

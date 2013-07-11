@@ -7,7 +7,7 @@
         <meta charset="utf-8" />
 
         <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
-        
+
         <!-- Bootstrap default style and scripts -->
         <link href="/nuxeo/site/easysoa/skin/css/bootstrap.css" rel="stylesheet" media="screen">
         <script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>
@@ -46,7 +46,7 @@
                             <p>
                             <div class="btn-group">
                                 <a class="btn" href="${Root.path}/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte sources</a>
-                                <a class="btn" href="${web_discovery_url}?subprojectId=${subprojectId}&visibility=${visibility}" target="_blank">Découverte web</a>
+                                <a class="btn" href="${web_discovery_url}?subprojectId=${subprojectId}&visibility=${visibility}&serverName=${serverName}" target="_blank">Découverte web</a>
                                 <a class="btn" href="${Root.path}/cartography/runDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte à l'éxécution</a>
                             </div>
                             </p>
@@ -158,7 +158,7 @@
 
 
             <#if Root.isDevModeSet()>
-            
+
             <!-- 2 categories with a separator -->
             <hr style="color:black; background-color:black; height:3px;" />
 
@@ -196,9 +196,9 @@
                     </div>
                 </li>
             </ul>
-            
+
             </#if>
-            
+
         </div>
 
         <a class="btn btn-primary" href="${Root.path}/indicators/?subprojectId=${subprojectId}&visibility=${visibility}">Old indicators page (to remove when finished)</a>

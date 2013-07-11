@@ -20,6 +20,7 @@
 
 package org.easysoa.registry.index.rest;
 
+import java.net.InetAddress;
 import java.util.Map;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -33,6 +34,7 @@ import org.easysoa.registry.rest.EasysoaModuleRoot;
 import org.easysoa.registry.utils.ContextData;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
+import org.nuxeo.ecm.webengine.model.Template;
 import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
@@ -49,7 +51,7 @@ public class IndexController extends EasysoaModuleRoot {
     @GET
     @Produces(MediaType.TEXT_HTML)
     public Object doGetHTML(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
-        
+
         CoreSession session = SessionFactory.getSession(request);
 
         // Compute indicators
@@ -57,11 +59,21 @@ public class IndexController extends EasysoaModuleRoot {
         Map<String, IndicatorValue> indicators = indicatorController.computeIndicators(session, null, null, subprojectId, visibility);
 
         // Return the index view
-        return getView("index")
-           .arg("indicators", indicators)
+        Template view = getView("index");
+        view.arg("indicators", indicators)
            .arg("subprojectId", subprojectId)
            .arg("visibility", visibility)
            .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
+
+        // Set only the registry host name in dev mode
+        if(this.isDevModeSet()){
+            view.arg("serverName", InetAddress.getLocalHost().getHostName());
+        } else {
+            view.arg("serverName", "");
+        }
+        
+        return view;
+
     }
 
 }

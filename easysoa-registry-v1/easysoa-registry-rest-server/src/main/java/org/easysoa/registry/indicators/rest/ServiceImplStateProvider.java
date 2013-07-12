@@ -154,7 +154,7 @@ public class ServiceImplStateProvider extends IndicatorProviderBase {
         newIndicator(indicators, "serviceWithDocumentation", serviceWithDocumentation, serviceCount);
 
         newIndicator(indicators, "serviceImplementationWithoutDocumentation", undocumentedServiceImpls, serviceImplCount);
-        newIndicator(indicators, "serviceImplementationDocumentationLineAverage", (serviceImplCount - undocumentedServiceImpls > 0) ? (int) (documentationLines / (serviceImplCount - undocumentedServiceImpls)) : -1);
+        newIndicator(indicators, "serviceImplementationDocumentationLineAverage", (serviceImplCount - undocumentedServiceImpls > 0) ? (int) (documentationLines / (serviceImplCount - undocumentedServiceImpls)) : -1, -1);
         newIndicator(indicators, "serviceImplementationWithoutMock", nonMockImplsCount - mockedImplsCount, nonMockImplsCount);
         newIndicator(indicators, "serviceImplementationWithoutTest", nonMockImplsCount - testedImplsCount, nonMockImplsCount);
         newIndicator(indicators, "documentedServiceImplementationDocumentationQuality", (serviceImplCount - undocumentedServiceImpls > 0) ?

@@ -3,19 +3,19 @@
 <head>
    <title>EasySOA Cartographie - Fiche Service</title>
 	<meta charset="utf-8" />
-	
+
    <!-- custom style and scripts -->
 	<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />
 	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" />
-	 
+
 	<script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
-	
+
 	<style type="text/css">
 	  .clickable:hover { cursor: pointer; background-color: #FFC; }
 	  .id { display: none }
 	  .selected { background-color: #CFC; }
 	</style>
-    
+
     <!-- Bootstrap default style and scripts -->
     <link href="/nuxeo/site/easysoa/skin/css/bootstrap.css" rel="stylesheet" media="screen">
     <script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>
@@ -26,7 +26,7 @@
         <#include "/views/EasySOA/macros.ftl">
         <#include "/views/EasySOA/docMacros.ftl">
         <#include "/views/EasySOA/soaMacros.ftl">
-    
+
    <div id="header">
       <div id="headerContents">
           <div id="logoLink">&nbsp;</div>
@@ -46,7 +46,7 @@
          <li class="span12">
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt=""></img>
-               
+
       <#if endpoint?has_content>
           <h3>Déploiement <@displayEndpointTitle endpoint subprojectId visibility/></h3>
       <#elseif serviceimpl?has_content>
@@ -67,31 +67,31 @@
       </#if>
 		<p/>
 
-      
+
       <#if !consumerActor?has_content><#assign consumerActor = ""/></#if>
       <#if !providerActor?has_content><#assign providerActor = ""/></#if>
       <#if !component?has_content><#assign component = ""/></#if>
 
             </div>
          </li>
-      
-      
+
+
       <#if service?has_content && parsedServiceSubprojectId.getSubprojectName() = 'Specifications'>
 
 
          <li class="span12">
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt=""></img>
-		
-		
+
+
 		<h3>Métier</h3><!-- ((sert à)) -->
-      
+
 		<#if businessService?has_content>
           <#-- if businessService['businessservice:consumerActor']?has_content>
             <#assign bsConsumerActor = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', businessService['businessservice:consumerActor']))/>
           </#if -->
 		    Fournit le service business <@displaySoaNodeLink businessService ""/> :
-          
+
           <#if !serviceimpl?has_content && !endpoint?has_content || isUserBusinessAnalyst>
           <br/>
            &nbsp;&nbsp;&nbsp;<@displaySoaNodeProp consumerActor 'Acteur consommateur' businessService/>
@@ -112,7 +112,7 @@
 		</#if>
 		<p/>
 		<p/>
-		
+
             </div>
          </li>
 
@@ -123,16 +123,16 @@
          <li class="span12">
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt=""></img>
-               
+
 		<h3>Service</h3>
 		<p/>
-      
-      
+
+
       <#if !service?has_content>
           Pas de service reliée.
       <#else>
-      
-      
+
+
       <#if serviceimpl?has_content || endpoint?has_content>
           La définition de service reliée est <@displayServiceShort service subprojectId visibility/>.
       <#else>
@@ -143,22 +143,22 @@
       <#-- h3>Interface(s)</h3 -->
       <@displayInterfaceResource service/>
       <p/>
-		
+
 		<#if parsedSubprojectIdToDisplay.getSubprojectName() = 'Specifications'>
-		
+
           <!-- TODO CONFIGURATION & LISTALL -->
           Définitions d'exigences formelles opérationnelles i.e.
           <@displaySoaNodeChildrenShort service, 'OLA', 'RequirementsDocument'/>
           <p/>
-      
+
 		    <#if !businessService?has_content>
               <@displaySoaNodeProp providerActor 'Acteur fournisseur' service/>
               <p/>
           </#if>
-              
+
           <@displaySoaNodeProp component 'Component' service/>
           <p/>
-          
+
       <#else>
           Service technique (ayant émergé lors de la phase de réalisation)
       </#if>
@@ -172,7 +172,7 @@
                <img data-src="holder.js/300x200" alt=""></img>
 
 		<h3>Documentation</h3>
-		
+
 		<h4>Documentation - extraite :</h4>
 		(de la définition et de l'implémentation réelle)
 		<#--
@@ -183,7 +183,7 @@
 		de l'impl (first (?) non-test one) :
 		<p/>
 		<#if actualImpls?has_content && actualImpls?size != 0>
-		${actualImpls[0]['impl:documentation']}
+		${actualImpls[0]['impl:documentation']} TODO !!!!!!!!!!!!!!!!!!!!!!!
 		<@displayProp actualImpls[0] 'impl:operations'/>
 		<#if actualImpls?size != 1>
 		<br/>(other implementations...)
@@ -191,7 +191,7 @@
 		</#if>
 		<p/>
 		-->
-		
+
       <#if serviceimpl?has_content>
          <#assign impl_operations=serviceimpl['impl:operations']><#-- or after productionImpl ? -->
       <#elseif productionImpl?has_content>
@@ -203,23 +203,23 @@
 		</#if>
       <@displayOperations service['iserv:operations'] impl_operations/>
 		<p/>
-		
+
 		<!-- TODO LATER OPT du WSDL de l'endpoint OR BELOW ON ENDPOINT :<p/ -->
-		
-		
+
+
 		<h4>Documentation - manuelle :</h4>
 		<!-- lister les non-SoaNodes fils du InformationService NON les fichiers joints, ou sinon du BusinessService -->
 		<#-- @displayProp service 'files:files'/><p/ -->
-		
+
 		Fichiers joints :<br/>
 		<@displayFiles service['files:files']/>
-      <p/>		
-      
+      <p/>
+
       <!-- TODO CONFIGURATION & LISTALL -->
-      Fichiers fils de 
+      Fichiers fils de
       <@displaySoaNodeChildrenShort service, 'Resource', ''/><!-- TODO displayResource -->
       <p/>
-        
+
       Tous les documents fils :<br/>
 		<@displayChildrenShort service 'Document'/>
 		<p/>
@@ -227,7 +227,7 @@
       <h4>Exemples d'appel :</h4>
       (aucun)
       <!-- TODO -->
-      
+
             </div>
          </li>
 
@@ -274,7 +274,7 @@
 		<#-- br/>(autres tags) --><!-- TODO -->
       <p/>
       &nbsp;<p/>
-      
+
       <b>Utilisé par :</b>
       <p/>
       <!-- bsConsumerActor (ses Components et evt leurs Applications) -->
@@ -333,10 +333,10 @@
       <#else>
           (aucun)
       </#if>
-      
+
       <p/>
 
-		
+
             </div>
          </li>
 
@@ -348,10 +348,10 @@
          <li class="span12">
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt=""></img>
-		
+
 		<h3>Implémentations de service<#-- (y compris de test) --></h3>
 		<#-- et consomme, dépend de (en mode non test) <br/ -->
-		
+
         <#if serviceimpl?has_content>
           <div style="margin-bottom:30px;">
           Cette implémentation
@@ -361,12 +361,12 @@
           <@displayImplementationShort serviceimpl subprojectId visibility/>
           <@displayDocumentation serviceimpl['impl:documentation']/>
           <p/>
-          
+
           <#-- @displayDocShort actualImpl/ -->
           <@displayImplementationDetail serviceimpl/>
           </div>
 		  </#if>
-		  
+
 		  <#-- Production as default preferred deployment ; TODO others according to role -->
         <#if !serviceimpl?has_content || productionImpl?has_content && productionImpl.id != serviceimpl.id>
           <div style="margin-bottom:30px;">
@@ -375,7 +375,7 @@
              <@displayImplementationShort productionImpl subprojectId visibility/>
              <@displayDocumentation productionImpl['impl:documentation']/>
              <p/>
-          
+
              <#-- @displayDocShort actualImpl/ -->
              <@displayImplementationDetail productionImpl/>
              <p/>
@@ -385,20 +385,20 @@
           </div>
         </#if>
         <p/>
-        
+
         <#if (isUserConsumer || !isUserProvider) && !(serviceimpl?has_content && serviceimpl['impl:ismock'] = 'true')>
           <div style="margin-bottom:30px;">
           <#if isUserConsumer>
           <b>En tant que consommateur</b>, vos implémentations de test sont :
           <#elseif !isUserProvider>
-          <b>N'étant pas fournisseur</b>, vous pouvez utiliser des implémentations de test : 
+          <b>N'étant pas fournisseur</b>, vous pouvez utiliser des implémentations de test :
           </#if>
           <br/>
           <#list userConsumerImpls as userConsumerImpl>
              &nbsp;&nbsp;-&nbsp;<@displayImplementationShort userConsumerImpl subprojectId visibility/>
              <@displayDocumentation userConsumerImpl['impl:documentation']/>
              <p/>
-          
+
              <#-- @displayDocShort actualImpl/ -->
              <@displayImplementationDetail userConsumerImpl/>
              <p/>
@@ -406,27 +406,27 @@
           </div>
         </#if>
         <p/>
-		
+
 		<#if actualImpls?has_content && actualImpls?size != 0>
 		<b>Autres implémentations :</b><br/>
 		<#list actualImpls as actualImpl>
 		   <#if (!productionImpl?has_content || productionImpl.id != actualImpl.id) && (!serviceimpl?has_content || serviceimpl.id != actualImpl.id)>
-		   
+
 		   &nbsp;&nbsp;-&nbsp;<@displayImplementationShort actualImpl subprojectId visibility/>
 		   <@displayDocumentation actualImpl['impl:documentation']/>
           <p/>
-          
+
           <#-- @displayDocShort actualImpl/ -->
           <@displayImplementationDetail actualImpl/>
           <p/>
-           
+
            </#if>
 		</#list>
 		</p>
 		<@displayImplementationTools subprojectId visibility/>
 		<p/>
 		</#if>
-		
+
       <#if mockImpls?has_content && !(isUserConsumer || !isUserProvider)>
 		<br/><b>Autres implémentations de test (mocks) :</b><br/>
       <#-- @displayDocs mockImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/ -->
@@ -450,7 +450,7 @@
                <img data-src="holder.js/300x200" alt=""></img>
 
 		<h3>Services déployés<#-- (endpoints) --></h3>
-		
+
         <#if endpoint?has_content>
           <div style="margin-bottom:30px;">
           Ce service déployé en <b>${endpoint['env:environment']}</b> à
@@ -468,7 +468,7 @@
           </#if>
           </div>
         </#if>
-        
+
         <#if !endpoint?has_content || endpoint['env:environment'] != 'Production'>
           <div style="margin-bottom:30px;">
           Déployé en <b>Production</b> à
@@ -490,7 +490,7 @@
           </#if>
           </div>
         </#if>
-        
+
         <#if (isUserConsumer || !isUserProvider) && !(serviceimpl?has_content && serviceimpl['impl:ismock'] = 'true')>
           <div style="margin-bottom:30px;">
           <#if isUserConsumer>
@@ -510,7 +510,7 @@
           </#list>
           </div>
         </#if>
-		
+
         <#if actualEndpoints?has_content>
         <b>Autres déploiements :</b><p/>
 		  <#-- @displayDocsShort actualEndpoints/ -->
@@ -530,7 +530,7 @@
         </#list>
         <p/>
         </#if>
-        
+
         <#if userConsumerEndpoints?has_content && !(serviceimpl?has_content && serviceimpl['impl:ismock'] = 'true')>
             <div style="margin-bottom:30px;">
             <b>Vos déploiements de test en tant que consommateur :</b><br/>
@@ -563,7 +563,7 @@
             </#list>
             </div>
         </#if>
-        
+
         <!-- TODO LATER endpoint consumptions (like service ones) -->
 
 
@@ -586,9 +586,9 @@
          <li class="span12">
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt=""></img>
-        
+
 		<h3>test</h3>
-		
+
 		<h4>User</h4>
 		(actual) user name & company : ${Context.getPrincipal().getName()} ${Context.getPrincipal().getCompany()}<br/>
         (test) user & groups : ${user.getName()} '<#list user.getGroups() as groupName>${groupName}, </#list>)<br/>
@@ -613,7 +613,7 @@
 		<#if service['children']?has_content><@displayDocsShort service['children']/><p/></#if>
 
 		<h3>log : all props</h3>
-		
+
 		<@displayDoc service/>
 		<p/>
 		&nbsp;<p/>
@@ -643,7 +643,7 @@
 		<p/>
       &nbsp;<p/>
       </#if>
-		
+
 		<#if serviceimpl?has_content>
       <b>Implementation :</b>
       <@displayPropsAll serviceimpl serviceImplementationPropNames/>
@@ -661,7 +661,7 @@
 		<p/>
 		&nbsp;<p/>
 		</#if>
-		
+
       <#if endpoint?has_content>
       <b>Endpoint :</b>
       <p/>
@@ -681,10 +681,10 @@
       <p/>
       &nbsp;<p/>
       </#if>
-		
-		
+
+
 		<h4>UI Draft</h4>
-		
+
         <h4>1. Display focus part according to role</h4>
         (profile ex. Developer, relationship ex. providerActor, phase ex. Specifications -->
 
@@ -698,7 +698,7 @@
             <li>le découvrir (découverte web/monit(/source/OPTimport) OPT scopée sur ce service/impl/endpoint)</li>
             <li>le définir (fournir l'interface, la prendre de l'impl/endpoint, LATER l'extraire d'échanges, OPT importer l'architecture)</li>
       </ul>
-      
+
         Vous êtes Concepteur et vous voulez (ce service) :
         <ul>
             <li>(prototyper (créer des implémentations de test, des clients de test)</li>
@@ -706,7 +706,7 @@
             <li>le définir (fournir l'interface, la prendre de l'impl/endpoint, LATER l'extraire d'échanges, OPT importer l'architecture)</li>
             <li>voir ses statistiques d'usage métier (répond-il aux attentes ?)</li>
         </ul>
-      
+
         Vous êtes Développeur et vous voulez (cette serviceimpl) :
         <ul>
             <li>développer avec (interface, documentation d'utilisation, exemples, essai en ligne, test endpoint, simulation)</li>
@@ -715,7 +715,7 @@
             <li>le découvrir (découverte source)</li>
             <li>(tous les autres, "ouvrables")</li>
         </ul>
-        
+
         Vous êtes Exploitant et vous voulez (cet endpoint) :
         <ul>
             <li>le déployer : appli et services dépendants</li>
@@ -724,7 +724,7 @@
             <li>voir ses statistiques d'usage techniques</li>
             <li>LATER gérer sa configuration (politiques)</li>
         </ul>
-        
+
         Vous êtes Utilisateur et vous voulez (ce service) :
         <ul>
             <li>vous en servir par une application (applications et leurs IHMs, notamment web) TODO appli:urlUiWeb</li>
@@ -737,11 +737,11 @@
 
             </div>
          </li>
-         
-        
+
+
         </#if>
-   
-   
+
+
       </ul>
    </div>
 

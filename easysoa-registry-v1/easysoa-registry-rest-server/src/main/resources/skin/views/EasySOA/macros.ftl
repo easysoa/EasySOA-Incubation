@@ -54,7 +54,7 @@ normal variable type, like an empty string if it should be an object (see above)
 
     <#macro displayIndicatorInTable indicator>
             <tr>
-                <td>${Context.getMessage(indicator.name)}</td>
+                <td>${Context.getMessage(indicator.name, indicator.args)}</td>
                 <td><b>
                     <@displayIndicatorValue indicator/>
                 </b></td>
@@ -67,7 +67,7 @@ normal variable type, like an empty string if it should be an object (see above)
 
     <#macro displayIndicatorInTable2 indicator>
             <tr>
-                <td width="80%" title="${indicator.description}">${Context.getMessage(indicator.name)}</td>
+                <td width="80%" title="${indicator.description}">${Context.getMessage(indicator.name, indicator.args)}</td>
                 <td width="10%"><b>
                     <@displayIndicatorValue indicator/>
                 </b></td>
@@ -80,7 +80,7 @@ normal variable type, like an empty string if it should be an object (see above)
 
     <#macro displayIndicatorInTableWithDescription indicator>
             <tr>
-                <td width="30%" title="${indicator.description}">${Context.getMessage(indicator.name)}</td>
+                <td width="30%" title="${indicator.description}">${Context.getMessage(indicator.name, indicator.args)}</td>
                 <td width="10%" title="${indicator.description}"><b>
                     <@displayIndicatorValue indicator/>
                 </b></td>
@@ -93,10 +93,10 @@ normal variable type, like an empty string if it should be an object (see above)
     </#macro>
 
     <#macro displayIndicatorInTableShort indicator>
-                                <tr>
-                                    <td width="80%" title="${indicator.description}">${Context.getMessage(indicator.name)} :</td>
-                                    <td width="20%"><@displayIndicatorValue indicator/></td>
-                                </tr>
+        <tr>
+            <td width="80%" title="${indicator.description}">${Context.getMessage(indicator.name, indicator.args)} :</td>
+            <td width="20%"><@displayIndicatorValue indicator/></td>
+        </tr>
     </#macro>
 
     <#macro displayIndicatorValue indicator>

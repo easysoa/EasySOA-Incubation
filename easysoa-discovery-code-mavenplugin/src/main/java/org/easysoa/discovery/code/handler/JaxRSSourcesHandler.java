@@ -35,16 +35,18 @@ import com.thoughtworks.qdox.model.JavaSource;
  * both by having class or method(s) annotated by @Path
  * * thanks to InterfaceHandlerBase, member (field or bean setter)-injected service :
  * typed by interfaces having class or method(s) annotated by @Path
- * 
+ *
  * About implementation : see references at
  * spec http://jax-rs-spec.java.net/
  * doc http://jax-ws.java.net/jax-ws-ea3/docs/annotations.html
  * resteasy impl http://docs.jboss.org/resteasy/docs/1.2.GA/userguide/html_single/
  * wink impl https://cwiki.apache.org/WINK/jax-rs-request-and-response-entities.html
  * fairly complete tutorial http://www.vogella.com/articles/REST/article.html
- * 
+ *
+ * For JAXRS, the documentation handler take the documention contained in the implementation (class).
+ *
  * TODO in bytecode
- * 
+ *
  */
 public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements SourcesHandler {
 
@@ -60,17 +62,17 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
     private static final String ANN_FORM_PARAM = "javax.ws.rs.FormParam";
     private static final String ANN_HEADER_PARAM = "javax.ws.rs.HeaderParam";
     private static final String ANN_COOKIE_PARAM = "javax.ws.rs.CookieParam";
-    
+
     public JaxRSSourcesHandler(CodeDiscoveryMojo codeDiscovery) {
         super(codeDiscovery);
     }
-    
+
     @Override
     public Map<String, JavaServiceInterfaceInformation> findWSInterfaces(JavaSource source,
             MavenDeliverableInformation mavenDeliverable, CodeDiscoveryRegistryClient registryClient,
             Log log) throws Exception {
         Map<String, JavaServiceInterfaceInformation> wsInjectableTypeSet = new HashMap<String, JavaServiceInterfaceInformation>();
-        
+
         // Pass 1 : Find all WS interfaces if any
         JavaClass[] classes = source.getClasses();
         for (JavaClass c : classes) {
@@ -94,10 +96,10 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                 }
             }
         }
-        
+
         return wsInjectableTypeSet;
     }
-   
+
     @Override
     public JavaServiceInterfaceInformation findWSInterfaceInClasspath(Class<?> candidateClass,
             MavenDeliverableInformation mavenDeliverable, CodeDiscoveryRegistryClient registryClient, Log log)
@@ -124,7 +126,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
             Map<String, JavaServiceInterfaceInformation> wsInterfaces, MavenDeliverableInformation mavenDeliverable,
             CodeDiscoveryRegistryClient registryClient, Log log) throws Exception {
         // Pass 2 : Find all WS impl, including those implementing known interfaces (though its not "classical" JAXRS)
-        List<SoaNodeInformation> discoveredNodes = new ArrayList<SoaNodeInformation>();
+      List<SoaNodeInformation> discoveredNodes = new ArrayList<SoaNodeInformation>();
         for (JavaSource source : sources) {
             // TODO diff between main & tests
             JavaClass[] classes = source.getClasses();
@@ -161,7 +163,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                         if (baseRestContentType == null) {
                             baseRestContentType = MediaType.APPLICATION_OCTET_STREAM; // see https://cwiki.apache.org/WINK/jax-rs-request-and-response-entities.html
                         }
-                        
+
                         // Create name & impl info
                         JavaServiceImplementationInformation serviceImpl = new JavaServiceImplementationInformation(
                                 this.codeDiscovery.getSubproject(),
@@ -172,12 +174,12 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPL_LANGUAGE, Platform.LANGUAGE_JAVA);
                 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPL_BUILD, Platform.BUILD_MAVEN);
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXRS);
-                        
-                        serviceImpl.setProperty(JavaServiceImplementation.XPATH_DOCUMENTATION, c.getComment());
+
+                        serviceImpl.setProperty(JavaServiceImplementation.XPATH_DOCUMENTATION, formatDoc(c));
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_ISMOCK, ParsingUtils.isTestClass(c));
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTATIONCLASS, c.getFullyQualifiedName());
                         serviceImpl.addParentDocument(mavenDeliverable.getSoaNodeId());
-                        
+
                         if (itf != null) {
                             // Extract WS info
                             serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTEDINTERFACE, itf.getFullyQualifiedName());
@@ -202,7 +204,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                                 discoveredNodes.add(serviceDef);
                             }
                         }
-                        
+
                         // set jaxrs conf
                         serviceImpl.setProperty(JavaServiceImplementation.XPATH_REST_PATH, baseRestPath);
                         if (baseRestAccepts != null) { // or defaults to "*" ?
@@ -211,7 +213,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                         if (baseRestContentType != null) { // or defaults to "application/*" ??
                             serviceImpl.setProperty(JavaServiceImplementation.XPATH_REST_CONTENT_TYPE, baseRestContentType);
                         }
-                        
+
                         // Extract operations info
                         List<OperationInformation> operations = serviceImpl.getOperations();
                         String baseRestPathPrefix = baseRestPath + ((baseRestPath.endsWith("/")) ? "" : '/');
@@ -225,7 +227,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                                         break;
                                     }
                                 }
-                                
+
                                 if (httpMethod != null) {
                                     // Extract service path
                                     String path = ParsingUtils.getAnnotationPropertyString(method, ANN_PATH, "value");
@@ -246,12 +248,12 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                                     if (operationProduces == null) {
                                         operationProduces = baseRestContentType;
                                     }
-                                    
+
                                     // Extract parameters info
                                     StringBuilder parametersInfo = new StringBuilder();
                                     for (JavaParameter parameter : method.getParameters()) {
                                         String paramName = extractRestParamName(parameter);
-                                        
+
                                         if (paramName != null) {
                                             String parameterType = getParameterType(parameter.getType());
                                             parametersInfo.append(formatParameter(paramName, parameterType) + ", ");
@@ -265,7 +267,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                                     // extract return parameter info
                                     String returnParameterType = getReturnParameterType(method);
                                     String returnParametersInfo = formatParameter("response", returnParameterType);
-                                    
+
                                     // "in message" way of presenting parameters :
                                     //parametersInfo.insert(0, operationConsumes + ": ");
                                     // "out message" way of presenting return :
@@ -276,13 +278,13 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
                                     //TODO lATER better as for JAXWS : operationMap.put(method.getName(), new OperationInformation(operationName...
                                     operations.add(new OperationInformation(operationName,
                                             parametersInfo.toString(), returnParametersInfo,
-                                            method.getComment(),
+                                            formatDoc(method),
                                             operationConsumes, operationProduces));
                                 }
-                                
+
                             }
                             serviceImpl.setOperations(operations);
-                            
+
 
                             if (this.codeDiscovery.isDiscoverImplementations()) {
                                 discoveredNodes.add(serviceImpl);
@@ -294,7 +296,7 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
         }
         return discoveredNodes;
     }
-    
+
 
     private String extractRestParamName(JavaParameter parameter) {
         String paramName = getParamName(parameter, ANN_PATH_PARAM, "path");
@@ -320,5 +322,5 @@ public class JaxRSSourcesHandler extends AbstractJavaSourceHandler implements So
         }
         return null;
     }
-    
+
 }

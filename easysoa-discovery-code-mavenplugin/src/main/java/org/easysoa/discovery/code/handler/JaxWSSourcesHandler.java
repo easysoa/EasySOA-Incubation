@@ -1,5 +1,6 @@
 package org.easysoa.discovery.code.handler;
 
+import com.thoughtworks.qdox.model.DocletTag;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,6 +37,8 @@ import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.JavaSource;
 import com.thoughtworks.qdox.model.Type;
+import java.io.Serializable;
+import org.apache.poi.hdf.model.hdftypes.FormattedDiskPage;
 
 
 /**
@@ -44,7 +47,9 @@ import com.thoughtworks.qdox.model.Type;
  * both by being annotated by @WebService
  * * thanks to InterfaceHandlerBase, member (field or bean setter)-injected service :
  * typed by @WebService annotated interfaces or @WebServiceClient annotated classes)
- * 
+ *
+ * For JAXWS, the documentation handler take the documention contained in the interface.
+ *
  * @author mdutoo
  *
  */
@@ -63,9 +68,9 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
     private static final String ANN_XML_WSCLIENT = "javax.xml.ws.WebServiceClient";
     private static final String ANN_XML_WSREF = "javax.xml.ws.WebServiceRef";
     private static final String ANN_XML_WSPROVIDER = "javax.xml.ws.WebServiceProvider";
-    
+
     private Map<Type, String> implsToInterfaces = new HashMap<Type, String>();
-    
+
     public JaxWSSourcesHandler(CodeDiscoveryMojo codeDiscovery) {
         super(codeDiscovery);
         this.addAnnotationToDetect(ANN_WSPROVIDER);
@@ -86,7 +91,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
             	String wsName = getWsName(c);
             	String wsNamespace = getWsNamespace(c);
             	Map<String, OperationInformation> operations = getOperationsInformation(c, null);
-                wsInjectableTypeSet.put(c.getFullyQualifiedName(), 
+                wsInjectableTypeSet.put(c.getFullyQualifiedName(),
                         new JavaServiceInterfaceInformation(this.codeDiscovery.getSubproject(),
                                 mavenDeliverable.getGroupId(), mavenDeliverable.getArtifactId(),
                                 c.getFullyQualifiedName(), wsNamespace, wsName, operations));
@@ -124,7 +129,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
             for (JavaClass c : classes) {
                 if (isWsImplementation(c, wsInterfaces)) {
                     JavaServiceInterfaceInformation interfaceInfo = null;
-                    
+
                     // Extract interface info
                     //System.out.println("\ncp:\n" + System.getProperty("java.class.path"));
                     JavaClass itfClass = getWsItf(c, wsInterfaces);
@@ -135,22 +140,25 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                     else {
                         log.warn("Couldn't find interface for class " + c.getFullyQualifiedName());
                     }
-                    
+
                     // Extract WS info
                     JavaServiceImplementationInformation serviceImpl = createServiceImplementation(c, itfClass, interfaceInfo);
                     serviceImpl.addParentDocument(mavenDeliverable.getSoaNodeId());
-                    
+
                     if (itfClass != null) {
                         // Extract operations info
                         Map<String, OperationInformation> itfOperationsInfo = interfaceInfo.getOperations();
                         Map<String, OperationInformation> implOperationsInfo = getOperationsInformation(c, itfOperationsInfo);
                         for (Entry<String, OperationInformation> implOperation : implOperationsInfo.entrySet()) {
                             if (itfOperationsInfo.containsKey(implOperation.getKey())) {
-                                itfOperationsInfo.get(implOperation.getKey()).mergeWith(implOperation.getValue());
+                                OperationInformation opInfo = itfOperationsInfo.get(implOperation.getKey());
+                                if(opInfo.getDocumentation() == null || "".equals(opInfo.getDocumentation())){
+                                    opInfo.mergeWith(implOperation.getValue());
+                                }
                             }
                         }
                         List<OperationInformation> operations = new ArrayList<OperationInformation>(itfOperationsInfo.values());
-                        
+
                         // Extract service info
                     	// TODO Cleaner porttype discovery
                         if (this.codeDiscovery.isDiscoverInterfaces()) {
@@ -158,10 +166,10 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                             informationService.setOperations(operations);
                             discoveredNodes.add(informationService);
                         }
-                        
+
                         serviceImpl.setOperations(operations); //TODO or only code (signature) plus any info pointing to iserv operations ??
                     }
-                    
+
                     if (this.codeDiscovery.isDiscoverImplementations()) {
                         discoveredNodes.add(serviceImpl);
                     }
@@ -177,7 +185,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
             MavenDeliverableInformation mavenDeliverable, CodeDiscoveryRegistryClient registryClient, Log log)
             throws Exception {
          List<SoaNodeInformation> discoveredNodes = new ArrayList<SoaNodeInformation>();
-         
+
         // Additional pass : Find WS tests
         for (JavaSource source : sources) {
             JavaClass[] classes = source.getClasses();
@@ -206,7 +214,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                                         matchingRegistryImpl.getSoaName(),
                                         c.getFullyQualifiedName()));
                             }
-                            
+
                             // Otherwise, attach test info to all known implementations of the interface
                             if (!foundOriginalImplementation) {
                                 for (Entry<Type, String> implToInterface : implsToInterfaces.entrySet()) {
@@ -222,7 +230,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                 }
             }
         }
-        
+
         return discoveredNodes;
     }
 
@@ -236,7 +244,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
     }
 
 	private String getWsNamespace(JavaClass c) {
-	    String wsNamespace = null; 
+	    String wsNamespace = null;
         wsNamespace = ParsingUtils.getAnnotationPropertyString(c, ANN_WS, "targetNamespace");
         if (wsNamespace == null) {
             wsNamespace = ParsingUtils.getAnnotationPropertyString(c, ANN_XML_WSCLIENT, "targetNamespace");
@@ -251,8 +259,8 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
         return wsNamespace;
 	}
 
-	private String getWsName(JavaClass c) {	
-        String wsName = null; 
+	private String getWsName(JavaClass c) {
+        String wsName = null;
         wsName = ParsingUtils.getAnnotationPropertyString(c, ANN_WS, "name");
         if (wsName == null) {
             wsName = ParsingUtils.getAnnotationPropertyString(c, ANN_XML_WSCLIENT, "name");
@@ -269,7 +277,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 
 	private String getWsServiceName(JavaClass c) {
 	    // service implementation name (used for binding & port)
-        String serviceName = null; 
+        String serviceName = null;
         serviceName = ParsingUtils.getAnnotationPropertyString(c, ANN_WS, "serviceName");
         if (serviceName == null) {
             serviceName = ParsingUtils.getAnnotationPropertyString(c, ANN_XML_WSCLIENT, "name");
@@ -290,13 +298,13 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 	private Map<String, OperationInformation> getOperationsInformation(JavaClass c,
 			Map<String, OperationInformation> existingOperationsInfo) {
         Map<String, OperationInformation> operations = new HashMap<String, OperationInformation>();
-        
+
         boolean acceptNewNonExistingOperations = isWsServerInterface(c);
         // NB. for interface inheritance, since jaxws 2.1 https://issues.apache.org/jira/browse/OPENEJB-1020
         //TODO check that this is enough to support it
-        
+
         for (JavaMethod method : c.getMethods()) {
-            
+
             String operationName = ParsingUtils.getAnnotationPropertyString(method, ANN_WEBMETHOD, "operationName");
             if (operationName == null) {
                 operationName = method.getName(); // even non-@WebMethod annotated interface methods are exposed
@@ -310,7 +318,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
         			}
         		}
         	}
-        	
+
             if (acceptNewNonExistingOperations || doesOperationExist/*operationName != null*/) {
                 // Extract parameters info
                 StringBuilder parametersInfo = new StringBuilder();
@@ -345,17 +353,19 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                 //parametersInfo.append(" }");
                 // "out message" way of presenting return :
                 //returnParametersInfo = SOAP_CONTENT_TYPE + ": " + returnParametersInfo;
-                
+
                 //TODO LATER also bare signature (or method.getName() ?) :
                 //String signature = method.getCallSignature();
-                operations.put(method.getName(), new OperationInformation(operationName, 
-                        parametersInfo.toString(), returnParametersInfo, method.getComment(),
+                operations.put(method.getName(), new OperationInformation(operationName,
+                        parametersInfo.toString(), returnParametersInfo, formatDoc(method),
                         operationInContentType, operationOutContentType));
             }
         }
         return operations;
 	}
-    
+
+
+
 
     private boolean isWsInterface(JavaClass c) {
         return isWsServerInterface(c) || isWsClientInterface(c);
@@ -370,7 +380,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                 || ParsingUtils.hasAnnotation(c, ANN_WSPROVIDER)
                 || ParsingUtils.hasAnnotation(c, ANN_XML_WSPROVIDER);
     }
-	
+
 	private boolean isWsImplementation(JavaClass c, Map<String, JavaServiceInterfaceInformation> wsInterfaces) {
         JavaClass itfClass = getWsItf(c, wsInterfaces); // TODO several interfaces ???
         return !c.isInterface() && (ParsingUtils.hasAnnotation(c, ANN_WS) || itfClass != null); // TODO superclass ?
@@ -378,7 +388,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 	private JavaServiceImplementationInformation createServiceImplementation(JavaClass c,
 			JavaClass itfClass, JavaServiceInterfaceInformation interfaceInfo) throws Exception {
 	    String wsNamespace = getWsNamespace(c), wsName = getWsName(c), serviceName = getWsServiceName(c);
-	    
+
 		String wsdlPortTypeName;
 		if (interfaceInfo != null) {
 		    wsdlPortTypeName = interfaceInfo.getWsPortTypeName();
@@ -392,7 +402,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                 new ServiceImplementationName(ServiceNameType.WEB_SERVICE, // ?????
                 wsdlPortTypeName, c.getFullyQualifiedName())); // serviceName
         serviceImpl.setTitle(c.getName()); // c.getName() (shortcut) or serviceImpl.getSoaName() ?
-        
+
 		// TODO Cleaner porttype/servicename discovery + revert soanodeid
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_WSDL_PORTTYPE_NAME, wsdlPortTypeName);
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_WSDL_SERVICE_NAME, wsdlServiceName);
@@ -400,7 +410,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPL_LANGUAGE, Platform.LANGUAGE_JAVA);
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPL_BUILD, Platform.BUILD_MAVEN);
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_TECHNOLOGY, Platform.SERVICE_LANGUAGE_JAXWS);
-		
+
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_ISMOCK,
 		        c.getSource().getURL().getPath().contains("src/test/"));
 		serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTATIONCLASS, c.getFullyQualifiedName());
@@ -410,7 +420,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 		        serviceImpl.setProperty(JavaServiceImplementation.XPATH_IMPLEMENTEDINTERFACELOCATION,
 		                interfaceInfo.getMavenDeliverableId().getName());
 		    }
-	        serviceImpl.setProperty(JavaServiceImplementation.XPATH_DOCUMENTATION, itfClass.getComment());
+	        serviceImpl.setProperty(JavaServiceImplementation.XPATH_DOCUMENTATION, formatDoc(itfClass));
 		}
 		return serviceImpl;
 	}
@@ -443,7 +453,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 	    // NB. operations set outside
 	    return informationService;
 	}
-	
+
 	public static String toShortNsName(String ns, String name) {
 	    return '{' + ns + '}' + name;
 	}
@@ -464,7 +474,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
     	return c.getName();
 	}
 
-	private String getWsName(Class<?> c) {	
+	private String getWsName(Class<?> c) {
     	if (ParsingUtils.hasAnnotation(c, ANN_WS)) {
     		WebService wsAnnotation = (WebService) ParsingUtils.getAnnotation(c, ANN_WS);
     		return wsAnnotation.targetNamespace();
@@ -505,16 +515,15 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
         boolean acceptNewNonExistingOperations = isWsServerInterface(c);
         // NB. for interface inheritance, since jaxws 2.1 https://issues.apache.org/jira/browse/OPENEJB-1020
         //TODO check that this is enough to support it
-        
-        for (Method method : c.getMethods()) {
 
+        for (Method method : c.getMethods()) {
             String operationName = ParsingUtils.getAnnotationPropertyString(method, ANN_WEBMETHOD, "operationName");
             if (operationName == null) {
                 operationName = method.getName(); // even non-@WebMethod annotated interface methods are exposed
             }
 
             boolean doesOperationExist = operationName != null;
-            
+
             if (acceptNewNonExistingOperations || doesOperationExist/*operationName != null*/) {
                 // Extract parameters info
                 StringBuilder parametersInfo = new StringBuilder();
@@ -538,7 +547,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                 		}
                 	}*/
                 	String webParameterType = getParameterType(parameter);
-                    parametersInfo.append(formatParameter(webParameterName, webParameterType) + ", ");                	
+                    parametersInfo.append(formatParameter(webParameterName, webParameterType) + ", ");
                 }
                 // removing trailing ", "
                 if (parametersInfo.length() > 2) {
@@ -563,12 +572,12 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
 
                 //TODO LATER also bare signature (or method.getName() ?) :
                 //String signature = method.getCallSignature();
-                operations.put(method.getName(), new OperationInformation(webResultName, 
+                operations.put(method.getName(), new OperationInformation(webResultName,
                         parametersInfo.toString(), returnParametersInfo, null,
                         operationInContentType, operationOutContentType));
             }
         }
         return operations;
 	}
-    
+
 }

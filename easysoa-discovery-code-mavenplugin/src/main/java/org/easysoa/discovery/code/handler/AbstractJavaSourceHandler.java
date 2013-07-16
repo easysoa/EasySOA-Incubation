@@ -270,12 +270,14 @@ public abstract class AbstractJavaSourceHandler implements SourcesHandler {
         if(method.getComment() != null){
             formattedDoc.append(method.getComment());
         }
-        for(JavaParameter param : method.getParameters()){
+        for(DocletTag tag : method.getTags()){
             if(formattedDoc.length() > 0){
                 formattedDoc.append("\n");
             }
-            formattedDoc.append("@param ");
-            formattedDoc.append(param.getName());
+            formattedDoc.append("@");
+            formattedDoc.append(tag.getName());
+            formattedDoc.append(" ");
+            formattedDoc.append(tag.getValue());
         }
         return formattedDoc.toString();
     }

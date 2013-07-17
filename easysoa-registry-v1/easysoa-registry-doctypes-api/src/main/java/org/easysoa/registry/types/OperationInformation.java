@@ -4,12 +4,12 @@ import java.security.InvalidParameterException;
 
 
 /**
- * 
+ *
  * @author mkalam-alami
  *
  */
 public class OperationInformation {
-    
+
     /* constants to be used to serialize it (to nuxeo model prop, or even json...) */
     public static final String OPERATION_NAME = "operationName";
     public static final String OPERATION_PARAMETERS = "operationParameters";
@@ -25,7 +25,7 @@ public class OperationInformation {
     private String inContentType;
     private String outContentType;
     //private String methodSignature;
-    
+
     public OperationInformation(String name,
             String parameters, String returnParameters,
             String documentation,
@@ -37,15 +37,15 @@ public class OperationInformation {
         this.inContentType = inContentType;
         this.outContentType = outContentType;
     }
-   
+
     public String getName() {
         return name;
     }
-   
+
     public String getParameters() {
         return parameters;
     }
-   
+
     public String getReturnParameters() {
         return returnParameters;
     }
@@ -61,7 +61,7 @@ public class OperationInformation {
     public String getOutContentType() {
         return outContentType;
     }
-    
+
     @Override
     public boolean equals(Object o) {
     	if (o instanceof OperationInformation) {
@@ -80,9 +80,9 @@ public class OperationInformation {
         if (operation.returnParameters != null) {
             this.returnParameters = operation.returnParameters;
         }
-		if (operation.documentation != null) {
-			if (this.documentation != null) {
-				this.documentation += "\n\nAdditional documentation:\n" + operation.documentation;
+		if (operation.documentation != null && operation.documentation.length() != 0) {
+			if (this.documentation != null && this.documentation.length() != 0) {
+				this.documentation += "\n\nAdditional documentation:\n" + operation.documentation; // TODO i18n
 			}
 			else {
 				this.documentation = operation.documentation;
@@ -94,7 +94,7 @@ public class OperationInformation {
         if (operation.outContentType != null) {
             this.outContentType = operation.outContentType;
         }
-		
+
 	}
-    
+
 }

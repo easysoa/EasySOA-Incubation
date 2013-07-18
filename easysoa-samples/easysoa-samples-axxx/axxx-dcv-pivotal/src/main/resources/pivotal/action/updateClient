@@ -1,9 +1,12 @@
 #parse("auth")
 
 #set($clientToUpdate = $clientService.getClient($identifiantClient))
+#set($Integer = 0)
 
 $clientService.updateClient($identifiantClient, $raisonSociale, $Integer.parseInt($anciennete),
     $typeStructure, $numEtVoie, $email, $codePostal, $ville, $pays,
-    $tel, $rib, $formeJuridique, $siren, $clientToUpdate.getDotGlobAPVN(), $clientToUpdate.getDontReliquatN1(), $clientToUpdate.getDontDotN(), $clientToUpdate.getNbBenefPrevN(), $clientToUpdate.getMontantUtiliseN(), $clientToUpdate.getNbBenefN())
+    $tel, $rib, $formeJuridique, $siren, $clientToUpdate.getDotGlobAPVN(),
+    $clientToUpdate.getDontReliquatN1(), $clientToUpdate.getDontDotN(),
+    $clientToUpdate.getNbBenefPrevN(), $clientToUpdate.getMontantUtiliseN(), $clientToUpdate.getNbBenefN())
 
 $response.sendRedirect("../clientDetails.html?identifiantClient=$identifiantClient")

@@ -34,6 +34,8 @@ import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.Subproject;
 import org.easysoa.registry.utils.NXQLQueryHelper;
+import org.easysoa.registry.wsdl.WsdlBlob;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -41,7 +43,7 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Computes various indicators on services & their impls & endpoints
- * 
+ *
  * @author mkalam-alami, mdutoo
  *
  */
@@ -79,12 +81,16 @@ public class ServiceStateProvider extends IndicatorProviderBase {
         int serviceWithoutImplementationNb = 0;
         int serviceWithImplementationWhithoutEndpointNb = 0;
         int serviceWithImplementationWhithoutProductionEndpointNb = 0;
-        
+
+        // % of documented services
+        int serviceWithDocumentation = this.computeServiceIndicators(session, indicators, subprojectCriteria);
+
         // TODO business services sans interface (InformationService) & in PhaseProgress indicator & governanceIndicators page
-        
+
         for (DocumentModel service : serviceList) {
 
         	// Specified services
+            // TODO rather only specified services ?
         	String servicePhase = SubprojectServiceImpl.parseSubprojectId(
         			SubprojectServiceImpl.getSubprojectId(service)).getSubprojectName();
         	if (Subproject.SPECIFICATIONS_SUBPROJECT_NAME.equals(servicePhase)) {
@@ -95,14 +101,14 @@ public class ServiceStateProvider extends IndicatorProviderBase {
 	        		//component = session.getDocument(new IdRef(componentId));
 	                serviceWithoutComponentNb++;
 	        	}
-	
+
 	            // Find actor
 	        	String providerActorId = (String) service.getPropertyValue(InformationService.XPATH_PROVIDER_ACTOR);
 	        	if (providerActorId == null || providerActorId.isEmpty()) {
 	                serviceWithoutActorNb++;
 	        	}
         	}
-        	
+
         	// Specified and non-specified (technical) services
         	if (MatchingHelper.isWsdlInfo(service) && MatchingHelper.isRestInfo(service)) {
         		serviceWithoutInterfaceNb++;
@@ -122,14 +128,14 @@ public class ServiceStateProvider extends IndicatorProviderBase {
 
                     if (serviceImpl.isMock()) {
                     	isAServiceWithMockImplementation = true;
-                    	
+
                     } else {
-                    	
+
                     	Serializable[] tests = (Serializable[]) serviceImplModel.getPropertyValue(ServiceImplementation.XPATH_TESTS);
                     	if (tests.length != 0) {
                     		isAServiceWithTestedImplementation = true;
                     	}
-                    	
+
                         DocumentModel productionEndpoint = documentService.getEndpointOfImplementation(serviceImplModel, Endpoint.ENV_PRODUCTION, subprojectId);
                         if (productionEndpoint == null) {
                             serviceWithImplementationWhithoutProductionEndpointNb++; // at most one production endpoint (else should pass through boolean)
@@ -165,7 +171,7 @@ public class ServiceStateProvider extends IndicatorProviderBase {
 
         newIndicator(indicators, "serviceWithMockImplementation", serviceWithMockImplementationNb, servicesCount); // for governance completion
         newIndicator(indicators, "serviceWithTestedImplementation", serviceWithTestedImplementationNb, servicesCount); // for governance completion
-        
+
         // TODO "test", "integration", "staging" ("design", "dev")
         newIndicator(indicators, "serviceWithImplementationWhithoutEndpoint", serviceWithImplementationWhithoutEndpointNb, serviceWithImplementationNb);
 
@@ -181,7 +187,62 @@ public class ServiceStateProvider extends IndicatorProviderBase {
         long serviceWithProductionEndpointNb = servicesCount - serviceWhithoutProductionEndpointNb;
         newIndicator(indicators, "serviceWithProductionEndpoint", serviceWithProductionEndpointNb, servicesCount); // for governance completion
 
+        //% de doc seulement sur les services qui en ont / Qualité de doc moyenne en %
+        //indicateurs documentation : % d'éléments doc'és (pour service, impl ; non test ; LATER pour consumer)
+        newIndicator(indicators, "serviceWithDocumentation", serviceWithDocumentation, servicesCount);
+
         return indicators;
+    }
+
+    /**
+     * Compute value for serviceWithDocumentation indicator
+     * @param session
+     * @param indicators
+     * @param subprojectCriteria
+     * @return
+     * @throws Exception
+     */
+    private int computeServiceIndicators(CoreSession session, Map<String, IndicatorValue> indicators, String subprojectCriteria) throws Exception {
+
+        DocumentService documentService = Framework.getService(DocumentService.class);
+
+        int serviceWithDocumentation = 0;
+        // Get services specified (else logically won't have any specifications doc but rather ex. javadoc)
+        // TODO LATER allow to "promote" services detected in the source
+        DocumentModelList serviceModels = documentService.query(session, DocumentService.NXQL_SELECT_FROM
+                + InformationService.DOCTYPE + subprojectCriteria
+                + DocumentService.NXQL_AND + "ecm:name='" + Subproject.SPECIFICATIONS_SUBPROJECT_NAME + "'", true, false);
+        for (DocumentModel serviceModel : serviceModels) {
+            boolean hasDoc = false;
+
+            // Check if there is a joined file or child file (except resource file or wsdl file)
+            WsdlBlob wsdlBlob = new WsdlBlob(serviceModel);
+            // ??
+            if(wsdlBlob.getBlob() != null && !wsdlBlob.getBlob().getFilename().endsWith("wsdl")){
+                hasDoc = true;
+            }
+
+            if(!hasDoc){
+                Blob fileBlob;
+                List<?> files = (List<?>) serviceModel.getPropertyValue("files:files");
+                if (files != null && !files.isEmpty()) {
+                    for (Object fileInfoObject : files) {
+                        Map<?, ?> fileInfoMap = (Map<?, ?>) fileInfoObject;
+                        fileBlob = (Blob) fileInfoMap.get("file");
+                        // TODO : Add a check for resource file
+                        if (!fileBlob.getFilename().endsWith("wsdl")) {
+                            hasDoc = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            // Increase counter
+            if(hasDoc){
+                serviceWithDocumentation++;
+            }
+        }
+        return serviceWithDocumentation;
     }
 
 }

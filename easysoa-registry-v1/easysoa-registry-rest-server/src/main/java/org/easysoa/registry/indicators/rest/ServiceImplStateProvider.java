@@ -20,11 +20,13 @@
 
 package org.easysoa.registry.indicators.rest;
 
+import com.sun.star.geometry.RealBezierSegment2D;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.log4j.Logger;
 
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.InformationService;
@@ -46,6 +48,8 @@ import org.nuxeo.runtime.api.Framework;
  * @author mkalam-alami; mdutoo
  */
 public class ServiceImplStateProvider extends IndicatorProviderBase {
+
+    private static Logger logger = Logger.getLogger(ServiceImplStateProvider.class);
 
     //private static final String SERVICEIMPL_DOCTYPE_INDICATOR = DoctypeCountProvider.getName(ServiceImplementation.DOCTYPE);
 
@@ -76,15 +80,24 @@ public class ServiceImplStateProvider extends IndicatorProviderBase {
 
         // Count indicators - ServiceImplementation-specific
         final int IDEAL_DOCUMENTATION_LINES = 40, DOCUMENTATION_LINES_TOLERANCE = 20;
+
+        /**
+         * 1 unit = 40 characters (half standard 80 character line)
+         * Ideal doc => 4 units for a class
+         * and for each operations 2 units + 1 unit for each parameter ....
+         *
+         */
+        final int DOC_LINE_CHARACTERS_NUMBER_UNIT = 40;
+
+        int serviceimplsMinIdealDocUnitTotal = 0; // sum of each class' minimum number of doc units to be considered ideally doc'd
+        int serviceImplsRealDocUnitTotal = 0;
+        int serviceImplsUnitDocQuality = 0;
         int undocumentedServiceImpls = 0, documentationLines = 0;
         long serviceImplCount = computedIndicators.get(SERVICEIMPL_DOCTYPE_INDICATOR).getCount();
         long serviceCount = computedIndicators.get(SERVICE_DOCTYPE_INDICATOR).getCount();
         int serviceImplsDocQuality = 0;
         Map<Serializable, Boolean> hasMock = new HashMap<Serializable, Boolean>();
         int mockedImplsCount = 0, testedImplsCount = 0, nonMockImplsCount = 0;
-
-        // % de services documentés
-        int serviceWithDocumentation = this.computeServiceIndicators(session, indicators, subprojectCriteria);
 
         // Get service impls
         DocumentModelList serviceImplModels = session.query(DocumentService.NXQL_SELECT_FROM
@@ -94,19 +107,51 @@ public class ServiceImplStateProvider extends IndicatorProviderBase {
             ServiceImplementation serviceImpl = serviceImplModel.getAdapter(ServiceImplementation.class);
             if (!serviceImpl.isPlaceholder()) {
 
+                int idealMinDocUnitNumber;
+                int realDocUnitNumber;
+
                 // Documentation info
                 String documentation = (String) serviceImpl.getProperty(ServiceImplementation.XPATH_DOCUMENTATION);
                 if (documentation != null && !documentation.isEmpty()) {
-                    documentationLines += computeLines(documentation);
 
+                    documentationLines += computeLines(documentation);
+                    idealMinDocUnitNumber = 4; // For a class => documentation must be at least equivalent to 4 doc units
+                    realDocUnitNumber = Math.round(documentation.length() / DOC_LINE_CHARACTERS_NUMBER_UNIT);
+
+                    // Operation documentation
                     for (OperationInformation operation : serviceImpl.getOperations()) {
                         String operationDocumentation = operation.getDocumentation();
                         documentationLines += computeLines(operationDocumentation);
+                        idealMinDocUnitNumber += 2; // For a method, at least 2 doc units
+
+                        String parameters[] = operation.getParameters().split(",");
+                        //totalNbOfParameters += parameters.length; // WARNING not necessarily meaningful,
+                        // ex. ContactSvcSoap.client(name, email, age...) vs PrecomptePartenaireWebService.creerPrecompte(CreerPrecompte) means the same
+                        idealMinDocUnitNumber += parameters.length; // 1 doc unit for each parameter
+                        realDocUnitNumber += Math.round(operationDocumentation.length() / DOC_LINE_CHARACTERS_NUMBER_UNIT);
                     }
 
-                    serviceImplsDocQuality += IDEAL_DOCUMENTATION_LINES - DOCUMENTATION_LINES_TOLERANCE
-                            - Math.max(0, Math.abs(IDEAL_DOCUMENTATION_LINES - computeLines(documentation))
-                                    - DOCUMENTATION_LINES_TOLERANCE);
+
+                    // computing doc quality : = 20 if in the tolerance range, otherwise drops down to 0 beyond twice the tolerance range
+                    int serviceImplDocQuality = Math.max(0,
+                            IDEAL_DOCUMENTATION_LINES - DOCUMENTATION_LINES_TOLERANCE
+                            - Math.max(0,
+                            Math.abs(IDEAL_DOCUMENTATION_LINES - documentationLines)
+                                    - DOCUMENTATION_LINES_TOLERANCE)); // 0 => 0, 10 => 10, 20 => 20 same up to 60 => 20, 70 => 10, 80 => 0, 100 => -20
+                    logger.debug("Doc quality for service impl " + serviceImpl.getName() + " : " + serviceImplDocQuality);
+                    serviceImplsDocQuality += serviceImplDocQuality;
+
+                    serviceImplsRealDocUnitTotal += realDocUnitNumber;
+                    serviceimplsMinIdealDocUnitTotal += idealMinDocUnitNumber;
+
+                    int serviceImplUnitDocQuality = Math.round(100 * realDocUnitNumber / idealMinDocUnitNumber);
+                    if(serviceImplUnitDocQuality > 100){
+                        serviceImplUnitDocQuality = 100; // Set to the max % value if there is too much doc in the class
+                    }
+                    serviceImplsUnitDocQuality += serviceImplUnitDocQuality;
+                    logger.debug("Doc units quality for service impl " + serviceImpl.getName() + " : " + serviceImplUnitDocQuality + "%");
+                    logger.debug("Ideal Doc units for service impl " + serviceImpl.getName() + " : " + idealMinDocUnitNumber);
+                    logger.debug("Real Doc units for service impl " + serviceImpl.getName() + " : " + realDocUnitNumber);
                 }
                 else {
                     undocumentedServiceImpls++;
@@ -148,17 +193,16 @@ public class ServiceImplStateProvider extends IndicatorProviderBase {
         }
 
         // Indicators results registration
-
-        //% de doc seulement sur les services qui en ont / Qualité de doc moyenne en%
-        //indicateurs documentation : % d'éléments doc'és (pour service, impl ; non test ; LATER pour consumer)
-        newIndicator(indicators, "serviceWithDocumentation", serviceWithDocumentation, serviceCount);
-
         newIndicator(indicators, "serviceImplementationWithoutDocumentation", undocumentedServiceImpls, serviceImplCount);
         newIndicator(indicators, "serviceImplementationDocumentationLineAverage", (serviceImplCount - undocumentedServiceImpls > 0) ? (int) (documentationLines / (serviceImplCount - undocumentedServiceImpls)) : -1, -1);
         newIndicator(indicators, "serviceImplementationWithoutMock", nonMockImplsCount - mockedImplsCount, nonMockImplsCount);
         newIndicator(indicators, "serviceImplementationWithoutTest", nonMockImplsCount - testedImplsCount, nonMockImplsCount);
+        // Obsolete indicator with old formula
+        //newIndicator(indicators, "documentedServiceImplementationDocumentationQuality", (serviceImplCount - undocumentedServiceImpls > 0) ?
+        //                (int) (100 * serviceImplsDocQuality / ((IDEAL_DOCUMENTATION_LINES - DOCUMENTATION_LINES_TOLERANCE) * (serviceImplCount - undocumentedServiceImpls))) : 0);
+        // New indicator with doc unit formula
         newIndicator(indicators, "documentedServiceImplementationDocumentationQuality", (serviceImplCount - undocumentedServiceImpls > 0) ?
-                        (int) (100 * serviceImplsDocQuality / ((IDEAL_DOCUMENTATION_LINES - DOCUMENTATION_LINES_TOLERANCE) * (serviceImplCount - undocumentedServiceImpls))) : -1);
+                        (int) (serviceImplsUnitDocQuality / (serviceImplCount - undocumentedServiceImpls)) : 0);
 
         // TODO model consistency ex. impl without service
         // TODO for one ex. impl of ONE service => prop to query
@@ -167,48 +211,10 @@ public class ServiceImplStateProvider extends IndicatorProviderBase {
     }
 
     private int computeLines(String documentation) {
-        return documentation.split("\n").length;
-    }
-
-    private int computeServiceIndicators(CoreSession session, Map<String, IndicatorValue> indicators, String subprojectCriteria) throws Exception {
-
-        DocumentService documentService = Framework.getService(DocumentService.class);
-
-        int serviceWithDocumentation = 0;
-        // Get services
-        DocumentModelList serviceModels = session.query(DocumentService.NXQL_SELECT_FROM
-                + InformationService.DOCTYPE + DocumentService.NXQL_WHERE_NO_PROXY + subprojectCriteria);
-        for (DocumentModel serviceModel : serviceModels) {
-            boolean hasDoc = false;
-
-            // Check if there is a joined file or child file (except resource file or wsdl file)
-            WsdlBlob wsdlBlob = new WsdlBlob(serviceModel);
-            // ??
-            if(wsdlBlob.getBlob() != null && !wsdlBlob.getBlob().getFilename().endsWith("wsdl")){
-                hasDoc = true;
-            }
-
-            if(!hasDoc){
-                Blob fileBlob;
-                List<?> files = (List<?>) serviceModel.getPropertyValue("files:files");
-                if (files != null && !files.isEmpty()) {
-                    for (Object fileInfoObject : files) {
-                        Map<?, ?> fileInfoMap = (Map<?, ?>) fileInfoObject;
-                        fileBlob = (Blob) fileInfoMap.get("file");
-                        // TODO : Add a check for resource file
-                        if (!fileBlob.getFilename().endsWith("wsdl")) {
-                            hasDoc = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            // Increase counter
-            if(hasDoc){
-                serviceWithDocumentation++;
-            }
+        if(documentation != null){
+            return documentation.split("\n").length;
         }
-        return serviceWithDocumentation;
+        return 0;
     }
 
 }

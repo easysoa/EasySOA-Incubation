@@ -1,5 +1,6 @@
 package org.easysoa.discovery.code.handler;
 
+import com.thoughtworks.qdox.model.AbstractInheritableJavaEntity;
 import com.thoughtworks.qdox.model.DocletTag;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -239,16 +240,17 @@ public abstract class AbstractJavaSourceHandler implements SourcesHandler {
     }
 
     /**
-     * Format the class documentation for Nuxeo registry, especially by adding doclets (eg : @author) ommitted by qdox
-     * @param itfClass Java class
+     * Format the class and method documentation for Nuxeo registry,
+     * especially by adding doclets (eg : @author, @param ...) ommitted by qdox
+     * @param javaEntity Java class or method
      * @return formatted comment bloc with doctlets tags
      */
-    protected String formatDoc(JavaClass itfClass) {
+    protected String formatDoc(AbstractInheritableJavaEntity javaEntity) {
         StringBuilder formattedDoc = new StringBuilder();
-        if(itfClass.getComment() != null){
-            formattedDoc.append(itfClass.getComment());
+        if(javaEntity.getComment() != null){
+            formattedDoc.append(javaEntity.getComment());
         }
-        for(DocletTag tag : itfClass.getTags()){
+        for(DocletTag tag : javaEntity.getTags()){
             if(formattedDoc.length() > 0){
                 formattedDoc.append("\n");
             }
@@ -256,26 +258,6 @@ public abstract class AbstractJavaSourceHandler implements SourcesHandler {
             formattedDoc.append(tag.getName());
             formattedDoc.append(" ");
             formattedDoc.append(tag.getValue());
-        }
-        return formattedDoc.toString();
-    }
-
-    /**
-     * Format the method documentation for Nuxeo registry, especially by adding doclets (eg : @param) ommitted by qdox
-     * @param method Java method
-     * @return formatted comment bloc with doctlets tags
-     */
-    protected String formatDoc(JavaMethod method) {
-        StringBuilder formattedDoc = new StringBuilder();
-        if(method.getComment() != null){
-            formattedDoc.append(method.getComment());
-        }
-        for(JavaParameter param : method.getParameters()){
-            if(formattedDoc.length() > 0){
-                formattedDoc.append("\n");
-            }
-            formattedDoc.append("@param ");
-            formattedDoc.append(param.getName());
         }
         return formattedDoc.toString();
     }

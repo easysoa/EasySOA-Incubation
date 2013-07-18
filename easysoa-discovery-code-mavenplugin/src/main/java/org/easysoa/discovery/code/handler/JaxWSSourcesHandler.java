@@ -152,9 +152,7 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                         for (Entry<String, OperationInformation> implOperation : implOperationsInfo.entrySet()) {
                             if (itfOperationsInfo.containsKey(implOperation.getKey())) {
                                 OperationInformation opInfo = itfOperationsInfo.get(implOperation.getKey());
-                                if(opInfo.getDocumentation() == null || "".equals(opInfo.getDocumentation())){
-                                    opInfo.mergeWith(implOperation.getValue());
-                                }
+                                opInfo.mergeWith(implOperation.getValue());
                             }
                         }
                         List<OperationInformation> operations = new ArrayList<OperationInformation>(itfOperationsInfo.values());

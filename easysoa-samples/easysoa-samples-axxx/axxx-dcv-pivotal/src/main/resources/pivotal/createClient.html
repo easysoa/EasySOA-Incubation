@@ -63,7 +63,9 @@
 					</tr>
 					<tr>
 		                <td><label for="Ville">Ville :</label></td>
-		                <td><input class="validate[] text-input" type="text" name="ville" id="ville" title="TEST MODE mock address validation service requires city to be Sarcelles, Paris or Lyon"><font color="#FF0000"><b>!</b></font></td>
+		                <td><input class="validate[] text-input" type="text" name="ville" id="ville"
+                                   title="[TEST MODE] City must be among : Sarcelles, Paris, Lyon (the mock address validation service is hardcoded to fail on others)">
+                            <font color="#FF0000"><b>WARN</b></font></td>
 		                <td id="villeError" class="error"></td>
 		                <td><label for="RIB">RIB :</label></td>
 		                <td><input class="validate[custom[onlyNumber]] text-input" type="text" name="rib" id="rib"></td>

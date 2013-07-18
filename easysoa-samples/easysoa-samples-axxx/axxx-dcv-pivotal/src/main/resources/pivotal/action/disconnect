@@ -1,2 +1,2 @@
 $request.getSession().removeAttribute("user")
-$response.sendRedirect("index.html")
+$response.sendRedirect("/pivotal/index.html")

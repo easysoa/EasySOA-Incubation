@@ -9,22 +9,22 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    
+
         <config.directory>src/main/resources</config.directory>
 
-        <frascati.version>1.5-SNAPSHOT</frascati.version><!-- at least 1.5-SNAPSHOT for implementation.velocity -->
+        <frascati.version>1.6-SNAPSHOT</frascati.version><!-- at least 1.5-SNAPSHOT for implementation.velocity -->
         <tinfi.version>1.4.6-SNAPSHOT</tinfi.version>
         <juliac.version>2.6-SNAPSHOT</juliac.version>
         <slf4j.version>1.6.2</slf4j.version>
         <xerces.version>2.9.1</xerces.version>
         <hibernate.version>3.6.0.Final</hibernate.version>
-        
+
 		<!-- FraSCAti conf -->
         <org.ow2.frascati.class>org.ow2.frascati.FraSCAti</org.ow2.frascati.class>
         <org.ow2.frascati.bootstrap>org.ow2.frascati.bootstrap.FraSCAti</org.ow2.frascati.bootstrap>
         <org.ow2.frascati.composite>org.ow2.frascati.FraSCAti</org.ow2.frascati.composite>
 
-		<!-- FraSCAti app conf -->        
+		<!-- FraSCAti app conf -->
         <java.util.logging.config.file>${config.directory}/logging.properties</java.util.logging.config.file>
         <cxf.config.file>${config.directory}/frascati-cxf.xml</cxf.config.file><!-- TODO probably not required, FStudio did not correctly point to it -->
         <composite.file>pivotal</composite.file>
@@ -54,7 +54,7 @@
         <hibernate.connection.url>jdbc:mysql://localhost:3306/axxx_pivotal</hibernate.connection.url>
         <hibernate.connection.username>axxx</hibernate.connection.username>
         <hibernate.connection.password>axxx</hibernate.connection.password -->
-        
+
         <!-- EasySOA code discovery & conf -->
         <easysoa.version>1.0-SNAPSHOT</easysoa.version><!-- TODO define in root ?? -->
         <!-- nuxeo.version>5.7-I20130111_0115</nuxeo.version --><!-- TODO define in root ?? -->
@@ -65,7 +65,7 @@
         <easysoa.discovery.code.password>Administrator</easysoa.discovery.code.password>
         <easysoa.discovery.code.subproject>/default-domain/Intégration DPS - DCV/Realisation_v</easysoa.discovery.code.subproject>
         <easysoa.discovery.code.application>SI DCV/Pivotal</easysoa.discovery.code.application>
-              
+
   </properties>
 
   <scm>
@@ -73,7 +73,7 @@
     <developerConnection>scm:git:ssh://git@github.com:easysoa/EasySOA-Incubation.git</developerConnection>
     <url>scm:git:https://github.com/easysoa/EasySOA-Incubation.git</url>
   </scm>
-   
+
   <dependencies>
     <!-- TODO F(Studio) deps -->
     <!-- FraSCAti -->
@@ -112,13 +112,13 @@
             <artifactId>frascati-factory-tools</artifactId>
             <version>${frascati.version}</version>
         </dependency  -->
-	
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-        
+
         <!--  hibernate -->
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -135,7 +135,7 @@
             <artifactId>hibernate-entitymanager</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
-        
+
 		<!-- database driver : -->
         <dependency>
             <groupId>postgresql</groupId>
@@ -163,8 +163,8 @@
             <artifactId>commons-fileupload</artifactId>
             <version>1.2.1</version>
         </dependency -->
-        
-    
+
+
     <!-- tests -->
     <dependency>
       <groupId>junit</groupId>
@@ -176,7 +176,7 @@
 
   <build>
     <finalName>pivotal</finalName>
-    
+
         <defaultGoal>package</defaultGoal>
 
         <resources>
@@ -185,9 +185,9 @@
                 <filtering>true</filtering><!-- maven will replace ${} variables by its own there, see http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
             </resource>
         </resources>
-        
+
     <plugins>
-      
+
       <!-- Compile with Java 1.6 -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -198,7 +198,7 @@
           <target>1.6</target>
         </configuration>
       </plugin>
-      
+
       <!-- Package as war -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -208,7 +208,7 @@
           <warSourceDirectory>WebContent</warSourceDirectory>
         </configuration>
       </plugin>
-      
+
 			<!-- tests use FraSCAti -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -226,13 +226,13 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
-      
+
     </plugins>
-    
-    
+
+
     <pluginManagement>
       <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings 
+        <!--This plugin's configuration is used to store Eclipse m2e settings
           only. It has no influence on the Maven build itself. -->
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
@@ -261,7 +261,7 @@
       </plugins>
     </pluginManagement>
   </build>
-  
+
 
   <profiles>
 
@@ -284,7 +284,7 @@
 	  </dependencies>
       <build>
         <plugins>
-          
+
 	      <!-- EasySOA code discovery plugins -->
 	      <plugin>
 	        <groupId>org.easysoa.discovery.code</groupId>
@@ -330,7 +330,7 @@
       </build>
     </profile>
 
-    <!-- to build classes from wsdl: mvn -Pbuild:wsdl -->  
+    <!-- to build classes from wsdl: mvn -Pbuild:wsdl -->
     <profile>
       <id>build:wsdl</id>
       <build>
@@ -363,8 +363,8 @@
         </plugins>
       </build>
     </profile>
-    
-    
+
+
     <!-- FRASCATI EXECUTION PROFILES -->
 
 <!--     To execute an SCA composite type 'mvn -Prun'. -->
@@ -450,7 +450,7 @@
                 <org.ow2.frascati.bootstrap>org.ow2.frascati.bootstrap.FraSCAtiJDTFractalRest</org.ow2.frascati.bootstrap>
             </properties>
         </profile>
-        
+
 <!--         To execute an SCA composite with FraSCAti Remote Introspection type 'mvn -Premote'. -->
 	    <profile>
 	      <id>remote</id>
@@ -482,8 +482,8 @@
         </profile>
 
     </profiles>
-  
-  
+
+
   <!-- TODO EasySOA repository at least for code disco plugin -->
   <repositories>
       <!-- XXX: Activating temporarily the FraSCAti repository
@@ -504,6 +504,6 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
-  
+
   </repositories>
 </project>

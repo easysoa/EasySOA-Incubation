@@ -18,7 +18,7 @@
  * Contact : easysoa-dev@googlegroups.com
  */
 
-package org.easysoa.beans;
+package org.easysoa.registry.beans;
 
 import java.net.URL;
 

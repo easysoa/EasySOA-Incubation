@@ -36,6 +36,7 @@
             <sca:binding.http uri="/pivotal" />
         </service>
         <property name="title">Pivotal</property>
+        <property name="defaultRequestEncoding">UTF-8</property><!-- configures ServletImplementationVelocity --><
         <web:implementation.velocity location="pivotal" default="index.html" />
         <reference name="connection" target="Connection/connection" />
         <reference name="clientService" target="Client/ClientService" />

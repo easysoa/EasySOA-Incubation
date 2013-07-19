@@ -3,8 +3,6 @@
 <script src="js/jquery-ui-1.8.16.custom.min.js" type="text/javascript"></script>
 <script src="js/jquery.tipTip.js"></script>
 
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
 #set($user = $request.getSession().getAttribute("user"))
 <input type="hidden" id="userId" value="$user.getId()"/>
 #if(!$user)

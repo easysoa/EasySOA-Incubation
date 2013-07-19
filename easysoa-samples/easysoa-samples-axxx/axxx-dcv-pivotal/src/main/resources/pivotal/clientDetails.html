@@ -30,11 +30,11 @@
 			    <table id="catalogServices">
 					<colgroup> <!-- 1000 -->
 				       	<col width="200px">
+				       	<col width="220px">
+				      	<col width="80px">
 				       	<col width="200px">
-				      	<col width="100px">
-				       	<col width="200px">
-				       	<col width="200px">
-				      	<col width="100px">
+				       	<col width="220px">
+				      	<col width="80px">
 			        </colgroup>
 				    <tbody>
 			            <tr>
@@ -46,10 +46,10 @@
 			                <td id="raisonSocialeError" class="error"></td>
 			            </tr>
 			            <tr>
-			                <td><label for="Anciennet&eacute;">Anciennet&eacute :<strong>*</strong></label></td>
+			                <td><label for="Anciennet&eacute;">Anciennet&eacute : <strong>*</strong></label></td>
 			                <td><input class="validate[required, custom[onlyNumber]] text-input" type="text" name="anciennete" id="anciennete" value="$client.getAnciennete()"></td>
 			                <td id="ancienneteError" class="error"></td>
-			                <td><label for="Type structure">Type structure :  <strong>*</strong></label></td>
+			                <td><label for="Type structure">Type structure : <strong>*</strong></label></td>
 			                <!--<td><input class="validate[] text-input" type="text" name="typeStructure" id="typeStructure" value="$client.getTypeStructure()"></td>-->
 			                <td>
 			                	<select class="text-input" name="typeStructure" id="typeStructure" size="1">
@@ -79,7 +79,8 @@
 						</tr>
 						<tr>
 			                <td><label for="Ville">Ville : <strong>*</strong></label></td>
-			                <td><input class="validate[required] text-input" type="text" name="ville" id="ville" value="$client.getVille()"></td>
+			                <td><input class="validate[required] text-input" type="text" name="ville" id="ville" value="$client.getVille()" title="[TEST MODE] City must be among : Sarcelles, Paris, Lyon (the mock address validation service is hardcoded to fail on others)">
+                            <img src="/pivotal/images/warn.png" alt="Important icon" style="width: 16px; height: 16px"/></td>
 			                <td id="villeError" class="error"></td>
 			                <td><label for="RIB">RIB :</label></td>
 			                <td><input class="validate[] text-input" type="text" name="rib" id="rib" value="$client.getRIB()"></td>
@@ -89,12 +90,12 @@
 			                <td><label for="Pays">Pays : <strong>*</strong></label></td>
 			                <td><input class="validate[required] text-input" type="text" name="pays" id="pays" value="$client.getPays()"></td>
 			                <td id="paysError" class="error"></td>
-			                <td><label for="Forme juridique">Forme juridique :<strong>*</strong></label></td>
+			                <td><label for="Forme juridique">Forme juridique : <strong>*</strong></label></td>
 			                <td><input class="validate[required] text-input" type="text" name="formeJuridique" id="formeJuridique" value="$client.getFormeJuridique()"></td>
 			                <td id="formeJuridiqueError" class="error"></td>
 			            </tr>
 			            <tr>
-			            	<td></td>
+			            	<td>* : Champ obligatoire</td>
 			            	<td></td>
 			            	<td></td>
 			                <td><label for="Siren">Siren : <strong>*</strong></label></td>

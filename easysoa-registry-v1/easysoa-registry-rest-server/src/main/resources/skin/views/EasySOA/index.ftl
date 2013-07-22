@@ -25,6 +25,11 @@
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
                 <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
+                <div id="headerContextBar">
+                    <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
+                    <#assign subprojectId=subprojectId!"">
+                    <@displayContextBar subprojectId contextInfo visibility "true"/>
+                </div>
             </div>
         </div>
 
@@ -32,10 +37,6 @@
 
         <div class="container" id="container">
             <ul class="thumbnails">
-                <!-- Display the context bar -->
-                <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
-                <#assign subprojectId=subprojectId!"">
-                <@displayContextBar subprojectId contextInfo visibility "true"/>
 
                 <li class="span6">
                     <div class="thumbnail">

@@ -25,17 +25,17 @@
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
                 <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
+                <div id="headerContextBar">
+                    <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
+                    <#assign subprojectId=subprojectId!"">
+                    <@displayContextBar subprojectId contextInfo visibility "true"/>
+                </div>
                 EasySOA - Indicateurs de complétion et gouvernance
             </div>
         </div>
         <br/>
         <div class="container" id="container">
             <ul class="thumbnails">
-                <!-- Context bar -->
-                <#assign visibility=visibility!"">
-                <#assign subprojectId=subprojectId!"">
-                <@displayContextBar subprojectId contextInfo visibility "false"/>
-
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">

@@ -1,41 +1,41 @@
 <!DOCTYPE html>
 
 <html xmlns:c="http://java.sun.com/jsp/jstl/core">
-    
+
     <head>
         <title>EasySOA Monitoring</title>
         <meta charset="utf-8"/>
         <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
-        
+
         <link href="/nuxeo/site/easysoa/skin/css/prettify.css" type="text/css" rel="stylesheet"/>
         <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/prettify/prettify._js"></script>
-        
+
         <!-- Bootstrap default style and scripts -->
         <link href="/nuxeo/site/easysoa/skin/css/bootstrap.css" rel="stylesheet" media="screen"/>
         <script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>
         <!-- custom style and scripts -->
 	<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all"/>
-	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico"/> 
+	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico"/>
     </head>
-    
+
     <body>
         <#include "/views/EasySOA/macros.ftl">
-        
+
         <div id="header">
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
                 <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
+                <div id="headerContextBar">
+                    <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
+                    <#assign subprojectId=subprojectId!"">
+                    <@displayContextBar subprojectId contextInfo visibility "true"/>
+                </div>
                 EasySOA - Monitoring JASMINe
             </div>
         </div>
         <br/>
         <div class="container" id="container">
             <ul class="thumbnails">
-                <!-- Context bar -->
-                <#assign visibility=visibility!"">
-                <#assign subprojectId=subprojectId!"">
-                <@displayContextBar subprojectId contextInfo visibility "false"/>
-
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
@@ -52,7 +52,7 @@
                             <br/>
                             <a class="btn" href="${jasmine_url}" target="_blank">Ouvrir l'outil JASMINe</a>
                         </p>
-                        
+
                         <hr/>
 
                         <a id="probeManagerWidget"></a>
@@ -135,7 +135,7 @@
                             <br/>
                             <img src="/nuxeo/site/easysoa/skin/img/doc/jasmine/graphNotif.png" alt="Graphique avec notifications" height="80%" width="80%"/>
                         </p>
-                        
+
                         <a id="NotifiationEditorWidget"></a>
                         <h3>Widget Notification editor</h3>
                         <p>
@@ -152,14 +152,13 @@
                             <br/>
                             <br/>
                             <img src="/nuxeo/site/easysoa/skin/img/doc/jasmine/notificationBoard.png" alt="Notification board" height="80%" width="80%"/>
-                        </p>                        
-                        
+                        </p>
+
                     </div>
                 </li>
-                
-                <@displayReturnToIndexButtonBar/>                
+
+                <@displayReturnToIndexButtonBar/>
             </ul>
         </div>
     </body>
-</html>       
-                        
+</html>

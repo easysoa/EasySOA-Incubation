@@ -135,26 +135,26 @@ td:first-child {
 </html>
 <body>
 
-        <#include "/views/EasySOA/macros.ftl">    
-    
+        <#include "/views/EasySOA/macros.ftl">
+
 	<div id="header">
 		<img id="headerLogo" src="/nuxeo/site/easysoa/skin/img/logo50px.png" />
-                <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
+        <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
+        <div id="headerContextBar">
+            <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
+            <#assign subprojectId=subprojectId!"">
+            <@displayContextBar subprojectId contextInfo visibility "true"/>
+        </div>
 	</div>
 	<div id="container">
 
-            <!-- Context bar -->
-            <#assign visibility=visibility!"">
-            <#assign subprojectId=subprojectId!"">
-            <@displayContextBar subprojectId contextInfo visibility "false"/>
+		<h1>Indicateurs sur votre SOA</h1>
 
-		<h1>Indicateurs sur votre SOA</h1>                
-                
 		<h2>Nbs</h2>
 		<ul>
 			<#list nbMap?keys as nbMapKey>
 			<li>Nombre de ${nbMapKey} : <b>${nbMap[nbMapKey]}</b>
-				<#if percentMap[nbMapKey]> | 
+				<#if percentMap[nbMapKey]> |
 					<#if percentMap[nbMapKey] != -1>
 						Pourcentage : <b>${percentMap[nbMapKey]}%</b>
 					<#else>
@@ -183,7 +183,7 @@ td:first-child {
 	</div>
         <div id="container">
             <h1>Context</h1>
-            
+
             <#if subprojectId>
             Current context : ${subprojectId}, visibility ${visibility}
             <#else>

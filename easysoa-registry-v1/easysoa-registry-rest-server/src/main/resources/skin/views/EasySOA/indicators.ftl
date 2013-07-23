@@ -143,7 +143,7 @@ td:first-child {
         <div id="headerContextBar">
             <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
             <#assign subprojectId=subprojectId!"">
-            <@displayContextBar subprojectId contextInfo visibility "true"/>
+            <@displayContextBar subprojectId contextInfo visibility "true" "false"/>
         </div>
 	</div>
 	<div id="container">

@@ -1,20 +1,14 @@
 <!DOCTYPE html>
 <html>
 
-    <head>
-	<title>Choose a project</title>
-	<meta charset="utf-8" />
-	<script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
-        <!-- Bootstrap default style and scripts -->
-        <link href="/nuxeo/site/easysoa/skin/css/bootstrap.css" rel="stylesheet" media="screen">
-        <script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>
+    <#include "/views/EasySOA/macros.ftl">
 
-	<link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />
-	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" />
+    <head>
+        <title>Choose a project</title>
+        <@includeResources/>
     </head>
 
     <body>
-        <#include "/views/EasySOA/macros.ftl">
         <div id="header">
             <div id="headerContents">
                 <div id="logoLink">&nbsp;</div>
@@ -22,7 +16,7 @@
                 <div id="headerContextBar">
                     <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
                     <#assign subprojectId=subprojectId!"">
-                    <@displayContextBar subprojectId contextInfo visibility "true"/>
+                    <@displayContextBar subprojectId contextInfo visibility "false" "false"/>
                 </div>
                 Perspective
             </div>
@@ -35,8 +29,11 @@
                         <img data-src="holder.js/300x200" alt=""/>
                         <h1>Projets, phases et versions :</h1>
                         <br/>
+                        <@displayContextBar subprojectId contextInfo visibility "false" "true"/>
+                        <br/>
                         <!--Choose the versions of phase you want to use as a point of view and the visibility scope (strict or deep, i.e. with or without parent phases).-->
-                        Choisissez un projet, une phase et la version que vous voulez utiliser dans la perspective (avec ou sans les phases parentes).
+                        <br/>
+                        Pour en changer, choisissez un projet, une phase et la version que vous voulez utiliser dans la perspective.
                         <br/>
                         <br/>
                         <@displayProjectsPhasesAndVersionsShort projectIdToSubproject/>

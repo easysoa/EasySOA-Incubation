@@ -1,26 +1,14 @@
 <!DOCTYPE html>
 <html>
 
+    <#include "/views/EasySOA/macros.ftl">
+
     <head>
-	<title>EasySOA Matching dashboard</title>
-	<meta charset="utf-8" />
-
-	<script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
-
-        <!-- Bootstrap default style and scripts -->
-        <link href="/nuxeo/site/easysoa/skin/css/bootstrap.css" rel="stylesheet" media="screen">
-        <script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>
-
-        <!-- font-awesome style for icons -->
-        <link rel="stylesheet" href="/nuxeo/site/easysoa/skin/css/font-awesome.css">
-
-        <!-- To solve temporarily the conflict between CSS styles -->
-        <link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />
-	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" />
+        <title>EasySOA Matching dashboard</title>
+        <@includeResources/>
     </head>
 
     <body>
-        <#include "/views/EasySOA/macros.ftl">
         <#include "/views/EasySOA/docMacros.ftl"><#-- for displayPhase(subprojectId) -->
         <div id="header">
             <div id="headerContents">
@@ -29,7 +17,7 @@
                 <div id="headerContextBar">
                     <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
                     <#assign subprojectId=subprojectId!"">
-                    <@displayContextBar subprojectId contextInfo visibility "true"/>
+                    <@displayContextBar subprojectId contextInfo visibility "true" "false"/>
                 </div>
                 EasySOA Matching dashboard
                 <form action="/nuxeo/site/easysoa/dashboard/samples?subprojectId=${subprojectId}&visibility=${visibility}" method="post" style="position: absolute; right: 20px; top: 20px">

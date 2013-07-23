@@ -25,11 +25,15 @@ import org.ow2.easywsdl.wsdl.api.WSDLReader;
 import com.google.inject.Inject;
 
 /**
+ * Tests WSDL local download, parsing and metadata extraction.
  * 
- * @author mkalam-alami
+ * These are consecutive steps of a workflow so test methods must be run
+ * in their order of definition and Nuxeo repository state must be kept in between.
+ * 
+ * @author mkalam-alami, mdutoo
  * 
  */
-@RepositoryConfig(cleanup = Granularity.CLASS)
+@RepositoryConfig(cleanup = Granularity.CLASS) // to keep repository state between test methods
 public class WSDLParsingTest extends AbstractRegistryTest {
 
     @SuppressWarnings("unused")
@@ -64,12 +68,36 @@ public class WSDLParsingTest extends AbstractRegistryTest {
 		}
 	}
 	
+
+	/**
+	 * Reorders tests, so they can run on jdk7 (workaround for #134)
+	 * 
+	 * This is a workaround required because Class.getDeclaredMethods() returns random ordered
+	 * results since jdk7 : http://sourceforge.net/p/jumble/bugs/10/
+	 * Long term fix is to upgrade to junit 4.11 (to be done by Nuxeo first) and use @FixMethodOrder :
+	 * http://stackoverflow.com/questions/3693626/how-to-run-test-methods-in-spec-order-in-junit4
+	 * @throws ClientException
+	 * @throws IOException
+	 */
+    @Test
+	public void testAllReordered() throws ClientException, IOException {
+        testListenerCreate();
+        testListenerUploadFirstWsdl();
+        testListenerUploadSecondIdenticalWsdl();
+        testListenerUploadSecondIdenticalButDifferentNameWsdl();
+        testListenerUploadThirdDifferentWsdl();
+        testListenerUploadFourthDifferentWsdl();
+        testListenerUploadBadWsdl();
+        testListenerRemoveWsdl();
+	}
+	
+	
 	/**
 	 * Actually testing the parsing listener, goes on in following tests
 	 * @throws ClientException
 	 * @throws IOException
 	 */
-	@Test
+	//@Test
 	public void testListenerCreate() throws ClientException, IOException {
 		serviceSoaId = new SoaNodeId(defaultSubprojectId, InformationService.DOCTYPE, "MyService");
         DocumentModel serviceModel = documentService.newSoaNodeDocument(documentManager, serviceSoaId);
@@ -78,7 +106,7 @@ public class WSDLParsingTest extends AbstractRegistryTest {
         serviceRef = serviceModel.getRef(); // storing ref to re-get clean (no contextData) document after
 	}
 	
-	@Test
+	//@Test
 	public void testListenerUploadFirstWsdl() throws ClientException, IOException {
         // getting clean document (with extracted metadata and no contextData guards) :
         // NB. reusing previous serviceModel = documentManager.saveDocument() is not enough because it
@@ -104,7 +132,7 @@ public class WSDLParsingTest extends AbstractRegistryTest {
         Assert.assertEquals("Unexpected filename", "PrecomptePartenaireService.wsdl", serviceModel.getPropertyValue(InformationService.XPATH_WSDL_FILE_NAME));
 	}
 	
-	@Test
+	//@Test
 	public void testListenerUploadSecondIdenticalWsdl() throws ClientException, IOException {
         // getting clean document (with extracted metadata and no contextData guards) :
         // NB. reusing previous serviceModel = documentManager.saveDocument() is not enough because it
@@ -129,7 +157,7 @@ public class WSDLParsingTest extends AbstractRegistryTest {
         Assert.assertEquals("Unexpected filename", "PrecomptePartenaireService.wsdl", serviceModel.getPropertyValue(InformationService.XPATH_WSDL_FILE_NAME));
 	}
 	
-	@Test
+	//@Test
 	public void testListenerUploadSecondIdenticalButDifferentNameWsdl() throws ClientException, IOException {
         // getting clean document (with extracted metadata and no contextData guards) :
         // NB. reusing previous serviceModel = documentManager.saveDocument() is not enough because it
@@ -154,7 +182,7 @@ public class WSDLParsingTest extends AbstractRegistryTest {
         Assert.assertEquals("Unexpected filename", "PrecomptePartenaireService1.wsdl", serviceModel.getPropertyValue(InformationService.XPATH_WSDL_FILE_NAME));
 	}
 	
-	@Test
+	//@Test
 	public void testListenerUploadThirdDifferentWsdl() throws ClientException, IOException {
         // getting clean document (with extracted metadata and no contextData guards) :
         // NB. reusing previous serviceModel = documentManager.saveDocument() is not enough because it
@@ -181,7 +209,7 @@ public class WSDLParsingTest extends AbstractRegistryTest {
         digest = existingBlob.getDigest();
 	}
 	
-	@Test
+	//@Test
 	public void testListenerUploadFourthDifferentWsdl() throws ClientException, IOException {
         // getting clean document (with extracted metadata and no contextData guards) :
         // NB. reusing previous serviceModel = documentManager.saveDocument() is not enough because it
@@ -207,7 +235,7 @@ public class WSDLParsingTest extends AbstractRegistryTest {
         digest = existingBlob.getDigest();
 	}
 	
-	@Test
+	//@Test
 	public void testListenerUploadBadWsdl() throws ClientException, IOException {
         // getting clean document (with extracted metadata and no contextData guards) :
         // NB. reusing previous serviceModel = documentManager.saveDocument() is not enough because it
@@ -241,7 +269,7 @@ public class WSDLParsingTest extends AbstractRegistryTest {
         digest = existingBlob.getDigest();
 	}
 	
-	@Test
+	//@Test
 	public void testListenerRemoveWsdl() throws ClientException, IOException {
         // getting clean document (with extracted metadata and no contextData guards) :
         // NB. reusing previous serviceModel = documentManager.saveDocument() is not enough because it

@@ -27,15 +27,12 @@ import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.VersioningOption;
 import org.nuxeo.ecm.core.api.model.PropertyException;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 
 /**
  * 
  * @author mdutoo, mkalam-alami
  *
  */
-@RepositoryConfig(cleanup = Granularity.CLASS)
 public class ServiceMatchingTest extends AbstractRegistryTest {
 
 	@SuppressWarnings("unused")

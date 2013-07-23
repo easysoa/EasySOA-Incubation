@@ -18,8 +18,6 @@ import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicators;
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -37,7 +35,8 @@ import com.sun.jersey.api.client.WebResource;
  */
 @Deploy("org.easysoa.registry.rest.server")
 @LocalDeploy({ "org.easysoa.registry.rest.server:OSGI-INF/SlaOlaIndicatorsTest.xml" })
-@RepositoryConfig(cleanup = Granularity.CLASS)
+// NB. no @RepositoryConfig(cleanup = Granularity.CLASS) because some methods change state
+// (update...() would make simple...() fail if executed first as it might be on jdk7 see #134 )
 public class EndpointStateServiceTest extends AbstractRestApiTest {
 
     private static Logger logger = Logger.getLogger(EndpointStateServiceTest.class);

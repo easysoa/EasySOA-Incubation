@@ -15,9 +15,21 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 
 import com.google.inject.Inject;
 
+
+/**
+ * To be extended by Nuxeo local tests.
+ * 
+ * To test consecutive steps of a workflow, add
+ * @RepositoryConfig(cleanup = Granularity.CLASS)
+ * in order to keep Nuxeo repository state between test methods.
+ * 
+ * @author mdutoo
+ *
+ */
 @RunWith(FeaturesRunner.class)
 @Features({EasySOAFeature.class, PlatformFeature.class})
-@RepositoryConfig(cleanup = Granularity.METHOD)
+@RepositoryConfig(cleanup = Granularity.METHOD) // truly unitary tests :
+//don't keep Nuxeo repository state between test methods
 public class AbstractRegistryTest {
     
     @Inject

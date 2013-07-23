@@ -1,5 +1,6 @@
 package org.easysoa.registry;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -21,7 +23,17 @@ import org.nuxeo.ecm.core.query.sql.NXQL;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 
-@RepositoryConfig(cleanup = Granularity.CLASS)
+/**
+ * Tests inheritance on DocumentService SOA node operations.
+ * 
+ * These are consecutive steps of a workflow so test methods must be run
+ * in their order of definition and Nuxeo repository state must be kept in between.
+ * TODO better : make them less interdependent.
+ * 
+ * @author mkalam-alami
+ *
+ */
+@RepositoryConfig(cleanup = Granularity.CLASS) // to keep repository state between test methods
 public class InheritedDataTest extends AbstractRegistryTest {
 
 	private static final SoaNodeId MYIS_ID = new SoaNodeId(InformationService.DOCTYPE, "myinfoserv");
@@ -47,8 +59,30 @@ public class InheritedDataTest extends AbstractRegistryTest {
 	private static ServiceImplementation myEndpointServiceImpl;
 
 	private static DocumentModel endpointProxyModel;
-	
-	@Test
+
+    
+    /**
+     * Reorders tests, so they can run on jdk7 (workaround for #134)
+     * 
+     * This is a workaround required because Class.getDeclaredMethods() returns random ordered
+     * results since jdk7 : http://sourceforge.net/p/jumble/bugs/10/
+     * Long term fix is to upgrade to junit 4.11 (to be done by Nuxeo first) and use @FixMethodOrder :
+     * http://stackoverflow.com/questions/3693626/how-to-run-test-methods-in-spec-order-in-junit4
+     * @throws ClientException
+     * @throws IOException
+     */
+    @Test
+    public void testAllReordered() throws Exception {
+        testInheritanceOnCreation();
+        testInheritanceOnUpdate();
+        testInheritanceOnMove();
+        testQuery();
+        testInheritanceOnDeletion();
+        testUuidSelectors();
+    }
+    
+    
+	//@Test
 	public void testInheritanceOnCreation() throws Exception {
 		myServiceImplModel = documentService.create(documentManager, MYIMPL_ID);
 		myServiceImpl = myServiceImplModel.getAdapter(ServiceImplementation.class);
@@ -65,7 +99,7 @@ public class InheritedDataTest extends AbstractRegistryTest {
 				myEndpointServiceImpl.getTests().contains("org.easysoa.Test1"));
 	}
 
-	@Test
+	//@Test
 	public void testInheritanceOnUpdate() throws Exception {
 		// ...when impl is updated...
 		myServiceImplModel = documentService.findSoaNode(documentManager, MYIMPL_ID);
@@ -83,7 +117,7 @@ public class InheritedDataTest extends AbstractRegistryTest {
 	}
 	
 
-	@Test
+	//@Test
 	public void testInheritanceOnMove() throws Exception {
 		// ...when endpoint is moved to another impl...
 		DocumentModel myServiceImpl2Model = documentService.create(documentManager, MYIMPL2_ID);
@@ -101,7 +135,7 @@ public class InheritedDataTest extends AbstractRegistryTest {
 				myEndpointServiceImpl.getTests().contains("org.easysoa.Test3"));
 	}
 
-	@Test
+	//@Test
 	public void testQuery() throws Exception {
 		// Intermission: take advantage of this feature,
 		// by looking for "the endpoints that are covered by a certain test"
@@ -130,7 +164,7 @@ public class InheritedDataTest extends AbstractRegistryTest {
 		Assert.assertEquals("Query of parent IDs on Endpoints must work (pt. 2)", 1, results.size());
 	}
 	
-	@Test
+	//@Test
 	public void testInheritanceOnDeletion() throws Exception {
 		// ...and when endpoint is removed from impl
 
@@ -153,8 +187,8 @@ public class InheritedDataTest extends AbstractRegistryTest {
         Assert.assertEquals("Query of parent IDs on Endpoints must work after removal", 0, results.size());
 	}
 	
-	@Test
-	public void testUuidSelectors() throws Exception {
+	//@Test
+	public void testUuidSelectors() throws ClientException {
 		// Link comp > infoservice < serviceimpl by UUIDs
 		DocumentModel infoServModel = documentService.create(documentManager, MYIS_ID);
 		myServiceImplModel.setPropertyValue(ServiceImplementation.XPATH_PROVIDED_INFORMATION_SERVICE, infoServModel.getId());

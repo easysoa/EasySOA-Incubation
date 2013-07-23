@@ -18,16 +18,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 
 import com.google.inject.Inject;
 
 /**
  * 
+ * Tests discovery, correlation and merge.
+ * 
  * @author mkalam-alami
+ * 
  */
-@RepositoryConfig(cleanup = Granularity.CLASS)
 public class DiscoveryServiceTest extends AbstractRegistryTest {
 
     @SuppressWarnings("unused")
@@ -132,6 +132,9 @@ public class DiscoveryServiceTest extends AbstractRegistryTest {
 
     @Test
     public void testMerge() throws Exception {
+        // do a first discovery
+        testSimpleDiscovery();
+        
         // Rediscover the same endpoint with new info
         properties = new HashMap<String, Object>();
         properties.put("dc:description", "Blahblah");

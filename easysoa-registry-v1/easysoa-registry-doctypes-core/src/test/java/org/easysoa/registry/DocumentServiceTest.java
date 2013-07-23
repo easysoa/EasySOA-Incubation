@@ -10,7 +10,6 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
@@ -18,11 +17,15 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import com.google.inject.Inject;
 
 /**
+ * Tests DocumentService CRUD operations.
+ * 
+ * These are consecutive steps of a workflow so test methods must be run
+ * in their order of definition and Nuxeo repository state must be kept in between.
  * 
  * @author mkalam-alami
  *
  */
-@RepositoryConfig(cleanup = Granularity.CLASS)
+@RepositoryConfig(cleanup = Granularity.CLASS) // to keep repository state between test methods
 public class DocumentServiceTest extends AbstractRegistryTest {
 
     private static final SoaNodeId MYSYSTEM_ID = new SoaNodeId(TaggingFolder.DOCTYPE, "MySystem");
@@ -44,8 +47,8 @@ public class DocumentServiceTest extends AbstractRegistryTest {
         documentManager.save();
         
         mySystemIdRef = new IdRef(systemModel.getId());
-        // TODO without this line or the next one, sometimes won't be found by
-        // SOA ID in testModelQuery() or even only in testModelDeletion() !?!!
+        // TODO without this line or the next one, sometimes won't be found by SOA ID in testModelQuery()
+        // or even only in testModelDeletion() !?!! see #134 NOOOO WORKS AGAIN
         ///Assert.assertTrue("Created system must be found by ref", documentManager.exists(mySystemIdRef));
         ////Assert.assertTrue("Created system must be found by uuid query", !documentManager.query("SELECT * FROM TaggingFolder WHERE ecm:uuid = '" + mySystemIdRef.value + "'").isEmpty());
         
@@ -68,7 +71,8 @@ public class DocumentServiceTest extends AbstractRegistryTest {
 
     @Test
     public void testModelDeletion() throws ClientException {
-        // TODO without this line or the next one, sometimes won't be found by SOA ID !?!!
+        // TODO without this line or the next one, sometimes won't be found
+        // by SOA ID !?!! see #134 NOOOO WORKS AGAIN
         ///Assert.assertTrue("Created system must be found by ref", documentManager.exists(mySystemIdRef));
         ////Assert.assertTrue("Created system must be found by uuid query", !documentManager.query("SELECT * FROM TaggingFolder WHERE ecm:uuid = '" + mySystemIdRef.value + "'").isEmpty());
         

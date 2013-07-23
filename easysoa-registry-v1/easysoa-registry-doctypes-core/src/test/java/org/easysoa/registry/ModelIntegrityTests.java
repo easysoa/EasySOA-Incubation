@@ -13,12 +13,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 
 import com.google.inject.Inject;
 
-@RepositoryConfig(cleanup = Granularity.CLASS)
 public class ModelIntegrityTests extends AbstractRegistryTest {
 
     private static Logger logger = Logger.getLogger(DiscoveryServiceTest.class);
@@ -79,6 +76,9 @@ public class ModelIntegrityTests extends AbstractRegistryTest {
     
     @Test
     public void testInvalidDiscovery() throws Exception {
+        // creating endpoint first
+        testEndpointsIntegrity();
+        
         // Try to override Endpoint URL
         properties = new HashMap<String, Object>();
         properties.put(Endpoint.XPATH_URL, "Other URL");

@@ -1,5 +1,7 @@
 package org.easysoa.registry;
 
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
 import org.easysoa.registry.test.AbstractRegistryTest;
 import org.easysoa.registry.types.Deliverable;
@@ -21,11 +23,16 @@ import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import com.google.inject.Inject;
 
 /**
+ * Tests SOA node behaviours i.e. RepositoryManagementListener.
+ * 
+ * These are consecutive steps of a workflow so test methods must be run
+ * in their order of definition and Nuxeo repository state must be kept in between.
+ * TODO better : make them less interdependent.
  * 
  * @author mkalam-alami
  *
  */
-@RepositoryConfig(cleanup = Granularity.CLASS)
+@RepositoryConfig(cleanup = Granularity.CLASS) // to keep repository state between test methods
 public class SoaNodeRepositoryTest extends AbstractRegistryTest {
 
     @SuppressWarnings("unused")
@@ -49,9 +56,27 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
         DocumentModel repositoryInstance = RepositoryHelper.getRepository(documentManager, defaultSubprojectId);
         Assert.assertNotNull("Repository must be created on first access", repositoryInstance);
     }
-
+    
+    /**
+     * Reorders tests, so they can run on jdk7 (workaround for #134)
+     * 
+     * This is a workaround required because Class.getDeclaredMethods() returns random ordered
+     * results since jdk7 : http://sourceforge.net/p/jumble/bugs/10/
+     * Long term fix is to upgrade to junit 4.11 (to be done by Nuxeo first) and use @FixMethodOrder :
+     * http://stackoverflow.com/questions/3693626/how-to-run-test-methods-in-spec-order-in-junit4
+     * @throws ClientException
+     * @throws IOException
+     */
     @Test
-    public void testDocumentRelocation() throws Exception {
+    public void testAllReordered() throws ClientException {
+        testDocumentRelocation();
+        testDuplicatesHandling();
+        testProxyCopy();
+        testSourceCopy();
+    }
+
+    //@Test
+    public void testDocumentRelocation() throws ClientException {
         // Create SystemTreeRoot
         strModel = documentService.createDocument(documentManager,
                 SystemTreeRoot.DOCTYPE, "MyRoot", DocumentModelHelper
@@ -92,10 +117,8 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
         Assert.assertEquals("The system tree root must not have a proxy", 1, strInstances.size());
     }
 
-    @Test
-    public void testDuplicatesHandling() throws Exception {
-        ///System.out.println("\n\nAny hidden error ??\n");
-        ///try {
+    //@Test
+    public void testDuplicatesHandling() throws ClientException {
         // Create already created system
         DocumentModel duplicateModel = documentService.create(documentManager,
                 new SoaNodeId(TaggingFolder.DOCTYPE, "MySystem"),
@@ -111,13 +134,10 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
                 sourceFound = true;
             }
         }
-        ///} catch (Exception e) {
-        ///    e.printStackTrace();
-        ///}//TODO rm
     }
     
-    @Test
-    public void testProxyCopy() throws Exception {
+    //@Test
+    public void testProxyCopy() throws ClientException {
         // Create new system
         DocumentModel newSystemModel = documentService.create(documentManager,
                 new SoaNodeId(TaggingFolder.DOCTYPE, "MySystem2"),
@@ -141,8 +161,8 @@ public class SoaNodeRepositoryTest extends AbstractRegistryTest {
         assertAllProxiesAreSetOnTheSources(proxies);
     }
 
-    @Test
-    public void testSourceCopy() throws Exception {
+    //@Test
+    public void testSourceCopy() throws ClientException {
         // Create a third system
         DocumentModel thirdSystemModel = documentService.create(documentManager,
                 new SoaNodeId(TaggingFolder.DOCTYPE, "MySystem3"),

@@ -28,8 +28,6 @@ import org.junit.Test;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 import com.google.inject.Inject;
@@ -43,7 +41,6 @@ import com.sun.jersey.api.client.WebResource;
  *
  */
 @Deploy("org.easysoa.registry.rest.server")
-@RepositoryConfig(cleanup = Granularity.CLASS)
 public class SimpleRegistryServiceTest extends AbstractRestApiTest {
 
     private static Logger logger = Logger.getLogger(SimpleRegistryServiceTest.class);
@@ -87,8 +84,6 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
     private static final String TEST_PORT_TYPE = "{namespace}portType";
     private static final String TEST_PORT_TYPE_WITH_PLATFORM_METAS = "{namespace}portTypeWithPlatformMetas";
     
-    public static boolean initDone = false;
-    
     /**
      * Init the tests
      * @throws Exception
@@ -96,7 +91,6 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
     @Before
     public void init() throws Exception {
         // Fill repository for all tests
-        if(!initDone){
             HashMap<String, Object> isProperties = new HashMap<String, Object>();
 
             // Add information service without wsdl
@@ -145,8 +139,6 @@ public class SimpleRegistryServiceTest extends AbstractRestApiTest {
             discoveryService.runDiscovery(documentManager, ENDPOINT_TEST_WITH_PLATFORM_METAS_ID, epProperties, null);
             
             documentManager.save();
-            initDone = true;
-        }
     }
     
     /**

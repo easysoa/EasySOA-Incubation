@@ -13,6 +13,17 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
+
+/**
+ * To be extended by EasySOA REST API tests.
+ * 
+ * To test consecutive steps of a workflow, add
+ * @RepositoryConfig(cleanup = Granularity.CLASS)
+ * in order to keep Nuxeo repository state between test methods.
+ * 
+ * @author mdutoo
+ *
+ */
 public abstract class AbstractRestApiTest extends AbstractWebEngineTest {
 
     protected String discoveryApiUrl = EasySOAWebEngineFeature.NUXEO_URL + "easysoa/registry";

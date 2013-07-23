@@ -6,9 +6,9 @@
 
     <head>
         <title>EasySOA Gouvernance</title>
+        <@includeResources/>
         <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/flot/jquery.flot._js"></script>
         <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/flot/jquery.flot.categories._js"></script>
-        <@includeResources/>
     </head>
 
     <body>

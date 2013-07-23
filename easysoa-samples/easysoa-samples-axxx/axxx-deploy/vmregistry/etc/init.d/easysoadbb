@@ -21,9 +21,8 @@ case "$1" in
   start)
         PWD=`pwd`
         cd $EASYSOADBB_INSTALL_PATH
-        sudo -u axxx nohup ./start-web.sh 1>/var/log/$SCRIPTNAME.log 2> /var/log/$SCRIPTNAME.err.log &
+        sudo -u axxx nohup bash -c "./start-web.sh" 1>>/var/log/$SCRIPTNAME.log 2>> /var/log/$SCRIPTNAME.err.log &
         cd $PWD
-        #sudo -u axxx nohup /home/axxx/bin/easysoadbb 1>/var/log/easysoadbb.log 2> /var/log/easysoadbb.err.log &
         ;;
   stop)
         echo Not supported

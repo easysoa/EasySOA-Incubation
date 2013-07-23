@@ -21,19 +21,15 @@ SCRIPTNAME=tomcat
 
 case "$1" in
   start)
-	#sudo -u axxx cd $AXXX_TOMCAT_INSTALL_PATH
-	#sudo -u axxx sh ./bin/catalina.sh start
-        #sudo -u axxx sh $AXXX_TOMCAT_INSTALL_PATH/bin/catalina.sh start
         PWD=`pwd`
         cd $AXXX_TOMCAT_INSTALL_PATH
-	#sudo -u axxx nohup /home/axxx/bin/tomcat 1>/var/log/tomcat.log 2> /var/log/tomcat.err.log &
-        sudo -u axxx nohup ./bin/catalina.sh run 1>/var/log/$SCRIPTNAME.log 2> /var/log/$SCRIPTNAME.err.log &
+        sudo -u axxx nohup bash -c "./bin/catalina.sh run" 1>>/var/log/$SCRIPTNAME.log 2>> /var/log/$SCRIPTNAME.err.log &
         cd $PWD
         ;;
   stop)
         PWD=`pwd`
         cd $AXXX_TOMCAT_INSTALL_PATH
-        sudo -u axxx sh ./bin/catalina.sh stop
+        sudo -u axxx bash -c "./bin/catalina.sh stop"
         cd $PWD
         ;;
   *)

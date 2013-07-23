@@ -23,13 +23,13 @@ case "$1" in
   start)
         PWD=`pwd`
         cd $AXXX_TOMCAT_INSTALL_PATH
-        sudo -u axxx nohup sh ./bin/catalina.sh run 1>/var/log/$SCRIPTNAME.log 2> /var/log/$SCRIPTNAME.err.log &
+        sudo -u axxx nohup bash -c "./bin/catalina.sh run" 1>>/var/log/$SCRIPTNAME.log 2>> /var/log/$SCRIPTNAME.err.log &
         cd $PWD
         ;;
   stop)
         PWD=`pwd`
         cd $AXXX_TOMCAT_INSTALL_PATH
-        sudo -u axxx sh ./bin/catalina.sh stop
+        sudo -u axxx bash -c "./bin/catalina.sh stop"
         cd $PWD
         ;;
   *)

@@ -78,9 +78,12 @@
 			                <td id="telephoneError" class="error"></td>
 						</tr>
 						<tr>
-			                <td><label for="Ville">Ville : <strong>*</strong></label></td>
-			                <td><input class="validate[required] text-input" type="text" name="ville" id="ville" value="$client.getVille()" title="[TEST MODE] City must be among : Sarcelles, Paris, Lyon (the mock address validation service is hardcoded to fail on others)">
-                            <img src="/pivotal/images/warn.png" alt="Important icon" style="width: 16px; height: 16px"/></td>
+			                <td><label for="Ville">Ville : <strong>*</strong></label>
+                            <img src="/pivotal/images/warn.png" alt="Important icon" style="width: 16px; height: 16px"
+                            title="[TEST MODE] City must be among : Sarcelles, Paris, Lyon (the mock address validation service is hardcoded to fail on others)"/>
+                         </td>
+			                <td><input class="validate[required] text-input" type="text" name="ville" id="ville" value="$client.getVille()"
+                            title="[TEST MODE] City must be among : Sarcelles, Paris, Lyon (the mock address validation service is hardcoded to fail on others)"></td>
 			                <td id="villeError" class="error"></td>
 			                <td><label for="RIB">RIB :</label></td>
 			                <td><input class="validate[] text-input" type="text" name="rib" id="rib" value="$client.getRIB()"></td>

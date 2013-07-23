@@ -4,19 +4,19 @@
 <head>
    <title>EasySOA Cartographie - Fiche Service</title>
    <meta charset="utf-8" />
-   
+
    <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/jquery._js"></script><!-- XXX No idea why (temporary 5.7-SNAPSHOT bug?), but Nuxeo returns the path of the script instead of the script itself when it is in .js -->
-   
+
    <!-- custom style and scripts -->
    <link rel="stylesheet" type="text/css" href="/nuxeo/site/easysoa/skin/css/base.css" media="all" />
-   <link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" /> 
-   
+   <link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" />
+
    <style type="text/css">
      .clickable:hover { cursor: pointer; background-color: #FFC; }
      .id { display: none }
      .selected { background-color: #CFC; }
    </style>
-    
+
     <!-- Bootstrap default style and scripts -->
     <link href="/nuxeo/site/easysoa/skin/css/bootstrap.css" rel="stylesheet" media="screen">
     <script src="/nuxeo/site/easysoa/skin/js/bootstrap._js"></script>
@@ -26,11 +26,16 @@
 
         <#include "/views/EasySOA/macros.ftl">
         <#include "/views/EasySOA/docMacros.ftl">
-    
+
    <div id="header">
       <div id="headerContents">
           <div id="logoLink">&nbsp;</div>
           <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
+          <div id="headerContextBar">
+              <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
+              <#assign subprojectId=subprojectId!"">
+              <@displayContextBar subprojectId contextInfo visibility "true"/>
+          </div>
           EasySOA Cartographie - Documentation
        </div>
    </div>
@@ -38,18 +43,13 @@
 
    <div class="container" id="container">
       <ul class="thumbnails">
-         <!-- Context bar -->
-         <#assign visibility=visibility!"">
-         <#assign subprojectId=subprojectId!"">
-         <@displayContextBar subprojectId contextInfo visibility "false"/>
-
          <li class="span12">
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt="">
-               
+
                <h3>Fiches Service</h3>
       <p/>
-      
+
       <@displayServicesShort services subprojectId visibility/>
       <p/>
       <p/>
@@ -61,17 +61,17 @@
          <li class="span12">
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt="">
-               
+
                <h3>Accès direct à leurs...</h3>
                <h4>implémentations</h4>
                <p/>
-               
+
                <@displayImplementationsShort impls subprojectId visibility/>
                <p/>
       <p/>
                <h4>déploiements</h4>
                <p/>
-               
+
                <@displayEndpointsShort endpoints subprojectId visibility/>
                <p/>
 
@@ -82,7 +82,7 @@
          <li class="span12">
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt="">
-               
+
       <h3>Par tags</h3>
       <p/>
 
@@ -128,12 +128,12 @@
          </#list>
       </ul>
       <p/>
-      
+
             </div>
          </li>
-   
+
          <@displayReturnToIndexButtonBar/>
-   
+
       </ul>
    </div>
 

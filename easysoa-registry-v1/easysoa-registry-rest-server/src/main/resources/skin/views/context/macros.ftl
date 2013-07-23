@@ -25,13 +25,13 @@
             </#list>
         </div>
     </#macro>
-    
+
     <#macro displayLiveShort projectVersionsList project>
         Versions courantes
         <ul>
         <#assign liveAndVersions = projectVersionsList[project]/>
         <#list liveAndVersions["live"] as live>
-            <li> 
+            <li>
                 ${live['dc:title']} - ${live.versionLabel} (<a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=deep">Avec</a>, <a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=strict">Sans</a> les phases parentes)
             </li>
         </#list>
@@ -40,10 +40,10 @@
 
     <#macro displayVersionsShort projectVersionsList project>
         Anciennes versions
-        <ul>        
+        <ul>
         <#assign liveAndVersions = projectVersionsList[project]/>
         <#list liveAndVersions["versions"] as version>
-            <li> 
+            <li>
                 ${version['dc:title']} - ${version.versionLabel} (<a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=deep">Avec</a>, <a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=strict">Sans</a> les phases parentes)
             </li>
         </#list>
@@ -66,19 +66,8 @@
 
     <#-- Display the context bar as a Bootstrap full width thumbnail -->
     <#macro displayContextBar subprojectId contextInfo visibility button>
-        <li class="span12">
-            <div class="thumbnail">
-                <img data-src="holder.js/300x200" alt="">
-                <table class="table-hidden">
-                    <tr>
-                        <td class="td-hidden"><strong>Perspective :</strong>&nbsp<@displayCurrentVersion subprojectId contextInfo visibility/>&nbsp;&nbsp;</td>
-                        <td class="td-hidden" style="text-align:right">
-                            <#if button == "true">
-                            <a class="btn btn-primary" href="/nuxeo/site/easysoa/context?subprojectId=${subprojectId}&visibility=${visibility}">Changer la perspective</a>
-                            </#if>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </li>
+        <strong>Perspective :</strong>&nbsp<@displayCurrentVersion subprojectId contextInfo visibility/>&nbsp</td>
+        <#if button == "true">
+            (&nbsp;<a href="/nuxeo/site/easysoa/context?subprojectId=${subprojectId}&visibility=${visibility}">Changer</a>&nbsp;)
+        </#if>
     </#macro>

@@ -66,8 +66,8 @@
 
     <#-- Display the context bar as a Bootstrap full width thumbnail -->
     <#macro displayContextBar subprojectId contextInfo visibility button>
-        <strong>Perspective :</strong>&nbsp<@displayCurrentVersion subprojectId contextInfo visibility/>&nbsp</td>
+        <strong>Perspective :</strong>&nbsp<@displayCurrentVersion subprojectId contextInfo visibility/>
         <#if button == "true">
-            (&nbsp;<a href="/nuxeo/site/easysoa/context?subprojectId=${subprojectId}&visibility=${visibility}">Changer</a>&nbsp;)
+            (<a href="/nuxeo/site/easysoa/context?subprojectId=${subprojectId}&visibility=${visibility}">Changer</a>)
         </#if>
     </#macro>

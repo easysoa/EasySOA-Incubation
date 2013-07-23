@@ -5,12 +5,19 @@
             <#if project != "Project Template">
             <div class="accordion-group">
                 <div class="accordion-heading">
+                    <#assign liveAndVersions = projectVersionsList[project]/>
+                    <#assign lastPhase = liveAndVersions["live"][liveAndVersions["live"]?size-1]/>
+
                     <#if project == "MyProject" >
                         <#assign projectTag="Projet par défaut">
                     <#else>
                         <#assign projectTag="Projet">
                     </#if>
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#${project?replace(' ', '_')}">${projectTag} ${project}</a>
+                    <!--<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#${project?replace(' ', '_')}">${projectTag} ${project}</a>-->
+                    <div class="accordion-toggle">
+                    ${projectTag} <Strong>${project}</Strong>, phase ${lastPhase['dc:title']} - ${lastPhase.versionLabel} (<a href="${Root.path}/../?subprojectId=${lastPhase['spnode:subproject']}&visibility=deep">Avec</a>, <a href="${Root.path}/../?subprojectId=${lastPhase['spnode:subproject']}&visibility=strict">Sans</a> les phases parentes)
+                    &nbsp;(<a data-toggle="collapse" data-parent="#accordion2" href="#${project?replace(' ', '_')}">Plus de choix...</a>)
+                    </div>
                 </div>
                 <div id="${project?replace(' ', '_')}" class="accordion-body collapse">
                     <div class="accordion-inner">

@@ -38,6 +38,7 @@
                         <!--Choose the versions of phase you want to use as a point of view and the visibility scope (strict or deep, i.e. with or without parent phases).-->
                         Choisissez un projet, une phase et la version que vous voulez utiliser dans la perspective (avec ou sans les phases parentes).
                         <br/>
+                        <br/>
                         <@displayProjectsPhasesAndVersionsShort projectIdToSubproject/>
                     </div>
                 </li>

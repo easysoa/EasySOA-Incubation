@@ -14,7 +14,7 @@
       <dataFile>directories/deliverable_nature.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy><!-- always on_missing_columns -->
     </directory>
-    
+
     <directory name="platform_serviceLanguage">
       <schema>vocabulary</schema>
       <dataSource>java:/nxsqldirectory</dataSource>
@@ -26,7 +26,7 @@
       <dataFile>directories/platform_serviceLanguage.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy><!-- always on_missing_columns -->
     </directory>
-    
+
     <directory name="platform_language">
       <schema>vocabulary</schema>
       <dataSource>java:/nxsqldirectory</dataSource>
@@ -38,7 +38,7 @@
       <dataFile>directories/platform_language.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy><!-- always on_missing_columns -->
     </directory>
-    
+
     <directory name="platform_build">
       <schema>vocabulary</schema>
       <dataSource>java:/nxsqldirectory</dataSource>
@@ -50,7 +50,20 @@
       <dataFile>directories/platform_build.csv</dataFile>
       <createTablePolicy>on_missing_columns</createTablePolicy><!-- always on_missing_columns -->
     </directory>
+
+  </extension>
+
+  <!-- Display the vocabulary directories in the nuxeo admin center -->
+  <extension target="org.nuxeo.ecm.directory.ui.DirectoryUIManager" point="directories" >
+
+    <directory name="deliverable_nature" layout="vocabulary" sortField="label" />
+
+    <directory name="platform_serviceLanguage" layout="vocabulary" sortField="label" />
+
+    <directory name="platform_language" layout="vocabulary" sortField="label" />
     
+    <directory name="platform_build" layout="vocabulary" sortField="label" />
+
   </extension>
 
 </component>

@@ -4,23 +4,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.core.MediaType;
-
 import org.apache.log4j.Logger;
-import org.easysoa.registry.rest.client.ClientBuilder;
 import org.easysoa.registry.test.AbstractWebEngineTest;
-import org.easysoa.registry.test.EasySOAWebEngineFeature;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.types.java.JavaServiceConsumption;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
 import org.junit.Test;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 import com.google.inject.Inject;
-import com.sun.jersey.api.client.WebResource;
 
 /**
  * 
@@ -30,7 +23,6 @@ import com.sun.jersey.api.client.WebResource;
  *
  */
 @Deploy({"org.easysoa.registry.rest.server", "org.easysoa.registry.doctypes.java.core"})
-@RepositoryConfig(cleanup = Granularity.CLASS)
 public class ServiceConsumptionIndicatorProviderTest extends AbstractWebEngineTest {
 
     private static Logger logger = Logger.getLogger(ServiceConsumptionIndicatorProviderTest.class);

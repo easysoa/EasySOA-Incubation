@@ -10,8 +10,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 
 import com.google.inject.Inject;
 
@@ -19,7 +17,6 @@ import com.google.inject.Inject;
  * 
  * @author mkalam-alami
  */
-@RepositoryConfig(cleanup = Granularity.CLASS)
 public class RelationsTest extends AbstractRegistryTest {
 
     @SuppressWarnings("unused")

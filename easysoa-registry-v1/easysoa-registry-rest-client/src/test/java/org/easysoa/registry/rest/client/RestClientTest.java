@@ -14,8 +14,6 @@ import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 import com.google.inject.Inject;
@@ -26,7 +24,6 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 
 @Deploy("org.easysoa.registry.rest.server")
-@RepositoryConfig(cleanup = Granularity.METHOD)
 public class RestClientTest extends AbstractWebEngineTest {
 
     @Inject

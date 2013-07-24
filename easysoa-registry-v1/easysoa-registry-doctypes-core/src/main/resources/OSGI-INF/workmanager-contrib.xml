@@ -10,14 +10,12 @@
       <name>Resource download</name>
       <maxThreads>4</maxThreads>
       <usePriority>true</usePriority>
-      <category>!resourceDownload!</category><!-- TODO bad category name (so goes in default queue)
-      else work blocks until test (transaction ? session ?) ends -->
+      <category>resourceDownload</category>
       <!-- clear completed work quickly as it contains (potentially large) text data -->
       <clearCompletedAfterSeconds>600</clearCompletedAfterSeconds>
     </queue>
   </extension>
   
-
   <extension point="schedule" target="org.nuxeo.ecm.core.scheduler.SchedulerService">
     <schedule id="refreshResources_MyProject/Deploiement">
       <event>refreshResources</event>
@@ -25,10 +23,10 @@
       <!-- eventCategory>spnode:subproject='/default-domain/MyProject/Realisation_v'</eventCategory -->
       <!-- refresh all Resources of said Project's Subprojects -->
       <eventCategory>spnode:subproject LIKE '/default-domain/MyProject/%_v'</eventCategory>
-      <!-- refresh every 1 minutes -->
-      <cronExpression>0 0/1 * * * ?</cronExpression>
       <!-- refresh every night at 3 am -->
-      <!-- cronExpression>0 3 * * * ?</cronExpression -->
+      <cronExpression>0 3 * * * ?</cronExpression>
+      <!-- refresh every 1 minutes (for testing purpose) -->
+      <!-- cronExpression>0 0/1 * * * ?</cronExpression -->
     </schedule>
   </extension>
 

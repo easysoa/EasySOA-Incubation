@@ -36,14 +36,13 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
  */
 public class AsyncResourceUpdateWork extends AbstractWork {
 
-    public static final String RESOURCE_DOWNLOAD_QUEUE_CATEGORY = "resourceDownload";
-
     private static Logger logger = Logger.getLogger(AsyncResourceUpdateWork.class);
 
     private DocumentModel newRdi;
     private DocumentModel oldRdi;
     private DocumentModel documentToUpdate;
     private boolean manualTransactionAtSaveTimeRatherThanManaged;
+    private String category;
 
     /**
      * 
@@ -51,13 +50,15 @@ public class AsyncResourceUpdateWork extends AbstractWork {
      * @param oldRdi
      * @param documentToUpdate
      * @param manualTransactionAtSaveTimeRatherThanManaged
+     * @param category controls the queue it goes to if it exists (else default queue)
      */
     AsyncResourceUpdateWork(DocumentModel newRdi, DocumentModel oldRdi, DocumentModel documentToUpdate,
-            boolean manualTransactionAtSaveTimeRatherThanManaged) {
+            boolean manualTransactionAtSaveTimeRatherThanManaged, String category) {
         this.newRdi = newRdi;
         this.oldRdi = oldRdi;
         this.documentToUpdate = documentToUpdate;
         this.manualTransactionAtSaveTimeRatherThanManaged = manualTransactionAtSaveTimeRatherThanManaged;
+        this.category = category;
     }
 
     @Override
@@ -77,7 +78,7 @@ public class AsyncResourceUpdateWork extends AbstractWork {
 
     @Override
     public String getCategory() {
-        return RESOURCE_DOWNLOAD_QUEUE_CATEGORY;
+        return category;
     }
 
     @Override

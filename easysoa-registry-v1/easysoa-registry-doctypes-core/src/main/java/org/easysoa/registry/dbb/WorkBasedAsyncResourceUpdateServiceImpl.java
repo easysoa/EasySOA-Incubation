@@ -32,9 +32,9 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class WorkBasedAsyncResourceUpdateServiceImpl extends ResourceUpdateServiceImpl implements AsyncResourceUpdateService {
 
-    /** triggers async download */
-    public static final String READY_TO_DOWNLOAD_RESOURCE_EVENT = "readyToDownloadResource";
-
+    /** dedicated Work queue for Resource download */
+    public static final String RESOURCE_DOWNLOAD_QUEUE_CATEGORY = "resourceDownload";
+    
     public static final String OLD_RDI_EVENT_PROP = "oldRdi";
     public static final String NEW_RDI_EVENT_PROP = "newRdi";
     
@@ -64,7 +64,8 @@ public class WorkBasedAsyncResourceUpdateServiceImpl extends ResourceUpdateServi
 
         // Add a new work in the update queue
         AsyncResourceUpdateWork work = new AsyncResourceUpdateWork(newRdi, oldRdi,
-                documentToUpdate, manualTransactionAtSaveTimeRatherThanManaged);
+                documentToUpdate, manualTransactionAtSaveTimeRatherThanManaged,
+                RESOURCE_DOWNLOAD_QUEUE_CATEGORY);
         service.schedule(work, true); // scheduling it afterCommit
                 // else not saved even if isTransactional (unless new transaction manually)
     }

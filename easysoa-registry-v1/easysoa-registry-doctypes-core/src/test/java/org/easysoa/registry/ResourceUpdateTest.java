@@ -29,6 +29,7 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 import org.easysoa.registry.dbb.ConfigurableResourceUpdateService;
+import org.easysoa.registry.dbb.WorkBasedAsyncResourceUpdateServiceImpl;
 import org.easysoa.registry.test.AbstractWebEngineTest;
 import org.easysoa.registry.test.EasySOAWebEngineFeature;
 import org.easysoa.registry.types.Endpoint;
@@ -143,7 +144,9 @@ public class ResourceUpdateTest extends AbstractWebEngineTest {
 
         // Wait for the async resource update work finish
         WorkManager workManagerService = Framework.getLocalService(WorkManager.class);
-        workManagerService.awaitCompletion("default", 15, TimeUnit.SECONDS);
+        workManagerService.awaitCompletion(
+                WorkBasedAsyncResourceUpdateServiceImpl.RESOURCE_DOWNLOAD_QUEUE_CATEGORY,
+                15, TimeUnit.SECONDS);
         
         
         // opening a dedicated session for test after async update, else changes won't be visible :

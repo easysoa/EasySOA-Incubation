@@ -49,9 +49,11 @@ import org.nuxeo.runtime.model.DefaultComponent;
  *
  * Reuses a single Jersey client (rather than creating one per download which costs too much).
  *
+ * TODO delegatedDownload(rdi) should get and return RDI properties other
+ * than file also (using response headers ???), same on delegated remote i.e. FraSCAti Studio side
+ *
  * TODO LATER better :
  * test delegate async at start
- * called by ResourceUpdate within async using Nuxeo Work
  *
  * @author jguillemotte, mdutoo
  *
@@ -139,7 +141,7 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
             resourceDownloadInfo.setFile(file);
             String urlString = url.toString();
             if(urlString.contains("?callback")){
-                resourceDownloadInfo.setUrl(urlString.substring(0, urlString.indexOf("?callback")));
+                resourceDownloadInfo.setUrl(urlString.substring(0, urlString.indexOf("?callback"))); // TODO why ? when ?
             } else {
                 resourceDownloadInfo.setUrl(urlString);
             }
@@ -149,11 +151,10 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
 
     @Override
     public ResourceDownloadInfo get(ResourceDownloadInfo rdi) throws Exception {
-        File file = null;
     	if (!isDelegatedDownloadDisabled) {
 	        // First try : Connect to FraSCAti studio download service
 	        try {
-                file = delegatedDownload(rdi);
+                delegatedDownload(rdi);
 	        }
 	        catch(Exception ex){
 	            // Error or timeout, try the second donwload method
@@ -162,8 +163,8 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
                 isDelegatedDownloadDisabled = true;
 	        }
         }
-        if(file == null){
-            rdi = get(new URL(rdi.getDownloadableUrl()));
+        if(rdi.getFile() == null){
+            rdi = get(new URL(rdi.getUrl())); // TODO LATER use rdi.timestamp in local download cache...
         }
         return rdi;
     }
@@ -195,17 +196,19 @@ public class ResourceDownloadServiceImpl extends DefaultComponent implements Res
     }
 
     /**
-     *
+     * TODO should get and fill RDI properties other than file also
+     * (using response headers ???)
+     *  
      * @param rdi ResourceDownloadInfo
      * @return
      * @throws Exception
      */
-    private File delegatedDownload(ResourceDownloadInfo rdi) throws Exception {
+    private void delegatedDownload(ResourceDownloadInfo rdi) throws Exception {
         WebResource webResource = client.resource(delegateResourceDownloadServiceUrl);
         webResource.entity(rdi);
         // Get the resource
         File resourceFile = webResource.get(File.class);
-        return resourceFile;
+        rdi.setFile(resourceFile);
     }
 
     /**

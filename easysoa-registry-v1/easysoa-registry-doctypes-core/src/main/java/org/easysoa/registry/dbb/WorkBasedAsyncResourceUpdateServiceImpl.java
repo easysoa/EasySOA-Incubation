@@ -30,19 +30,29 @@ import org.nuxeo.runtime.api.Framework;
  *
  * @author jguillemotte
  */
-public class AsyncResourceUpdateServiceImpl extends ResourceUpdateServiceImpl implements AsyncResourceUpdateService {
+public class WorkBasedAsyncResourceUpdateServiceImpl extends ResourceUpdateServiceImpl implements AsyncResourceUpdateService {
 
-    private static Logger logger = Logger.getLogger(AsyncResourceUpdateServiceImpl.class);
+    /** triggers async download */
+    public static final String READY_TO_DOWNLOAD_RESOURCE_EVENT = "readyToDownloadResource";
+
+    public static final String OLD_RDI_EVENT_PROP = "oldRdi";
+    public static final String NEW_RDI_EVENT_PROP = "newRdi";
+    
+    private static Logger logger = Logger.getLogger(WorkBasedAsyncResourceUpdateServiceImpl.class);
+    
+    // TODO conf
+    public boolean manualTransactionAtSaveTimeRatherThanManaged = true;
 
     @Override
     public void updateResource(DocumentModel newRdi, DocumentModel oldRdi,
-            DocumentModel documentToUpdate, ResourceDownloadService resourceDownloadService) throws ClientException {
+            DocumentModel documentToUpdate) throws ClientException {
 
         // Check if update is needed
         if (!isNewResourceRetrieval(newRdi, oldRdi)) {
+            // may happen when document Resource saved at parsing time
             return;
         }
-
+        
         if (documentToUpdate.isDirty()) {
         	// write if dirty (required ex. on documentCreated & async...)
         	documentToUpdate.getCoreSession().saveDocument(documentToUpdate);
@@ -53,9 +63,10 @@ public class AsyncResourceUpdateServiceImpl extends ResourceUpdateServiceImpl im
         WorkManager service = Framework.getLocalService(WorkManager.class);
 
         // Add a new work in the update queue
-        AsyncResourceUpdateWork work = new AsyncResourceUpdateWork(newRdi, oldRdi, documentToUpdate, resourceDownloadService);
-        service.schedule(work);
-
+        AsyncResourceUpdateWork work = new AsyncResourceUpdateWork(newRdi, oldRdi,
+                documentToUpdate, manualTransactionAtSaveTimeRatherThanManaged);
+        service.schedule(work, true); // scheduling it afterCommit
+                // else not saved even if isTransactional (unless new transaction manually)
     }
-
+    
 }

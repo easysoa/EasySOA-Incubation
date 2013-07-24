@@ -32,9 +32,6 @@ public class SynchronousResourceUpdateServiceImpl extends ResourceUpdateServiceI
 		implements SyncResourceUpdateService {
 
     private static Logger logger = Logger.getLogger(SynchronousResourceUpdateServiceImpl.class);
-    // TODO : document service to get the rdi attributes
-    // TODO : get the resourceDownloadService to get the resource
-    // TODO : Update the endpoint or the information service with the updated resource
 
     // Default constructor
     public SynchronousResourceUpdateServiceImpl(){
@@ -43,10 +40,10 @@ public class SynchronousResourceUpdateServiceImpl extends ResourceUpdateServiceI
 
     @Override
     public void updateResource(DocumentModel newRdi, DocumentModel oldRdi,
-            DocumentModel documentToUpdate, ResourceDownloadService resourceDownloadService) throws ClientException {
+            DocumentModel documentToUpdate) throws ClientException {
 
         // Update resource & fire event
-        super.doUpdateResourceAndFireEvent(newRdi, oldRdi, documentToUpdate, resourceDownloadService);
+        super.doUpdateResourceAndFireEvent(newRdi, oldRdi, documentToUpdate);
     }
 
 }

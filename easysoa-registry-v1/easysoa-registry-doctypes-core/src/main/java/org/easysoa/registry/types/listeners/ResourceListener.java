@@ -22,37 +22,58 @@ package org.easysoa.registry.types.listeners;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.SoaMetamodelService;
-import org.easysoa.registry.dbb.AsyncResourceUpdateService;
-import org.easysoa.registry.dbb.ConfigurableResourceUpdateService;
 import org.easysoa.registry.dbb.ProbeConfUtil;
-import org.easysoa.registry.dbb.ResourceDownloadService;
 import org.easysoa.registry.dbb.ResourceParsingService;
 import org.easysoa.registry.dbb.ResourceUpdateService;
-import org.easysoa.registry.dbb.SyncResourceUpdateService;
 import org.easysoa.registry.types.Resource;
 import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.nuxeo.common.collections.ScopeType;
 import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.event.Event;
+import org.nuxeo.ecm.core.event.EventBundle;
 import org.nuxeo.ecm.core.event.EventContext;
 import org.nuxeo.ecm.core.event.EventListener;
+import org.nuxeo.ecm.core.event.PostCommitEventListener;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.runtime.api.Framework;
 
 /**
  * Triggers SOA resource download & parse as required.
+ * 
+ * Usually called synchronously, but might also be triggered in an async
+ * (which requires to implement PostCommitEventListener and postCommit="true",
+ * see EventListenerDescriptor.java) manner by Nuxeo's event system, see
+ * http://doc.nuxeo.com/display/NXDOC/Events+and+Listeners
  *
  * Should be registered on events : documentCreated, documentModified
  * (and not beforeDocumentModification because digest not yet computed at storage level)
  *
  * @author jguillemotte
  */
-public class ResourceListener extends EventListenerBase implements EventListener {
+public class ResourceListener extends EventListenerBase implements EventListener, PostCommitEventListener {
 
     private static final String CONTEXT_REQUEST_RESOURCE_ALREADY_UPDATED = "resourceAlreadyUpdated";
 
     private static Logger logger = Logger.getLogger(ResourceListener.class);
+
+    
+    /**
+     * Simplistic async / postcommit impl that dispatches to handleEvent(event)
+     * @param events
+     * @throws ClientException
+     */
+    @Override
+    public void handleEvent(EventBundle events) throws ClientException {
+        for (Event event : events) {
+            try {
+                this.handleEvent(event);
+            } catch (Exception e) {
+                logger.error("Error", e);
+            }
+        }
+        
+    }
 
     @Override
     public void handleEvent(Event event) throws ClientException {
@@ -86,23 +107,22 @@ public class ResourceListener extends EventListenerBase implements EventListener
         // if is an RDI (external, to be downloaded resource), update it
         if (isResourceDownloadInfo(sourceDocument)) { // TODO extract to isResourceDocument()
 
-            // Get & use probe conf
+            // Check that probe is not using a custom event type
             String probeType = (String) sourceDocument.getPropertyValue(ResourceDownloadInfo.XPATH_PROBE_TYPE);//TODO
             String probeInstanceId = (String) sourceDocument.getPropertyValue(ResourceDownloadInfo.XPATH_PROBE_INSTANCEID);//TODO
-            // exit if document change but probe conf says it triggers using dedicated event
             if (ProbeConfUtil.isResourceProbeEventCustom(probeType, probeInstanceId)) {
+                // exit if document change but probe conf says it triggers using dedicated event
                 return;
             }
-            ResourceDownloadService probeResourceDownloadService = ProbeConfUtil.getResourceDownloadService(probeType, probeInstanceId);
 
             // Starting update :
             resourceUpdateService.updateResource(sourceDocument, previousDocumentModel,
-                sourceDocument, probeResourceDownloadService);
+                sourceDocument);
 
             // NB. parsing is triggered by (possibly async) resourceDownloaded event fired by resourceUpdateService
 
         } else if (isResource(sourceDocument)) {
-            // Trigger event to call (WSDL) parsing listener
+            // Trigger event to directly call (WSDL) parsing listener
             resourceUpdateService.fireResourceDownloadedEvent(sourceDocument);
         }
     }

@@ -10,6 +10,8 @@
   <!-- Prority set to 150 to run after dcListener, which inits "created" -->
 
   <extension target="org.nuxeo.ecm.core.event.EventServiceComponent" point="listener">
+  
+    <!-- RepositoryManagement : moving SOA nodes a their canonical place & proxying them, metadata inheritance... -->
     <listener name="repositoryManagementListener" class="org.easysoa.registry.RepositoryManagementListener" priority="155">
       <event>documentCreated</event>
       <event>documentCreatedByCopy</event>
@@ -18,25 +20,35 @@
       <event>aboutToRemove</event>
     </listener>
     
+    <!-- SOA node matching : impl to iserv, endpoint to impl or to iserv through placeholder impl -->
     <listener name="soaNodeMatchingListener" class="org.easysoa.registry.SoaNodeMatchingListener"
     	priority="156">
       <event>documentCreated</event>
       <event>documentModified</event>
     </listener>
     
-    <!-- TODO : priority ? set to 151 ?? -->
-    <!-- Events : keep documentCreated & documentModified ? -->
+    <!-- Resource - update (download then parse) on change : -->
     <listener name="resourceListener" class="org.easysoa.registry.types.listeners.ResourceListener"
-      priority="151">
+      priority="151"><!-- async="true" postCommit="true" -->
       <event>documentCreated</event>
       <event>documentModified</event>
-    </listener>    
+    </listener>
+    <!-- required by event-based alternative to async impl (EventBasedAsyncResourceUpdateServiceImpl) -->
+    <!-- listener name="resourceDownloadListener" class="org.easysoa.registry.types.listeners.AsyncResourceDownloadListener"
+      async="true" postCommit="true">
+      <event>readyToDownloadResource</event>
+    </listener --><!-- no priority because listens only to custom event (and async) -->
     <!-- TODO : Refactoring ? modify event for wsdlParsingListener ?? -->
     <listener name="wsdlParsingListener" class="org.easysoa.registry.types.listeners.WSDLParsingListener"
       priority="152">
-      <!--<event>documentCreated</event>--><!-- TODO rm -->
-      <!--<event>documentModified</event>--><!-- TODO rm -->
-      <event>resourceDownloaded</event><!-- triggered by ResourceUpdateService -->
+      <event>resourceDownloaded</event><!-- triggered by ResourceUpdateService, or directly ResourceListener if not downloadable -->
+    </listener>
+    
+    <!-- Resource - periodic refresh : -->
+    <listener name="refreshResourcesListener" class="org.easysoa.registry.types.listeners.RefreshResourcesListener"
+      async="true" postCommit="true">
+      <event>refreshResources</event><!-- triggered by ResourceUpdateService, or directly ResourceListener if not downloadable -->
+      <!-- no priority because listens only to custom event (and async) -->
     </listener>
     
     <listener name="componentListener" class="org.easysoa.registry.types.listeners.ComponentListener"
@@ -45,6 +57,7 @@
       <event>beforeDocumentModification</event>
     </listener>
     
+    <!-- Subproject Node : copy of spnode metadata on all subnodes -->
     <listener name="subprojectListener" class="org.easysoa.registry.subproject.SubprojectNodeListener"
       priority="150">
       <event>aboutToCreate</event>

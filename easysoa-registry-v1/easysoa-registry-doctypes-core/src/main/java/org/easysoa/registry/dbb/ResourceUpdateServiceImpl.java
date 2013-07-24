@@ -22,9 +22,10 @@ package org.easysoa.registry.dbb;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.GregorianCalendar;
+
 import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.easysoa.registry.types.listeners.EventListenerBase;
 import org.nuxeo.ecm.core.api.Blob;
@@ -38,10 +39,15 @@ import org.nuxeo.ecm.platform.ui.web.util.files.FileUtils;
 import org.nuxeo.runtime.api.Framework;
 
 /**
+ * Impl of Resource Update Service that downloads Resource synchronously
+ * and then triggers its parsing through (a priori synchronous) event
  *
  * @author jguillemotte
  */
 public abstract class ResourceUpdateServiceImpl implements ResourceUpdateService  {
+
+    /** triggers parsing */
+    public static final String RESOURCE_DOWNLOADED_EVENT = "resourceDownloaded";
 
     @Override
     public boolean isNewResourceRetrieval(DocumentModel newRdi, DocumentModel oldRdi) throws ClientException {
@@ -71,9 +77,9 @@ public abstract class ResourceUpdateServiceImpl implements ResourceUpdateService
      * @throws ClientException
      */
     protected void doUpdateResourceAndFireEvent(DocumentModel newRdi, DocumentModel oldRdi,
-            DocumentModel documentToUpdate, ResourceDownloadService resourceDownloadService) throws ClientException {
+            DocumentModel documentToUpdate) throws ClientException {
 
-    	documentToUpdate = this.doUpdateResource(newRdi, oldRdi, documentToUpdate, resourceDownloadService);
+    	documentToUpdate = this.doUpdateResource(newRdi, oldRdi, documentToUpdate);
     	
         this.fireResourceDownloadedEvent(documentToUpdate); // firing on persisted document (else no SQLBlob so no digest)
     }
@@ -90,9 +96,8 @@ public abstract class ResourceUpdateServiceImpl implements ResourceUpdateService
 
         DocumentEventContext ctx = new DocumentEventContext(document.getCoreSession(),
         		document.getCoreSession().getPrincipal(), document);
-        //ctx.setProperty("myprop", "something"); // TODO any property to set ???
 
-        Event event = ctx.newEvent("resourceDownloaded");
+        Event event = ctx.newEvent(RESOURCE_DOWNLOADED_EVENT);
         try {
             eventProducer.fireEvent(event);
         } catch (ClientException ex) {
@@ -101,12 +106,14 @@ public abstract class ResourceUpdateServiceImpl implements ResourceUpdateService
     }
 
     protected DocumentModel doUpdateResource(DocumentModel newRdi, DocumentModel oldRdi,
-            DocumentModel documentToUpdate, ResourceDownloadService resourceDownloadService) throws ClientException {
+            DocumentModel documentToUpdate) throws ClientException {
 
         // Check if update is needed
         if (!isNewResourceRetrieval(newRdi, oldRdi)) {
             return documentToUpdate;
         }
+        
+        ResourceDownloadService resourceDownloadService = this.getProbeResourceDownloadService(newRdi);
 
         CoreSession coreSession = documentToUpdate.getCoreSession();
 
@@ -121,11 +128,14 @@ public abstract class ResourceUpdateServiceImpl implements ResourceUpdateService
             //newUrl = "http://footballpool.dataaccess.eu/data/info.wso?WSDL";
             return documentToUpdate;
         }
-        ResourceDownloadInfo resource;
+        ResourceDownloadInfo newRdiBean = new ResourceDownloadInfoImpl();
+        newRdiBean.setUrl(newUrl);
+        // TODO set other props
+        // TODO LATER rather as adapter ?
         InputStream file;
         try {
-            resource = resourceDownloadService.get(new URL(newUrl));
-            file = new FileInputStream(resource.getFile());
+            newRdiBean = resourceDownloadService.get(newRdiBean);
+            file = new FileInputStream(newRdiBean.getFile());
         } catch (MalformedURLException ex) {
             throw new ClientException("Bad URL : " + newUrl, ex);
         } catch (Exception ex) {
@@ -134,9 +144,9 @@ public abstract class ResourceUpdateServiceImpl implements ResourceUpdateService
 
         // Update registry with new resource
         Blob resourceBlob = FileUtils.createSerializableBlob(file, getWsdlFileName(newUrl), null);
-        documentToUpdate.setProperty("file", "content", resourceBlob);
+        documentToUpdate.setPropertyValue("file:content", (Serializable) resourceBlob);
         documentToUpdate.setPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP,
-        		resource.getTimestamp()); // NB. nuxeo auto-converts it to GregorianCalendar (xs:dateTime)
+                newRdiBean.getTimestamp()); // NB. nuxeo auto-converts it to GregorianCalendar (xs:dateTime)
 
         // saving :
         // first disabling events (the only one to be triggered is resourceDownloaded event,
@@ -145,7 +155,7 @@ public abstract class ResourceUpdateServiceImpl implements ResourceUpdateService
         documentToUpdate = coreSession.saveDocument(documentToUpdate); // updates (& triggers events),
         // else Blob stays a StreamingBlob instead of becoming an SQLBlob and can't compute the new digest
         EventListenerBase.enableListeners(documentToUpdate); // reenabling them for resourceDownloaded event
-        ///coreSession.save(); // not required
+        // NB. coreSession.save() is not required (and should not since when async save is done transactionnaly in Work) 
         
         return documentToUpdate; // returning persisted document
     }
@@ -163,4 +173,14 @@ public abstract class ResourceUpdateServiceImpl implements ResourceUpdateService
         return fileName;
     }
 
+    @Override
+    public ResourceDownloadService getProbeResourceDownloadService(DocumentModel newRdi) throws ClientException {
+        // Get & use probe conf
+        String probeType = (String) newRdi.getPropertyValue(ResourceDownloadInfo.XPATH_PROBE_TYPE);//TODO
+        String probeInstanceId = (String) newRdi.getPropertyValue(ResourceDownloadInfo.XPATH_PROBE_INSTANCEID);//TODO
+
+        ResourceDownloadService probeResourceDownloadService = ProbeConfUtil.getResourceDownloadService(probeType, probeInstanceId);
+        return probeResourceDownloadService;
+    }
+    
 }

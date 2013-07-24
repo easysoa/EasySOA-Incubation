@@ -21,33 +21,63 @@
 package org.easysoa.registry.dbb;
 
 import org.apache.log4j.Logger;
+import org.easysoa.registry.types.ResourceDownloadInfo;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.runtime.api.Framework;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 /**
+ * Does the work of downloading and triggering parsing of Resource in an async manner.
+ * Does so in its own configurable work queue to allow scalability without impeding
+ * other Nuxeo async features.
  *
- * @author jguillemotte
+ * @author jguillemotte, mdutoo
  */
 public class AsyncResourceUpdateWork extends AbstractWork {
+
+    public static final String RESOURCE_DOWNLOAD_QUEUE_CATEGORY = "resourceDownload";
 
     private static Logger logger = Logger.getLogger(AsyncResourceUpdateWork.class);
 
     private DocumentModel newRdi;
     private DocumentModel oldRdi;
     private DocumentModel documentToUpdate;
-    private ResourceDownloadService resourceDownloadService;
+    private boolean manualTransactionAtSaveTimeRatherThanManaged;
 
-    AsyncResourceUpdateWork(DocumentModel newRdi, DocumentModel oldRdi, DocumentModel documentToUpdate, ResourceDownloadService resourceDownloadService) {
+    /**
+     * 
+     * @param newRdi
+     * @param oldRdi
+     * @param documentToUpdate
+     * @param manualTransactionAtSaveTimeRatherThanManaged
+     */
+    AsyncResourceUpdateWork(DocumentModel newRdi, DocumentModel oldRdi, DocumentModel documentToUpdate,
+            boolean manualTransactionAtSaveTimeRatherThanManaged) {
         this.newRdi = newRdi;
         this.oldRdi = oldRdi;
         this.documentToUpdate = documentToUpdate;
-        this.resourceDownloadService = resourceDownloadService;
+        this.manualTransactionAtSaveTimeRatherThanManaged = manualTransactionAtSaveTimeRatherThanManaged;
     }
 
     @Override
     public String getTitle() {
         return "AsyncResourceUpdateWork";
+    }
+
+    /**
+     * NB. it is better if transaction is done (manually) only
+     * around save time, to avoid clogging too much resources while downloading
+     * @return !manualTransactionAtSaveTimeRatherThanManaged
+     */
+    @Override
+    protected boolean isTransactional() {
+        return !manualTransactionAtSaveTimeRatherThanManaged;
+    }
+
+    @Override
+    public String getCategory() {
+        return RESOURCE_DOWNLOAD_QUEUE_CATEGORY;
     }
 
     @Override
@@ -60,13 +90,40 @@ public class AsyncResourceUpdateWork extends AbstractWork {
             return;
         }
 
-        ResourceUpdateService service = Framework.getService(SyncResourceUpdateService.class);
+        ResourceUpdateService service = Framework.getLocalService(SyncResourceUpdateService.class);
         
         // getting a document with a session for the service below (requires it to be TODO) :
         documentToUpdate = session.getDocument(documentToUpdate.getRef());
 
         // Update resource & fire event
-        service.updateResource(newRdi, oldRdi, documentToUpdate, resourceDownloadService);
+        service.updateResource(newRdi, oldRdi, documentToUpdate);
+        
+        // if isTransactional and scheduled postCommit, transaction is managed
+        // (started and committed or rollbacked) automatically by AbstractWork
+        
+        if (manualTransactionAtSaveTimeRatherThanManaged) {
+            // if not transactional, we can do a transaction only around save time,
+            // to avoid clogging too much resources while downloading
+            
+            // NB. isTransactional only works if scheduled postCommit. However, if isTransactional
+            // and not postCommit, it can be make to work by such a manual transaction,
+            // else it wouldn't be saved when session closed
+            try {
+                TransactionHelper.startTransaction();
+                session.saveDocument(documentToUpdate);
+                session.save();
+            } catch (Exception e) {
+                logger.error("Error while updating resource " + documentToUpdate
+                        + " to " + newRdi.getPropertyValue(ResourceDownloadInfo.XPATH_URL), e);
+                if (TransactionHelper.isTransactionActive()) {
+                    TransactionHelper.setTransactionRollbackOnly(); // marks for rollback
+                } // else already ended or marked rollback
+            } finally {
+                if (TransactionHelper.isTransactionActive()) {
+                    TransactionHelper.commitOrRollbackTransaction();
+                } // else already ended
+            }
+        }
     }
 
 }

@@ -46,13 +46,21 @@ public interface ResourceUpdateService {
      * @throws Exception 
      */
     public void updateResource(DocumentModel sourceDocument, DocumentModel previousDocumentModel,
-            DocumentModel documentToUpdate, ResourceDownloadService resourceDownloadService) throws ClientException;
+            DocumentModel documentToUpdate) throws ClientException;
     
     /**
-     * Fire a "resourceDownloaded" event
+     * Fire a "resourceDownloaded" event, used by framework
      * @param document The document to associate with the event (must have a CoreSession)
      * @throws ClientException
      */
     public void fireResourceDownloadedEvent(DocumentModel document) throws ClientException;
+    
+    /**
+     * Use by framework when async download
+     * @param newRdi
+     * @return
+     * @throws ClientException 
+     */
+    public ResourceDownloadService getProbeResourceDownloadService(DocumentModel newRdi) throws ClientException;
     
 }

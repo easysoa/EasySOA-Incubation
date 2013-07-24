@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 <component name="org.easysoa.registry.dbb.AsyncResourceUpdateService" version="1.0">
 
-  <implementation class="org.easysoa.registry.dbb.AsyncResourceUpdateServiceImpl" />
+  <implementation class="org.easysoa.registry.dbb.WorkBasedAsyncResourceUpdateServiceImpl" />
+  <!-- implementation class="org.easysoa.registry.dbb.EventBasedAsyncResourceUpdateServiceImpl" / -->
 
   <service>
     <provide interface="org.easysoa.registry.dbb.AsyncResourceUpdateService" />

@@ -17,30 +17,37 @@ import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 @Produces(MediaType.APPLICATION_JSON)
 public interface RegistryApi {
 
+    /** discovers the given SOA node */
     @POST
     OperationResult post(SoaNodeInformation soaNodeInfo) throws Exception;
 
+    /** @return all non-proxy, not deleted SOA nodes in the given subproject returned by the given guery */
     @POST
     @Path("query")
     @Consumes(MediaType.TEXT_PLAIN)
     SoaNodeInformation[] query(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId,
             String query) throws Exception;
     
+    /** Returns the subproject root. FIXME WorkspaceRoot is not a SoaNode */
     @GET
     SoaNodeInformation get(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId) throws Exception;
 
+    /** @return all SOA nodes of the given type (TODO or facet) in the given subproject */
     @GET
     @Path("{doctype}")
     SoaNodeInformation[] get(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId, @PathParam("doctype") String doctype) throws Exception;
 
+    /** @return the given SOA node */
     @GET
     @Path("{doctype}/{name:.+}")
     SoaNodeInformation get(@QueryParam("subproject") String subprojectId, @PathParam("doctype") String doctype, @PathParam("name") String name) throws Exception;
 
+    /** Deletes the given SOA node */
     @DELETE
     @Path("{doctype}/{name:.+}")
     OperationResult delete(@QueryParam("subproject") String subprojectId, @PathParam("doctype") String doctype, @PathParam("name") String name) throws Exception;
 
+    /** deletes the proxy of the given SOA node that is below the given correlated SOA node */
     @DELETE
     @Path("{doctype}/{name}/{correlatedDoctype}/{correlatedName}")
     OperationResult delete(@QueryParam("subproject") String subprojectId, @PathParam("doctype") String doctype, @PathParam("name") String name,

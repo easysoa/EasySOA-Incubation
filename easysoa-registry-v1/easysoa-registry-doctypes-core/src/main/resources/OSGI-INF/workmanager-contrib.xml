@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<component name="org.easysoa.registry.resource.download.work.contrib" version="1.0">
+
+  <documentation>
+    Defines a work queue dedicated to resource download
+  </documentation>
+
+  <extension target="org.nuxeo.ecm.core.work.service" point="queues">
+    <queue id="resourceDownload">
+      <name>Resource download</name>
+      <maxThreads>4</maxThreads>
+      <usePriority>true</usePriority>
+      <category>resourceDownload</category>
+      <!-- clear completed work quickly as it contains (potentially large) text data -->
+      <clearCompletedAfterSeconds>600</clearCompletedAfterSeconds>
+    </queue>
+  </extension>
+  
+  <extension point="schedule" target="org.nuxeo.ecm.core.scheduler.SchedulerService">
+    <schedule id="refreshResources_MyProject/Deploiement">
+      <event>refreshResources</event>
+      <!-- refresh all Resources of said Subproject -->
+      <!-- eventCategory>spnode:subproject='/default-domain/MyProject/Realisation_v'</eventCategory -->
+      <!-- refresh all Resources of said Project's Subprojects -->
+      <eventCategory>spnode:subproject LIKE '/default-domain/MyProject/%_v'</eventCategory>
+      <!-- refresh every night at 3 am -->
+      <cronExpression>0 3 * * * ?</cronExpression>
+      <!-- refresh every 1 minutes (for testing purpose) -->
+      <!-- cronExpression>0 0/1 * * * ?</cronExpression -->
+    </schedule>
+  </extension>
+
+</component>

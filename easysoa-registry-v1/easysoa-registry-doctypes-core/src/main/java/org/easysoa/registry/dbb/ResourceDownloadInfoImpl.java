@@ -33,6 +33,8 @@ public class ResourceDownloadInfoImpl implements ResourceDownloadInfo {
     private String timestamp;
     private String url;
     private String downloadableURL;
+    private String probeType;
+    private String probeInstanceId;
 
     @Override
     public File getFile() {
@@ -74,5 +76,24 @@ public class ResourceDownloadInfoImpl implements ResourceDownloadInfo {
         this.downloadableURL = downloadableURL;
     }
 
+    @Override
+    public String getProbeType() {
+        return probeType;
+    }
+
+    @Override
+    public void setProbeType(String probeType) {
+        this.probeType = probeType;
+    }
+
+    @Override
+    public String getProbeInstanceId() {
+        return probeInstanceId;
+    }
+
+    @Override
+    public void setProbeInstanceId(String probeInstanceId) {
+        this.probeInstanceId = probeInstanceId;
+    }
 
 }

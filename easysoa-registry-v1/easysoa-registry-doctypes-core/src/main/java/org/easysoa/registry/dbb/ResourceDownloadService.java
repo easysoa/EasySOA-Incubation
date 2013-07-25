@@ -25,6 +25,7 @@ import java.net.URL;
 import org.easysoa.registry.types.ResourceDownloadInfo;
 
 /**
+ * Registry-local ResourceDownloadService (but may delegate to remote services)
  *
  * @author jguillemotte
  */

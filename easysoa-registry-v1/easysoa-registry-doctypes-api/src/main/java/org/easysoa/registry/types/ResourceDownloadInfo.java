@@ -32,14 +32,20 @@ public interface ResourceDownloadInfo {
 
     static final String XPATH_URL = "rdi:url";
 
+    /**
+     * the URL used by the probe to download the Resource file if it differs
+     * from rdi:url (may happen if there is routing), else null
+     */
     static final String XPATH_DOWNLOADABLE_URL = "rdi:downloadableUrl";
 
     static final String XPATH_TIMESTAMP = "rdi:timestamp";
 
     static final String TIMESTAMP_DATETIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
 
+    /** probeType if any, none means Registry UI itself */
     static final String XPATH_PROBE_TYPE = "rdi:probeType";
 
+    /** probe instance id, none means the default one */
     static final String XPATH_PROBE_INSTANCEID = "rdi:probeInstanceId";
 
     /**
@@ -79,7 +85,9 @@ public interface ResourceDownloadInfo {
     public void setUrl(String url);
 
     /**
-     * Return the downloadable URL
+     * Return the downloadable URL i.e. the URL used by the probe to download
+     * the Resource file if it differs from url (may happen if there is routing),
+     * else null
      * @return A String representing the URL
      */
     public String getDownloadableUrl();
@@ -90,4 +98,19 @@ public interface ResourceDownloadInfo {
      */
     public void setDownloadableUrl(String url);
 
+
+    /**
+     * @return probeType if any, none means Registry UI itself
+     */
+    public String getProbeType();
+
+    public void setProbeType(String probeType);
+
+    /**
+     * @return probe instance id, none means the default one
+     */
+    public String getProbeInstanceId();
+
+    public void setProbeInstanceId(String probeInstanceId);
+    
 }

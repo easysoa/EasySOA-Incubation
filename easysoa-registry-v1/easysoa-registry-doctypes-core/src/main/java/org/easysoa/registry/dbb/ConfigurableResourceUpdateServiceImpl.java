@@ -39,6 +39,7 @@ public class ConfigurableResourceUpdateServiceImpl implements ResourceUpdateServ
      * If set to true, the synchronous update service will be used, else the asynchronous service
      * @param synchronous
      */
+    @Override
     public void setSynchronousUpdateService(boolean synchronous) {
         this.synchronous = synchronous;
     }
@@ -57,24 +58,31 @@ public class ConfigurableResourceUpdateServiceImpl implements ResourceUpdateServ
         }
 	}
 
+    @Override
 	public boolean isNewResourceRetrieval(DocumentModel newRdi,
 			DocumentModel oldRdi) throws ClientException {
 		return getResourceUpdateService().isNewResourceRetrieval(newRdi, oldRdi);
 	}
 
+    @Override
 	public void updateResource(DocumentModel sourceDocument,
 			DocumentModel previousDocumentModel,
-			DocumentModel documentToUpdate,
-			ResourceDownloadService resourceDownloadService)
+			DocumentModel documentToUpdate)
 			throws ClientException {
 		getResourceUpdateService().updateResource(sourceDocument,
-				previousDocumentModel, documentToUpdate,
-				resourceDownloadService);
+				previousDocumentModel, documentToUpdate);
 	}
 
+    @Override
 	public void fireResourceDownloadedEvent(DocumentModel document)
 			throws ClientException {
 		getResourceUpdateService().fireResourceDownloadedEvent(document);
 	}
+
+    @Override
+    public ResourceDownloadService getProbeResourceDownloadService(
+            DocumentModel newRdi) throws ClientException {
+        return getResourceUpdateService().getProbeResourceDownloadService(newRdi);
+    }
 	
 }

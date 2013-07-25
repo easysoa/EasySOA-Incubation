@@ -18,6 +18,8 @@ import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicators;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.test.annotations.Granularity;
+import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
 import org.nuxeo.ecm.directory.api.DirectoryService;
 import org.nuxeo.runtime.test.runner.Deploy;
@@ -37,6 +39,8 @@ import com.sun.jersey.api.client.WebResource;
 @LocalDeploy({ "org.easysoa.registry.rest.server:OSGI-INF/SlaOlaIndicatorsTest.xml" })
 // NB. no @RepositoryConfig(cleanup = Granularity.CLASS) because some methods change state
 // (update...() would make simple...() fail if executed first as it might be on jdk7 see #134 )
+@RepositoryConfig(cleanup = Granularity.METHOD) // truly unitary tests :
+//don't keep Nuxeo repository state between test methods
 public class EndpointStateServiceTest extends AbstractRestApiTest {
 
     private static Logger logger = Logger.getLogger(EndpointStateServiceTest.class);
@@ -46,6 +50,8 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
     @Inject
     DirectoryService directoryService;
     
+    private static boolean initDone = false;
+    
     public final static String ENDPOINT_ID = "test";
     
     public final static String INDICATOR_NAME = "testSlaIndicator";
@@ -53,13 +59,13 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
     
     public final static String SERVICE_LEVEL_HEALTH = "gold";
     
-    private static boolean initDone = false;
-    
     /**
-     * Init the tests
+     * Init the tests (called only once, state kept all along even with
+     * @RepositoryConfig(cleanup = Granularity.METHOD))
+     * 
      * @throws Exception
      */
-    @Before
+    @Before // NB. can't be @BeforeClass else can't access injected directoryService
     public void init() throws Exception {
         
         if(!initDone){
@@ -205,7 +211,8 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
     /**
      * Test the updateSlaOlaIndicators REST operation
      */
-    @Test
+    //@Test // rather called in getSlaOrOlaIndicatorsTestWithDateRangeAndPagination()
+    // which expects it else random junit test order on jdk7 may make it fail, see #134
     public void updateSlaOlaIndicatorsTest(){
         logTestName(logger);
         
@@ -302,6 +309,9 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
     
     @Test
     public void getSlaOrOlaIndicatorsTestWithDateRangeAndPagination(){
+        // add some more first
+        updateSlaOlaIndicatorsTest();
+        
         logTestName(logger);
         
         // Required to avoid problem with indicators and periodEnd in the same second

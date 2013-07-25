@@ -11,8 +11,6 @@ import org.nuxeo.ecm.core.api.ClientException;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
 import org.nuxeo.ecm.core.api.IdRef;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 
 import com.google.inject.Inject;
 
@@ -25,7 +23,6 @@ import com.google.inject.Inject;
  * @author mkalam-alami
  *
  */
-@RepositoryConfig(cleanup = Granularity.CLASS) // to keep repository state between test methods
 public class DocumentServiceTest extends AbstractRegistryTest {
 
     private static final SoaNodeId MYSYSTEM_ID = new SoaNodeId(TaggingFolder.DOCTYPE, "MySystem");
@@ -61,6 +58,9 @@ public class DocumentServiceTest extends AbstractRegistryTest {
 
     @Test
     public void testModelQuery() throws ClientException {
+        // creating first
+        testModelCreation();
+        
         DocumentModel systemModel = documentService.findSoaNode(documentManager, MYSYSTEM_ID);
         Assert.assertNotNull("Created system must be found by name", systemModel);
         Assert.assertEquals(MYSYSTEM_ID.getName(), systemModel.getTitle());
@@ -71,6 +71,9 @@ public class DocumentServiceTest extends AbstractRegistryTest {
 
     @Test
     public void testModelDeletion() throws ClientException {
+        // creating first
+        testModelCreation();
+        
         // TODO without this line or the next one, sometimes won't be found
         // by SOA ID !?!! see #134 NOOOO WORKS AGAIN
         ///Assert.assertTrue("Created system must be found by ref", documentManager.exists(mySystemIdRef));

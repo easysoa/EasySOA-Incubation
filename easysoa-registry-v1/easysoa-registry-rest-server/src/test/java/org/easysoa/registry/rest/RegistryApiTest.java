@@ -25,6 +25,7 @@ import org.nuxeo.runtime.test.runner.Deploy;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
+import org.easysoa.registry.rest.marshalling.SoaNodeInformations;
 
 @Deploy("org.easysoa.registry.rest.server")
 @RepositoryConfig(cleanup = Granularity.CLASS)
@@ -48,11 +49,11 @@ public class RegistryApiTest extends AbstractRestApiTest {
         WebResource discoveryRequest = client.resource(discoveryApiUrl)
                 .path(Component.DOCTYPE).path("ComponentForDefaultSubprojectIdInit");
         SoaNodeInformation soaNodeInformation = discoveryRequest.get(SoaNodeInformation.class);
-        
+
         defaultSubprojectId = soaNodeInformation.getSubprojectId();
         Assert.assertNotNull(defaultSubprojectId, "defaultSubprojectId should not be null");
     }
-    
+
     @Test
     public void getOne() throws Exception {
         logTestName(logger);
@@ -71,7 +72,7 @@ public class RegistryApiTest extends AbstractRestApiTest {
         SoaNodeInformation soaNodeInformation = discoveryRequest.get(SoaNodeInformation.class);
 
         // Check result
-        Assert.assertEquals("Returned SoaNode must have the expected ID", 
+        Assert.assertEquals("Returned SoaNode must have the expected ID",
         		new SoaNodeId(defaultSubprojectId, InformationService.DOCTYPE, "MyService0").toString(),
                 soaNodeInformation.getSoaNodeId().toString());
         Map<String, Serializable> properties = soaNodeInformation.getProperties();
@@ -88,11 +89,11 @@ public class RegistryApiTest extends AbstractRestApiTest {
         // Run request
         Client client = createAuthenticatedHTTPClient();
         WebResource discoveryRequest = client.resource(discoveryApiUrl).path(InformationService.DOCTYPE);
-        SoaNodeInformation[] soaNodes = discoveryRequest.get(SoaNodeInformation[].class);
+        SoaNodeInformations soaNodes = discoveryRequest.get(SoaNodeInformations.class);
 
         // Check result
-        Assert.assertEquals("All registered services must be found", SERVICE_COUNT, soaNodes.length);
-        SoaNodeId firstSoaNodeId = soaNodes[0].getSoaNodeId();
+        Assert.assertEquals("All registered services must be found", SERVICE_COUNT, soaNodes.getSoaNodeInformationList().size());
+        SoaNodeId firstSoaNodeId = soaNodes.getSoaNodeInformationList().get(0).getSoaNodeId();
         Assert.assertEquals("'type' property must be provided for each document", InformationService.DOCTYPE,
                 firstSoaNodeId.getType());
         Assert.assertEquals("'name' property must be provided for each document", "MyService0",
@@ -158,18 +159,18 @@ public class RegistryApiTest extends AbstractRestApiTest {
     @Test
     public void query() throws Exception {
         logTestName(logger);
-        
+
         EndpointId endpointToQuery = new EndpointId("Production", "EndpointToQuery");
         documentService.create(documentManager, endpointToQuery);
-        
+
         Client client = createAuthenticatedHTTPClient();
         Builder discoveryRequest = client.resource(discoveryApiUrl)
                 .path("query")
                 .type(MediaType.TEXT_PLAIN);
-       SoaNodeInformation[] foundEndpoints = discoveryRequest.post(SoaNodeInformation[].class,
+       SoaNodeInformations foundEndpoints = discoveryRequest.post(SoaNodeInformations.class,
     		   "SELECT * FROM Endpoint WHERE " + Endpoint.XPATH_URL +" = 'EndpointToQuery'");
-       Assert.assertEquals(1, foundEndpoints.length);
-       Assert.assertEquals(endpointToQuery.getEnvironment(), foundEndpoints[0].getProperties().get(Endpoint.XPATH_ENDP_ENVIRONMENT));
-        
+       Assert.assertEquals(1, foundEndpoints.getSoaNodeInformationList().size());
+       Assert.assertEquals(endpointToQuery.getEnvironment(), foundEndpoints.getSoaNodeInformationList().get(0).getProperties().get(Endpoint.XPATH_ENDP_ENVIRONMENT));
+
     }
 }

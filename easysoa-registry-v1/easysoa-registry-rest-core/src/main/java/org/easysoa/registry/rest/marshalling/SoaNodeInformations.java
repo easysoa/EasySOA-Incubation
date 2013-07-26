@@ -39,6 +39,13 @@ public class SoaNodeInformations {
 
     /**
      *
+     */
+    public SoaNodeInformations(){
+        soaNodeInformations  = new ArrayList<SoaNodeInformation>();
+    }
+
+    /**
+     *
      * @param soaNodeInformation
      */
     public void addSoaNodeInformation(SoaNodeInformation soaNodeInformation){

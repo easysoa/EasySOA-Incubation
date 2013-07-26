@@ -30,10 +30,8 @@ import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;
-import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.JavaSource;
 import com.thoughtworks.qdox.model.Type;
-import net.oauth.OAuth.Parameter;
 
 
 /**

@@ -1,6 +1,5 @@
 package org.easysoa.discovery.code.handler;
 
-import com.thoughtworks.qdox.model.DocletTag;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +24,7 @@ import org.easysoa.discovery.code.model.JavaServiceInterfaceInformation;
 import org.easysoa.registry.rest.client.types.InformationServiceInformation;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.marshalling.SoaNodeInformations;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.OperationInformation;
 import org.easysoa.registry.types.Platform;
@@ -37,9 +37,6 @@ import com.thoughtworks.qdox.model.JavaMethod;
 import com.thoughtworks.qdox.model.JavaParameter;
 import com.thoughtworks.qdox.model.JavaSource;
 import com.thoughtworks.qdox.model.Type;
-import java.io.Serializable;
-import org.apache.poi.hdf.model.hdftypes.FormattedDiskPage;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformations;
 
 
 /**

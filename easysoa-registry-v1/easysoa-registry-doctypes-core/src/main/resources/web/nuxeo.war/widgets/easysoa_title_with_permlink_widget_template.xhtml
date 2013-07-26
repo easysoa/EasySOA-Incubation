@@ -63,7 +63,7 @@
     
     <h:panelGroup rendered="#{field.hasFacet('InformationServiceData')}"><!-- is a service, impl or endpoint --> 
         <a href="/nuxeo/site/easysoa/services/path#{field.getPropertyValue('spnode:subproject')}:#{field.getType()}:#{field.getPropertyValue('soan:name')}?subprojectId=#{field.getPropertyValue('spnode:subproject')}&amp;visibility=deep">
-            <nxu:graphicImage value="/icons/fiche.png" alt="Fiche Service" />
+            <nxu:graphicImage value="/icons/fiche.png" alt="Fiche Service" title="Fiche Service"/>
         </a>
     </h:panelGroup>
 

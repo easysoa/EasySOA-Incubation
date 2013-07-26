@@ -16,8 +16,12 @@ import org.easysoa.registry.rest.AbstractRestApiTest;
 import org.easysoa.registry.rest.integration.ServiceLevelHealth;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicator;
 import org.easysoa.registry.rest.integration.SlaOrOlaIndicators;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.DocumentModelList;
+import org.nuxeo.ecm.core.test.RepositorySettings;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.directory.Session;
@@ -30,7 +34,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 
 /**
- * Test for Endpoint state service
+ * Test for Endpoint state service, also provide SQL Directory test helpers
  * 
  * @author jguillemotte
  *
@@ -40,7 +44,8 @@ import com.sun.jersey.api.client.WebResource;
 // NB. no @RepositoryConfig(cleanup = Granularity.CLASS) because some methods change state
 // (update...() would make simple...() fail if executed first as it might be on jdk7 see #134 )
 @RepositoryConfig(cleanup = Granularity.METHOD) // truly unitary tests :
-//don't keep Nuxeo repository state between test methods
+// don't keep Nuxeo repository state between test methods
+// (but doesn't clean up SQL directories by itself)
 public class EndpointStateServiceTest extends AbstractRestApiTest {
 
     private static Logger logger = Logger.getLogger(EndpointStateServiceTest.class);
@@ -50,7 +55,10 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
     @Inject
     DirectoryService directoryService;
     
-    private static boolean initDone = false;
+    @Inject
+    RepositorySettings repositorySettings;
+
+    private boolean initDone = false;
     
     public final static String ENDPOINT_ID = "test";
     
@@ -58,87 +66,112 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
     public final static String ANOTHER_INDICATOR_NAME = "anotherTestSlaIndicator";
     
     public final static String SERVICE_LEVEL_HEALTH = "gold";
+
     
     /**
-     * Init the tests (called only once, state kept all along even with
-     * @RepositoryConfig(cleanup = Granularity.METHOD))
+     * Cleans up the directory after each test if @RepositoryConfig(cleanup = Granularity.METHOD)
+     * LATER reuse it in other directory tests
+     * @throws Exception
+     */
+    @After
+    public void cleanup() throws Exception {
+        if (this.repositorySettings.getGranularity() == Granularity.METHOD) {
+            Session session = directoryService.open(org.easysoa.registry.types.SlaOrOlaIndicator.DOCTYPE);
+           
+            try{
+                DocumentModelList entries = session.getEntries();
+                for (DocumentModel entry : entries) {
+                    session.deleteEntry(entry);
+                }
+    
+            } finally {
+                // NB. container manages transaction, so no need to commit or rollback
+                // (see doc of deprecated session.commit())
+                session.close();
+            }
+        }
+    }
+    
+    /**
+     * Init the tests before each test or only once if not @RepositoryConfig(cleanup = Granularity.METHOD)
+     * LATER reuse it in other directory tests
      * 
      * @throws Exception
      */
     @Before // NB. can't be @BeforeClass else can't access injected directoryService
-    public void init() throws Exception {
+    public void initDirectory() throws Exception {
         
-        if(!initDone){
+        if(this.repositorySettings.getGranularity() == Granularity.METHOD || !initDone){
             
             Session session = directoryService.open(org.easysoa.registry.types.SlaOrOlaIndicator.DOCTYPE);
            
             try{
-                // Create a first SlaOrOlaIndicator
-                Map<String, Object> properties = new HashMap<String, Object>();
-                properties.put("endpointId", ENDPOINT_ID);
-                properties.put("slaOrOlaName", INDICATOR_NAME);
-                properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
-                properties.put("serviceLevelViolation", false);
-                Calendar calendar = new GregorianCalendar(); // now
-                properties.put("timestamp", calendar);
-                session.createEntry(properties);
-
-                // Create a second SlaOrOlaIndicator                
-                properties = new HashMap<String, Object>();
-                properties.put("endpointId", ENDPOINT_ID);
-                properties.put("slaOrOlaName", ANOTHER_INDICATOR_NAME);
-                properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
-                properties.put("serviceLevelViolation", true);
-                calendar = new GregorianCalendar();
-                calendar.set(2012, 11, 25, 8, 24, 37);
-                properties.put("timestamp", calendar);                
-                session.createEntry(properties);
-
-                // Create a third SlaOrOlaIndicator                
-                properties = new HashMap<String, Object>();
-                properties.put("endpointId", "anotherEndpointID");
-                properties.put("slaOrOlaName", "AgainAnotherIndicatorName");
-                properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
-                properties.put("serviceLevelViolation", true);
-                calendar = new GregorianCalendar();
-                calendar.set(2012, 11, 12, 16, 7, 10);
-                properties.put("timestamp", calendar);                
-                session.createEntry(properties);            
-
-                // Create a fourth SlaOrOlaIndicator                
-                properties = new HashMap<String, Object>();
-                properties.put("endpointId", "anotherEndpointID");
-                properties.put("slaOrOlaName", "IndicatorNameTest4");
-                properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
-                properties.put("serviceLevelViolation", true);
-                calendar = new GregorianCalendar();
-                calendar.set(2012, 11, 8, 9, 46, 43);
-                properties.put("timestamp", calendar);
-                session.createEntry(properties);
+                doInitDirectory(session);
                 
-                // Create a fifth SlaOrOlaIndicator                
-                properties = new HashMap<String, Object>();
-                properties.put("endpointId", "anotherEndpointID");
-                properties.put("slaOrOlaName", "IndicatorNameTest5");
-                properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
-                properties.put("serviceLevelViolation", false);
-                calendar = new GregorianCalendar();
-                calendar.set(2012, 11, 14, 17, 27, 17);
-                properties.put("timestamp", calendar);                
-                session.createEntry(properties);  
-                
+            } finally {
                 // NB. container manages transaction, so no need to commit or rollback
                 // (see doc of deprecated session.commit())
                 session.close();
-            }
-            catch(Exception ex){
-                // NB. container manages transaction, so no need to commit or rollback
-                // (see doc of deprecated session.commit())
-                session.close();
-                ex.printStackTrace();
             }
             initDone = true;
         }
+    }
+    
+
+    private void doInitDirectory(Session session) throws Exception {
+        // Create a first SlaOrOlaIndicator
+        Map<String, Object> properties = new HashMap<String, Object>();
+        properties.put("endpointId", ENDPOINT_ID);
+        properties.put("slaOrOlaName", INDICATOR_NAME);
+        properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
+        properties.put("serviceLevelViolation", false);
+        Calendar calendar = new GregorianCalendar(); // now
+        properties.put("timestamp", calendar);
+        session.createEntry(properties);
+
+        // Create a second SlaOrOlaIndicator                
+        properties = new HashMap<String, Object>();
+        properties.put("endpointId", ENDPOINT_ID);
+        properties.put("slaOrOlaName", ANOTHER_INDICATOR_NAME);
+        properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
+        properties.put("serviceLevelViolation", true);
+        calendar = new GregorianCalendar();
+        calendar.set(2012, 11, 25, 8, 24, 37);
+        properties.put("timestamp", calendar);                
+        session.createEntry(properties);
+
+        // Create a third SlaOrOlaIndicator                
+        properties = new HashMap<String, Object>();
+        properties.put("endpointId", "anotherEndpointID");
+        properties.put("slaOrOlaName", "AgainAnotherIndicatorName");
+        properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
+        properties.put("serviceLevelViolation", true);
+        calendar = new GregorianCalendar();
+        calendar.set(2012, 11, 12, 16, 7, 10);
+        properties.put("timestamp", calendar);                
+        session.createEntry(properties);            
+
+        // Create a fourth SlaOrOlaIndicator                
+        properties = new HashMap<String, Object>();
+        properties.put("endpointId", "anotherEndpointID");
+        properties.put("slaOrOlaName", "IndicatorNameTest4");
+        properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
+        properties.put("serviceLevelViolation", true);
+        calendar = new GregorianCalendar();
+        calendar.set(2012, 11, 8, 9, 46, 43);
+        properties.put("timestamp", calendar);
+        session.createEntry(properties);
+        
+        // Create a fifth SlaOrOlaIndicator                
+        properties = new HashMap<String, Object>();
+        properties.put("endpointId", "anotherEndpointID");
+        properties.put("slaOrOlaName", "IndicatorNameTest5");
+        properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
+        properties.put("serviceLevelViolation", false);
+        calendar = new GregorianCalendar();
+        calendar.set(2012, 11, 14, 17, 27, 17);
+        properties.put("timestamp", calendar);                
+        session.createEntry(properties);
     }
 
     /**

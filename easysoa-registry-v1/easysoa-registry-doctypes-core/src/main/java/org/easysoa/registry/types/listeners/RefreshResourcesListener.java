@@ -84,6 +84,7 @@ public class RefreshResourcesListener extends EventListenerBase
             try {
                 this.handleEvent(event);
             } catch (Exception e) {
+                // TODO transaction ?!
                 logger.error("Error", e);
             }
         }
@@ -140,6 +141,10 @@ public class RefreshResourcesListener extends EventListenerBase
             // reset timestamp, which will trigger redownload when ResourceListener listens to change :
             resourceModel.setPropertyValue(ResourceDownloadInfo.XPATH_TIMESTAMP, null);
             session.saveDocument(resourceModel);
+            
+            // TODO what if fails : don't block next ones ! restore timestamp, using exception
+            // handling / transaction / rollback ? if possible per Resource ? explicit download ?
+            // (NB. according to nuxeo wiki, the whole async listener is done in its own tx)
         }
         session.save();
     }

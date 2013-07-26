@@ -16,13 +16,18 @@
     </queue>
   </extension>
   
+  
   <extension point="schedule" target="org.nuxeo.ecm.core.scheduler.SchedulerService">
     <schedule id="refreshResources_MyProject/Deploiement">
       <event>refreshResources</event>
-      <!-- refresh all Resources of said Subproject -->
-      <!-- eventCategory>spnode:subproject='/default-domain/MyProject/Realisation_v'</eventCategory -->
-      <!-- refresh all Resources of said Project's Subprojects -->
+      
+      <!-- refresh all Resources of all (live) Subprojects -->
+      <!-- eventCategory>spnode:subproject LIKE '/default-domain/%/%_v'</eventCategory -->
+      <!-- refresh all Resources of all of said Project's (live) Subprojects -->
       <eventCategory>spnode:subproject LIKE '/default-domain/MyProject/%_v'</eventCategory>
+      <!-- refresh all Resources of said (live) Subproject -->
+      <!-- eventCategory>spnode:subproject='/default-domain/MyProject/Realisation_v'</eventCategory -->
+      
       <!-- refresh every night at 3 am -->
       <cronExpression>0 3 * * * ?</cronExpression>
       <!-- refresh every 1 minutes (for testing purpose) -->

@@ -37,7 +37,7 @@ public class JsonMessageReader implements MessageBodyReader<Object> {
     public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations,
             MediaType mediaType, MultivaluedMap<String, String> httpHeaders,
             InputStream entityStream) throws IOException, WebApplicationException {
-        
+
         JsonNode jsonNode = mapper.readValue(entityStream, JsonNode.class);
         if (jsonNode.isArray()) {
             return mapper.readValue(jsonNode, SoaNodeInformation[].class);
@@ -46,6 +46,9 @@ public class JsonMessageReader implements MessageBodyReader<Object> {
             JsonNode idNode = jsonNode.get("id");
             if (idNode != null && idNode.has("type") && idNode.has("name")) {
                 return mapper.readValue(jsonNode, SoaNodeInformation.class);
+            }
+            else if (jsonNode.has("soaNodeInformations")) {
+                return mapper.readValue(jsonNode, SoaNodeInformations.class);
             }
             else if (jsonNode.has("result")) {
                 return mapper.readValue(jsonNode, OperationResult.class);
@@ -58,7 +61,7 @@ public class JsonMessageReader implements MessageBodyReader<Object> {
             }
             else if(jsonNode.has("slaOrOlaIndicators")) {
                 return mapper.readValue(jsonNode, SlaOrOlaIndicators.class);
-            }            
+            }
             else {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 JsonFactory factory = new JsonFactory(new ObjectMapper());

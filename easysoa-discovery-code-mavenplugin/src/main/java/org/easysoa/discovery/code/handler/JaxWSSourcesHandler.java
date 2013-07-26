@@ -39,6 +39,7 @@ import com.thoughtworks.qdox.model.JavaSource;
 import com.thoughtworks.qdox.model.Type;
 import java.io.Serializable;
 import org.apache.poi.hdf.model.hdftypes.FormattedDiskPage;
+import org.easysoa.registry.rest.marshalling.SoaNodeInformations;
 
 
 /**
@@ -203,10 +204,10 @@ public class JaxWSSourcesHandler extends AbstractJavaSourceHandler implements So
                 	    for (JavaServiceConsumptionInformation foundConsumption : foundConsumptions) {
                             // Try to attach test to existing non-mock impls
                             boolean foundOriginalImplementation = false;
-                            SoaNodeInformation[] matchingRegistryImpls = registryClient
+                            SoaNodeInformations matchingRegistryImpls = registryClient
                                     .findImplsByInterface(this.codeDiscovery.getSubproject(),
                                             foundConsumption.getConsumedInterface());
-                            for (SoaNodeInformation matchingRegistryImpl : matchingRegistryImpls) {
+                            for (SoaNodeInformation matchingRegistryImpl : matchingRegistryImpls.getSoaNodeInformationList()) {
                                 foundOriginalImplementation = true;
                                 discoveredNodes.add(createTestDiscovery(
                                         matchingRegistryImpl.getSoaName(),

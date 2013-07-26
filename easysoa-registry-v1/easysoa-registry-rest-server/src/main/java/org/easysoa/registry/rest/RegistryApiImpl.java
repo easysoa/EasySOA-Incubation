@@ -15,6 +15,7 @@ import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.rest.marshalling.OperationResult;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.marshalling.SoaNodeInformations;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.DocumentModelHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -27,27 +28,27 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * REST discovery API
- * 
+ *
  * Powerful but complex API allowing to add and return any SOA elements to and from Nuxeo.
  * It is complex in a business way because it requires knowing the underlaying EasySOA metamodel in Nuxeo.
  * It is complex technically because it uses specialized JSON providers (to avoid
  * root elements when returning lists, and to handle in SoaNodeInformation class any complex object types
  * as Map<String, Serializable>).
- * See JsonMessageReader and JsonMessageWriter in easysoa-registry-rest-core module 
- * 
+ * See JsonMessageReader and JsonMessageWriter in easysoa-registry-rest-core module
+ *
  * To get less complicated results and / or other clients than the Jersey one, use the SimpleRegistryService.
  * The SimpleRegistryService returns simple objects with direct access to Nuxeo objects properties
- * 
+ *
  * About implementation :
  * For now try to put info discovered in source code the simplest way.
  * Later (once indicators are computed...) soanodeinformation may need to be be detailed (add correlation direction, full model...)
- * 
+ *
  * @author mkalam-alami
- * 
+ *
  */
 @Path("easysoa/registry")
 public class RegistryApiImpl implements RegistryApi {
-    
+
     @Context HttpServletRequest request;
 
     public OperationResult post(SoaNodeInformation soaNodeInfo) throws Exception {
@@ -67,8 +68,8 @@ public class RegistryApiImpl implements RegistryApi {
                     + " and parents " + soaNodeInfo.getParentIds(), e);
         }
     }
-    
-    public SoaNodeInformation[] query(String subprojectId, String query) throws Exception {
+
+    public SoaNodeInformations query(String subprojectId, String query) throws Exception {
         try {
             CoreSession documentManager = SessionFactory.getSession(request);
         	DocumentService docService = Framework.getService(DocumentService.class);
@@ -81,20 +82,22 @@ public class RegistryApiImpl implements RegistryApi {
             } else {
                 subprojectPathCriteria = DocumentService.NXQL_AND + SubprojectServiceImpl.buildCriteriaInSubproject(subprojectId);
             }
-        	
+
             DocumentModelList modelList = docService.query(documentManager, query
                     + DocumentService.NXQL_NO_DELETED_DOCUMENTS_CRITERIA + subprojectPathCriteria, true, false);
-            SoaNodeInformation soaNodes[] = new SoaNodeInformation[modelList.size()];
+            //SoaNodeInformation soaNodes[] = new SoaNodeInformation[modelList.size()];
+            SoaNodeInformations soaNodes = new SoaNodeInformations();
             int i = 0;
             for (DocumentModel model : modelList) {
-                soaNodes[i++] = SoaNodeInformationFactory.create(documentManager, model);
+                //soaNodes[i++] = SoaNodeInformationFactory.create(documentManager, model);
+                soaNodes.addSoaNodeInformation(SoaNodeInformationFactory.create(documentManager, model));
             }
             return soaNodes;
         } catch (Exception e) {
             throw new Exception("Failed to query documents with '" + query +"'", e);
         }
     }
-    
+
     public SoaNodeInformation get(String subprojectId) throws Exception {
         CoreSession documentManager = SessionFactory.getSession(request);
 
@@ -107,13 +110,13 @@ public class RegistryApiImpl implements RegistryApi {
             subprojectPathCriteria = " " + IndicatorProvider.NXQL_PATH_STARTSWITH
                     + subprojectId.split("_v")[0] + "'";
         }*/
-        
+
         DocumentModel document = documentManager.getDocument(new PathRef(
                 DocumentModelHelper.getWorkspacesPath(documentManager, subprojectId)));
         return SoaNodeInformationFactory.create(documentManager, document); // FIXME WorkspaceRoot is not a SoaNode
     }
 
-    public SoaNodeInformation[] get(String subprojectId, String doctype) throws Exception {
+    public SoaNodeInformations get(String subprojectId, String doctype) throws Exception {
         // Initialization
         CoreSession documentManager = SessionFactory.getSession(request);
         DocumentService documentService = Framework.getService(DocumentService.class);
@@ -142,7 +145,10 @@ public class RegistryApiImpl implements RegistryApi {
         }
 
         // Write response
-        return modelsToMarshall.toArray(new SoaNodeInformation[]{});
+        //return modelsToMarshall.toArray(new SoaNodeInformation[]{});
+        SoaNodeInformations soaNodes = new SoaNodeInformations();
+        soaNodes.setSoaNodeInformationList(modelsToMarshall);
+        return soaNodes;
     }
 
     public SoaNodeInformation get(String subprojectId, String doctype, String name) throws Exception {
@@ -152,7 +158,7 @@ public class RegistryApiImpl implements RegistryApi {
 
         subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId);
         SoaNodeId soaNodeId = new SoaNodeId(subprojectId, doctype, name);
-        
+
         try {
             // Fetch SoaNode
             DocumentModel foundDocument = documentService.findSoaNode(documentManager, soaNodeId);
@@ -176,7 +182,7 @@ public class RegistryApiImpl implements RegistryApi {
 
         subprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, subprojectId);
         SoaNodeId soaNodeId = new SoaNodeId(subprojectId, doctype, name);
-        
+
         try {
             // Delete SoaNode
             documentService.delete(documentManager, soaNodeId);
@@ -186,7 +192,7 @@ public class RegistryApiImpl implements RegistryApi {
             return new OperationResult(false, "Failed to delete document " + soaNodeId, e);
         }
     }
-    
+
     public OperationResult delete(String subprojectId, String doctype, String name,
             String correlatedSubprojectId, String correlatedDoctype, String correlatedName) throws Exception {
         // Initialization
@@ -198,7 +204,7 @@ public class RegistryApiImpl implements RegistryApi {
         // TODO findCorrelated() in visibleSubprojects ??
         correlatedSubprojectId = SubprojectServiceImpl.getSubprojectIdOrCreateDefault(documentManager, correlatedSubprojectId);
         SoaNodeId correlatedSoaNodeId = new SoaNodeId(correlatedSubprojectId, correlatedDoctype, correlatedName);
-        
+
         try {
             // Delete proxy of SoaNode
             DocumentModel correlatedSoaNodeModel = documentService.findSoaNode(documentManager, correlatedSoaNodeId);

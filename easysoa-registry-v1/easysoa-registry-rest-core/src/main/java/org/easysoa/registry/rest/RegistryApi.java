@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.easysoa.registry.rest.marshalling.OperationResult;
 import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.marshalling.SoaNodeInformations;
 
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
@@ -25,9 +26,9 @@ public interface RegistryApi {
     @POST
     @Path("query")
     @Consumes(MediaType.TEXT_PLAIN)
-    SoaNodeInformation[] query(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId,
+    SoaNodeInformations query(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId,
             String query) throws Exception;
-    
+
     /** Returns the subproject root. FIXME WorkspaceRoot is not a SoaNode */
     @GET
     SoaNodeInformation get(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId) throws Exception;
@@ -35,7 +36,7 @@ public interface RegistryApi {
     /** @return all SOA nodes of the given type (TODO or facet) in the given subproject */
     @GET
     @Path("{doctype}")
-    SoaNodeInformation[] get(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId, @PathParam("doctype") String doctype) throws Exception;
+    SoaNodeInformations get(/*@DefaultValue(null) */@QueryParam("subproject") String subprojectId, @PathParam("doctype") String doctype) throws Exception;
 
     /** @return the given SOA node */
     @GET
@@ -51,7 +52,7 @@ public interface RegistryApi {
     @DELETE
     @Path("{doctype}/{name}/{correlatedDoctype}/{correlatedName}")
     OperationResult delete(@QueryParam("subproject") String subprojectId, @PathParam("doctype") String doctype, @PathParam("name") String name,
-            @QueryParam("correlatedSubprojectId") String correlatedSubprojectId, 
+            @QueryParam("correlatedSubprojectId") String correlatedSubprojectId,
             @PathParam("correlatedDoctype") String correlatedDoctype,
             @PathParam("correlatedName") String correlatedName) throws Exception;
 

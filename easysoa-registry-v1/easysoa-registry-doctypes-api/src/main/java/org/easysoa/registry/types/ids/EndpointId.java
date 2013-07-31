@@ -3,18 +3,26 @@ package org.easysoa.registry.types.ids;
 import java.io.Serializable;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlTransient;
+
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
 import org.easysoa.registry.types.Endpoint;
 
+@XmlTransient
+@XmlAccessorType(XmlAccessType.NONE)
 @JsonAutoDetect(fieldVisibility=Visibility.ANY, getterVisibility=Visibility.NONE, setterVisibility=Visibility.NONE)
 public class EndpointId extends SoaNodeId {
 
 	@JsonIgnore
+	@XmlTransient
 	private final String environment;
 
 	@JsonIgnore
+    @XmlTransient
 	private final String url;
 
     /**

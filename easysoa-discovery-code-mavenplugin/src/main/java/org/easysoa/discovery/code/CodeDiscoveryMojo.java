@@ -18,11 +18,11 @@ import org.apache.maven.project.MavenProject;
 import org.easysoa.discovery.code.handler.JaxRSSourcesHandler;
 import org.easysoa.discovery.code.handler.JaxWSSourcesHandler;
 import org.easysoa.discovery.code.handler.SourcesHandler;
+import org.easysoa.registry.rest.OperationResult;
 import org.easysoa.registry.rest.RegistryApi;
+import org.easysoa.registry.rest.SoaNodeInformation;
 import org.easysoa.registry.rest.client.ClientBuilder;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
-import org.easysoa.registry.rest.marshalling.OperationResult;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.Deliverable;
 
 import com.sun.jersey.api.client.ClientHandlerException;

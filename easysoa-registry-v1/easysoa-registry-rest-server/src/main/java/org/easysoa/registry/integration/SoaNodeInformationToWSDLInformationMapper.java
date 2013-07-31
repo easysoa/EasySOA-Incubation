@@ -5,6 +5,7 @@ package org.easysoa.registry.integration;
 
 import java.util.List;
 import java.util.Map;
+
 import org.easysoa.registry.matching.MatchingHelper;
 import org.easysoa.registry.rest.integration.EndpointInformation;
 import org.easysoa.registry.rest.integration.ServiceInformation;

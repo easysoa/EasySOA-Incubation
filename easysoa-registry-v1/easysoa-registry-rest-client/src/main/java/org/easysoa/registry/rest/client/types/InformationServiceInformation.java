@@ -2,7 +2,7 @@ package org.easysoa.registry.rest.client.types;
 
 import java.util.List;
 
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.SoaNodeInformation;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.OperationInformation;
 import org.easysoa.registry.types.SoaModelSerializationUtil;

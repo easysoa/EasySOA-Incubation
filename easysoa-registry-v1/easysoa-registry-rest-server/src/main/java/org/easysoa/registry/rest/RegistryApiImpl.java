@@ -7,15 +7,15 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 
 import org.easysoa.registry.DiscoveryService;
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.SubprojectServiceImpl;
-import org.easysoa.registry.rest.marshalling.OperationResult;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformations;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.DocumentModelHelper;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -27,26 +27,22 @@ import org.nuxeo.ecm.webengine.jaxrs.session.SessionFactory;
 import org.nuxeo.runtime.api.Framework;
 
 /**
- * REST discovery API
- *
- * Powerful but complex API allowing to add and return any SOA elements to and from Nuxeo.
- * It is complex in a business way because it requires knowing the underlaying EasySOA metamodel in Nuxeo.
- * It is complex technically because it uses specialized JSON providers (to avoid
- * root elements when returning lists, and to handle in SoaNodeInformation class any complex object types
- * as Map<String, Serializable>).
- * See JsonMessageReader and JsonMessageWriter in easysoa-registry-rest-core module
- *
- * To get less complicated results and / or other clients than the Jersey one, use the SimpleRegistryService.
- * The SimpleRegistryService returns simple objects with direct access to Nuxeo objects properties
+ * REST discovery API impl.
  *
  * About implementation :
  * For now try to put info discovered in source code the simplest way.
- * Later (once indicators are computed...) soanodeinformation may need to be be detailed (add correlation direction, full model...)
+ * Later (once indicators are computed...) soanodeinformation may need to be be detailed
+ * (add correlation direction, full model...)
  *
  * @author mkalam-alami
  *
  */
-@Path("easysoa/registry")
+@Path("easysoa/registry") // even if already in itf else won't be deployed
+// (because at root there's already the default Nuxeo sites web UI)
+// because Jersey doesn't (mostly) inherit @Path, see
+// http://jersey.576304.n2.nabble.com/Inheritance-of-Annotations-and-Jersey-td3225397.html
+@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+@Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
 public class RegistryApiImpl implements RegistryApi {
 
     @Context HttpServletRequest request;
@@ -113,7 +109,7 @@ public class RegistryApiImpl implements RegistryApi {
 
         DocumentModel document = documentManager.getDocument(new PathRef(
                 DocumentModelHelper.getWorkspacesPath(documentManager, subprojectId)));
-        return SoaNodeInformationFactory.create(documentManager, document); // FIXME WorkspaceRoot is not a SoaNode
+        return SoaNodeInformationFactory.create(documentManager, document);
     }
 
     public SoaNodeInformations get(String subprojectId, String doctype) throws Exception {

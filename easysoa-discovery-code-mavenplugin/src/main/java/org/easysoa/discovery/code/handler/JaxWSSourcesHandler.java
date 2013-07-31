@@ -21,10 +21,10 @@ import org.easysoa.discovery.code.handler.consumption.ImportedServicesConsumptio
 import org.easysoa.discovery.code.model.JavaServiceConsumptionInformation;
 import org.easysoa.discovery.code.model.JavaServiceImplementationInformation;
 import org.easysoa.discovery.code.model.JavaServiceInterfaceInformation;
+import org.easysoa.registry.rest.SoaNodeInformation;
+import org.easysoa.registry.rest.SoaNodeInformations;
 import org.easysoa.registry.rest.client.types.InformationServiceInformation;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformations;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.OperationInformation;
 import org.easysoa.registry.types.Platform;

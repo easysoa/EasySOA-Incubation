@@ -4,7 +4,15 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 
+import org.codehaus.jackson.annotate.JsonAutoDetect;
+import org.codehaus.jackson.annotate.JsonAutoDetect.Visibility;
+
+
+@XmlAccessorType(XmlAccessType.FIELD)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY, getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class SoaNodeId {
 
     /** may be null, then assumed as default subproject */
@@ -66,6 +74,11 @@ public class SoaNodeId {
 		this.type = type;
 	}
 
+    /**
+     * Default impl, returns a new empty map (no default property values
+     * for generic SOA nodes)
+     * @return
+     */
 	public Map<String, Serializable> getDefaultPropertyValues() {
 		return new HashMap<String, Serializable>();
 	}

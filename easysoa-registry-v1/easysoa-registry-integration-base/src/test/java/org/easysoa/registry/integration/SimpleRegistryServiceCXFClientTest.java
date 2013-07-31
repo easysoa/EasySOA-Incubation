@@ -26,7 +26,7 @@ public class SimpleRegistryServiceCXFClientTest {
     public static void setUp() throws Exception {
         // Load the CXF Config file
         System.out.println("Launching SimpleRegistryServiceCXFClientTest");
-        context = new FileSystemXmlApplicationContext("src/test/resources/cxf.xml");
+        context = new FileSystemXmlApplicationContext("src/test/resources/cxf-test.xml");
     }
     
     /**

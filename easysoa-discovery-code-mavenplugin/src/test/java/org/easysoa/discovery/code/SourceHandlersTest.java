@@ -15,9 +15,9 @@ import org.easysoa.discovery.code.handler.JaxRSSourcesHandler;
 import org.easysoa.discovery.code.handler.JaxWSSourcesHandler;
 import org.easysoa.discovery.code.handler.SourcesHandler;
 import org.easysoa.registry.rest.RegistryApi;
+import org.easysoa.registry.rest.SoaNodeInformation;
 import org.easysoa.registry.rest.client.ClientBuilder;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.test.AbstractWebEngineTest;
 import org.easysoa.registry.test.EasySOAWebEngineFeature;
 import org.junit.BeforeClass;
@@ -63,7 +63,7 @@ public class SourceHandlersTest extends AbstractWebEngineTest {
         
         // Init registry client
         ClientBuilder clientBuilder = new ClientBuilder();
-        clientBuilder.setNuxeoSitesUrl(EasySOAWebEngineFeature.NUXEO_URL);
+        clientBuilder.setNuxeoSitesUrl(EasySOAWebEngineFeature.NUXEO_SITES_URL);
         RegistryApi registryApi = clientBuilder.constructRegistryApi();
         
         // Set sources to explore

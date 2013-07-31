@@ -1,5 +1,5 @@
 /**
- * EasySOA Proxy
+ * EasySOA Registry
  * Copyright 2011-2013 Open Wide
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
  * Contact : easysoa-dev@googlegroups.com
  */
 
-package org.easysoa.registry.rest.marshalling;
+package org.easysoa.registry.rest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +27,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 /**
+ * Models a list of SOA node informations.
+ * 
+ * Can be serialized both to JSON using Jackson and XML using JAXB.
  *
  * @author jguillemotte
  */
-@XmlRootElement
+@XmlRootElement(name = "soaNodeInformations")
 @JsonAutoDetect(fieldVisibility=JsonAutoDetect.Visibility.ANY, getterVisibility=JsonAutoDetect.Visibility.NONE, setterVisibility=JsonAutoDetect.Visibility.NONE)
 public class SoaNodeInformations {
 

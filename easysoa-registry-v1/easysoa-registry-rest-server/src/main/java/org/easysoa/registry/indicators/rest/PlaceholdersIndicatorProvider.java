@@ -21,6 +21,7 @@
 package org.easysoa.registry.indicators.rest;
 
 import java.util.List;
+
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.types.SoaNode;
 

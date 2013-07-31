@@ -1,6 +1,8 @@
 ﻿<!DOCTYPE html>
 <html>
-    <@includeResources/>
+
+    <#include "/views/EasySOA/docMacros.ftl">
+    
 <head>
     <title>EasySOA Cartographie - Fiche Service</title>
     <@includeResources/>
@@ -12,8 +14,6 @@
 </head>
 
 <body>
-
-    <#include "/views/EasySOA/docMacros.ftl">
 
     <div id="header">
       <div id="headerContents">

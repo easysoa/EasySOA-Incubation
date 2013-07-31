@@ -101,11 +101,14 @@
     
     <!-- other nuxeo-compatible registry deps versions : -->
     <guava.version>13.0.1</guava.version>
+    <!-- junit.version>4.8.1</junit.version -->
+    
     <!-- other registry deps versions : -->
     <jung.version>2.0.1</jung.version>
     <collections.generic.version>4.01</collections.generic.version>
     <easywsdl.version>2.3</easywsdl.version>
     <easycommons.version>1.1</easycommons.version>
+    <jackson.version>1.8.1</jackson.version>
   </properties>
 
   <!-- ======= -->
@@ -524,6 +527,13 @@
         <groupId>net.sourceforge.htmlcleaner</groupId>
         <artifactId>htmlcleaner</artifactId>
         <version>2.2</version>
+      </dependency>
+      
+      <!-- REST -->
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-jaxrs</artifactId><!-- brings JacksonJsonProvider, to configure in clients -->
+        <version>${jackson.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

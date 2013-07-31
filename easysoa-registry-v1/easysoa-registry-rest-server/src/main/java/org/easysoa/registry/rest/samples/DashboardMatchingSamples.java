@@ -8,9 +8,9 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
-import org.easysoa.registry.rest.marshalling.JsonMessageReader;
-import org.easysoa.registry.rest.marshalling.JsonMessageWriter;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.SoaNodeInformation;
+import org.easysoa.registry.rest.jackson.JsonMessageReader;
+import org.easysoa.registry.rest.jackson.JsonMessageWriter;
 import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Endpoint;
 import org.easysoa.registry.types.InformationService;

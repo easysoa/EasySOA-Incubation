@@ -22,6 +22,7 @@ package org.easysoa.registry.indicators.rest;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import org.nuxeo.ecm.core.api.CoreSession;
 
 /**

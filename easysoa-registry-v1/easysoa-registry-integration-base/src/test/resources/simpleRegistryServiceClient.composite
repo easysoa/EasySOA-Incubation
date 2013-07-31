@@ -2,26 +2,41 @@
 
 <composite name="simpleRegistryServiceClient"
   xmlns="http://www.osoa.org/xmlns/sca/1.0"
-  xmlns:frascati="http://frascati.ow2.org/xmlns/sca/1.1">
+  xmlns:frascati="http://frascati.ow2.org/xmlns/sca/1.1"
+  xmlns:http="org/ow2/frascati/intent/cxf/http">
 
-  <!-- Test client REST service -->
-  <service name="simpleRegistryServiceTestClient" promote="simpleRegistryService/testService" />
+  <!-- Test client REST services -->
+  <service name="simpleRegistryServiceTestClientService" promote="simpleRegistryServiceTestClient/testService" />
+  <service name="registryApiTestClientService" promote="registryApiTestClient/testService" />
 
   <!-- Test client component REST binding -->
-  <component name="simpleRegistryService">
+  <component name="simpleRegistryServiceTestClient">
   	<implementation.java class="org.easysoa.registry.integration.TestClient"/>
 	<service name="testService">
       <interface.java interface="org.easysoa.registry.integration.TestClientItf"/>
     </service>
 	<reference name="service">
-	  <!-- Change the port to 8080 to use this test with real nuxeo server-->
-      <frascati:binding.rest uri="http://localhost:8180/nuxeo/site/" requires="nuxeoAuthorization"/>
+	   <!-- Change the port to 8080 to use this test with real nuxeo server-->
+      <frascati:binding.rest uri="http://localhost:8180/srs/nuxeo/site" requires="nuxeoAuthorization"/>
+    </reference>
+  </component>
+  
+
+  <!-- Test client component REST binding -->
+  <component name="registryApiTestClient">
+   <implementation.java class="org.easysoa.registry.integration.TestRegistryApiClientImpl"/>
+   <service name="testService">
+      <interface.java interface="org.easysoa.registry.rest.RegistryApi"/>
+    </service>
+   <reference name="registryApi">
+      <!-- Change the port to 8080 to use this test with real nuxeo server-->
+      <frascati:binding.rest uri="http://localhost:8180/r/nuxeo/site" requires="nuxeoAuthorization EasySOARegistry"/>
     </reference>
   </component>
 
-  <!-- Nuxeo authentification -->
+  <!-- Nuxeo authentification (TODO not required) -->
   <component name="nuxeoAuthorization">
-    <implementation.composite name="BasicAuthorizationPolicyIntent"/>
+    <implementation.composite name="http:BasicAuthorizationPolicyIntent"/>
     <property name="UserName">Administrator</property>
     <property name="Password">Administrator</property>
   </component>
@@ -31,7 +46,17 @@
     <implementation.java class="org.easysoa.registry.integration.SimpleRegistryServiceServerImpl" />
     <service name="simpleRegistryServiceMockServerService">
       <interface.java interface="org.easysoa.registry.rest.integration.SimpleRegistryService"/>
-      <frascati:binding.rest uri="http://localhost:8180/nuxeo/site/"/>
+      <frascati:binding.rest uri="http://localhost:8180/srs/nuxeo/site" requires="PrettyLogging"/>
+    </service>
+  </component>
+
+  <!-- RegistryJsonApi mock server -->
+  <!-- WARNING base server URIs must differ, else only one of both are available (even if their @path differ) !! -->
+  <component name="registryApiMockServer">
+    <implementation.java class="org.easysoa.registry.integration.RegistryApiServerImpl" />
+    <service name="registryApiMockServerService">
+      <interface.java interface="org.easysoa.registry.rest.RegistryJsonApi"/>
+      <frascati:binding.rest uri="http://localhost:8180/r/nuxeo/site" requires="EasySOARegistry PrettyLogging"/><!-- org/ow2/frascati/intent/cxf/jaxrs/provider/jackson/Jackson -->
     </service>
   </component>
 

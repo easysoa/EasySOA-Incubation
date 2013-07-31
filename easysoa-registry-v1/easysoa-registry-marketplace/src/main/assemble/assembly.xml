@@ -81,15 +81,23 @@
     <!-- Whereas the marketplace build using an EAR is automatically downloading the
     required libraries, that simpler solution requires you explicitly list them -->
     <copy todir="${outdir}/marketplace/install/lib">
+    	<!-- graph deps (for SOA metamodel) -->
       <artifact:resolveFile key="net.sf.jung:jung-api::jar" />
       <artifact:resolveFile key="net.sf.jung:jung-graph-impl::jar" />
       <artifact:resolveFile key="net.sf.jung:jung-algorithms::jar" />
       <artifact:resolveFile key="net.sourceforge.collections:collections-generic::jar" />
+    	
+    	<!-- EasyWSDL and deps (for WSDL support) -->
       <artifact:resolveFile key="org.ow2.easywsdl:easywsdl-wsdl::jar" />
       <artifact:resolveFile key="org.ow2.easywsdl:easywsdl-schema::jar" />
       <artifact:resolveFile key="com.ebmwebsourcing.easycommons:easycommons.uri::jar" />
       <artifact:resolveFile key="org.jvnet.jaxb2_commons:runtime:0.4.1.5:jar" />
+    	
+    	<!-- Jackson JAXRS (for JSON/JAXRS API) -->
+      <artifact:resolveFile key="org.codehaus.jackson:jackson-jaxrs:1.8.1:jar" />
+    	
       <artifact:resolveFile key="com.sun.jersey:jersey-client:1.11:jar" />
+    	
       <artifact:resolveFile key="net.sourceforge.htmlcleaner:htmlcleaner:2.2:jar" />
 
       <!-- Diff third-party libs -->

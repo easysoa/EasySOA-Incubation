@@ -1,0 +1,31 @@
+10
+
+dir
+6280
+svn+ssh://dutoo@svn.forge.objectweb.org/svnroot/frascati/trunk/frascati/intents/apache-cxf/jackson/src/main/java/org/ow2/frascati/intent/cxf
+svn+ssh://dutoo@svn.forge.objectweb.org/svnroot/frascati
+
+
+
+2013-05-07T12:54:05.944097Z
+6068
+merle
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+49e94ffb-27ee-44a7-83f7-100ad7c3700c
+
+jaxrs
+dir
+

@@ -2,8 +2,8 @@ package org.easysoa.discovery.code.model;
 
 import javax.xml.namespace.QName;
 
+import org.easysoa.registry.rest.SoaNodeInformation;
 import org.easysoa.registry.rest.client.types.ServiceImplementationInformation;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.ids.ServiceNameType;
 import org.easysoa.registry.types.ids.ServiceImplementationName;

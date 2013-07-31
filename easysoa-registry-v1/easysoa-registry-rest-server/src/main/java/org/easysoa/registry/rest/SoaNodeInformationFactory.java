@@ -10,7 +10,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.easysoa.registry.DocumentService;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 import org.easysoa.registry.types.SoaNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.nuxeo.ecm.core.api.CoreSession;
@@ -58,9 +57,6 @@ public class SoaNodeInformationFactory {
             CoreSession documentManager, DocumentModel model) throws Exception {
         DocumentService documentService = Framework.getService(DocumentService.class);
         
-        // ID
-        SoaNodeId id = documentService.createSoaNodeId(model);
-        
         // Properties
         HashMap<String, Serializable> properties = new HashMap<String, Serializable>();
         Map<String, Object> schemaProperties;
@@ -78,6 +74,16 @@ public class SoaNodeInformationFactory {
             }
         }
         properties.put(NXQL.ECM_UUID, model.getId());
+
+        // allowing for non SOA nodes ex. Subproject :
+        if (!documentService.isSoaNode(documentManager, model.getType())) {
+            return new SoaNodeInformation(null, properties, null);
+        }
+        
+        // completing SOA node handling :
+        
+        // ID
+        SoaNodeId id = documentService.createSoaNodeId(model);
         
         // Parent SoaNodes
         List<SoaNodeId> parentDocuments = new LinkedList<SoaNodeId>();

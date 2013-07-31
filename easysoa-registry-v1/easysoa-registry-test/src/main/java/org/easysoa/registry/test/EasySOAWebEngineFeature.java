@@ -9,6 +9,6 @@ public class EasySOAWebEngineFeature extends WebEngineFeature {
 	
     public static final int PORT = 8082;
 
-    public static final String NUXEO_URL = "http://localhost:" + PORT + "/";
+    public static final String NUXEO_SITES_URL = "http://localhost:" + PORT + "/";
 
 }

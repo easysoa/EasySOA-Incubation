@@ -32,11 +32,14 @@
         <artifactId>easysoa-registry-doctypes-core</artifactId>
         <scope>test</scope>
     </dependency>
-    <dependency>
+    <!-- NB. can't depend on -server module else circular dependency.
+    But in any way, the point of the REST client module is to provide
+    the easiest path to try using a user's OWN Registry, not a test one. -->
+    <!-- dependency>
       <groupId>org.easysoa.registry</groupId>
       <artifactId>easysoa-registry-rest-server</artifactId>
       <scope>test</scope>
-    </dependency>
+    </dependency -->
   
     <!-- Jersey Client -->
     <dependency>

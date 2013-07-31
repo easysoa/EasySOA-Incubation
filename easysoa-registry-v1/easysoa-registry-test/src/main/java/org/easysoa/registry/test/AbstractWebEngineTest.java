@@ -72,7 +72,7 @@ public abstract class AbstractWebEngineTest {
     @Before
     public void testAvailability() {
         try {
-            URLConnection connection = new URL(EasySOAWebEngineFeature.NUXEO_URL).openConnection();
+            URLConnection connection = new URL(EasySOAWebEngineFeature.NUXEO_SITES_URL).openConnection();
             connection.connect();
         }
         catch (Exception e) {
@@ -83,11 +83,11 @@ public abstract class AbstractWebEngineTest {
     }
     
     public String getURL(Class<?> c) {
-        return EasySOAWebEngineFeature.NUXEO_URL + PathExtractor.getPath(c);
+        return EasySOAWebEngineFeature.NUXEO_SITES_URL + PathExtractor.getPath(c);
     }
 
     public String getURL(Class<?> c, String methodName, Class<?>... parameterTypes) throws SecurityException, NoSuchMethodException {
-        return EasySOAWebEngineFeature.NUXEO_URL + PathExtractor.getPath(c, methodName, parameterTypes);
+        return EasySOAWebEngineFeature.NUXEO_SITES_URL + PathExtractor.getPath(c, methodName, parameterTypes);
     }
     
     public void logTestName(Logger logger) {

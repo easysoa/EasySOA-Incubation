@@ -3,7 +3,7 @@ package org.easysoa.registry.rest.client.types;
 import java.io.Serializable;
 import java.util.List;
 
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.easysoa.registry.rest.SoaNodeInformation;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.ListUtils;

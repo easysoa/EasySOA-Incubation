@@ -25,8 +25,8 @@ import org.easysoa.discovery.code.handler.consumption.AnnotatedServicesConsumpti
 import org.easysoa.discovery.code.handler.consumption.ImportedServicesConsumptionFinder;
 import org.easysoa.discovery.code.handler.consumption.ServiceConsumptionFinder;
 import org.easysoa.discovery.code.model.JavaServiceInterfaceInformation;
+import org.easysoa.registry.rest.SoaNodeInformation;
 import org.easysoa.registry.rest.client.types.java.MavenDeliverableInformation;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
 
 import com.thoughtworks.qdox.model.JavaClass;
 import com.thoughtworks.qdox.model.JavaMethod;

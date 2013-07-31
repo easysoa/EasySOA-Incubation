@@ -45,8 +45,6 @@ Running :
  * B. properties, in [key]=[value] syntax
  * * username (default : Administrator)
  * * password (default : Administrator)
- * * username (default : Administrator)
- * * password (default : Administrator)
  * * apvHost (default : localhost)
  * * pivotalHost (default : localhost)
  * * registryHost (default : localhost)

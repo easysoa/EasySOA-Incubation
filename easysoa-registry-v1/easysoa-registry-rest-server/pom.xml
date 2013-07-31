@@ -20,7 +20,11 @@
     </dependency>
     <dependency>
       <groupId>org.easysoa.registry</groupId>
-      <artifactId>easysoa-registry-rest-core</artifactId>
+      <artifactId>easysoa-registry-rest-core</artifactId><!-- brought by -client -->
+    </dependency>
+    <dependency>
+      <groupId>org.easysoa.registry</groupId>
+      <artifactId>easysoa-registry-rest-client</artifactId><!-- for easier tests... -->
     </dependency>
     <dependency>
       <groupId>org.easysoa.registry</groupId>

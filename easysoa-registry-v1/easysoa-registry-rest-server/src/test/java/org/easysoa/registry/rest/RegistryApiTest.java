@@ -1,15 +1,19 @@
 package org.easysoa.registry.rest;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 
 import org.apache.log4j.Logger;
-import org.easysoa.registry.rest.marshalling.OperationResult;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformation;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.ObjectWriter;
+import org.easysoa.registry.rest.client.ClientBuilder;
 import org.easysoa.registry.types.Component;
 import org.easysoa.registry.types.Deliverable;
 import org.easysoa.registry.types.Endpoint;
@@ -17,18 +21,15 @@ import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ids.EndpointId;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.nuxeo.ecm.core.test.annotations.Granularity;
-import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.WebResource.Builder;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformations;
 
 @Deploy("org.easysoa.registry.rest.server")
-@RepositoryConfig(cleanup = Granularity.CLASS)
 public class RegistryApiTest extends AbstractRestApiTest {
 
     private static Logger logger = Logger.getLogger(RegistryApiTest.class);
@@ -37,7 +38,8 @@ public class RegistryApiTest extends AbstractRestApiTest {
 
     private SoaNodeId deliverableId = new SoaNodeId(Deliverable.DOCTYPE, "org.easysoa:deliverable");
 
-    @Test
+    
+    @Before
     public void initDefaultSubprojectId() throws Exception {
         logTestName(logger);
         defaultSubprojectId = null;
@@ -52,11 +54,6 @@ public class RegistryApiTest extends AbstractRestApiTest {
 
         defaultSubprojectId = soaNodeInformation.getSubprojectId();
         Assert.assertNotNull(defaultSubprojectId, "defaultSubprojectId should not be null");
-    }
-
-    @Test
-    public void getOne() throws Exception {
-        logTestName(logger);
 
         // Fill repository for all tests
         for (int i = 0; i < SERVICE_COUNT; i++) {
@@ -64,6 +61,11 @@ public class RegistryApiTest extends AbstractRestApiTest {
                     "MyService" + i), null, null);
         }
         documentManager.save();
+    }
+
+    @Test
+    public void getOne() throws Exception {
+        logTestName(logger);
 
         // Fetch one service
         Client client = createAuthenticatedHTTPClient();
@@ -80,6 +82,44 @@ public class RegistryApiTest extends AbstractRestApiTest {
                 && !properties.isEmpty());
         Assert.assertEquals("Valid properties must be returned", "MyService0",
                 properties.get("dc:title"));
+    }
+
+    @Test
+    public void testJacksonApiOnActualModel() throws Exception {
+        logTestName(logger);
+
+        // Fetch one service
+        Client client = createAuthenticatedHTTPClient();
+        WebResource discoveryRequest = client.resource(discoveryApiUrl)
+                .path(InformationService.DOCTYPE).path("MyService0");
+        SoaNodeInformation soaNodeInformation = discoveryRequest.get(SoaNodeInformation.class);
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter prettyPrintWriter = mapper.defaultPrettyPrintingWriter();
+        
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        prettyPrintWriter.writeValue(bos, soaNodeInformation);
+        String serialized = bos.toString();
+        logger.info(serialized);
+        Assert.assertTrue(serialized != null && !serialized.trim().isEmpty());
+    }
+
+    @Test
+    public void testJaxbApiOnActualModel() throws Exception {
+        logTestName(logger);
+
+        // Fetch one service
+        RegistryApi xmlRegistryApi = clientBuilder.constructRegistryXmlApi();
+        SoaNodeInformation soaNodeInformation = xmlRegistryApi.get(null, InformationService.DOCTYPE, "MyService0");
+
+        JAXBContext jc = JAXBContext.newInstance(SoaNodeInformation.class);
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        marshaller.marshal(soaNodeInformation, bos);
+        String marshalled = bos.toString();
+        logger.info(marshalled);
+        Assert.assertTrue(marshalled != null && !marshalled.trim().isEmpty());
     }
 
     @Test

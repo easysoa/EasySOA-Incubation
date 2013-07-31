@@ -1,7 +1,7 @@
 package org.easysoa.discovery.code;
 
 import org.easysoa.registry.rest.RegistryApi;
-import org.easysoa.registry.rest.marshalling.SoaNodeInformations;
+import org.easysoa.registry.rest.SoaNodeInformations;
 import org.easysoa.registry.types.java.JavaServiceImplementation;
 
 public class CodeDiscoveryRegistryClient {

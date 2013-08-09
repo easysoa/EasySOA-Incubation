@@ -27,7 +27,7 @@ import com.google.inject.Inject;
 /**
  * Full unit tests for the REST client library.
  * Can't be done in -rest module because uses the whole, actual EasySOA / Registry Nuxeo server.
- * 
+ *
  * @author mdutoo
  *
  */
@@ -114,6 +114,7 @@ public class RestClientWithOwnServerTest extends AbstractWebEngineTest {
         blob.setFilename("InternationalPostalValidation_nourl.wsdl");
         docModel.setPropertyValue("file:content", blob);
         docModel = documentManager.saveDocument(docModel);
+        Assert.assertNotNull(docModel);
         // client side solution :
         /*
         Map<String, Serializable> myServiceProperties = new HashMap<String, Serializable>();

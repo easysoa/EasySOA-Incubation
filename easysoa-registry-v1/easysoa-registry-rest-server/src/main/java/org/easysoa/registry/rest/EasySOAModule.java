@@ -16,8 +16,8 @@ import org.easysoa.registry.indicators.rest.IndicatorsController;
 import org.easysoa.registry.integration.EndpointStateServiceImpl;
 import org.easysoa.registry.integration.SimpleRegistryServiceImpl;
 import org.easysoa.registry.monitoring.rest.MonitoringController;
-import org.easysoa.registry.rest.jackson.JsonMessageReader;
-import org.easysoa.registry.rest.jackson.JsonMessageWriter;
+//import org.easysoa.registry.rest.jackson.JsonMessageReader;
+//import org.easysoa.registry.rest.jackson.JsonMessageWriter;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
 
 /**
@@ -34,11 +34,11 @@ public class EasySOAModule extends WebEngineModule {
     @Override
     public Set<Object> getSingletons() {
         Set<Object> singletons = new HashSet<Object>();
-        
+
         // custom JAXRS provider :
         //singletons.add(new JsonMessageReader());
         //singletons.add(new JsonMessageWriter());
-        
+
         // Jersey's Jackson provider ;
         //singletons.add(new JacksonProviderProxy()); // however its configuration would be Jersey's
         // see http://www.mkyong.com/webservices/jax-rs/json-example-with-jersey-jackson/
@@ -48,10 +48,10 @@ public class EasySOAModule extends WebEngineModule {
         //ObjectMapper mapper = new ObjectMapper(); // allows to configure Jackson
         JacksonJsonProvider jacksonJsonProvider = new JacksonJsonProvider(/*mapper*/); // from jackson-jaxrs
         singletons.add(jacksonJsonProvider);
-        
+
         // JAXB provider :
         // using Jersey's default one (Jettison I guess ? or Jackson also ??)
-        
+
         return singletons;
     }
 

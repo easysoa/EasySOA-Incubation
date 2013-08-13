@@ -156,9 +156,10 @@
                         <!--<p>Statistiques et indicateurs à l'exécution, (?) d'appropiation du modèle SOA par les utilisateurs de EasySOA...</p>-->
                         <p>
                             <div class="btn-group">
-                                <a class="btn" href="${Root.path}/governance/prodPhaseMonitoring?subprojectId=${subprojectId}&visibility=${visibility}">Scaffolder proxy</a>
-                                <a class="btn" href="${Root.path}/governance/governanceIndicators?subprojectId=${subprojectId}&visibility=${visibility}">Proxy run manager</a>
+                                <a class="btn" href="">Scaffolder proxy</a>
+                                <a class="btn" href="">Proxy run manager</a>
                                 <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:7080/easySoa/index.html">FraSCAti Studio</a>
+                                <a class="btn" href="${Root.path}/tools/apis?subprojectId=${subprojectId}&visibility=${visibility}">Easysoa API REST</a>
                             </div>
 
                             <!-- TODO : add links -->
@@ -171,7 +172,7 @@
                             </ul>-->
                         </p>
                         <br/>
-                        <a class="btn btn-primary" href="">Plus...</a><!-- TODO -->
+                        <a class="btn btn-primary" href="${Root.path}/tools?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a><!-- TODO -->
                         <br/>
                         <h3>Exemples</h3>
                         <p>

@@ -16,6 +16,7 @@ import org.easysoa.registry.indicators.rest.IndicatorsController;
 import org.easysoa.registry.integration.EndpointStateServiceImpl;
 import org.easysoa.registry.integration.SimpleRegistryServiceImpl;
 import org.easysoa.registry.monitoring.rest.MonitoringController;
+import org.easysoa.registry.tools.rest.ToolsController;
 //import org.easysoa.registry.rest.jackson.JsonMessageReader;
 //import org.easysoa.registry.rest.jackson.JsonMessageWriter;
 import org.nuxeo.ecm.webengine.app.WebEngineModule;
@@ -70,7 +71,8 @@ public class EasySOAModule extends WebEngineModule {
             IndexController.class,
             GovernanceController.class,
             CartographyController.class,
-            SoapUIConfRest.class
+            SoapUIConfRest.class,
+            ToolsController.class
         };
     }
 

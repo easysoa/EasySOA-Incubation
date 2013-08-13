@@ -143,8 +143,6 @@
                 </li>
             </ul>
 
-
-
             <#if Root.isDevModeSet()>
 
             <!-- 2 categories with a separator -->
@@ -188,8 +186,6 @@
             </#if>
 
         </div>
-
-        <a class="btn btn-primary" href="${Root.path}/indicators/?subprojectId=${subprojectId}&visibility=${visibility}">Old indicators page (to remove when finished)</a>
 
     </body>
 

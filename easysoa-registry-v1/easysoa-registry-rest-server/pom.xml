@@ -54,5 +54,65 @@
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-client</artifactId>
     </dependency>
+
+    <!-- CXF Client test -->
+    <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+        <version>2.7.6</version>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- FraSCAti client test -->
+    <!-- Unable to have FraSCAti work in nuxeo -->
+  	<!--<dependency>
+ 	  	<groupId>org.ow2.frascati</groupId>
+      	<artifactId>frascati-binding-factory</artifactId>
+      	<version>1.6-SNAPSHOT</version>
+	  	<scope>test</scope>
+    </dependency>
+    <dependency>
+      	<groupId>org.ow2.frascati</groupId>
+      	<artifactId>frascati-runtime-factory</artifactId>
+      	<version>1.6-SNAPSHOT</version>
+	  	<scope>test</scope>
+	</dependency>
+    <dependency>
+      	<groupId>org.ow2.frascati</groupId>
+      	<artifactId>frascati-binding-ws</artifactId>
+      	<version>1.6-SNAPSHOT</version>
+	  	<scope>test</scope>
+    </dependency>
+    <dependency>
+      	<groupId>org.ow2.frascati</groupId>
+      	<artifactId>frascati-binding-http</artifactId>
+	  	<version>1.6-SNAPSHOT</version>
+		<scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.ow2.frascati</groupId>
+    	<artifactId>frascati-binding-rest</artifactId>
+    	<version>1.6-SNAPSHOT</version>
+		<scope>test</scope>
+    </dependency>-->
+
+    <!-- FraSCAti intents -->
+	<!--<dependency>
+		<groupId>org.ow2.frascati.intent</groupId>
+		<artifactId>frascati-intent-apache-cxf</artifactId>
+		<version>1.6-SNAPSHOT</version>
+	</dependency>
+    <dependency>
+      <groupId>org.ow2.frascati.intent.apache-cxf</groupId>
+      <artifactId>frascati-intent-apache-cxf-http</artifactId>
+      <version>1.6-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.frascati.intent</groupId>
+      <artifactId>frascati-authentication</artifactId>
+      <version>1.6-SNAPSHOT</version>
+    </dependency>-->
+
   </dependencies>
+
 </project>

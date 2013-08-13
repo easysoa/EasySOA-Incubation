@@ -149,34 +149,37 @@
             <hr style="color:black; background-color:black; height:3px;" />
 
             <ul class="thumbnails">
-                <li class="span6">
+                <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>A classer</h3>
-                        <p>Statistiques et indicateurs à l'exécution, (?) d'appropiation du modèle SOA par les utilisateurs de EasySOA...</p>
-
+                        <h3>Outils</h3>
+                        <!--<p>Statistiques et indicateurs à l'exécution, (?) d'appropiation du modèle SOA par les utilisateurs de EasySOA...</p>-->
                         <p>
-                            <ul>
-                                <!-- TODO : add links -->
+                            <div class="btn-group">
+                                <a class="btn" href="${Root.path}/governance/prodPhaseMonitoring?subprojectId=${subprojectId}&visibility=${visibility}">Scaffolder proxy</a>
+                                <a class="btn" href="${Root.path}/governance/governanceIndicators?subprojectId=${subprojectId}&visibility=${visibility}">Proxy run manager</a>
+                                <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:7080/easySoa/index.html">FraSCAti Studio</a>
+                            </div>
+
+                            <!-- TODO : add links -->
+                            <!--<ul>
                                 <li>Scaffolder proxy
                                     <small> : Take advantage of the services you find, by using them in this secured service scaffolder</<small>
                                 </li>
                                 <li>Proxy run manager</li>
                                 <li><a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:7080/easySoa/index.html">FraSCAti Studio</a></li>
-                            </ul>
+                            </ul>-->
                         </p>
-                    </div>
-                </li>
-                <li class="span6">
-                    <div class="thumbnail">
-                        <img data-src="holder.js/300x200" alt="">
+                        <br/>
+                        <a class="btn btn-primary" href="">Plus...</a><!-- TODO -->
+                        <br/>
                         <h3>Exemples</h3>
                         <p>
                             <ul>
                                 <li><a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/demo-intranet/index.html" target="_blank">Pure Air Flowers</a></li>
                                 <li><a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/demo-intranet/index.html" target="_blank">Intranet</a></li>
-                                <li><a href="http://owsi-vm-easysoa-axxx-pivotal.accelance.net:7080/pivotal/index.html">APV Pivotal</a></li>
-                                <li><a href="http://owsi-vm-easysoa-axxx-apv.accelance.net:7080/apv/index.jsp">AXXX dps apv</a></li>
+                                <li><a href="http://owsi-vm-easysoa-axxx-pivotal.accelance.net:7080/pivotal/index.html" target="_blank">APV Pivotal</a></li>
+                                <li><a href="http://owsi-vm-easysoa-axxx-apv.accelance.net:7080/apv/index.jsp" target="_blank">AXXX dps apv</a></li>
                             </ul>
                         </p>
                     </div>

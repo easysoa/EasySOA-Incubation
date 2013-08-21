@@ -8,8 +8,8 @@
   <h1>
     <!-- EasySOA: display document type -->
     <span style="font-size: 70%; padding-right: 3px; color: #777">
-        
-        <h:panelGroup rendered="#{'InformationService' eq field.getType()}"> 
+
+        <h:panelGroup rendered="#{'InformationService' eq field.getType()}">
         <nxu:methodResult name="targetDocument" value="#{documentModelHelperBean.safeGetDocument(field.getPropertyValue('iserv:providerActor'))}">
             <h:panelGroup rendered="#{not empty targetDocument}">
                 <span title="#{documentModelHelperBean.getDocumentTypeLabel(targetDocument)}">
@@ -18,11 +18,11 @@
                 <nxd:restDocumentLink document="#{targetDocument}">
                     <nxh:outputText value="#{nxd:titleOrId(targetDocument)}" /><!-- for an SoaNode, is its SoaName -->
                 </nxd:restDocumentLink>
-                 / 
+                 /
                 <span style="font-size: 70%; padding-right: 3px; color: #777"> </span>
             </h:panelGroup>
         </nxu:methodResult>
-        
+
         <nxu:methodResult name="targetDocument" value="#{documentModelHelperBean.safeGetDocument(field.getPropertyValue('acomp:componentId'))}">
             <h:panelGroup rendered="#{not empty targetDocument}">
                 <span title="#{documentModelHelperBean.getDocumentTypeLabel(targetDocument)}">
@@ -31,18 +31,18 @@
                 <nxd:restDocumentLink document="#{targetDocument}">
                     <nxh:outputText value="#{nxd:titleOrId(targetDocument)}" /><!-- for an SoaNode, is its SoaName -->
                 </nxd:restDocumentLink>
-                 / 
+                 /
                 <span style="font-size: 70%; padding-right: 3px; color: #777"> </span>
             </h:panelGroup>
         </nxu:methodResult>
         </h:panelGroup>
-        
+
     </span>
-    
+
     <span title="#{documentModelHelperBean.getDocumentTypeLabel(field)}">
         <nxu:graphicImage value="#{nxd:iconPath(field)}" alt="" />
     </span>
-    
+
     <c:if test="#{field.version}">
       <h:outputText value="#{nxd:titleOrId(field)}"/>
       (<h:outputText value="#{messages['label.version']}" />
@@ -60,9 +60,19 @@
           title="#{messages['label.permalink']}"/>
       </nxd:restDocumentLink>
     </span>
-    
-    <h:panelGroup rendered="#{field.hasFacet('InformationServiceData')}"><!-- is a service, impl or endpoint --> 
+
+    <h:panelGroup>
+        <a href="/nuxeo/site/easysoa/?subprojectId=#{field.getPropertyValue('spnode:subproject')}&amp;visibility=deep">
+            <nxu:graphicImage value="/icons/saved_searches.png" alt="EasySOA custom UI" title="EasySOA custom UI"/>
+        </a>
+    </h:panelGroup>
+    <h:panelGroup rendered="#{field.hasFacet('InformationServiceData')}"><!-- is a service, impl or endpoint -->
         <a href="/nuxeo/site/easysoa/services/path#{field.getPropertyValue('spnode:subproject')}:#{field.getType()}:#{field.getPropertyValue('soan:name')}?subprojectId=#{field.getPropertyValue('spnode:subproject')}&amp;visibility=deep">
+            <nxu:graphicImage value="/icons/fiche.png" alt="Fiche Service" title="Fiche Service"/>
+        </a>
+    </h:panelGroup>
+    <h:panelGroup rendered="#{!field.hasFacet('InformationServiceData')}"><!-- For phase only -->
+        <a href="/nuxeo/site/easysoa/services?subprojectId=#{field.getPropertyValue('spnode:subproject')}&amp;visibility=deep">
             <nxu:graphicImage value="/icons/fiche.png" alt="Fiche Service" title="Fiche Service"/>
         </a>
     </h:panelGroup>

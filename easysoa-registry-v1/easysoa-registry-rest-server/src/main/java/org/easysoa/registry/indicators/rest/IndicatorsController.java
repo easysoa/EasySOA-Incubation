@@ -18,18 +18,26 @@
  */
 package org.easysoa.registry.indicators.rest;
 
+import au.com.bytecode.opencsv.CSVWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import org.apache.commons.io.IOUtils;
 
 import org.apache.log4j.Logger;
 import org.easysoa.registry.SubprojectServiceImpl;
@@ -54,7 +62,7 @@ import org.nuxeo.ecm.webengine.model.WebObject;
 
 /**
  * Indicators
- * 
+ *
  * TODO refactor init of providers & computing to dedicated IndicatorsService
  *
  * @author mdutoo
@@ -80,9 +88,9 @@ public class IndicatorsController extends EasysoaModuleRoot {
      * Init the indicator controller
      */
     public IndicatorsController() {
-    	
+
     	// CARTOGRAPHY
-    	
+
         // Document count by type
     	addIndicatorProvider(new DoctypeCountProvider(SoaNode.ABSTRACT_DOCTYPE, CATEGORY_CARTOGRAPHY)); // TODO : replace all these providers by a unique provider
     	addIndicatorProvider(new DoctypeCountProvider(BusinessService.DOCTYPE, CATEGORY_CARTOGRAPHY));
@@ -103,20 +111,20 @@ public class IndicatorsController extends EasysoaModuleRoot {
         addIndicatorProvider(new LastCodeDiscoveryIndicatorProvider(CATEGORY_CARTOGRAPHY));
         addIndicatorProvider(new ServiceImplStateProvider(CATEGORY_CARTOGRAPHY));
 
-        
+
         // MATCHING
-        
+
         //addIndicatorProvider(new PlaceholdersIndicatorProvider(InformationService.DOCTYPE, CATEGORY_MATCHING));
         addIndicatorProvider(new PlaceholdersIndicatorProvider(ServiceImplementation.DOCTYPE, CATEGORY_MATCHING));
         addIndicatorProvider(new PlaceholdersIndicatorProvider(Endpoint.DOCTYPE, CATEGORY_MATCHING));
         //addIndicatorProvider(new PlaceholdersIndicatorProvider(SoaNode.DOCTYPE, CATEGORY_MATCHING));
 
-        
+
         // USAGE
 
         addIndicatorProvider(new ServiceDefaultCountIndicatorProvider(CATEGORY_USAGE));
-        
-        
+
+
         // STEERING
 
         addIndicatorProvider(new ServiceConsumptionIndicatorProvider(CATEGORY_STEERING));
@@ -305,8 +313,53 @@ public class IndicatorsController extends EasysoaModuleRoot {
         if (!pendingRequiredIndicators.isEmpty()) {
 	        logger.warn("Pending required indicators : " + pendingRequiredIndicators);
         }
-        
+
         //return indicatorsByCategory;
         return computedIndicators;
     }
+
+    /**
+     * Exports the indicators as a CSV file
+     * @param subprojectId
+     * @param visibility
+     * @return
+     * @throws Exception
+     */
+    @GET
+    @Path("export.csv")
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    public Object doGetExportIndicators(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility, @QueryParam("category") String category) throws Exception {
+        CoreSession session = SessionFactory.getSession(request);
+        File exportFile = new File("indicators.csv");
+        CSVWriter writer = new CSVWriter(new FileWriter(exportFile));
+
+        Map<String, IndicatorValue> indicators = computeIndicators(session, subprojectId, visibility);
+        Set<String> indicatorNames = indicators.keySet();
+        for(String indicatorName : indicatorNames){
+            String[] entries = new String[3];
+            entries[0] = indicatorName;
+            if(indicators.get(indicatorName).getCount() == -1){
+                entries[1] = "N/A";
+            } else {
+                entries[1] = String.valueOf(indicators.get(indicatorName).getCount());
+            }
+            if(indicators.get(indicatorName).getPercentage() == -1){
+                entries[2] = "N/A";
+            } else {
+                entries[2] = String.valueOf(indicators.get(indicatorName).getPercentage()) + "%";
+            }
+            writer.writeNext(entries);
+        }
+        writer.close();
+        Reader input = new FileReader(exportFile);
+        StringWriter output = new StringWriter();
+        try {
+            IOUtils.copy(input, output);
+        } finally {
+            input.close();
+        }
+        return output.toString();
+    }
+
+
 }

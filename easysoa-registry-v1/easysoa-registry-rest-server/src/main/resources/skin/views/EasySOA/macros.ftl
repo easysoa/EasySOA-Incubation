@@ -138,6 +138,9 @@ normal variable type, like an empty string if it should be an object (see above)
                     </#if>
     </#macro>
 
+    <#macro displayIndicatorsExport subprojectId visibility category>
+        <a href="/nuxeo/site/easysoa/indicators/export.csv?subprojectId=${subprojectId}&visibility=${visibility}&category=${category}"><span class="icon-file-text" style="color:grey" title="Export CSV des indicateurs"></span></a>
+    </#macro>
 
     <#macro displayUserInfo user>
         <#if user == "">

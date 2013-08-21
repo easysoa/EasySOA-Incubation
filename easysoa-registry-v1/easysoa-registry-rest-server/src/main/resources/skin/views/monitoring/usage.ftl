@@ -42,7 +42,7 @@
                             </p>
                         </p>
 
-                        <h3>Indicateurs</h3>
+                        <h3>Indicateurs <@displayIndicatorsExport subprojectId visibility "usage"/></h3>
                         <p>
                             <!-- TODO : Add table headers ? -->
                             <@displayIndicatorsInTable indicators "usage"/>

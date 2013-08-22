@@ -336,19 +336,16 @@ public class IndicatorsController extends EasysoaModuleRoot {
         Map<String, IndicatorValue> indicators = computeIndicators(session, subprojectId, visibility);
         Set<String> indicatorNames = indicators.keySet();
         for(String indicatorName : indicatorNames){
-            String[] entries = new String[3];
-            entries[0] = indicatorName;
-            if(indicators.get(indicatorName).getCount() == -1){
-                entries[1] = "N/A";
-            } else {
-                entries[1] = String.valueOf(indicators.get(indicatorName).getCount());
+            if(category != null && !"".equals(category)){
+                if(indicators.get(indicatorName).getCategories().contains(category)){
+                    // return only the indicators with the correponding category
+                    writeEntry(writer, indicators.get(indicatorName));
+                }
             }
-            if(indicators.get(indicatorName).getPercentage() == -1){
-                entries[2] = "N/A";
-            } else {
-                entries[2] = String.valueOf(indicators.get(indicatorName).getPercentage()) + "%";
+            else {
+                // return all indicators
+                writeEntry(writer, indicators.get(indicatorName));
             }
-            writer.writeNext(entries);
         }
         writer.close();
         Reader input = new FileReader(exportFile);
@@ -361,5 +358,26 @@ public class IndicatorsController extends EasysoaModuleRoot {
         return output.toString();
     }
 
+    /**
+     *
+     * @param writer
+     * @param indicatorValue
+     */
+    private void writeEntry(CSVWriter writer, IndicatorValue indicatorValue){
+        String[] entries = new String[4];
+        entries[0] = indicatorValue.getName();
+        entries[1] = indicatorValue.getDescription();
+        if(indicatorValue.getCount() == -1){
+            entries[2] = "N/A";
+        } else {
+            entries[2] = String.valueOf(indicatorValue.getCount());
+        }
+        if(indicatorValue.getPercentage() == -1){
+            entries[3] = "N/A";
+        } else {
+            entries[3] = String.valueOf(indicatorValue.getPercentage()) + "%";
+        }
+        writer.writeNext(entries);
+    }
 
 }

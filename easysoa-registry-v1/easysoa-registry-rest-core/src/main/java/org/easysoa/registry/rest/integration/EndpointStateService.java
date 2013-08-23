@@ -1,5 +1,6 @@
 package org.easysoa.registry.rest.integration;
 
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -13,13 +14,13 @@ import javax.ws.rs.core.MediaType;
  * Endpoint state service interface.
  * Meant to be called by operational SOA monitoring platforms,
  * such as Bull's OW2 Jasmine on top of Talend ESB and its SOA SLA rules.
- * 
+ *
  * Architecture : see https://github.com/easysoa/EasySOA/wiki/Easysoa-integration-architecture---monitoring-platform
- * 
+ *
  * implementation :
  *  * meant to be on top of Nuxeo Directory (actually SQL, with the right indexes)
- *  * dates are ISO8601 (in java use the right SimpleDateFormat), see http://stackoverflow.com/questions/3558458/recommended-date-format-for-rest-api  
- * 
+ *  * dates are ISO8601 (in java use the right SimpleDateFormat), see http://stackoverflow.com/questions/3558458/recommended-date-format-for-rest-api
+ *
  * @author mdutoo, jguillemotte
  *
  */
@@ -30,11 +31,11 @@ public interface EndpointStateService {
 	/**
 	 * Creates each of the given indicator, for the given endpointId, levelName and timestamp.
 	 * NB. endpointId et slaOrOlaName sont à récupérer du modèle EasySOA des Specifications et mettre dans la configuration de la plateforme de monitoring
-	 *  (d'abord manuellement puis récupérés automatiquement au démarrage étant donné l'id du sous-projet de déploiement versionné) 
+	 *  (d'abord manuellement puis récupérés automatiquement au démarrage étant donné l'id du sous-projet de déploiement versionné)
 	 * @param SlaOrOlaIndicators : array of SlaOrOlaIndicator
-	 * 
+	 *
 	 * Consumes :
-	 * 
+	 *
      * {
      *   "slaOrOlaIndicators":[
      *     {
@@ -46,8 +47,8 @@ public interface EndpointStateService {
      *     }
      *   ]
      * }
-	 * 
-	 * 
+	 *
+	 *
 	 * where endpointId is the nuxeo id of the endpoint
 	 * @throws Exception
 	 */
@@ -59,11 +60,11 @@ public interface EndpointStateService {
      * Updates each of the given indicator, for the given endpointId, levelName and timestamp.
      * Not required in the normal work cycle, less efficient than createSlaOlaIndicators.
      * NB. endpointId et slaOrOlaName sont à récupérer du modèle EasySOA des Specifications et mettre dans la configuration de la plateforme de monitoring
-     *  (d'abord manuellement puis récupérés automatiquement au démarrage étant donné l'id du sous-projet de déploiement versionné) 
+     *  (d'abord manuellement puis récupérés automatiquement au démarrage étant donné l'id du sous-projet de déploiement versionné)
      * @param SlaOrOlaIndicators : array of SlaOrOlaIndicator
-     * 
+     *
      * Consumes :
-     * 
+     *
      * {
      *   "slaOrOlaIndicators":[
      *     {
@@ -75,24 +76,24 @@ public interface EndpointStateService {
      *     }
      *   ]
      * }
-     * 
-     * 
+     *
+     *
      * where endpointId is the nuxeo id of the endpoint
      * @throws Exception
      */
     @PUT
     @Path("/slaOlaIndicators")
     public void updateSlaOlaIndicators(SlaOrOlaIndicators SlaOrOlaIndicators) throws Exception;
-	
+
 	/**
 	 * Returns level indicators, in the given period (default : daily)
 	 * TODO add criteria as required by UI :
 	 * * endpointId & slaOrOlaName
-	 * * or wider : at least environment and subprojectId (or only global environment) ; possibly componentId... 
+	 * * or wider : at least environment and subprojectId (or only global environment) ; possibly componentId...
 	 * OPT paginated navigation
-	 * 
+	 *
 	 * Produces :
-	 * 
+	 *
 	 * {
      *   "slaOrOlaIndicators":[
      *     {
@@ -104,33 +105,33 @@ public interface EndpointStateService {
      *     }
      *   ]
      * }
-	 * 
+	 *
      * @param periodStart : if null day start, if both null returns all in the current day, must be formatted with this format yyyy-MM-dd'T'HH:mm:ss
      * @param periodEnd : if null now, if both null returns all in the current day, must be formatted with this format yyyy-MM-dd'T'HH:mm:ss
      * @param pageSize OPT pagination : number of indicators per page, if not specified, all results are returned
      * @param pageStart OPT pagination : index of the first indicator to return (starts with 0)
 	 * @return SlaOrOlaIndicators array of SlaOrOlaIndicator
-	 * @throws Exception 
-	 * 
+	 * @throws Exception
+	 *
 	 * FAQ : to get the latest value of an (endpoint) sla or ola indicator, look it up using pageSize=1 & pageStart = 0
 	 */
     @GET
     @Path("/slaOlaIndicators")
     @Produces(MediaType.APPLICATION_JSON)
-	public SlaOrOlaIndicators getSlaOrOlaIndicators(@QueryParam("endpointId") String endpointId, 
+	public SlaOrOlaIndicators getSlaOrOlaIndicators(@QueryParam("endpointId") String endpointId,
 	        @QueryParam("slaOrOlaName") String slaOrOlaName,
-	        @QueryParam("periodStart") String periodStart, 
-	        @QueryParam("periodEnd") String periodEnd, 
-	        @QueryParam("pageSize") int pageSize, 
+	        @QueryParam("periodStart") String periodStart,
+	        @QueryParam("periodEnd") String periodEnd,
+	        @QueryParam("pageSize") int pageSize,
 	        @QueryParam("pageStart") int pageStart) throws Exception;
 
-    
+
     /**
      * Returns level indicators for the endpoints corresponding to the given environment and project ID
      * , in the given period (default : daily)
-     * 
+     *
      * Produces :
-     * 
+     *
      * {
      *   "slaOrOlaIndicators":[
      *     {
@@ -142,7 +143,7 @@ public interface EndpointStateService {
      *     }
      *   ]
      * }
-     * 
+     *
      * @param environment Endpoint environment
      * @param projectId Endpoint project ID
      * @param periodStart : if null day start, if both null returns all in the current day, must be formatted with this format yyyy-MM-dd'T'HH:mm:ss
@@ -155,11 +156,22 @@ public interface EndpointStateService {
     @GET
     @Path("/slaOlaIndicatorsByEnv")
     @Produces(MediaType.APPLICATION_JSON)
-    public SlaOrOlaIndicators getSlaOrOlaIndicatorsByEnv(@QueryParam("environment") String environment, 
-            @QueryParam("projectId") String projectId, 
-            @QueryParam("periodStart") String periodStart, 
-            @QueryParam("periodEnd") String periodEnd, 
-            @QueryParam("pageSize") int pageSize, 
+    public SlaOrOlaIndicators getSlaOrOlaIndicatorsByEnv(@QueryParam("environment") String environment,
+            @QueryParam("projectId") String projectId,
+            @QueryParam("periodStart") String periodStart,
+            @QueryParam("periodEnd") String periodEnd,
+            @QueryParam("pageSize") int pageSize,
             @QueryParam("pageStart") int pageStart) throws Exception;
+
+    /**
+     *
+     * @param endpointIds
+     * @param periodStart
+     * @param periodEnd
+     * @return
+     * @throws Exception
+     */
+    public int getTotalNumberOfSlaOrOlaindicators(List<String> endpointIds,
+            String periodStart, String periodEnd) throws Exception;
 
 }

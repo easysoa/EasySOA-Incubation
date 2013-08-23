@@ -20,6 +20,7 @@
 
 package org.easysoa.registry.monitoring.rest;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,22 +103,35 @@ public class MonitoringController extends EasysoaModuleRoot {
                 .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
                 .arg("contextInfo", ContextData.getVersionData(session, subprojectId))
-                
+
                 .arg("new_f", new freemarker.template.utility.ObjectConstructor());
                 // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
                 // and not "new" else conflicts with Nuxeo's NewMethod helper
     }
 
     @GET
-    @Path("envIndicators/{endpointId:.+}") // TODO encoding
+    @Path("envIndicators/{endpointId:.+}/{page}") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetByPathHTML(@PathParam("endpointId") String endpointId, @QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
+    public Object doGetByPathHTML(@PathParam("endpointId") String endpointId, @PathParam("page") String page, @QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         DocumentService docService = Framework.getService(DocumentService.class);
+        Pagination pagination = new Pagination();
 
         // Check there is at least on environment
         if(endpointId == null || "".equals(endpointId)){
             throw new IllegalArgumentException("At least one endpointID must be specified");
+        }
+
+        // Check page Number
+        int pageNumber;
+        try{
+            pageNumber = Integer.parseInt(page) - 1;
+            if(pageNumber < 1){
+                pageNumber = 0;
+            }
+        }
+        catch(Exception ex){
+            throw new IllegalArgumentException("Page argument must be a positive integer number greater than 0 ");
         }
 
         // Get the enpoints associated with the environment
@@ -134,7 +148,14 @@ public class MonitoringController extends EasysoaModuleRoot {
 
         // Get the indicators for the endpoint in the Nuxeo store
         EndpointStateService endpointStateService = new EndpointStateServiceImpl();
-        List<SlaOrOlaIndicator> indicators =  endpointStateService.getSlaOrOlaIndicators(endpointId, "", null, null, 10, 0).getSlaOrOlaIndicatorList();
+        List<SlaOrOlaIndicator> indicators =  endpointStateService.getSlaOrOlaIndicators(endpointId, "", null, null, 10, pageNumber).getSlaOrOlaIndicatorList();
+
+        // Set pagination
+        List<String> endpointIds = new ArrayList<String>();
+        endpointIds.add(endpointId);
+        int totalIndicatorNumber = endpointStateService.getTotalNumberOfSlaOrOlaindicators(endpointIds, null, null);
+
+        // To finish : Set data in pagination, add indicators in database to test the pagination
 
         // TODO Complete the returned indicators
         // Complete each indicator with the description / services ...
@@ -162,7 +183,7 @@ public class MonitoringController extends EasysoaModuleRoot {
 
         Template view = getView("envIndicators"); // TODO see services.ftl, dashboard/*.ftl...
         if (indicators != null) {
-            view = view.arg("indicators", indicators);
+            view.arg("indicators", indicators);
         }
         view.arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
@@ -170,7 +191,7 @@ public class MonitoringController extends EasysoaModuleRoot {
                 .arg("service", service)
                 .arg("servicePath", service.getPathAsString())
                 .arg("endpoint", endpoint)
-                
+                .arg("pagination", pagination)
                 .arg("new_f", new freemarker.template.utility.ObjectConstructor());
                 // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
                 // and not "new" else conflicts with Nuxeo's NewMethod helper
@@ -195,7 +216,7 @@ public class MonitoringController extends EasysoaModuleRoot {
                 .arg("visibility", visibility)
                 .arg("indicators", indicators)
                 .arg("contextInfo", ContextData.getVersionData(session, subprojectId))
-                
+
                 .arg("new_f", new freemarker.template.utility.ObjectConstructor());
                 // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
                 // and not "new" else conflicts with Nuxeo's NewMethod helper
@@ -212,7 +233,7 @@ public class MonitoringController extends EasysoaModuleRoot {
         view.arg("subprojectId", subProjectId)
                 .arg("visibility", visibility)
                 .arg("contextInfo", ContextData.getVersionData(session, subProjectId))
-                
+
                 .arg("new_f", new freemarker.template.utility.ObjectConstructor());
                 // see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html
                 // and not "new" else conflicts with Nuxeo's NewMethod helper

@@ -1,9 +1,9 @@
 
-        
+
     <#macro displayEndpointEnvUrl endpoint subprojectId visibility>
-         Déployé en ${endpoint['env:environment']} à <a href="${Root.path}/envIndicators/${endpoint.id}?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint['endp:url']}</a>
+         Déployé en ${endpoint['env:environment']} à <a href="${Root.path}/envIndicators/${endpoint.id}/1?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint['endp:url']}</a>
     </#macro>
-        
+
     <#macro displayEndpointsShort endpoints subprojectId visibility>
         <#if endpoints?has_content>
         <div class="accordion" id="accordion2">
@@ -20,14 +20,14 @@
                             </#list>
                         </ul>
                     </div>
-                </div>            
+                </div>
             </div>
             </#list>
         </div>
         <#else>
             Aucun service déployé
         </#if>
-        
+
         <#--<ul>
             <#list endpoints?keys as service>
             ${service.name}
@@ -37,8 +37,8 @@
             </#list>
             </ul>-->
 
-    </#macro>       
-        
+    </#macro>
+
     <#macro displayIndicatorShort indicator>
         <tr>
             <td>
@@ -52,7 +52,7 @@
                 <#else>
                     <#if indicator.serviceLevelHealth=="silver">
                     <span class="label label-warning">${indicator.serviceLevelHealth}</span>
-                    <#else> 
+                    <#else>
                     <span class="label label-important">{indicator.serviceLevelHealth}</span>
                     </#if>
                 </#if>
@@ -68,17 +68,17 @@
             </td>
         </tr>
     </#macro>
-    
+
     <#macro displayIndicatorsShort indicators>
         <table class="table table-bordered">
             <tr>
-                <!--
-                <td>Indicator name</td>
+            <!--
+            <td>Indicator name</td>
             <td>Timestamp</td>
             <td>Service level health</td>
             <td>Service level violation</td>
-                -->
-                <td>Indicateur</td>
+            -->
+            <td>Indicateur</td>
             <td>Horodatage</td>
             <td>Niveau de santé du service</td>
             <td>Niveau de violation du service</td>

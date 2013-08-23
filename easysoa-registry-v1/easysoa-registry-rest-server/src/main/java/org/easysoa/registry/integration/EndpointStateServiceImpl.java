@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.easysoa.registry.integration;
 
@@ -38,9 +38,9 @@ import org.nuxeo.runtime.api.Framework;
 
 /**
  * Endpoint state service implementation
- * 
+ *
  * @author jguillemotte
- * 
+ *
  */
 @Path("easysoa/endpointStateService")
 public class EndpointStateServiceImpl implements EndpointStateService {
@@ -48,7 +48,7 @@ public class EndpointStateServiceImpl implements EndpointStateService {
     // Servlet context
     @Context
     HttpServletRequest request;
-    
+
     /**
      * @see org.easysoa.registry.rest.integration.EndpointStateService#updateSlaOlaIndicators(SlaOrOlaIndicator[])
      */
@@ -56,7 +56,7 @@ public class EndpointStateServiceImpl implements EndpointStateService {
     public void createSlaOlaIndicators(SlaOrOlaIndicators slaOrOlaIndicators) throws Exception {
 
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        
+
         if(slaOrOlaIndicators != null){
 
             // Open a session on slaOrOlaIndicator directory
@@ -74,7 +74,7 @@ public class EndpointStateServiceImpl implements EndpointStateService {
             }
             catch(Exception ex){
                  // Return the exception and cancel the transaction
-                 throw new Exception("Failed to update SLA or OLA indicators ", ex);                   
+                 throw new Exception("Failed to update SLA or OLA indicators ", ex);
             } finally {
                 if (session != null) {
                     // NB. container manages transaction, so no need to commit or rollback
@@ -84,7 +84,7 @@ public class EndpointStateServiceImpl implements EndpointStateService {
             }
         }
     }
-    
+
     private void createIndicator(Session session, SlaOrOlaIndicator indicator)
             throws DirectoryException, ClientException, Exception {
         checkNotNull(indicator.getEndpointId(), "SlaOrOlaIndicator.endpointId");
@@ -93,7 +93,7 @@ public class EndpointStateServiceImpl implements EndpointStateService {
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("endpointId", indicator.getEndpointId());
         properties.put("slaOrOlaName", indicator.getSlaOrOlaName());
-        properties.put("serviceLeveHealth", indicator.getServiceLevelHealth().toString());    
+        properties.put("serviceLeveHealth", indicator.getServiceLevelHealth().toString());
         properties.put("serviceLevelViolation", indicator.isServiceLevelViolation());
         if(indicator.getTimestamp() != null){
             GregorianCalendar calendar = new GregorianCalendar();
@@ -116,7 +116,6 @@ public class EndpointStateServiceImpl implements EndpointStateService {
     public void updateSlaOlaIndicators(SlaOrOlaIndicators slaOrOlaIndicators) throws Exception {
 
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
-        
         if(slaOrOlaIndicators != null){
 
             // Open a session on slaOrOlaIndicator directory
@@ -137,7 +136,7 @@ public class EndpointStateServiceImpl implements EndpointStateService {
                     parameters.put("timestamp", calendar);
                     DocumentModelList documentModelList = session.query(parameters);
                     DocumentModel indicatorModel;
-                    
+
                     if(documentModelList != null && documentModelList.size() > 0){
                         // Update existing indicator
                         indicatorModel = documentModelList.get(0);
@@ -152,7 +151,7 @@ public class EndpointStateServiceImpl implements EndpointStateService {
             }
             catch(Exception ex){
                  // Return the exception and cancel the transaction
-                 throw new Exception("Failed to update SLA or OLA indicators ", ex);                   
+                 throw new Exception("Failed to update SLA or OLA indicators ", ex);
             } finally {
                 if (session != null) {
                     // NB. container manages transaction, so no need to commit or rollback
@@ -172,24 +171,24 @@ public class EndpointStateServiceImpl implements EndpointStateService {
             String periodStart, String periodEnd, int pageSize, int pageStart) throws Exception {
         // TODO NXQL query returning all endpoints where environment & projectId
         // TODO put them in call to getSlaOrOlaIndicators(String endpointIds...) and return it
-        
+
         CoreSession documentManager = SessionFactory.getSession(request);
 
         if(environment != null && !"".equals(environment) && projectId != null && !"".equals(projectId)){
             throw new IllegalArgumentException("Environment or projectid parameter must not be null or empty");
         }
-        
+
         // Fetch SoaNode list
-        ArrayList<String> parameters = new ArrayList<String>(); 
-        StringBuilder query = new StringBuilder(); 
+        ArrayList<String> parameters = new ArrayList<String>();
+        StringBuilder query = new StringBuilder();
         query.append("SELECT * FROM Endpoint WHERE ");
- 
+
         // Search parameters
         if(environment != null && !"".equals(environment)){
             query.append(Endpoint.XPATH_ENDP_ENVIRONMENT + " like '?' ");
             parameters.add(environment);
         }
-        
+
         if(projectId != null && !"".equals(projectId)){
             if(environment != null && !"".equals(environment)){
                 query.append(" AND ");
@@ -197,26 +196,26 @@ public class EndpointStateServiceImpl implements EndpointStateService {
             query.append("endp:projectid" + " like '?' ");
             parameters.add(projectId);
         }
-        
+
         // Execute query
         String nxqlQuery = NXQLQueryBuilder.getQuery(query.toString(), parameters.toArray(), false, true);
-        DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);        
-        
+        DocumentModelList soaNodeModelList = documentManager.query(nxqlQuery);
+
         // Get endpoints list
         List<String> endpointsList = new ArrayList<String>();
         for(DocumentModel documentModel : soaNodeModelList){
             endpointsList.add((String)documentModel.getPropertyValue(Endpoint.XPATH_UUID));
         }
-        
+
         // Get endpoints indicators
         return this.getSlaOrOlaIndicators(endpointsList, periodStart, periodEnd, pageSize, pageStart);
     }
-    
+
     /**
-     * 
+     *
      * not REST, used by above
-     * TODO LATER ask Nuxeo to support OR in SQL Directory queries 
-     * 
+     * TODO LATER ask Nuxeo to support OR in SQL Directory queries
+     *
      * @param endpointIds
      * @param periodStart
      * @param periodEnd
@@ -233,7 +232,25 @@ public class EndpointStateServiceImpl implements EndpointStateService {
         for(String endpointId : endpointIds){
             slaOrOlaIndicators.getSlaOrOlaIndicatorList().addAll(getSlaOrOlaIndicators(endpointId, "", periodStart, periodEnd, pageSize, pageStart).getSlaOrOlaIndicatorList());
         }
-        return slaOrOlaIndicators;        
+        return slaOrOlaIndicators;
+    }
+
+    public int getTotalNumberOfSlaOrOlaindicators(List<String> endpointIds,
+            String periodStart, String periodEnd) throws Exception {
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        Session session = directoryService.open(org.easysoa.registry.types.SlaOrOlaIndicator.DOCTYPE);
+        int totalIndicatorNumber = 0;
+        for(String endpointId : endpointIds){
+            int indicatorNumber = getTotalNumberOfSlaOrOlaindicators(session, endpointId, "", periodStart, periodEnd);
+            totalIndicatorNumber = totalIndicatorNumber + indicatorNumber;
+        }
+        return totalIndicatorNumber;
+    }
+
+    public int getTotalNumberOfSlaOrOlaindicators(Session session, String endpointId,
+            String slaOrOlaName, String periodStart, String periodEnd) throws Exception {
+        return session.query(buildParameters(endpointId,
+            slaOrOlaName, periodStart, periodEnd), buildFullTextSearchParams()).size();
     }
 
     /**
@@ -241,12 +258,12 @@ public class EndpointStateServiceImpl implements EndpointStateService {
      *      Date, int, int)
      */
     @Override
-    public SlaOrOlaIndicators getSlaOrOlaIndicators(String endpointId, 
+    public SlaOrOlaIndicators getSlaOrOlaIndicators(String endpointId,
             String slaOrOlaName, String periodStart, String periodEnd, int pageSize, int pageStart) throws Exception {
-        
-        DirectoryService directoryService = Framework.getService(DirectoryService.class);        
-        Session session = directoryService.open(org.easysoa.registry.types.SlaOrOlaIndicator.DOCTYPE);        
-        
+
+        DirectoryService directoryService = Framework.getService(DirectoryService.class);
+        Session session = directoryService.open(org.easysoa.registry.types.SlaOrOlaIndicator.DOCTYPE);
+
         /*
         * Returns level indicators, in the given period (default : daily)
         * OPT paginated navigation
@@ -256,23 +273,23 @@ public class EndpointStateServiceImpl implements EndpointStateService {
         * @param pageStart OPT pagination : index of the first indicator to return (starts with 0)
         * @return SlaOrOlaIndicators array of SlaOrOlaIndicator
         */
-        
+
         if(session == null){
             throw new Exception("Unable to open a new session on directory '" + org.easysoa.registry.types.SlaOrOlaIndicator.DOCTYPE + "'");
         }
 
         Map<String, Serializable> parameters = new HashMap<String, Serializable>();
-        
+
         if(endpointId != null && !"".equals(endpointId)){
             parameters.put("endpointId", endpointId);
         }
-        
+
         if(slaOrOlaName != null && !"".equals(slaOrOlaName)){
             parameters.put("slaOrOlaName", slaOrOlaName);
         }
 
         SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();
-        // Execute query        
+        // Execute query
         try {
 
             // Use this method to have request on date range and pagination
@@ -283,25 +300,25 @@ public class EndpointStateServiceImpl implements EndpointStateService {
             Calendar calendarFrom = new GregorianCalendar();
             Calendar calendarTo = new GregorianCalendar();
             Calendar currentDate = new GregorianCalendar();
-            
+
             // Add date Range param
             // If periodEnd is null and period start is null, set to current day end
             if(periodEnd == null && periodStart == null){
                 calendarTo.clear();
                 calendarTo.set(currentDate.get(Calendar.YEAR) , currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH), 23, 59, 59);
-            } 
+            }
             // If period End is null and periodStart not null, set to now
             else if(periodEnd == null && periodStart != null) {
                 calendarTo.setTime(currentDate.getTime());
-            } 
-            // else set with the periodEnd param 
+            }
+            // else set with the periodEnd param
             else {
                 calendarTo.setTime(dateFormater.parse(periodEnd));
             }
             // Set period start
             if(periodStart != null){
                 calendarFrom.setTime(dateFormater.parse(periodStart));
-            } 
+            }
             // If periodStart is null, set to current day start
             else {
                 calendarFrom.clear();
@@ -309,12 +326,12 @@ public class EndpointStateServiceImpl implements EndpointStateService {
                 // But cause some problems to test the UI when the model is not reloaded daily
                 // Remove the "-1" when finished
                 calendarFrom.set(currentDate.get(Calendar.YEAR) - 1, currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH));
-            }            
+            }
             SQLBetweenFilter dateRangeFilter = new SQLBetweenFilter(calendarFrom, calendarTo);
             parameters.put("timestamp", dateRangeFilter);
             // Execute the query
             DocumentModelList soaNodeModelList = session.query(parameters, fullTextSearchParams, orderByParams, false, pageSize, pageStart * pageSize);
-            
+
             SlaOrOlaIndicator indicator;
             for(DocumentModel model : soaNodeModelList){
                 indicator = new SlaOrOlaIndicator();
@@ -331,8 +348,64 @@ public class EndpointStateServiceImpl implements EndpointStateService {
             ex.printStackTrace();
             throw ex;
         }
-        
+
         return slaOrOlaIndicators;
     }
-    
+
+    private Map<String, Serializable> buildParameters(String endpointId,
+            String slaOrOlaName, String periodStart, String periodEnd) throws Exception {
+
+        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+        SimpleDateFormat dateFormater = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        Calendar calendarFrom = new GregorianCalendar();
+        Calendar calendarTo = new GregorianCalendar();
+        Calendar currentDate = new GregorianCalendar();
+
+        if(endpointId != null && !"".equals(endpointId)){
+            parameters.put("endpointId", endpointId);
+        }
+
+        if(slaOrOlaName != null && !"".equals(slaOrOlaName)){
+            parameters.put("slaOrOlaName", slaOrOlaName);
+        }
+
+        // Add date Range param
+        // If periodEnd is null and period start is null, set to current day end
+        if(periodEnd == null && periodStart == null){
+            calendarTo.clear();
+            calendarTo.set(currentDate.get(Calendar.YEAR) , currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH), 23, 59, 59);
+        }
+        // If period End is null and periodStart not null, set to now
+        else if(periodEnd == null && periodStart != null) {
+            calendarTo.setTime(currentDate.getTime());
+        }
+        // else set with the periodEnd param
+        else {
+            calendarTo.setTime(dateFormater.parse(periodEnd));
+        }
+        // Set period start
+        if(periodStart != null){
+            calendarFrom.setTime(dateFormater.parse(periodStart));
+        }
+        // If periodStart is null, set to current day start
+        else {
+            calendarFrom.clear();
+            // TODO : previous setting was to fix the from date to the current day
+            // But cause some problems to test the UI when the model is not reloaded daily
+            // Remove the "-1" when finished
+            calendarFrom.set(currentDate.get(Calendar.YEAR) - 1, currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH));
+        }
+        SQLBetweenFilter dateRangeFilter = new SQLBetweenFilter(calendarFrom, calendarTo);
+        parameters.put("timestamp", dateRangeFilter);
+
+        return parameters;
+    }
+
+    private Set<String> buildFullTextSearchParams() {
+        Set<String> fullTextSearchParams = new HashSet<String>();
+        // TODO : complete this method
+        return fullTextSearchParams;
+    }
+
+
 }

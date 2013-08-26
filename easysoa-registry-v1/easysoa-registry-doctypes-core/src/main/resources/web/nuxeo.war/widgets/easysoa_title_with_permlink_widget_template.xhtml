@@ -61,7 +61,7 @@
       </nxd:restDocumentLink>
     </span>
 
-    <h:panelGroup>
+    <h:panelGroup rendered="#{field.hasFacet('SubprojectNode') and !field.hasFacet('InformationServiceData')}">
         <a href="/nuxeo/site/easysoa/?subprojectId=#{field.getPropertyValue('spnode:subproject')}&amp;visibility=deep">
             <nxu:graphicImage value="/icons/saved_searches.png" alt="EasySOA custom UI" title="EasySOA custom UI"/>
         </a>
@@ -71,7 +71,7 @@
             <nxu:graphicImage value="/icons/fiche.png" alt="Fiche Service" title="Fiche Service"/>
         </a>
     </h:panelGroup>
-    <h:panelGroup rendered="#{!field.hasFacet('InformationServiceData')}"><!-- For phase only -->
+    <h:panelGroup rendered="#{field.getType() eq 'Subproject'}"><!-- For phase only -->
         <a href="/nuxeo/site/easysoa/services?subprojectId=#{field.getPropertyValue('spnode:subproject')}&amp;visibility=deep">
             <nxu:graphicImage value="/icons/fiche.png" alt="Fiche Service" title="Fiche Service"/>
         </a>

@@ -331,8 +331,17 @@ public class IndicatorsController extends EasysoaModuleRoot {
     public Object doGetExportIndicators(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility, @QueryParam("category") String category) throws Exception {
         CoreSession session = SessionFactory.getSession(request);
         File exportFile = new File("indicators.csv");
-        CSVWriter writer = new CSVWriter(new FileWriter(exportFile));
+        CSVWriter writer = new CSVWriter(new FileWriter(exportFile), ';');
 
+        // Headers
+        String[] entries = new String[4];
+        entries[0] = "Indicateur";
+        entries[1] = "Descirption";
+        entries[2] = "Valeur";
+        entries[3] = "Pourcentage";
+        writer.writeNext(entries);
+
+        // values
         Map<String, IndicatorValue> indicators = computeIndicators(session, subprojectId, visibility);
         Set<String> indicatorNames = indicators.keySet();
         for(String indicatorName : indicatorNames){

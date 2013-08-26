@@ -69,6 +69,9 @@ public class MonitoringController extends EasysoaModuleRoot {
     @SuppressWarnings("unused")
     private static Logger logger = Logger.getLogger(MonitoringController.class);
 
+    // Number of indicators par page
+    public int RESULTS_PER_PAGE = 10;
+
     /**
      * Default constructor
      */
@@ -148,7 +151,7 @@ public class MonitoringController extends EasysoaModuleRoot {
 
         // Get the indicators for the endpoint in the Nuxeo store
         EndpointStateService endpointStateService = new EndpointStateServiceImpl();
-        List<SlaOrOlaIndicator> indicators =  endpointStateService.getSlaOrOlaIndicators(endpointId, "", null, null, 10, pageNumber).getSlaOrOlaIndicatorList();
+        List<SlaOrOlaIndicator> indicators =  endpointStateService.getSlaOrOlaIndicators(endpointId, "", null, null, RESULTS_PER_PAGE, pageNumber).getSlaOrOlaIndicatorList();
 
         // Set pagination
         List<String> endpointIds = new ArrayList<String>();
@@ -156,6 +159,14 @@ public class MonitoringController extends EasysoaModuleRoot {
         int totalIndicatorNumber = endpointStateService.getTotalNumberOfSlaOrOlaindicators(endpointIds, null, null);
 
         // To finish : Set data in pagination, add indicators in database to test the pagination
+        pagination.setTotalPageNumber(totalIndicatorNumber % RESULTS_PER_PAGE);
+        pagination.setCurrentPage(pageNumber+1);
+        if(totalIndicatorNumber > RESULTS_PER_PAGE){
+            pagination.setHasNextPage(true);
+        }
+        if(pageNumber > 0){
+            pagination.setHasPreviousPage(true);
+        }
 
         // TODO Complete the returned indicators
         // Complete each indicator with the description / services ...

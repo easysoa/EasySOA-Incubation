@@ -43,14 +43,14 @@
                                 <tr>
                                     <td style="text-align: left;width: 40%">
                                         <#if pagination.hasPreviousPage()>
-                                            <a href=""><span class="icon-circle-arrow-left" style="color: grey"></span></a>
+                                            <a href="${Root.path}/envIndicators/${endpoint.id}/1?subprojectId=${subprojectId}&visibility=${visibility}"><span class="icon-circle-arrow-left" style="color: grey"></span></a>
                                         <#else>
                                             <span class="icon-circle-arrow-left" style="color: grey"></span>
                                         </#if>
                                     </td>
                                     <td style="text-align: left;width: 5%">
                                         <#if pagination.hasPreviousPage()>
-                                            <a href=""><span class="icon-chevron-sign-left" style="color: grey"></span></a>
+                                            <a href="${Root.path}/envIndicators/${endpoint.id}/${pagination.currentPage - 1}?subprojectId=${subprojectId}&visibility=${visibility}"><span class="icon-chevron-sign-left" style="color: grey"></span></a>
                                         <#else>
                                             <span class="icon-chevron-sign-left" style="color: grey"></span>
                                         </#if>
@@ -58,14 +58,14 @@
                                     <td style="text-align: center;width: 10%"><span>Page ${pagination.currentPage} / ${pagination.totalPageNumber}</span></td>
                                     <td style="text-align: right;width: 5%">
                                         <#if pagination.hasNextPage()>
-                                            <a href=""><span class="icon-chevron-sign-right" style="color: grey"></span></a>
+                                            <a href="${Root.path}/envIndicators/${endpoint.id}/${pagination.currentPage + 1}?subprojectId=${subprojectId}&visibility=${visibility}"><span class="icon-chevron-sign-right" style="color: grey"></span></a>
                                         <#else>
                                             <span class="icon-chevron-sign-right" style="color: grey"></span>
                                         </#if>
                                     </td>
                                     <td style="text-align: right;width: 40%">
                                         <#if pagination.hasNextPage()>
-                                            <a href=""><span class="icon-circle-arrow-right" style="color: grey"></span></a>
+                                            <a href="${Root.path}/envIndicators/${endpoint.id}/${pagination.totalPageNumber}?subprojectId=${subprojectId}&visibility=${visibility}"><span class="icon-circle-arrow-right" style="color: grey"></span></a>
                                         <#else>
                                             <span class="icon-circle-arrow-right" style="color: grey"></span>
                                         </#if>

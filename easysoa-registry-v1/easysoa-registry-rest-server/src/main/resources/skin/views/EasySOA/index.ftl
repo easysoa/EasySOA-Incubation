@@ -156,8 +156,8 @@
                         <!--<p>Statistiques et indicateurs à l'exécution, (?) d'appropiation du modèle SOA par les utilisateurs de EasySOA...</p>-->
                         <p>
                             <div class="btn-group">
-                                <a class="btn" href="">Scaffolder proxy</a>
-                                <a class="btn" href="">Proxy run manager</a>
+                                <a class="btn" disabled href="">Scaffolder proxy</a><!-- disabled -->
+                                <a class="btn" disabled href="">Proxy run manager</a><!-- disabled -->
                                 <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:7080/easySoa/index.html">FraSCAti Studio</a>
                                 <a class="btn" href="${Root.path}/tools/apis?subprojectId=${subprojectId}&visibility=${visibility}">Easysoa API REST</a>
                             </div>

@@ -336,7 +336,7 @@ public class IndicatorsController extends EasysoaModuleRoot {
         // Headers
         String[] entries = new String[4];
         entries[0] = "Indicateur";
-        entries[1] = "Descirption";
+        entries[1] = "Description";
         entries[2] = "Valeur";
         entries[3] = "Pourcentage";
         writer.writeNext(entries);

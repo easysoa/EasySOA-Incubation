@@ -159,9 +159,17 @@ public class MonitoringController extends EasysoaModuleRoot {
         int totalIndicatorNumber = endpointStateService.getTotalNumberOfSlaOrOlaindicators(endpointIds, null, null);
 
         // To finish : Set data in pagination, add indicators in database to test the pagination
-        pagination.setTotalPageNumber(totalIndicatorNumber % RESULTS_PER_PAGE);
-        pagination.setCurrentPage(pageNumber+1);
-        if(totalIndicatorNumber > RESULTS_PER_PAGE){
+        int totalPageNumber = Math.round(totalIndicatorNumber / RESULTS_PER_PAGE);
+        if(totalIndicatorNumber % RESULTS_PER_PAGE > 0){
+            totalPageNumber++;
+        }
+        pagination.setTotalPageNumber(totalPageNumber);
+        if(indicators.size() > 0){
+            pagination.setCurrentPage(pageNumber+1);
+        } else {
+            pagination.setCurrentPage(0);
+        }
+        if(totalIndicatorNumber - ((pageNumber + 1) * RESULTS_PER_PAGE) > 0){
             pagination.setHasNextPage(true);
         }
         if(pageNumber > 0){

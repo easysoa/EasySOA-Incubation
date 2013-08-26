@@ -53,7 +53,7 @@
                     <#if indicator.serviceLevelHealth=="silver">
                     <span class="label label-warning">${indicator.serviceLevelHealth}</span>
                     <#else>
-                    <span class="label label-important">{indicator.serviceLevelHealth}</span>
+                    <span class="label label-important">${indicator.serviceLevelHealth}</span>
                     </#if>
                 </#if>
             </td>

@@ -29,30 +29,59 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
+                            <h3>Simple Registry API</h3>
+                            <p>
+                                La Simple Registry API permet de faire en REST des requêtes simples et couvrant la plupart des besoins sur les objets SOA du modèle,
+                                avec un modèle plus simple que la Registry API complète et sans devoir écrire des requêtes NXQL.
+                                <br/>
+                                <br/>
+                                Les opérations disponibles sont les suivantes :
+                                <ul>
+                                    <li>queryWSDLInterfaces : Retourne les services enregistrés dans le registry EasySOA.</li>
+                                    <li>queryEndpoints : Retourne les services déployés.</li>
+                                    <li>queryServicesWithEndpoints : Retourne les services ainsi que leurs point de déploiement pour une phase donnée.</li>
+                                </ul>
+                            </p>
+
+                            <p>
+                                Sa définition formelle en JAXRS est ici <a href="https://github.com/easysoa/EasySOA-Incubation/blob/master/easysoa-registry-v1/easysoa-registry-rest-core/src/main/java/org/easysoa/registry/rest/integration/SimpleRegistryService.java" target="_blank">SimpleRegistryService.java</a>
+                                <br/>
+                                Elle contient aussi sa documentation détaillée, avec des exemples du format requis (JSON, ou bien XML).
+                                <br/>
+                                Des clients basés sur les moteurs de service Jersey, CXF et FraSCAti sont déjà fournis, voir le projet <a href="https://github.com/easysoa/EasySOA-Incubation/tree/master/easysoa-registry-v1/easysoa-registry-integration-base" target="_blank">Intégration base</a>.
+                                <br/>
+                                Pour appeler la SimpleRegistryAPI de son registry EasySOA déployé, voir l'exemple des tests unitaires : <a href="https://github.com/easysoa/EasySOA-Incubation/tree/master/easysoa-registry-v1/easysoa-registry-integration-base/src/test/java/org/easysoa/registry/integration" target=_blank">Intégration base tests</a>.
+                                <br/>
+                                Le Simple Registry API Service est exposé <a href="/nuxeo/site/easysoa/simpleRegistryService/queryEndpoints">ici</a>.
+                            </p>
+
                             <h3>Registry API</h3>
                             <p>
-                                L'API REST registry peut être utilisée pour effectuer les opérations de base sur les objets stockés dans Easysoa (services, implémentations de services, points de déploiement ...).
+                                La Registry API permet en REST toutes les manipulations sur les objets SOA stockés dans Easysoa
+                                (services, implémentations de services, points de déploiement ...), avec toutes les propriétés Nuxeo qu'ils portent.
+                                <br/>
+                                NB : pour faire uniquement des requêtes simples, utilisez le SimpleRegistryService.
+                                <br/>
                                 <br/>
                                 Voila la liste des opérations supportées par l'API :
                                 <ul>
                                     <li>Création : Création d'objets dans le registry EasySOA.</li>
                                     <li>Suppression : Suppression d'objets.</li>
                                     <li>Lecture : Récupération d'objets pour consultation.</li>
-                                    <li>Requète : Permet d'éxécuter une requete NXQL dans le registry EasySOA.</li>
+                                    <li>Requète : Permet d'éxécuter une requête NXQL dans le registry EasySOA.</li>
                                 </ul>
                             </p>
-                            <h3>Simple registry API</h3>
-                            <p>
-                                L'API registry simple est une version simplifiée de l'API REST registry.
-                                Elle offre des opérations prédéfinies puissantes permettant de récuperer des objets ayant des relations complexes sans devoir ecrire des requetes NXQL.
-                                <br/>
-                                Les opérations disponibles sont les suivantes :
-                            <ul>
-                                <li>queryWSDLInterfaces : Retourne les services enregistrés dans le registry EasySOA.</li>
-                                <li>queryEndpoints : Retourne les services déployés.</li>
-                                <li>queryServicesWithEndpoints : Retourne les services ainsi que leurs point de déploiement pour une phase donnée.</li>
-                            </ul>
 
+                            <p>
+                                Sa définition formelle en JAXRS est ici <a href="https://github.com/easysoa/EasySOA-Incubation/blob/master/easysoa-registry-v1/easysoa-registry-rest-core/src/main/java/org/easysoa/registry/rest/RegistryApi.java"  target="_blank">RegistryApi.java</a>
+                                <br/>
+                                Elle contient aussi sa documentation détaillée, avec des exemples du format requis (JSON, ou bien XML).
+                                <br/>
+                                Des clients basés sur les moteurs de service Jersey, CXF et FraSCAti sont déjà fournis, voir le projet XXX <a href="https://github.com/easysoa/EasySOA-Incubation/tree/master/easysoa-registry-v1/easysoa-registry-integration-base" target="_blank">Intégration base</a>.
+                                <br/>
+                                Pour appeler la RegistryAPI de son registry EasySOA déployé, voir l'exemple des tests unitaires : <a href="https://github.com/easysoa/EasySOA-Incubation/blob/master/easysoa-registry-v1/easysoa-registry-rest-client/src/test/java/org/easysoa/registry/rest/client/RestClientTest.java" target=_blank">RestClientTest.java</a>.
+                                <br/>
+                                Le Registry API Service est exposé <a href="/nuxeo/site/easysoa/registry">ici</a>.
                             </p>
                     </div>
                 </li>

@@ -30,6 +30,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * This property impl replaces a generic List or array by a List of SoaNodePropertyValue.
+ * (That may be in maps in Nuxeo complex properties, see
+ * http://answers.nuxeo.com/questions/4417/how-to-programatically-populate-complex-multivalued-fields )
  * 
  * The regular way to serialize a list in JAXB is to model it in such a wrapper element,
  * see http://theopentutorials.com/tutorials/java/jaxb/jaxb-marshalling-and-unmarshalling-list-of-objects/

@@ -1,11 +1,11 @@
 
 
     <#-- URL Constants -->
-    <#assign web_discovery_url = Root.getWebDiscoveryUrl() /><!-- VM : owsi-vm-easysoa-axxx-registry -->
+    <#assign web_discovery_url = Root.getWebDiscoveryUrl() /><!-- http://host:8083/ ; VM : owsi-vm-easysoa-axxx-registry -->
     <#assign proxy_management_url = 'http://' + Root.getServerHost() + ':9080/easysoa-proxy-web' /><!-- TODO proxy war or FStudio ?? VM : owsi-vm-easysoa-axxx-registry -->
     <#assign http_proxy_host = Root.getServerHost() /><!-- TODO proxy war or FStudio ?? VM : owsi-vm-easysoa-axxx-registry -->
     <#assign http_proxy_port = '8082' /><!-- TODO proxy war or FStudio ?? VM : owsi-vm-easysoa-axxx-registry -->
-    <#assign jasmine_url = Root.getJasmineUrl() /><!-- VM : owsi-vm-easysoa-axxx-pivotal -->
+    <#assign jasmine_url = Root.getJasmineUrl() /><!-- http://host:9100/jasmine/ ; VM : owsi-vm-easysoa-axxx-pivotal -->
     <#assign frascatiStudio_url = 'http://' + Root.getServerHost() + ':7080/easySoa/' /><!-- VM : owsi-vm-easysoa-axxx-registry -->
 
 
@@ -24,6 +24,7 @@
     <#macro urlToLocalNuxeoPrint doc>/nuxeo/site/admin/repository<@escapeUrl doc['path']/>/@views/print</#macro>
 
     <#-- EasySOA tool URLs -->
+    <#macro urlToWebDiscovery subprojectId visibility>${web_discovery_url}?subprojectId=${subprojectId}&visibility=${visibility}&serverName=${Root.getServerHost()}</#macro>
     <#macro urlToFicheSOA soaNode subprojectId visibility>${Root.path}/../services/path${soaNode['spnode:subproject']?xml}:${soaNode.type}:${soaNode['soan:name']?xml}?subprojectId=${subprojectId}&visibility=${visibility}</#macro>
     <#macro urlToEndpointState endpoint subprojectId visibility>${Root.path}/../monitoring/envIndicators/${endpoint.id}?subprojectId=${subprojectId}&visibility=${visibility}</#macro>
     <#macro urlToProxyManagementGetInstance subprojectId environment>${proxy_management_url}/management/getInstance.html?projectId=${subprojectId?url('ISO-8859-1')}&userLogin=${Root.currentUser?url('ISO-8859-1')}&environment=${environment?url('ISO-8859-1')}</#macro>

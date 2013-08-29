@@ -3,6 +3,7 @@
 <html xmlns:c="http://java.sun.com/jsp/jstl/core">
 
     <#include "/views/EasySOA/macros.ftl">
+    <#include "/views/EasySOA/urlMacros.ftl">
 
     <head>
         <title>EasySOA Accueil</title>
@@ -34,7 +35,7 @@
                             <p>
                             <div class="btn-group">
                                 <a class="btn" href="${Root.path}/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte sources</a>
-                                <a class="btn" href="${web_discovery_url}?subprojectId=${subprojectId}&visibility=${visibility}&serverName=${serverName}" target="_blank">Découverte web</a>
+                                <a class="btn" href="<@urlToWebDiscovery subprojectId visibility/>" target="_blank">Découverte web</a>
                                 <a class="btn" href="${Root.path}/cartography/runDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte à l'éxécution</a>
                             </div>
                             </p>

@@ -29,6 +29,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * This property impl replaces a Map by a List of SoaNodeProperty.
+ * (That may be in maps in Nuxeo complex properties, see
+ * http://answers.nuxeo.com/questions/4417/how-to-programatically-populate-complex-multivalued-fields )
  * 
  * Otherwise Map would by serialized as <entry><key>name</key><value>value</value</entry>...
  * with the wrong namespaces, and the regular way to handle it in JAXB is using a (Map)Adapter

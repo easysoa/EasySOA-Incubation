@@ -20,7 +20,6 @@
 
 package org.easysoa.registry.index.rest;
 
-import java.net.InetAddress;
 import java.util.Map;
 
 import javax.ws.rs.GET;
@@ -66,13 +65,6 @@ public class IndexController extends EasysoaModuleRoot {
            .arg("subprojectId", subprojectId)
            .arg("visibility", visibility)
            .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
-
-        // Set only the registry host name in dev mode
-        if(this.isDevModeSet()){
-            view.arg("serverName", InetAddress.getLocalHost().getHostName());
-        } else {
-            view.arg("serverName", "");
-        }
         
         return view;
 

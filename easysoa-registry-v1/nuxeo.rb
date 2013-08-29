@@ -19,6 +19,7 @@ def nuxeoctl()
   if defined? NUXEO_PATH
     path = Dir[NUXEO_PATH + 'bin/nuxeoctl'][0]
   else
+    # get nuxeo distrib downloaded as maven dep and copied by assembly ant task
     path = Dir[MARKETPLACE_BUILD_OUTPUT + 'nuxeo-cap-*-tomcat/bin/nuxeoctl'][0]
   end
   if path == nil
@@ -72,10 +73,12 @@ ARGV.each do |arg|
       if defined? NUXEO_PATH
         nuxeoPath = NUXEO_PATH
       else
+        # get nuxeo distrib downloaded as maven dep and copied by assembly ant task
         nuxeoPath = Dir[MARKETPLACE_BUILD_OUTPUT + 'nuxeo-cap-*-tomcat'][0]
       end
       
       if nuxeoPath.nil?
+        # get nuxeo distrib downloaded as maven dep and copied by assembly ant task, unzip and init it
         capDistribPath = Dir[MARKETPLACE_BUILD_OUTPUT + 'nuxeo-distribution-tomcat-*.zip'][0]
         if !File.exists?(capDistribPath)
           puts "ERROR: " + capDistribPath + " not found, aborting."

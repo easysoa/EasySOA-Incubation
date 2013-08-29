@@ -34,6 +34,8 @@ import org.codehaus.jackson.annotate.JsonTypeName;
 
 /**
  * Map wrapper that replaces Map impls.
+ * (That may be in Nuxeo complex properties, see
+ * http://answers.nuxeo.com/questions/4417/how-to-programatically-populate-complex-multivalued-fields )
  * 
  * Such a wrapper object allows to annotate its list field by
  * @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)

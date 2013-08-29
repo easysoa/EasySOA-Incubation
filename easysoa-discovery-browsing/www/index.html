@@ -40,8 +40,21 @@ function getUrlVars()
 }
 
    $(window).load(function () {
+       var serverName = getUrlVars()['serverName'];
+       
+       $('#nothingProxied').html('<u>Warning</u>: Are you sure you have enabled your browser\'s proxy?'
+    	     + 'Please make sure it is set to <b><a href="http://' + serverName + ':8081">http://'
+    	     + serverName + ':8081</a></b>.');
+       
 	    var visibility = getUrlVars()['visibility'];
-        $('#frame').attr('src', "default.html?subprojectId=" + getUrlVars()['subprojectId'] + "&visibility=" + visibility + "&registryServerName=" + getUrlVars()['serverName']);
+
+	    $('#frame').load(function() {
+	    	// setting frame height dynamically to remove scrollbar
+	      this.height = this.contentWindow.document.body.scrollHeight + 35;
+	    });
+	    
+       $('#frame').attr('src', "default.html?subprojectId=" + getUrlVars()['subprojectId'] + "&visibility=" + visibility + "&registryServerName=" + serverName);
+        
         // Display the current context
         if(typeof getUrlVars()["subprojectId"] != "undefined"){
         	try {
@@ -75,7 +88,7 @@ function getUrlVars()
   	<div id="header">Service discovery by browsing</div>
 
   	<div id="content">
-  		<div id="nothingProxied"><u>Warning</u>: Are you sure you have enabled your browser's proxy? Please make sure it is set to <b>http://127.0.0.1:8081</b>.</div>
+  		<div id="nothingProxied"></div>
 	  	<div id="navBar">
     			<div id="messages">
     				<div id="messageInfo"><img src="img/loading.gif" /> Connecting...</div>

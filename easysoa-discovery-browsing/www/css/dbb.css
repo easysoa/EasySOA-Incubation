@@ -126,7 +126,7 @@ li {
 
 #frame {
 	width: 100%;
-	height: 100%;
+	/*height: 100%; NO doesn't work, rather set dynamically using jquery*/
 	border: none;
 	background-color: #EEFAFD; 
 }

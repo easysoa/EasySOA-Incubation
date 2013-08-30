@@ -178,10 +178,10 @@
                         <h3>Exemples</h3>
                         <p>
                             <ul>
-                                <li><a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/demo-intranet/index.html" target="_blank">Pure Air Flowers</a></li>
-                                <li><a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:8083/demo-intranet/index.html" target="_blank">Intranet</a></li>
-                                <li><a href="http://owsi-vm-easysoa-axxx-pivotal.accelance.net:7080/pivotal/index.html" target="_blank">APV Pivotal</a></li>
-                                <li><a href="http://owsi-vm-easysoa-axxx-apv.accelance.net:7080/apv/index.jsp" target="_blank">AXXX dps apv</a></li>
+                                <li><a href="<@urlToPureAirFlowers />" target="_blank">Pure Air Flowers</a></li>
+                                <li><a href="<@urlToPureAirFlowers />" target="_blank">Intranet</a></li>
+                                <li><a href="<@urlToApvPivotal />" target="_blank">APV Pivotal</a></li>
+                                <li><a href="<@urlToAxxxDpsApv />" target="_blank">AXXX dps apv</a></li>
                             </ul>
                         </p>
                     </div>

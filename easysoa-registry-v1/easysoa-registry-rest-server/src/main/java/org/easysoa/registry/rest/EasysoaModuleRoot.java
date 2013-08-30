@@ -142,6 +142,14 @@ public class EasysoaModuleRoot extends ModuleRoot {
     	return getProperties().getProperty("jasmine.url", "http://" + getServerHost() + ":9100/jasmine/");
     }
 
+    public String getApvPivotal_url(){
+        return getProperties().getProperty("apvPivotal.url", "http://" + getServerHost() + ":7080/pivotal/index.html");
+    }
+
+    public String getAxxxDpsApv_url(){
+        return getProperties().getProperty("AxxxDpsApv.url", "http://" + getServerHost() + ":7080/apv/index.jsp");
+    }
+
     //protected String subprojectCriteria = // TODO cache
 
     public DocumentService getDocumentService() throws Exception {

@@ -7,7 +7,9 @@
     <#assign http_proxy_port = '8082' /><!-- TODO proxy war or FStudio ?? VM : owsi-vm-easysoa-axxx-registry -->
     <#assign jasmine_url = Root.getJasmineUrl() /><!-- http://host:9100/jasmine/ ; VM : owsi-vm-easysoa-axxx-pivotal -->
     <#assign frascatiStudio_url = 'http://' + Root.getServerHost() + ':7080/easySoa/' /><!-- VM : owsi-vm-easysoa-axxx-registry -->
-
+    <#assign pureAirFlowers_intranet_url = 'http://' + Root.getServerHost() + ':8083/demo-intranet/index.html' />
+    <#assign apvPivotal_url = Root.getApvPivotal_url() />
+    <#assign axxxDpsApv_url = Root.getAxxxDpsApv_url() />
 
     <#macro escapeUrl path>${path?replace('/', '____')?url?replace('____', '/')}</#macro>
 
@@ -54,3 +56,10 @@
         <a href="${frascatiStudio_url}easySoa/GeneratedAppService">FraSCAti Studio new application</a>
         <!-- a href="">FraSCAti Studio application A</a -->
     </#macro>
+
+    <#-- EasySOA examples URLs -->
+    <#macro urlToPureAirFlowers>${pureAirFlowers_intranet_url}</#macro>
+    <#macro urlToIntranet>${pureAirFlowers_intranet_url}</#macro>
+    <#macro urlToApvPivotal>${apvPivotal_url}</#macro>
+    <#macro urlToAxxxDpsApv>${axxxDpsApv_url}</#macro>
+

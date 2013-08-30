@@ -68,17 +68,6 @@ public class CxfClientTest extends AbstractWebEngineTest {
         Assert.assertNotNull(result);
         Assert.assertTrue("Creation must be successful", result.isSuccessful());
 
-        // Fetch it
-        //get(@QueryParam("subproject") String subprojectId, @PathParam("doctype") String doctype, @PathParam("name") String name) throws Exception;
-        /*
-        client = client.path("/" + myServiceId.getType() + "/" + myServiceId.getName());
-        client = client.replaceQueryParam("subproject", myServiceId.getSubprojectId());
-        SoaNodeInformation foundSoaNode = client.get(SoaNodeInformation.class);
-        //SoaNodeInformation foundSoaNode = registryApi.get(myServiceId.getSubprojectId(), myServiceId.getType(), myServiceId.getName());
-        Assert.assertNotNull("Created SoaNode must have been found by the client", foundSoaNode);
-        Assert.assertEquals("Found document must be the expected Service", myServiceId, foundSoaNode.getSoaNodeId());
-        */
-
         // Create another document
         SoaNodeId myOtherServiceId = new SoaNodeId(defaultSubprojectId, InformationService.DOCTYPE, "MyOtherService");
         result = client.post(new SoaNodeInformation(myOtherServiceId, null, null), OperationResult.class);
@@ -96,4 +85,28 @@ public class CxfClientTest extends AbstractWebEngineTest {
 
     }
 
+    @Test
+    public void testClientGetMethodWithSereralPathParams() throws Exception {
+
+        // Create client with authentification
+        WebClient client = WebClient.create(EasySOAWebEngineFeature.NUXEO_SITES_URL, username, password, null);
+
+        Assert.assertNotNull("Client instanciation must be successful", client);
+
+        // Create some document
+        SoaNodeId myOtherServiceId = new SoaNodeId(defaultSubprojectId, InformationService.DOCTYPE, "MyOtherService");
+
+        client.path("easysoa/registry");
+        //client.type("text/xml").accept("text/xml");
+        OperationResult result = client.post(new SoaNodeInformation(myOtherServiceId, null, null), OperationResult.class);
+        Assert.assertNotNull(result);
+        Assert.assertTrue("Creation must be successful", result.isSuccessful());
+
+        // Fetch it
+        client = client.path("/" + InformationService.DOCTYPE + "/" + myOtherServiceId.getName());
+        client = client.replaceQueryParam("subproject", myOtherServiceId.getSubprojectId());
+        SoaNodeInformation foundSoaNode = client.get(SoaNodeInformation.class);
+        Assert.assertNotNull("Created SoaNode must have been found by the client", foundSoaNode);
+        Assert.assertEquals("Found document must be the expected Service", myOtherServiceId, foundSoaNode.getSoaNodeId());
+    }
 }

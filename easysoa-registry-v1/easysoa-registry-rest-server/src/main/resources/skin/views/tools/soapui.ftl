@@ -3,6 +3,8 @@
 <html xmlns:c="http://java.sun.com/jsp/jstl/core">
 
     <#include "/views/EasySOA/macros.ftl">
+    <#include "/views/EasySOA/urlMacros.ftl">
+
 
     <head>
         <title>EasySOA Tools</title>
@@ -31,16 +33,34 @@
                         <img data-src="holder.js/300x200" alt="">
                             <h3>Soap UI : Export de configuration</h3>
                             <p>
-                                Pour chaque endpoint enregistré dans le registry EasySOA,
-                                il est possible de générer une configuration de projet Soap UI afin de pouvoir tester ou émuler les opérations associées à l'endpoint.
+                                <a href="http://www.soapui.org/" target="_blank">Soap UI</a> (<a href="http://sourceforge.net/projects/soapui/files/">télécharger</a>)
+                                est un outil de test de services WSDL pour les développeurs.
+                                Il permet de créer et d'éxécuter rapidement des tests sur
+                                des services SOAP aussi bien d'un point de vue client que d'un point de vue serveur (mocks)
+                                <br/>
+                                Le registry EasySOA fournit à la demande des configurations SOAPUI permettant de tester un ou plusieurs services déployés (endpoint)
+                                d'un même environnement de déploiement, afin de pouvoir tester ou émuler les opérations associées à l'endpoint.
                                 <br/>
                                 <br/>
-                                L'export se présente sous la forme d'un bouton placé dans la partie supérieure droite de l'écran.
-                                Ce bouton n'est affiché que pour les endpoints. L'export du projet est un fichier XML qu'il est nécéssaire d'enregistrer avant de pouvoir l'ouvrir,
-                                Soap UI n'offrant pas la possibilité de l'ouvrir directement depuis le navigateur.
+                                L'export est accessible :
+                                <br/>
+                                * dans la <a href="/nuxeo/site/easysoa/services/?subprojectId=/default-domain/Int%C3%A9gration%20DPS%20-%20DCV/Deploiement_v&visibility=deep">
+                                    Fiche Service
+                                </a>, sous la forme d'un lien placé dans la partie "Outils" de chaque service déployé
                                 <br/>
                                 <br/>
-                                <img src="/nuxeo/site/easysoa/skin/img/doc/soapui/exportSoapUI.png" alt="Export de projet Soap UI" height="60%" width="60%"/>
+                                <img src="/nuxeo/site/easysoa/skin/img/doc/soapui/exportSoapUI_FicheService.png" alt="Export de projet Soap UI, Fiche service" height="60%" width="60%"/>
+                                <br/>
+                                <br/>
+                                * dans l'<a href="/nuxeo/nxpath/default/default-domain/Intégration DPS - DCV/Deploiement/repository/Endpoint/Integration/http://vmapv:7080/apv/services/PrecomptePartenaireService@view_documents">
+                                        IHM d'édition collaborative
+                                    </a>
+                                , sous la forme d'un bouton placé dans la partie supérieure droite de l'écran.
+                                Ce bouton n'est affiché que pour les endpoints. L'export du projet est un fichier XML qu'il est nécéssaire d'enregistrer avant de pouvoir l'ouvrir
+                                (car Soap UI n'offre pas la possibilité de l'ouvrir directement depuis le navigateur).
+                                <br/>
+                                <br/>
+                                <img src="/nuxeo/site/easysoa/skin/img/doc/soapui/exportSoapUI.png" alt="Export de projet Soap, IHM d'édition collaborative" height="60%" width="60%"/>
                             </p>
                             <p>
                                 Pour ouvrir le projet dans Soap UI, demarrez Soap UI puis rendez vous dans le menu 'File' puis dans 'Import Project'.
@@ -58,6 +78,9 @@
                                 <br/>
                                 <br/>
                                 <img src="/nuxeo/site/easysoa/skin/img/doc/soapui/exportSoapUI_OperationRequest.png" alt="Operation request" height="60%" width="60%"/>
+                                <br/>
+                                <br/>
+                                Pour plus d'information, rendez vous sur la <a href="http://www.soapui.org/Functional-Testing/functional-testing.html">documentation de SOAPUI</a>.
                             </p>
                     </div>
                 </li>

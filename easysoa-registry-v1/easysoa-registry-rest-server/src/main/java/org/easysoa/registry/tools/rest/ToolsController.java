@@ -45,12 +45,10 @@ public class ToolsController extends EasysoaModuleRoot {
 
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetHTML(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
+    public Object doGetHTML(@QueryParam("subprojectId") String subprojectId,
+        @QueryParam("visibility") String visibility) throws Exception {
 
         CoreSession session = SessionFactory.getSession(request);
-        //DocumentService docService = Framework.getService(DocumentService.class);
-        //String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
-
         return getView("tools")
             .arg("subprojectId", subprojectId)
             .arg("visibility", visibility)
@@ -60,17 +58,27 @@ public class ToolsController extends EasysoaModuleRoot {
     @GET
     @Path("apis") // TODO encoding
     @Produces(MediaType.TEXT_HTML)
-    public Object doGetApisPageHTML(@QueryParam("subprojectId") String subprojectId, @QueryParam("visibility") String visibility) throws Exception {
+    public Object doGetApisPageHTML(@QueryParam("subprojectId") String subprojectId,
+        @QueryParam("visibility") String visibility) throws Exception {
 
         CoreSession session = SessionFactory.getSession(request);
-        //DocumentService docService = Framework.getService(DocumentService.class);
-        //String subprojectCriteria = NXQLQueryHelper.buildSubprojectCriteria(session, subprojectId, visibility);
-
         return getView("apis")
             .arg("subprojectId", subprojectId)
             .arg("visibility", visibility)
             .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
+    }
 
+    @GET
+    @Path("soapui") // TODO encoding
+    @Produces(MediaType.TEXT_HTML)
+    public Object doGetSoapUIPageHTML(@QueryParam("subprojectId") String subprojectId,
+        @QueryParam("visibility") String visibility) throws Exception {
+
+        CoreSession session = SessionFactory.getSession(request);
+        return getView("soapui")
+            .arg("subprojectId", subprojectId)
+            .arg("visibility", visibility)
+            .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
     }
 
 }

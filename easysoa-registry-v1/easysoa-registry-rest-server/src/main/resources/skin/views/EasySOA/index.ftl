@@ -161,6 +161,7 @@
                                 <a class="btn" disabled href="">Proxy run manager</a><!-- disabled -->
                                 <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:7080/easySoa/index.html">FraSCAti Studio</a>
                                 <a class="btn" href="${Root.path}/tools/apis?subprojectId=${subprojectId}&visibility=${visibility}">Easysoa API REST</a>
+                                <a class="btn" href="${Root.path}/tools/soapui?subprojectId=${subprojectId}&visibility=${visibility}">SoapUI</a>
                             </div>
 
                             <!-- TODO : add links -->

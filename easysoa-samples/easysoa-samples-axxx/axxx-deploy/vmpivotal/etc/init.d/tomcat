@@ -15,7 +15,7 @@
 
 # package conf
 AXXX_INSTALL_PATH=/home/axxx/install
-AXXX_TOMCAT_NAME="apache-tomcat-6.0.36"
+AXXX_TOMCAT_NAME="apache-tomcat7"
 AXXX_TOMCAT_INSTALL_PATH=$AXXX_INSTALL_PATH/$AXXX_TOMCAT_NAME
 SCRIPTNAME=tomcat
 

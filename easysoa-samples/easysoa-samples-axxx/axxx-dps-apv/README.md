@@ -107,8 +107,9 @@ to expose WS from Eclipse, on PrecomptePartenaireWebServiceTestStarter do right-
 
 #### Deploying :
 
-Download Tomcat 6 from http://tomcat.apache.org/download-60.cgi , unzip it and change all
-80xx ports to 70xx in conf/server.xml (allows to have a running EasySOA Registry on the 8080 port). 
+Download Tomcat 7 from http://tomcat.apache.org/download-70.cgi , unzip it, rename its
+directory to "apache-tomcat7" and change all 80xx ports to 70xx in conf/server.xml
+(allows to have a running EasySOA Registry on the 8080 port). 
 
 Now copy axxx-dps-apv-web/target/*war in its webapps directory, go in bin/ directory and start it :
 

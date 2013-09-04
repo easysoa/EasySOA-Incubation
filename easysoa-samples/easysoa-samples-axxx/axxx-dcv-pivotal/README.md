@@ -125,13 +125,14 @@ favorite application server.
 
 Here is how to do it with Apache Tomcat :
 
-Download Tomcat 6 from http://tomcat.apache.org/download-60.cgi , unzip it and change all
-80xx ports to 70xx in conf/server.xml (allows to have a running EasySOA Registry on the 8080 port). 
+Download Tomcat 7 from http://tomcat.apache.org/download-70.cgi , unzip it, rename its
+directory to "apache-tomcat7" and change all 80xx ports to 70xx in conf/server.xml
+(allows to have a running EasySOA Registry on the 8080 port). 
 
 Now copy axxx-dcv-pivotal/target/pivotal/* in its webapps/ROOT directory :
 
-   rm -rf [TOMCAT_HOME]/webapps/ROOT/*   
-   scp -rp axxx-dcv-pivotal/target/pivotal/* [USER]:[REMOTE_HOST]:/home/[USER]/install/apache-tomcat-6.0.36/webapps/ROOT/
+   rm -rf [TOMCAT_HOME]/webapps/ROOT/*
+   scp -r axxx-dcv-pivotal/target/pivotal/* [USER]:[REMOTE_HOST]:/home/[USER]/install/apache-tomcat7/webapps/ROOT/
 
    On local machine, you can use this command :
    cp -rf axxx-dps-apv-web/target/pivotal/* [TOMCAT_HOME]/webapps/ROOT/
@@ -141,7 +142,8 @@ Then go in bin/ directory and start it :
     cd [TOMCAT_HOME]/bin/
 	./catalina.sh run
 	
-And AXXX Pivotal will be available at http://localhost:7080/ .
+And AXXX Pivotal will be available at http://localhost:7080/pivotal and its web
+services below http://localhost:7080 .
 	
 If the following error message is displayed :
 
@@ -152,7 +154,7 @@ Then before starting it, just go in bin folder and execute the following command
 
 	chmod +x *.sh
 
-Update the appended contents of your system's hosts file to the
+In production, update the appended contents of your system's hosts file to the
 actual IPs of the deployment computers.
 
 
@@ -192,4 +194,9 @@ Solution :
 You need to first build the EasySOA source discovery plugin once (and the EasySOA registry, but you don't need to start it !) by doing at the EasySOA-Incubation root : mvn clean install -DskipTests
 
 Or you can skip it by adding to the mvn command line : -DskipEasySOA
+
+### OutOfMemoryError - PermGen space error
+May happen with other webapps in the same tomcat. To solve it, add to catalina.sh :
+	
+	JAVA_OPTS=-XX:MaxPermSize=128m
 

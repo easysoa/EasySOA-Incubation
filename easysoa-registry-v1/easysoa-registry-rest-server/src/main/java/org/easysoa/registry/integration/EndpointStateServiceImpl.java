@@ -75,12 +75,11 @@ public class EndpointStateServiceImpl implements EndpointStateService {
             catch(Exception ex){
                  // Return the exception and cancel the transaction
                  throw new Exception("Failed to update SLA or OLA indicators ", ex);
+                 
             } finally {
-                if (session != null) {
-                    // NB. container manages transaction, so no need to commit or rollback
-                    // (see doc of deprecated session.commit())
-                    session.close();
-                }
+                // NB. container manages transaction, so no need to commit or rollback
+                // (see doc of deprecated session.commit())
+                session.close();
             }
         }
     }
@@ -120,11 +119,11 @@ public class EndpointStateServiceImpl implements EndpointStateService {
 
             // Open a session on slaOrOlaIndicator directory
             Session session = directoryService.open("slaOrOlaIndicator");
-            if(session == null){
+            if (session == null){
                 throw new Exception("Unable to open a new session on directory 'slaOrOlaIndicator'");
             }
 
-            try{
+            try {
                 // Update each indicator
                 for(SlaOrOlaIndicator indicator : slaOrOlaIndicators.getSlaOrOlaIndicatorList()){
                     // get the indicator if exists
@@ -148,16 +147,15 @@ public class EndpointStateServiceImpl implements EndpointStateService {
                         createIndicator(session, indicator);
                     }
                 }
-            }
-            catch(Exception ex){
+                
+            } catch (Exception ex) {
                  // Return the exception and cancel the transaction
                  throw new Exception("Failed to update SLA or OLA indicators ", ex);
+                 
             } finally {
-                if (session != null) {
-                    // NB. container manages transaction, so no need to commit or rollback
-                    // (see doc of deprecated session.commit())
-                    session.close();
-                }
+                // NB. container manages transaction, so no need to commit or rollback
+                // (see doc of deprecated session.commit())
+                session.close();
             }
         }
     }
@@ -239,12 +237,27 @@ public class EndpointStateServiceImpl implements EndpointStateService {
             String periodStart, String periodEnd) throws Exception {
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         Session session = directoryService.open(org.easysoa.registry.types.SlaOrOlaIndicator.DOCTYPE);
-        int totalIndicatorNumber = 0;
-        for(String endpointId : endpointIds){
-            int indicatorNumber = getTotalNumberOfSlaOrOlaindicators(session, endpointId, "", periodStart, periodEnd);
-            totalIndicatorNumber = totalIndicatorNumber + indicatorNumber;
+        if (session == null){
+            throw new Exception("Unable to open a new session on directory 'slaOrOlaIndicator'");
         }
-        return totalIndicatorNumber;
+        
+        try {
+            int totalIndicatorNumber = 0;
+            for(String endpointId : endpointIds){
+                int indicatorNumber = getTotalNumberOfSlaOrOlaindicators(session, endpointId, "", periodStart, periodEnd);
+                totalIndicatorNumber = totalIndicatorNumber + indicatorNumber;
+            }
+            return totalIndicatorNumber;
+            
+        } catch (Exception ex) {
+             // Return the exception and cancel the transaction
+             throw new Exception("Failed to getTotalNumberOfSlaOrOlaindicators ", ex);
+             
+        } finally {
+            // NB. container manages transaction, so no need to commit or rollback
+            // (see doc of deprecated session.commit())
+            session.close();
+        }
     }
 
     public int getTotalNumberOfSlaOrOlaindicators(Session session, String endpointId,
@@ -261,36 +274,38 @@ public class EndpointStateServiceImpl implements EndpointStateService {
     public SlaOrOlaIndicators getSlaOrOlaIndicators(String endpointId,
             String slaOrOlaName, String periodStart, String periodEnd, int pageSize, int pageStart) throws Exception {
 
+        SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();
+        
         DirectoryService directoryService = Framework.getService(DirectoryService.class);
         Session session = directoryService.open(org.easysoa.registry.types.SlaOrOlaIndicator.DOCTYPE);
 
-        /*
-        * Returns level indicators, in the given period (default : daily)
-        * OPT paginated navigation
-        * @param periodStart : if null day start, if both null returns all in the current day
-        * @param periodEnd : if null now, if both null returns all in the current day
-        * @param pageSize OPT pagination : number of indicators per page, if not specified, all results are returned
-        * @param pageStart OPT pagination : index of the first indicator to return (starts with 0)
-        * @return SlaOrOlaIndicators array of SlaOrOlaIndicator
-        */
-
-        if(session == null){
+        if (session == null) {
             throw new Exception("Unable to open a new session on directory '" + org.easysoa.registry.types.SlaOrOlaIndicator.DOCTYPE + "'");
         }
-
-        Map<String, Serializable> parameters = new HashMap<String, Serializable>();
-
-        if(endpointId != null && !"".equals(endpointId)){
-            parameters.put("endpointId", endpointId);
-        }
-
-        if(slaOrOlaName != null && !"".equals(slaOrOlaName)){
-            parameters.put("slaOrOlaName", slaOrOlaName);
-        }
-
-        SlaOrOlaIndicators slaOrOlaIndicators = new SlaOrOlaIndicators();
-        // Execute query
+        
         try {
+    
+            /*
+            * Returns level indicators, in the given period (default : daily)
+            * OPT paginated navigation
+            * @param periodStart : if null day start, if both null returns all in the current day
+            * @param periodEnd : if null now, if both null returns all in the current day
+            * @param pageSize OPT pagination : number of indicators per page, if not specified, all results are returned
+            * @param pageStart OPT pagination : index of the first indicator to return (starts with 0)
+            * @return SlaOrOlaIndicators array of SlaOrOlaIndicator
+            */
+    
+            Map<String, Serializable> parameters = new HashMap<String, Serializable>();
+    
+            if(endpointId != null && !"".equals(endpointId)){
+                parameters.put("endpointId", endpointId);
+            }
+    
+            if(slaOrOlaName != null && !"".equals(slaOrOlaName)){
+                parameters.put("slaOrOlaName", slaOrOlaName);
+            }
+    
+            // Execute query
 
             // Use this method to have request on date range and pagination
             Map<String, String> orderByParams = new HashMap<String, String>();
@@ -344,9 +359,15 @@ public class EndpointStateServiceImpl implements EndpointStateService {
                 indicator.setTimestamp(calendar.getTime());
                 slaOrOlaIndicators.getSlaOrOlaIndicatorList().add(indicator);
             }
+            
         } catch (ClientException ex) {
-            ex.printStackTrace();
-            throw ex;
+            // Return the exception and cancel the transaction
+            throw new Exception("Failed to getSlaOrOlaIndicators on paginated range ", ex);
+            
+        } finally {
+            // NB. container manages transaction, so no need to commit or rollback
+            // (see doc of deprecated session.commit())
+            session.close();
         }
 
         return slaOrOlaIndicators;

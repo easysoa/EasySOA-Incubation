@@ -36,11 +36,17 @@
                <img data-src="holder.js/300x200" alt=""></img>
 
       <#if endpoint?has_content>
-          <h3>Déploiement <@displayEndpointTitle endpoint subprojectId visibility/></h3>
+          <h3>Déploiement <@displayEndpointTitle endpoint subprojectId visibility/>
+          <a href="<@urlToLocalNuxeoDocumentsUi endpoint/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
+          </h3>
       <#elseif serviceimpl?has_content>
-          <h3>Implémentation <@displayImplementationTitle serviceimpl subprojectId visibility/></h3>
+          <h3>Implémentation <@displayImplementationTitle serviceimpl subprojectId visibility/>
+          <a href="<@urlToLocalNuxeoDocumentsUi serviceimpl/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
+          </h3>
       <#else>
-		    <h3>Définition <@displayServiceTitle service subprojectId visibility/></h3>
+		    <h3>Définition <@displayServiceTitle service subprojectId visibility/>
+		    <a href="<@urlToLocalNuxeoDocumentsUi service/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
+		    </h3>
 		</#if>
 
 

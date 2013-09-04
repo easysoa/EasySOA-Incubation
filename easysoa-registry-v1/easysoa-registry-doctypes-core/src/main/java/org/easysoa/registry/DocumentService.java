@@ -412,9 +412,10 @@ public interface DocumentService {
 	List<DocumentModel> getConsumedInterfaceImplementationsOfJavaConsumption(DocumentModel javaConsumptionModel, String subprojectId, boolean nonMock, boolean mock) throws ClientException;
 	/** Returns non mock and / or mock impls of this java consumption's interface */
 	List<DocumentModel> getConsumedInterfaceImplementationsOfJavaConsumptionInCriteria(DocumentModel javaConsumptionModel, String subprojectCriteria, boolean nonMock, boolean mock) throws ClientException;
-	DocumentModel getConsumedJavaInterfaceService(DocumentModel javaConsumptionModel, String subprojectId) throws ClientException;
-	/** Returns the InformationService of the first non-mock impl of this java consumption's interface */
-	DocumentModel getConsumedJavaInterfaceServiceInCriteria(DocumentModel javaConsumptionModel, String subprojectCriteria) throws ClientException;
+	List<DocumentModel> getPossibleConsumedJavaInterfaceServices(DocumentModel javaConsumptionModel, String subprojectId) throws ClientException;
+	/** Does getConsumedInterfaceImplementationsOfJavaConsumptionInCriteria(non mock) then getParentInformationServices
+	 * (because only the InformationService of the first impl could be wrong and really misleading) */
+	List<DocumentModel> getPossibleConsumedJavaInterfaceServicesInCriteria(DocumentModel javaConsumptionModel, String subprojectCriteria) throws ClientException;
 	
 	List<DocumentModel> getJavaServiceConsumptions(DocumentModel serviceModel, String subprojectId) throws ClientException;
 	List<DocumentModel> getJavaServiceConsumptionsInCriteria(DocumentModel serviceModel, String subprojectCriteria) throws ClientException;
@@ -442,6 +443,7 @@ public interface DocumentService {
 	List<DocumentModel> getComponentsInCriteria(CoreSession session, String subprojectCriteria) throws ClientException;
 
 	DocumentModel getParentInformationService(DocumentModel model) throws ClientException;
+	List<DocumentModel> getParentInformationServices(List<DocumentModel> model) throws ClientException;
 
 	/**
 	 * For now uses getSoaNodeParent()
@@ -450,5 +452,6 @@ public interface DocumentService {
 	 * @throws ClientException
 	 */
 	DocumentModel getParentServiceImplementation(DocumentModel model)throws ClientException;
+    List<DocumentModel> getParentServiceImplementations(List<DocumentModel> model) throws ClientException;
 
 }

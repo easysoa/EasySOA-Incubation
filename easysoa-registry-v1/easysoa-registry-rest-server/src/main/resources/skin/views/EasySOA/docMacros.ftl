@@ -97,6 +97,7 @@
         <@displayServiceTitleWithoutPhase service subprojectId visibility/>
         <span style="color:grey; font-style: italic;"> - <@displayPhaseIfOutsideContext service['spnode:subproject']/>
         <#--  (v${service.versionLabel}) -->
+        </span>
     </#macro>
     
     <#macro displayActorLink actor>
@@ -314,16 +315,25 @@
               <#if delConsumption_index != delConsumptions?size - 1> ;</#if>
          </#list>))
          <br/ -->
-           et consomme les services :
+           et consomme les services (hors test) :
            <#list delConsumptions as delConsumption>
-              <#assign delConsumedService = Root.getDocumentService().getConsumedJavaInterfaceService(delConsumption, subprojectId)/>
-              <#if delConsumedService?has_content>
-                 <br/>&nbsp;-&nbsp;&nbsp;<@displayServiceShort delConsumedService subprojectId visibility/>
-              <#else>
-                 <br/>&nbsp;-&nbsp;&nbsp;${delConsumption['wsdlinfo:wsdlPortTypeName']}
+              <#if delConsumption['sc:isTest'] != 'true'>
+                 <#assign delPossibleConsumedServices = Root.getDocumentService().getPossibleConsumedJavaInterfaceServices(delConsumption, subprojectId)/>
+                 <br/>&nbsp;-&nbsp;&nbsp;interface <span style="color:grey;">${delConsumption['wsdlinfo:wsdlPortTypeName']}</span>
+                 (java <span style="color:grey;">${delConsumption['javasc:consumedInterface']}</span>)
+                 <#if delPossibleConsumedServices?size != 0>
+                    avec les services web Java correspondant possibles
+                    <#list delPossibleConsumedServices as delPossibleConsumedService>
+                       <@displayServiceShort delPossibleConsumedService subprojectId visibility/>
+                       <#if service?has_content && delPossibleConsumedService['soan:name'] = service['soan:name']>
+                       (lui-même)
+                       </#if> 
+                       <#if delPossibleConsumedService_index != delPossibleConsumedServices?size - 1> ;</#if>
+                    </#list>
+                    et les autres services web correspondant possibles <i>(à venir)</i>
+                 </#if>
+                 <#if delConsumption_index != delConsumptions?size - 1> ;</#if>
               </#if>
-              (java ${delConsumption['javasc:consumedInterface']})
-              <#if delConsumption_index != delConsumptions?size - 1> ;</#if>
            </#list>
          <#else>
              est inconnu.
@@ -356,9 +366,11 @@
                   </#if>
                </#list>
                <#if !foundLocalNonMockConsumedServiceImpl?has_content>
-                    <br/>&nbsp;-&nbsp;&nbsp;externe au délivrable ${servicecons['title']} (par l'interface ${servicecons['javasc:consumedInterface']})
+                    <br/>&nbsp;-&nbsp;&nbsp;externe au délivrable <span style="color:grey;">${servicecons['title']}</span>
+                    (par l'interface <span style="color:grey;">${servicecons['javasc:consumedInterface']}</span>)
                  <#else>
-                    <br/>&nbsp;-&nbsp;&nbsp;(interne au délivrable ${servicecons['title']}, par l'implémentation ${foundLocalNonMockConsumedServiceImpl['title']} d'interface ${servicecons['javasc:consumedInterface']})
+                    <br/>&nbsp;-&nbsp;&nbsp;(interne au délivrable <span style="color:grey;">${servicecons['title']}</span>,
+                    par l'implémentation ${foundLocalNonMockConsumedServiceImpl['title']} d'interface <span style="color:grey;">${servicecons['javasc:consumedInterface']}</span>)
                  </#if>
               </#if>
          </#list>

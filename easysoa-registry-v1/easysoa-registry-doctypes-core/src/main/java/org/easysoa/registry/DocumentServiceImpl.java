@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import javax.annotation.Nullable;
+
 import org.easysoa.registry.facets.ServiceImplementationDataFacet;
 import org.easysoa.registry.matching.MatchingHelper;
 import org.easysoa.registry.types.Component;
@@ -44,6 +46,9 @@ import org.nuxeo.ecm.platform.query.nxql.NXQLQueryBuilder;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Lists;
 
 public class DocumentServiceImpl extends DefaultComponent implements DocumentService {
 
@@ -846,18 +851,19 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
         return filterImpls(impls, nonMock, mock);
 	}
 	@Override
-	public DocumentModel getConsumedJavaInterfaceService(
+	public List<DocumentModel> getPossibleConsumedJavaInterfaceServices(
 			DocumentModel javaConsumptionModel, String subprojectId) throws ClientException {
-		return getConsumedJavaInterfaceServiceInCriteria(javaConsumptionModel,
+		return getPossibleConsumedJavaInterfaceServicesInCriteria(javaConsumptionModel,
 				NXQLQueryHelper.buildSubprojectCriteria(javaConsumptionModel.getCoreSession(), subprojectId, true));
 	}
 	@Override
-	public DocumentModel getConsumedJavaInterfaceServiceInCriteria(
+	public List<DocumentModel> getPossibleConsumedJavaInterfaceServicesInCriteria(
 			DocumentModel javaConsumptionModel, String subprojectCriteria) throws ClientException {
-		List<DocumentModel> consumedImpls = getConsumedInterfaceImplementationsOfJavaConsumptionInCriteria(javaConsumptionModel, subprojectCriteria, true, true);
+		List<DocumentModel> consumedImpls = getConsumedInterfaceImplementationsOfJavaConsumptionInCriteria(
+		        javaConsumptionModel, subprojectCriteria, true, false);
+		        // NB. don't return mocks, because a mock's project is never the project of the actual service
 		// getting non mock impl IF POSSIBLE because it is a better guess (TODO how even better ??)
-		DocumentModel impl = null;
-		DocumentModel actualImpl = null;
+		/*DocumentModel actualImpl = null;
 		for (DocumentModel consumedImpl : consumedImpls) {
 			if ("true".equals(consumedImpl.getPropertyValue(ServiceImplementation.XPATH_ISMOCK))) {
 				actualImpl = consumedImpl;
@@ -867,18 +873,19 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 		}
 		if (actualImpl != null) {
 			impl = actualImpl;
-		}
-		if (impl == null) {
+		}*/
+		if (consumedImpls.isEmpty()) {
 			// if none i.e. is a non-impl'd itf,
 			// TODO handle this case, ex.
 			// * by adding (consumed) iserv info on consumption
 			// * or by modeling java interface independently
 			// * or by adding java info to technical iserv NO DOESN'T SOLVE PB IF NO TECHNICAL ISERV
 		}
-		if (impl == null) {
+		/*if (impl == null) {
 			return null;
 		}
-		return getParentInformationService(impl);
+		return getParentInformationService(impl);*/
+        return getParentInformationServices(consumedImpls);
 	}
 
 	@Override
@@ -1070,6 +1077,20 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 		}
     	return null;
 	}
+    @Override
+    public List<DocumentModel> getParentInformationServices(List<DocumentModel> serviceimpls) throws ClientException {
+        return Lists.transform(serviceimpls, new Function<DocumentModel, DocumentModel>() {
+            @Override
+            @Nullable
+            public DocumentModel apply(@Nullable DocumentModel serviceimpl) {
+                try {
+                    return getParentInformationService(serviceimpl);
+                } catch (ClientException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
 
 	@Override
 	public DocumentModel getParentServiceImplementation(DocumentModel model) throws ClientException {
@@ -1085,6 +1106,21 @@ public class DocumentServiceImpl extends DefaultComponent implements DocumentSer
 		}*/
 		return getSoaNodeParent(model, ServiceImplementation.DOCTYPE);
 	}
+
+    @Override
+    public List<DocumentModel> getParentServiceImplementations(List<DocumentModel> endpoints) throws ClientException {
+        return Lists.transform(endpoints, new Function<DocumentModel, DocumentModel>() {
+            @Override
+            @Nullable
+            public DocumentModel apply(@Nullable DocumentModel endpoint) {
+                try {
+                    return getParentServiceImplementation(endpoint);
+                } catch (ClientException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
 	
 
 	protected List<DocumentModel> filterImpls(List<DocumentModel> impls, boolean nonMock, boolean mock)

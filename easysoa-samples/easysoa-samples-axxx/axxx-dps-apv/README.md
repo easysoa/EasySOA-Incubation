@@ -1,7 +1,22 @@
 ## AXXX APV Web
 
 
-### Features
+### About :
+AXXX APV is a mock-up business application managing requests for funded holidays,
+deployed at AXXX and managed by the DPS IT department. See more information about the
+AXXX use case at https://github.com/easysoa/EasySOA/wiki/Axxx-use-case .
+
+AXXX is a use case of the [EasySOA project](http://www.easysoa.org) and developed by
+its partners :
+* [INRIA labs](http://www.inria.fr)
+* [EasiFab](http://easifab.net)
+* [Talend](http://www.talend.com)
+* [Nuxeo](http://www.nuxeo.org)
+* [Bull](http://www.bull.com)
+* [Open Wide](http://www.openwide.fr)
+
+
+### Features :
 
 * no user & security for now
 * APV POJO model : PrecomptePartenaire, Tdr, Projet
@@ -54,19 +69,6 @@ Business processes :
  * LATER display approved Projets in readonly & list them separately
 
 * TODO UI : prettify, more AXXX-y (see www.axxx.fr)
-
-
-### About
-AXXX APV is a mock-up business application managing requests for funded holidays, deployed at AXXX and managed by the DPS IT department.
-See more information about the AXXX use case at https://github.com/easysoa/EasySOA/wiki/Axxx-use-case .
-
-AXXX is a use case of the [EasySOA project](http://www.easysoa.org) and developed by its partners :
-* [INRIA labs](http://www.inria.fr)
-* [EasiFab](http://easifab.net)
-* [Talend](http://www.talend.com)
-* [Nuxeo](http://www.nuxeo.org)
-* [Bull](http://www.bull.com)
-* [Open Wide](http://www.openwide.fr)
 
 
 ### How to install :

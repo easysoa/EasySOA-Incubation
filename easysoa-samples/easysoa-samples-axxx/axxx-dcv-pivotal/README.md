@@ -1,6 +1,23 @@
 ## AXXX Pivotal
 
-Features :
+
+### About :
+
+AXXX Pivotal is a mock-up CRM application deployed at AXXX and managed by the DCV IT
+department. See more information about the AXXX use case at
+https://github.com/easysoa/EasySOA/wiki/Axxx-use-case .
+
+AXXX is a use case of the [EasySOA project](http://www.easysoa.org) and developed by
+its partners :
+* [INRIA labs](http://www.inria.fr)
+* [EasiFab](http://easifab.net)
+* [Talend](http://www.talend.com)
+* [Nuxeo](http://www.nuxeo.org)
+* [Bull](http://www.bull.com)
+* [Open Wide](http://www.openwide.fr)
+
+
+### Features :
 
 * login, logout
 * allow to list, remove & add Client
@@ -18,20 +35,6 @@ Features :
 
 * TODO UI : more MS-y, display partner logos that are in pivotal/images/logos and pivotal/css/images.css, remove unused images & js
 * TODO deploy in production (notably doc ; see FStudio)
-
-
-### About
-
-AXXX Pivotal is a mock-up CRM application deployed at AXXX and managed by the DCV IT department.
-See more information about the AXXX use case at https://github.com/easysoa/EasySOA/wiki/Axxx-use-case .
-
-AXXX is a use case of the [EasySOA project](http://www.easysoa.org) and developed by its partners :
-* [INRIA labs](http://www.inria.fr)
-* [EasiFab](http://easifab.net)
-* [Talend](http://www.talend.com)
-* [Nuxeo](http://www.nuxeo.org)
-* [Bull](http://www.bull.com)
-* [Open Wide](http://www.openwide.fr)
 
 
 ### How to install :
@@ -131,15 +134,20 @@ directory to "apache-tomcat7" and change all 80xx ports to 70xx in conf/server.x
 
 Now copy axxx-dcv-pivotal/target/pivotal/* in its webapps/ROOT directory :
 
-   rm -rf [TOMCAT_HOME]/webapps/ROOT/*
-   scp -r axxx-dcv-pivotal/target/pivotal/* [USER]:[REMOTE_HOST]:/home/[USER]/install/apache-tomcat7/webapps/ROOT/
+	# Deploy to a remote computer :
+	rm -rf [TOMCAT_HOME]/webapps/ROOT/*
+	scp -r axxx-dcv-pivotal/target/pivotal/* [USER]:[REMOTE_HOST]:/home/[USER]/install/apache-tomcat7/webapps/ROOT/
 
-   On local machine, you can use this command :
-   cp -rf axxx-dps-apv-web/target/pivotal/* [TOMCAT_HOME]/webapps/ROOT/
+	# On local machine, you can use this command :
+	cp -rf axxx-dps-apv-web/target/pivotal/* [TOMCAT_HOME]/webapps/ROOT/
+
+	# If you're adding a new version, remove the older one first
+	# (else FraSCAti startup errors "component XXX is already defined") :
+	rm -rf [TOMCAT_HOME]/webapps/ROOT/*
 
 Then go in bin/ directory and start it :
 
-    cd [TOMCAT_HOME]/bin/
+	cd [TOMCAT_HOME]/bin/
 	./catalina.sh run
 	
 And AXXX Pivotal will be available at http://localhost:7080/pivotal and its web
@@ -200,3 +208,28 @@ May happen with other webapps in the same tomcat. To solve it, add to catalina.s
 	
 	JAVA_OPTS=-XX:MaxPermSize=128m
 
+### FraSCAti startup error - "component XXX is already defined"
+In log file (apache-tomcat7/logs/catalina.out etc.), a lot of errors such as :
+
+	sept. 04, 2013 5:20:38 PM org.ow2.frascati.parser.core.ParsingContextImpl error
+	SEVERE: jar:file:/home/mdutoo/dev/easysoa/apache-tomcat7/webapps/ROOT/WEB-INF/lib/frascati-assembly-factory-1.6-20130820.132037-101.jar!/org/ow2/frascati/assembly/factory/AssemblyFactory.composite: <sca:composite name="org.ow2.frascati.assembly.factory.AssemblyFactory"> - <component name='sca-component-property'> is already defined
+
+going after :
+
+	sept. 04, 2013 5:23:47 PM org.ow2.frascati.util.AbstractLoggeable warning
+	WARNING: 172 errors detected during the checking phase of composite 'org/ow2/frascati/FraSCAti'
+	sept. 04, 2013 5:23:47 PM org.ow2.frascati.util.AbstractLoggeable severe
+	SEVERE: Cannot load the OW2 FraSCAti composite
+	org.ow2.frascati.util.FrascatiException: Cannot load the OW2 FraSCAti composite
+		at org.ow2.frascati.FraSCAti.initFrascatiComposite(FraSCAti.java:191)
+		at org.ow2.frascati.FraSCAti.newFraSCAti(FraSCAti.java:246)
+		at org.ow2.frascati.FraSCAti.newFraSCAti(FraSCAti.java:222)
+		at org.ow2.frascati.servlet.FraSCAtiServlet.init(FraSCAtiServlet.java:150)
+
+Solution :
+
+there are two different versions of FraSCAti in the same webapp. This probably
+happened because you tried to update the webapp to a newer version. In this case,
+before updating it remove the older one :
+
+	rm -rf [TOMCAT_HOME]/webapps/ROOT/*

@@ -6,8 +6,7 @@
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: tomcat initscript for FraSCAti Studio
-# Description:       This file should be used to construct scripts to be
-#                    placed in /etc/init.d.
+# Description:       Tomcat script for SysV init. Requires : sudo, nohup, bash.
 ### END INIT INFO
 
 # Author: Openwide <contact@openwide.fr>

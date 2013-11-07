@@ -125,7 +125,8 @@ public class SoaNodeInformation implements SoaNode {
     @JsonSubTypes({ @JsonSubTypes.Type(String.class), @JsonSubTypes.Type(SoaDateType.class),
         @JsonSubTypes.Type(SoaMapType.class), @JsonSubTypes.Type(SoaListType.class),
         @JsonSubTypes.Type(Integer.class), @JsonSubTypes.Type(Long.class),
-        @JsonSubTypes.Type(Float.class), @JsonSubTypes.Type(Double.class) })
+        @JsonSubTypes.Type(Float.class), @JsonSubTypes.Type(Double.class),
+        @JsonSubTypes.Type(Boolean.class) })
     @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
     public Map<String, Serializable> getJacksonProperties() {
         return JacksonModelHelper.toJacksonProperties(properties);
@@ -140,7 +141,8 @@ public class SoaNodeInformation implements SoaNode {
     @JsonSubTypes({ @JsonSubTypes.Type(String.class), @JsonSubTypes.Type(SoaDateType.class),
         @JsonSubTypes.Type(SoaMapType.class), @JsonSubTypes.Type(SoaListType.class),
         @JsonSubTypes.Type(Integer.class), @JsonSubTypes.Type(Long.class),
-        @JsonSubTypes.Type(Float.class), @JsonSubTypes.Type(Double.class) })
+        @JsonSubTypes.Type(Float.class), @JsonSubTypes.Type(Double.class),
+        @JsonSubTypes.Type(Boolean.class) })
     @JsonTypeInfo(use = Id.NAME, include = As.WRAPPER_OBJECT)
     public void setJacksonProperties(Map<String, Serializable> properties) {
         this.properties = JacksonModelHelper.fromJacksonProperties(properties);

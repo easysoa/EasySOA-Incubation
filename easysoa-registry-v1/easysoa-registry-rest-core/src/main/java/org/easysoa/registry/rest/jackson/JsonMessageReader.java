@@ -47,7 +47,9 @@ import org.easysoa.registry.rest.integration.SlaOrOlaIndicators;
 
 /**
  * 
- * @obsolete using rather a wrapper list node (ex. SoaNodeInformations)
+ * @obsolete using rather a wrapper list node (ex. SoaNodeInformations).
+ * Map to JsonNode then entity is not optimal, and LATER not available in Jackson 2
+ * (would have to be replaced by JacksonJsonProvider or do as in ProviderBase)
  *
  */
 @Provider

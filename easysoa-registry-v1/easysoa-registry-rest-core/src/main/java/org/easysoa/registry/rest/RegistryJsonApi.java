@@ -29,6 +29,9 @@ import javax.ws.rs.core.MediaType;
 /**
  * Clients can use this sub-interface to tell their JAXRS engine to use RegistryAPI through JSON.
  * See RegistryAPI.
+ * 
+ * Defined in Jackson 1.8.1.
+ * (see how to migrate to 2.0 at http://www.cowtowncoder.com/blog/archives/2012/04/entry_469.html )
  */
 @Path("easysoa/registry") // even if already in itf
 //because Jersey doesn't (mostly) inherit @Path, see

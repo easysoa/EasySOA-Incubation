@@ -26,6 +26,8 @@ import java.security.Principal;
 import java.util.Properties;
 
 import org.easysoa.registry.DocumentService;
+import org.easysoa.registry.EndpointMatchingService;
+import org.easysoa.registry.ServiceMatchingService;
 import org.easysoa.registry.SubprojectServiceImpl;
 import org.easysoa.registry.subproject.SubprojectId;
 import org.easysoa.registry.utils.NXQLQueryHelper;
@@ -154,6 +156,12 @@ public class EasysoaModuleRoot extends ModuleRoot {
 
     public DocumentService getDocumentService() throws Exception {
     	return Framework.getService(DocumentService.class);
+    }
+    public ServiceMatchingService getServiceMatchingService() throws Exception {
+        return Framework.getService(ServiceMatchingService.class);
+    }
+    public EndpointMatchingService getEndpointMatchingService() throws Exception {
+        return Framework.getService(EndpointMatchingService.class);
     }
     public UserManager getUserManager() throws Exception {
     	return Framework.getService(UserManager.class);

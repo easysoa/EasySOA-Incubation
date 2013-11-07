@@ -3,6 +3,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <!-- don't bring in EasySOA Registry server-side pom (?) -->
   <!-- parent>
       <groupId>org.easysoa.registry</groupId>
       <artifactId>easysoa-registry</artifactId>
@@ -17,6 +18,7 @@
   
   <properties>
      <easysoa.version>1.0-SNAPSHOT</easysoa.version>
+     <java.version>1.7</java.version><!-- nuxeo's -->
      <frascati.version>1.6-SNAPSHOT</frascati.version>
      <cxf.version>2.7.5</cxf.version><!-- frascati's -->
      <jettison.version>1.3.3</jettison.version><!-- cxf's -->
@@ -139,14 +141,15 @@
   <!-- ======= -->
   <build>
     <plugins>
-      <!-- Compile with Java 1.6 -->
+      <!-- Compile with Java 1.7
+      else FraSCAti UnsupportedClassVersionError 51.0 RegistryApi, TODO rather recopy it -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.5.1</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target><!-- else FraSCAti UnsupportedClassVersionError 51.0 RegistryApi, TODO rather recopy it -->
+          <source>${java.version}</source>
+          <target>${java.version}</target>
         </configuration>
       </plugin>
     </plugins>
@@ -158,8 +161,9 @@
   <!-- ============ -->
   <repositories>
     <repository>
+      <!-- EasySOA repository at Nuxeo Nexus, proxies & contains everything that's required by EasySOA -->
       <id>easysoa</id>
-      <name>EasySOA consortium repository</name>
+      <name>EasySOA group repository</name>
       <url>https://maven.nuxeo.org/nexus/content/groups/easysoa/</url>
       <releases>
         <enabled>true</enabled>
@@ -168,11 +172,19 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
+    <!-- XXX: Activating temporarily the FraSCAti repository
+    since some dependencies are missing from the Nuxeo mirror repository -->
+    <!-- repository>
+      <id>frascati-repo</id>
+      <name>FraSCAti Nexus repository</name>
+      <url>https://frascati-repo.inria.fr/nexus/content/groups/public</url>
+    </repository -->
   </repositories>
   <pluginRepositories>
     <pluginRepository>
+      <!-- EasySOA repository at Nuxeo Nexus, proxies & contains everything that's required by EasySOA -->
       <id>easysoa</id>
-      <name>EasySOA consortium repository</name>
+      <name>EasySOA group repository</name>
       <url>https://maven.nuxeo.org/nexus/content/groups/easysoa/</url>
       <releases>
         <enabled>true</enabled>
@@ -181,6 +193,13 @@
         <enabled>true</enabled>
       </snapshots>
     </pluginRepository>
+    <!-- XXX: Activating temporarily the FraSCAti repository
+    since some dependencies are missing from the Nuxeo mirror repository -->
+    <!-- pluginRepository>
+      <id>frascati-repo</id>
+      <name>FraSCAti Nexus repository</name>
+      <url>https://frascati-repo.inria.fr/nexus/content/groups/public</url>
+    </pluginRepository -->
   </pluginRepositories>
   
 </project>

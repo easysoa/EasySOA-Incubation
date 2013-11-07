@@ -5,7 +5,9 @@
   <groupId>org.easysoa.registry</groupId>
   <artifactId>easysoa-registry</artifactId>
   <name>EasySOA Registry</name>
-  <description>EasySOA is a software for discovering, registering and organizing SOA services.</description>
+  <description>EasySOA provides agile, collaborative, non-intrusive governance to Service-oriented Information Systems.
+  It allows to discover SOA services, get metrics about them, document them, reconcile them against specified planned developments and business requirements,
+  keep track of business Service Levels, and provide impact analysis.</description>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
@@ -26,16 +28,16 @@
 
   <url>http://www.easysoa.org</url>
   <scm>
-    <connection>scm:git:git://github.com/easysoa/EasySOA.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com:easysoa/EasySOA.git</developerConnection>
-    <url>https://github.com/easysoa/EasySOA</url>
+    <connection>scm:git:git://github.com/easysoa/EasySOA-Incubation.git</connection>
+    <developerConnection>scm:git:ssh://git@github.com:easysoa/EasySOA-Incubation.git</developerConnection>
+    <url>https://github.com/easysoa/EasySOA-Incubation</url>
   </scm>
 
   <mailingLists>
     <mailingList>
       <name>EasySOA developers mailing-list</name>
       <archive>https://groups.google.com/forum/?fromgroups#!forum/easysoa-dev</archive>
-      <post>easysoa.dev@googlegroups.com</post>
+      <post>easysoa-dev@googlegroups.com</post>
     </mailingList>
   </mailingLists>
   <issueManagement>
@@ -47,7 +49,7 @@
 
   <developers>
     <developer>
-      <id>dutoo</id>
+      <id>mdutoo</id>
       <name>Marc Dutoo</name>
       <email>marc.dutoo@openwide.fr</email>
       <organization>Openwide</organization>
@@ -58,7 +60,7 @@
       </roles>
     </developer>
     <developer>
-      <id>guillemotte</id>
+      <id>JGuillemotte</id>
       <name>Jeremie Guillemotte</name>
       <email>jeremie.guillemotte@openwide.fr</email>
       <organization>Openwide</organization>
@@ -69,13 +71,33 @@
       </roles>
     </developer>
     <developer>
-      <id>kalam-alami</id>
+      <id>mkalam-alami</id>
       <name>Marwane Kalam-alami</name>
       <email>marwane.kalam-alami@openwide.fr</email>
-      <organization>Openwide</organization>
+      <organization>Open Wide</organization>
       <organizationUrl>http://www.openwide.fr</organizationUrl>
       <roles>
         <role>Architect</role>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>fenhril</id>
+      <name>Yoann Rodière</name>
+      <email>yoann.rodiere@openwide.fr</email>
+      <organization>Open Wide</organization>
+      <organizationUrl>http://www.openwide.fr</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>akervern</id>
+      <name>Arnaud Kervern</name>
+      <email>akervern@nuxeo.com</email>
+      <organization>Nuxeo</organization>
+      <organizationUrl>http://www.nuxeo.com</organizationUrl>
+      <roles>
         <role>Developer</role>
       </roles>
     </developer>
@@ -583,6 +605,7 @@
   <!-- Repositories -->
   <!-- ============ -->
   <repositories>
+    <!-- EasySOA repository at Nuxeo Nexus, proxies & contains everything that's required by EasySOA -->
     <repository>
       <id>easysoa</id>
       <name>EasySOA consortium repository</name>
@@ -594,17 +617,21 @@
         <enabled>true</enabled>
       </snapshots>
     </repository>
-    <!-- Petals repository (EasyWSDL lib) -->
+    <!-- Petals repository (for EasyWSDL lib)
+    not exactly for EasyWSDL 2.3 which is on Central while this repo contains only 2.4-2.5,
+    but for its dependency (!) com.ebmwebsourcing.easycommons:easycommons.uri:jar:1.1 -->
     <repository>
-     <id>ebmws-public.release</id>
-     <url>http://maven.petalslink.com/public</url>
-     <releases>
-      <enabled>true</enabled>
-     </releases>
-     <snapshots>
-      <enabled>false</enabled>
-     </snapshots>
+      <id>ebmws-public.release</id>
+      <url>http://maven.petalslink.com/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </repository>
+    <!-- Nuxeo Studio
+    NO requires password & makes (public) build harder -->
     <!-- repository>
       <id>nuxeo-studio</id>
       <url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url>
@@ -623,6 +650,7 @@
     </repository>
   </repositories>
   <pluginRepositories>
+    <!-- EasySOA repository at Nuxeo Nexus, proxies & contains everything that's required by EasySOA -->
     <pluginRepository>
       <id>easysoa</id>
       <name>EasySOA consortium repository</name>

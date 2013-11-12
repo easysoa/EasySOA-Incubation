@@ -12,13 +12,7 @@
     <body>
         <div id="header">
             <div id="headerContents">
-                <div id="logoLink">&nbsp;</div>
-                <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
-                <div id="headerContextBar">
-                    <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
-                    <#assign subprojectId=subprojectId!"">
-                    <@displayContextBar subprojectId contextInfo visibility "true" "false"/>
-                </div>
+                <@headerContentsDefault/>
                 EasySOA Conformité
             </div>
         </div>

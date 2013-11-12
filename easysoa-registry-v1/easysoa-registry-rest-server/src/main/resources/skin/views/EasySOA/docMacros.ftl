@@ -37,35 +37,43 @@
         </#if><#-- else no perspective / context TODO passing subprojectIdToDisplay param to displayPhaseIfOutsideContext doesn't work -->
     </#macro>
     
-    <#macro displayProviderActorAndComponent service subprojectId visibility>
-        <@displayProviderActorOfService service/> / <@displayComponentOfService service/>
+    <#macro displayProviderActorAndComponent service withLink subprojectId visibility>
+        <@displayProviderActorOfService service withLink/> / <@displayComponentOfService service withLink/>
     </#macro>
     
-    <#macro displayProviderActorOfService service>
+    <#macro displayProviderActorOfService service withLink>
         <#if service['iserv:providerActor']?has_content>
             <#-- NB. to create a new object, see http://freemarker.624813.n4.nabble.com/best-practice-to-create-a-java-object-instance-td626021.html -->
             <#assign providerActor = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['iserv:providerActor']))/>
-            <@displaySoaNodeLink providerActor ""/>
+            <#if withLink>
+                <@displaySoaNodeLink providerActor ""/>
+            <#else>
+                <@displaySoaNodeTitle providerActor ""/>
+            </#if>
         <#else>
             <@displaySoaNodeTitle "" "Actor"/>
         </#if>
     </#macro>
     
-    <#macro displayComponentOfService service>
+    <#macro displayComponentOfService service withLink>
         <#if service['acomp:componentId']?has_content>
             <#assign component = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['acomp:componentId']))/>
-            <@displaySoaNodeLink component ""/>
+            <#if withLink>
+                <@displaySoaNodeLink component ""/>
+            <#else>
+                <@displaySoaNodeTitle component ""/>
+            </#if>
         <#else>
             <@displaySoaNodeTitle "" "Component"/>
         </#if>
     </#macro>
     
-    <#macro displayServiceTitleWithoutPhase service subprojectId visibility>
+    <#macro displayServiceTitleWithoutPhase service withLink subprojectId visibility>
         <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">
         
         <#assign phaseName =  Root.parseSubprojectId(service['spnode:subproject']).getSubprojectName()/>
         <#if phaseName == 'Specifications'>
-            <@displayProviderActorAndComponent service subprojectId visibility/>
+            <@displayProviderActorAndComponent service withLink subprojectId visibility/>
         <#elseif phaseName == 'Realisation'>
             <#-- "technical" service -->
             <#assign actualImpls = Root.getDocumentService().getActualImplementationsOfService(service, service['spnode:subproject'])/>
@@ -86,15 +94,15 @@
         </#if>
         
         / </span>
-        <a href="<@urlToFicheSOA service subprojectId visibility/>">
+        <#if withLink><a href="<@urlToFicheSOA service subprojectId visibility/>"></#if>
         <span title="SOA ID: ${service['soan:name']}"><@displaySoaNodeTitle service ""/></span>
-        </a>
+        <#if withLink></a></#if>
         <#if service['soan:isplaceholder'] = 'true'> (inconnu)<#elseif phaseName != 'Specifications'> (technique)</#if>
         </span>
     </#macro>
     
-    <#macro displayServiceTitle service subprojectId visibility>
-        <@displayServiceTitleWithoutPhase service subprojectId visibility/>
+    <#macro displayServiceTitle service withLink subprojectId visibility>
+        <@displayServiceTitleWithoutPhase service withLink subprojectId visibility/>
         <span style="color:grey; font-style: italic;"> - <@displayPhaseIfOutsideContext service['spnode:subproject']/>
         <#--  (v${service.versionLabel}) -->
         </span>
@@ -188,7 +196,7 @@
         <#if deliverable?has_content && deliverable['del:application']?has_content && deliverable['del:application']?length != 0>
             <@displayApplication deliverable['del:application']/>
         <#else>
-            <@displayProviderActorAndComponent serviceimpl subprojectId visibility/>
+            <@displayProviderActorAndComponent serviceimpl true subprojectId visibility/>
         </#if>
         / <@displaySoaNodeName deliverable 'Deliverable'/>
         /
@@ -219,7 +227,7 @@
         <#if deliverable?has_content && deliverable['del:application']?has_content && deliverable['del:application']?length != 0>
             <@displayApplication deliverable['del:application']/><#-- / <@displaySoaNodeName deliverable 'Deliverable'/ -->
         <#else>
-            <@displayProviderActorAndComponent endpoint subprojectId visibility/>
+            <@displayProviderActorAndComponent endpoint true subprojectId visibility/>
         </#if>
         /
         </span>
@@ -240,7 +248,7 @@
     </#macro>
     
     <#macro displayServiceShort service subprojectId visibility>
-        <a href="<@urlToFicheSOA service subprojectId visibility/>"><@displayServiceTitle service subprojectId visibility/></a>
+        <a href="<@urlToFicheSOA service subprojectId visibility/>"><@displayServiceTitle service true subprojectId visibility/></a>
         <a href="<@urlToLocalNuxeoDocumentsUi service/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
     </#macro>
     
@@ -412,6 +420,8 @@
            <@displayServiceShort soaNode subprojectId visibility/>
         <#elseif soaNode.facets?seq_contains('System')>
            <@displayTagShort soaNode subprojectId visibility/>
+        <#elseif soaNode.schemas?seq_contains('requirementsdocument')>
+           <@displaySoaNodeLink soaNode "RequirementsDocument"/> - <@displayPhaseIfOutsideContext soaNode['spnode:subproject']/>
         <#else>
            <@displaySoaNodeLink soaNode ""/> - <@displayPhaseIfOutsideContext soaNode['spnode:subproject']/>
            <#--  (v${soaNode.versionLabel}) --></a>

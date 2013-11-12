@@ -13,13 +13,7 @@
         <#include "/views/monitoring/macros.ftl">
         <div id="header">
             <div id="headerContents">
-                <div id="logoLink">&nbsp;</div>
-                <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
-                <div id="headerContextBar">
-                    <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
-                    <#assign subprojectId=subprojectId!"">
-                    <@displayContextBar subprojectId contextInfo visibility "true" "false"/>
-                </div>
+                <@headerContentsDefault/>
                 EasySOA Usage
             </div>
         </div>
@@ -29,7 +23,8 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>Indicateurs pour le service <@displayServiceTitleWithoutPhase service subprojectId visibility/><a href="<@urlToLocalNuxeoDocumentsUiShort servicePath/>" target="_blank"><i class="icon-file-alt"></i></a></h3>
+                        <h3>Indicateurs pour le service <@displayServiceTitleWithoutPhase service true subprojectId visibility/>
+                        <a href="<@urlToLocalNuxeoDocumentsUiPath servicePath/>" target="_blank"><i class="icon-file-alt"></i></a></h3>
                         <span><#-- to solve img pb just below Bootstrap .thumbnail (actually display:block) -->
                         <#-- OLD Déployé en <@displayEnvironment endpoint['env:environment']/> à ${endpoint['endp:url']} -->
                         Déployé à <@displayEndpointTitleWithoutPhase endpoint subprojectId visibility/>

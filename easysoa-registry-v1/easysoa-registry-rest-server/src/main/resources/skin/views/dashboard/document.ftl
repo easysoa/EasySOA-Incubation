@@ -18,9 +18,9 @@
             REST path : <span style="color:grey;">${document['rest:path']}</span><br />
         </#if>
    	<#if document.type == 'InformationService'>
-   	    Fournisseur: <@displayProviderActorOfService document/>
+   	    Fournisseur: <@displayProviderActorOfService document true/>
    	    &nbsp;&nbsp;
-          Composant: <@displayComponentOfService document/>
+          Composant: <@displayComponentOfService document true/>
       <#elseif document.type?ends_with('ServiceImplementation')><#-- TODO better -->
           Langage : ${document['impl:language']}
           &nbsp;&nbsp;

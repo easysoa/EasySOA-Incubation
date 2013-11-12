@@ -17,13 +17,7 @@
 
     <div id="header">
       <div id="headerContents">
-          <div id="logoLink">&nbsp;</div>
-          <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
-          <div id="headerContextBar">
-              <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
-              <#assign subprojectId=subprojectId!"">
-              <@displayContextBar subprojectId contextInfo visibility "true" "false"/>
-          </div>
+          <@headerContentsDefault/>
           EasySOA Cartographie - Documentation
        </div>
    </div>
@@ -76,7 +70,7 @@
 
       <#list tags as tag>
       <#if tagId2Services?keys?seq_contains(tag.id)>
-      <h4>Services (${tagId2Services[tag.id]?size}) du tag <@displayTagShort tag subprojectId visibility/></h4>
+      <h4>Eléments SOA (${tagId2Services[tag.id]?size}) taggés dans <@displayTagShort tag subprojectId visibility/></h4>
         <#-- Inlining to handle non-service cases. TODO LATER more generic ?? -->
           <#-- @displayServicesShort tagId2Services[tag.id] subprojectId visibility/ -->
          <#if services?size = 0>
@@ -99,7 +93,7 @@
       </#list>
       <p/>
 
-      <h3>Services sans tag (${untaggedServices?size})</h3>
+      <h3>Eléments SOA sans tag (${untaggedServices?size})</h3>
       <p/>
 
       <@displayServicesShort untaggedServices subprojectId visibility/>

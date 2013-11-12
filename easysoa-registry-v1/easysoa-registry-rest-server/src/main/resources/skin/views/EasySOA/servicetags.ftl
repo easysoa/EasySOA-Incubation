@@ -4,7 +4,7 @@
     <#include "/views/EasySOA/macros.ftl">
 
     <head>
-        <title>EasySOA Cartographie - Fiche Service/title>
+        <title>EasySOA Cartographie - Fiche Service</title>
         <@includeResources/>
         <style type="text/css">
           .clickable:hover { cursor: pointer; background-color: #FFC; }
@@ -18,30 +18,28 @@
         <#include "/views/EasySOA/docMacros.ftl">
 	<div id="header">
 		<div id="headerContents">
-		    <div id="logoLink">&nbsp;</div>
-	    	<div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
-            <div id="headerContextBar">
-                <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
-                <#assign subprojectId=subprojectId!"">
-                <@displayContextBar subprojectId contextInfo visibility "true" "false"/>
-            </div>
+         <@headerContentsDefault/>
 			EasySOA REST Services Documentation
 	    </div>
 	</div>
 
-	<div id="container">
+    <br/>
+    <div class="container" id="container">
+        <ul class="thumbnails">
+            <li class="span12">
+                <div class="thumbnail">
+               <img data-src="holder.js/300x200" alt=""></img>
 
-		<h1>Service</h1>
+		<h3>Service</h3>
 		<@displayServiceShort service subprojectId visibility/>
 
-		<h2>Tagged in</h2>
+		<h3>Taggé dans</h3>
 
 		<#-- compute currentTagIds for later "not yet used tags" display : -->
 		<#assign currentTagIds=[]/>
 		<#if service['proxies']?has_content>
-		<ul>
         <#list service['proxies'] as serviceProxy>
-                    <li>
+          &nbsp;&nbsp;-
             <#-- in Specifications, can also be : IntelligentSystem, BusinessService, BusinessService, Folder  -->
             <#if serviceProxy['parent'].facets?seq_contains('SoaNode')><#-- serviceProxy['parent'].type = 'TaggingFolder' -->
                     <@displayTagShort serviceProxy['parent'] subprojectId visibility/>
@@ -49,28 +47,33 @@
                     <@displayDocShort serviceProxy['parent']/><#-- TODO display in this case ?? -->
             </#if>
              -
-                    <form method="POST" action="${Root.path}/proxy/${serviceProxy.id}?subprojectId=${subprojectId}&visibility=${visibility}">
+               <form style="display:inline;" method="POST" action="${Root.path}/proxy/${serviceProxy.id}?subprojectId=${subprojectId}&visibility=${visibility}">
 						<input name="delete" type="hidden" value=""/>
-						<a href="##" onClick="this.parentNode.submit();">Untag</a>
+						<a href="##" onClick="this.parentNode.submit();">Détagger</a>
 					</form>
-					</li>
 					<#assign currentTagIds=currentTagIds+[serviceProxy['parent'].id]/>
-		</#list>
-		</ul>
+			  <br/>
+		  </#list>
 		</#if>
 
-		<h2>Also tag in...</h2>
+		<h3>Tagger aussi dans...</h3>
 
 		<#list tags as tag>
 			<#if !currentTagIds?seq_contains(tag.id)>
-			<form method="POST" action="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}/tags?subprojectId=${subprojectId}&visibility=${visibility}">
+			&nbsp;&nbsp;-
+			<form style="display:inline;" method="POST" action="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}/tags?subprojectId=${subprojectId}&visibility=${visibility}">
 				<input name="tagId" type="hidden" value="${tag.id}"/>
-				<a href="##" onClick="this.parentNode.submit();">Tag</a> in <@displayTagShort tag subprojectId visibility/>
+				<a href="##" onClick="this.parentNode.submit();">Tagger</a> dans <@displayTagShort tag subprojectId visibility/>
 			</form>
+		   <br/>
 			</#if>
 		</#list>
 
-	</div>
+            </div>
+         </li>
+
+      </ul>
+   </div>
 
 </body>
 

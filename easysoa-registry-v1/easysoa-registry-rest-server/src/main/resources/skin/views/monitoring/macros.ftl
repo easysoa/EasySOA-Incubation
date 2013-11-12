@@ -1,21 +1,26 @@
 
+    <#include "/views/EasySOA/docMacros.ftl">
+    
 
     <#macro displayEndpointEnvUrl endpoint subprojectId visibility>
          Déployé en ${endpoint['env:environment']} à <a href="${Root.path}/envIndicators/${endpoint.id}/1?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint['endp:url']}</a>
     </#macro>
 
-    <#macro displayEndpointsShort endpoints subprojectId visibility>
-        <#if endpoints?has_content>
+    <#macro displayEndpointsShort servicePathToEndpoints pathToServices subprojectId visibility>
+        <#if servicePathToEndpoints?has_content>
         <div class="accordion" id="accordion2">
-            <#list endpoints?keys as service>
+            <#list servicePathToEndpoints?keys as servicePath>
+                <#assign service=pathToServices[servicePath]/>
             <div class="accordion-group">
                 <div class="accordion-heading">
-                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#${service}">${service}</a>
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#${service.name}"><@displayServiceTitle service false subprojectId visibility/></a>
+                    <#-- a href="<@urlToFicheSOA service subprojectId visibility/>" target="_blank"><img src="/nuxeo/icons/fiche.png" alt="Fiche Service"/></a>
+                    <a href="<@urlToLocalNuxeoDocumentsUiPath servicePath/>" target="_blank"><i class="icon-file-alt"></i></a -->
                 </div>
-                <div id="${service}" class="accordion-body collapse">
+                <div id="${service.name}" class="accordion-body collapse">
                     <div class="accordion-inner">
                         <ul>
-                            <#list endpoints[service] as endpoint>
+                            <#list servicePathToEndpoints[servicePath] as endpoint>
                                 <li><@displayEndpointEnvUrl endpoint subprojectId visibility/></li>
                             </#list>
                         </ul>
@@ -27,22 +32,12 @@
         <#else>
             Aucun service déployé
         </#if>
-
-        <#--<ul>
-            <#list endpoints?keys as service>
-            ${service.name}
-                <#list endpoints[service] as endpoint>
-                    <@displayEndpointShort endpoint subprojectId visibility/>
-                </#list>
-            </#list>
-            </ul>-->
-
     </#macro>
 
     <#macro displayIndicatorShort indicator>
         <tr>
             <td>
-                <a href="<@urlToLocalNuxeoDocumentsUiEdit indicator.path/>" target="_blank"><i class="icon-edit"></i></a>
+                <@linkBootstrapToLocalNuxeoDocumentsUiEdit indicator/>
                 <a href="#" data-toggle="tooltip" data-placement="top" title="${indicator.description}">${indicator.slaOrOlaName}</a>
             </td>
             <td>${indicator.timestamp?datetime?string.long}</td>

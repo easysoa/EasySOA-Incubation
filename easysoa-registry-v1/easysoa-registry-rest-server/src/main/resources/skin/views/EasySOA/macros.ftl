@@ -61,7 +61,32 @@ normal variable type, like an empty string if it should be an object (see above)
 
     	<link rel="shortcut icon" type="image/png" href="/nuxeo/site/easysoa/skin/favicon.ico" />
     </#macro>
-
+    
+    <#macro headerContentsDefault>
+       <a href="/nuxeo/site/easysoa"><div id="logoLink">&nbsp;</div></a>
+       <div id="headerLinksBar">
+           <a onclick="window.open(this.href); return false;" href="http://www.easysoa.org/">Website</a>
+           -
+           <a onclick="window.open(this.href); return false;" href="https://github.com/easysoa/EasySOA/wiki">Documentation</a>
+           -
+           <a onclick="window.open(this.href); return false;" href="http://www.openwide.fr">Support</a>
+       </div>
+       <div id="headerPartnersBar">
+           <a onclick="window.open(this.href); return false;" href="http://www.openwide.fr"><img style="height:22px; width:auto;" src="/nuxeo/site/easysoa/skin/img/logos/logo-openwide.png" alt="Open Wide"/></a>
+           &nbsp;
+           <a onclick="window.open(this.href); return false;" href="http://www.nuxeo.com/"><img style="height:14px; width:auto;" src="/nuxeo/site/easysoa/skin/img/logos/logo-nuxeo.png" alt="Nuxeo"/></a>
+           <a onclick="window.open(this.href); return false;" href="http://www.talend.com"><img style="height:14px; width:auto;" src="/nuxeo/site/easysoa/skin/img/logos/logo-talend.png" alt="Talend"/></a>
+           <a onclick="window.open(this.href); return false;" href="http://www.bull.com"><img style="height:12px; width:auto;" src="/nuxeo/site/easysoa/skin/img/logos/logo-bull.png" alt="Bull"/></a>
+           <a onclick="window.open(this.href); return false;" href="http://www.easifab.net"><img style="height:14px; width:auto;" src="/nuxeo/site/easysoa/skin/img/logos/logo-easifab.png" alt="EasiFab"/></a>
+           <a onclick="window.open(this.href); return false;" href="http://www.inria.fr"><img style="height:14px; width:auto;" src="/nuxeo/site/easysoa/skin/img/logos/logo-inria.png" alt="Inria"/></a>
+       </div>
+       <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
+       <div id="headerContextBar">
+           <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
+           <#assign subprojectId=subprojectId!"">
+           <@displayContextBar subprojectId contextInfo visibility "true" "false"/>
+       </div>
+    </#macro>
 
 
     <#macro displayIndicatorsInTable indicators category>

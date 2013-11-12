@@ -13,13 +13,7 @@
     <body>
         <div id="header">
             <div id="headerContents">
-                <div id="logoLink">&nbsp;</div>
-                <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
-                <div id="headerContextBar">
-                    <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
-                    <#assign subprojectId=subprojectId!"">
-                    <@displayContextBar subprojectId contextInfo visibility "true" "false"/>
-                </div>
+                <@headerContentsDefault/>
             </div>
         </div>
         <br/>
@@ -40,18 +34,7 @@
                             </div>
                             </p>
                             <div class="btn-group">
-                                <#if subprojectId>
-                                    <#assign nuxeoUrl = "/nuxeo/nxdoc/default/"
-                                        + Session.query("select * from Subproject where spnode:subproject='" + subprojectId + "'")[0].id
-                                        + "/view_documents"/>
-                                    <#if !subprojectId?ends_with("_v")>
-                                        <#assign nuxeoUrl = nuxeoUrl + "?version=true" />
-                                    </#if>
-                                <#else>
-                                    <#assign nuxeoUrl = "/nuxeo/nxpath/default/default-domain@view_documents"/>
-                                </#if>
-
-                                <a class="btn" href="${nuxeoUrl}">Edition collaborative du modèle SOA</a>
+                                <!-- a class="btn" href="<@urlToLocalNuxeoDocumentsSoaProject subprojectId/>">Edition collaborative du modèle SOA</a -->
                                 <!-- TODO make it work for versions -->
                                 <a class="btn" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation SOA</a>
                             </div>
@@ -117,18 +100,7 @@
                             </div>
                             <p/>
                             <div class="btn-group">
-                                <#if subprojectId>
-                                    <#assign nuxeoUrl = "/nuxeo/nxdoc/default/"
-                                        + Session.query("select * from Subproject where spnode:subproject='" + subprojectId + "'")[0].id
-                                        + "/view_documents"/>
-                                    <#if !subprojectId?ends_with("_v")>
-                                        <#assign nuxeoUrl = nuxeoUrl + "?version=true" />
-                                    </#if>
-                                <#else>
-                                    <#assign nuxeoUrl = "/nuxeo/nxpath/default/default-domain@view_documents"/>
-                                </#if>
-
-                                <a class="btn" href="${nuxeoUrl}">Edition collaborative du modèle SOA</a>
+                                <a class="btn" href="<@urlToLocalNuxeoDocumentsSoaProject subprojectId/>">Edition collaborative du modèle SOA</a>
                                 <!-- TODO make it work for versions -->
                                 <!-- et / ou Aide à la prise de décisions ? Registry des services, implementations ?? -->
                             </div>
@@ -157,11 +129,11 @@
                         <!--<p>Statistiques et indicateurs à l'exécution, (?) d'appropiation du modèle SOA par les utilisateurs de EasySOA...</p>-->
                         <p>
                             <div class="btn-group">
+                                <a class="btn" href="${Root.path}/tools/apis?subprojectId=${subprojectId}&visibility=${visibility}">EasySOA API REST</a>
+                                <a class="btn" href="${Root.path}/tools/soapui?subprojectId=${subprojectId}&visibility=${visibility}">SOAPUI</a>
                                 <a class="btn" disabled href="">Scaffolder proxy</a><!-- disabled -->
                                 <a class="btn" disabled href="">Proxy run manager</a><!-- disabled -->
-                                <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:7080/easySoa/index.html">FraSCAti Studio</a>
-                                <a class="btn" href="${Root.path}/tools/apis?subprojectId=${subprojectId}&visibility=${visibility}">Easysoa API REST</a>
-                                <a class="btn" href="${Root.path}/tools/soapui?subprojectId=${subprojectId}&visibility=${visibility}">SoapUI</a>
+                                <a class="btn" href="${frascatiStudio_url}">FraSCAti Studio</a>
                             </div>
 
                             <!-- TODO : add links -->
@@ -170,7 +142,7 @@
                                     <small> : Take advantage of the services you find, by using them in this secured service scaffolder</<small>
                                 </li>
                                 <li>Proxy run manager</li>
-                                <li><a href="http://owsi-vm-easysoa-axxx-registry.accelance.net:7080/easySoa/index.html">FraSCAti Studio</a></li>
+                                <li><a href="${frascatiStudio_url}">FraSCAti Studio</a></li>
                             </ul>-->
                         </p>
                         <br/>
@@ -180,7 +152,7 @@
                         <p>
                             <ul>
                                 <li><a href="<@urlToPureAirFlowers />" target="_blank">Pure Air Flowers</a></li>
-                                <li><a href="<@urlToPureAirFlowers />" target="_blank">Intranet</a></li>
+                                <li><a href="<@urlToIntranet />" target="_blank">Intranet</a></li>
                                 <li><a href="<@urlToApvPivotal />" target="_blank">APV Pivotal</a></li>
                                 <li><a href="<@urlToAxxxDpsApv />" target="_blank">AXXX dps apv</a></li>
                             </ul>

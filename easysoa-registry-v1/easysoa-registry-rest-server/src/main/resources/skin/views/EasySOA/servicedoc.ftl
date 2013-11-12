@@ -18,13 +18,7 @@
 
     <div id="header">
         <div id="headerContents">
-            <div id="logoLink">&nbsp;</div>
-            <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
-            <div id="headerContextBar">
-                <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
-                <#assign subprojectId=subprojectId!"">
-                <@displayContextBar subprojectId contextInfo visibility "true" "false"/>
-            </div>
+            <@headerContentsDefault/>
             EasySOA Cartographie - Documentation
         </div>
     </div>
@@ -37,15 +31,15 @@
 
       <#if endpoint?has_content>
           <h3>Déploiement <@displayEndpointTitle endpoint subprojectId visibility/>
-          <a href="<@urlToLocalNuxeoDocumentsUi endpoint/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
+          <@linkToLocalNuxeoDocumentsUi endpoint/>
           </h3>
       <#elseif serviceimpl?has_content>
           <h3>Implémentation <@displayImplementationTitle serviceimpl subprojectId visibility/>
-          <a href="<@urlToLocalNuxeoDocumentsUi serviceimpl/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
+          <@linkToLocalNuxeoDocumentsUi serviceimpl/>
           </h3>
       <#else>
-		    <h3>Définition <@displayServiceTitle service subprojectId visibility/>
-		    <a href="<@urlToLocalNuxeoDocumentsUi service/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
+		    <h3>Définition <@displayServiceTitle service true subprojectId visibility/>
+          <@linkToLocalNuxeoDocumentsUi service/>
 		    </h3>
 		</#if>
 
@@ -130,12 +124,12 @@
       <#if serviceimpl?has_content || endpoint?has_content>
           La définition de service reliée est <@displayServiceShort service subprojectId visibility/>.
       <#else>
-          Ce service est <@displayServiceTitle service subprojectId visibility/>.
+          Ce service est <@displayServiceTitle service false subprojectId visibility/>.
       </#if>
       <p/>
 
       <#-- h3>Interface(s)</h3 -->
-      <@displayInterfaceResource service/>
+      <@displayResources service/>
       <p/>
 
 		<#if parsedSubprojectIdToDisplay.getSubprojectName() = 'Specifications'>
@@ -202,21 +196,14 @@
 
 
 		<h4>Documentation - manuelle :</h4>
-		<!-- lister les non-SoaNodes fils du InformationService NON les fichiers joints, ou sinon du BusinessService -->
-		<#-- @displayProp service 'files:files'/><p/ -->
-
-		Fichiers joints :<br/>
-		<@displayFiles service['files:files']/>
+		<!-- lister les non-Resources (or SoaNodes) joints ou fils du InformationService, ou sinon du BusinessService -->
+		Documents (joints et fils) :<br/>
+      <@displayNonSoaFilesAndDocuments service/>
+		<#-- OBSOLETE
+		@displayFiles service['files:files']/>
+      <br/>
+      <@displayChildrenShort service 'Document'/ -->
       <p/>
-
-      <!-- TODO CONFIGURATION & LISTALL -->
-      Fichiers fils de
-      <@displaySoaNodeChildrenShort service, 'Resource', ''/><!-- TODO displayResource -->
-      <p/>
-
-      Tous les documents fils :<br/>
-		<@displayChildrenShort service 'Document'/>
-		<p/>
 
       <h4>Exemples d'appel :</h4>
       (aucun)
@@ -232,42 +219,6 @@
 
 		<h3>Usages</h3>
 		<!-- (applications : le déployant ; architecture : le consommant)<p/ -->
-
-		<#-- IntelligentSystems tagging it, since only Applications from now NOOO ALSO Folders : -->
-		<#-- b>Applications :</b><br/ -->
-		<b>Rangé dans les classifications :</b><br/>
-		<#if service['proxies']?has_content && service['proxies']?size != 0>
-		<ul>
-		<#list service['proxies'] as serviceProxy>
-			<#if serviceProxy['parent'].type = 'IntelligentSystem'>
-					<li><@displayDocShort serviceProxy/></li>
-			</#if>
-		</#list>
-		</ul>
-      <#else>
-      Aucune.
-		</#if>
-
-		<#-- TaggingFolder tagging it, since only Applications from now : -->
-      <#-- br/><b>Business Processes :</b><br/ -->
-		<br/><b>Taggé dans :</b><br/>
-		<#if service['proxies']?has_content && service['proxies']?size != 0>
-		<ul>
-		<#list service['proxies'] as serviceProxy>
-			<#if serviceProxy['parent'].facets?seq_contains('SoaNode')><#-- serviceProxy['parent'].type = 'TaggingFolder' -->
-					<li><@displayTagShort serviceProxy['parent'] subprojectId visibility/></li>
-			</#if>
-		</#list>
-		</ul>
-      <#else>
-      Aucun.
-		</#if>
-
-		<br/><a href="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}/tags?subprojectId=${subprojectId}&visibility=${visibility}">Tagger aussi dans...</a>
-
-		<#-- br/>(autres tags) --><!-- TODO -->
-      <p/>
-      &nbsp;<p/>
 
       <b>Utilisé par :</b>
       <p/>
@@ -285,7 +236,7 @@
                  <#if consumerService['acomp:componentId']?has_content>
                      <@displayComponentLink Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['acomp:componentId']))/>
                  <#else>
-                     inconnu du service <@displayServiceTitle consumerService subprojectId visibility/>
+                     inconnu du service <@displayServiceTitle consumerService true subprojectId visibility/>
                  </#if>
                  <#if consumerService_index != consumerServices?size - 1>, </#if>
               </#list>
@@ -297,7 +248,7 @@
       <!-- EndpointConsumptions (son host voire l'application des endpoints déployés dessus / son providerActor) consommant son endpoint Production (sinon Staging...) et sinon un non mock -->
       <#if productionEndpoint?has_content><!-- TODO if endpoint != null -->
           <#assign ecs = Root.getDocumentService().getSoaNodeParents(productionEndpoint, 'EndpointConsumption')/>
-      <#elseif endpoint?has_content && endpoint['imlp:ismock'] != 'true'>
+      <#elseif endpoint?has_content && endpoint['impl:ismock'] != 'true'>
           <#assign ecs = Root.getDocumentService().getSoaNodeParents(endpoint, 'EndpointConsumption')/>
       <#elseif actualEndpoints?has_content && actualEndpoints?size != 0>
           <#assign ecs = Root.getDocumentService().getSoaNodeParents(actualEndpoints[0], 'EndpointConsumption')/>
@@ -327,6 +278,46 @@
       <#else>
           (aucun)
       </#if>
+      <p/>
+      &nbsp;<p/>
+      
+      <#-- IntelligentSystems tagging it, since only Applications from now NOOO ALSO Folders : -->
+      <#-- b>Applications :</b><br/ -->
+      <b>Rangé dans les classifications :</b><br/>
+      <#if service['proxies']?has_content && service['proxies']?size != 0>
+      <ul>
+      <#list service['proxies'] as serviceProxy>
+         <#if serviceProxy['parent'].type = 'IntelligentSystem'>
+               <li><@displayDocShort serviceProxy/></li>
+         </#if>
+      </#list>
+      </ul>
+      <#else>
+      Aucune.
+      </#if>
+
+      <#-- TaggingFolder tagging it, since only Applications from now : -->
+      <#-- br/><b>Business Processes :</b><br/ -->
+      <br/><b>Taggé dans :</b><br/>
+      <#assign isTagged=false/> 
+      <#if service['proxies']?has_content>
+      <ul>
+      <#list service['proxies'] as serviceProxy>
+         <#if serviceProxy['parent'].facets?seq_contains('SoaNode')><#-- serviceProxy['parent'].type = 'TaggingFolder' -->
+               <#assign isTagged=true/> 
+               <li><@displayTagShort serviceProxy['parent'] subprojectId visibility/></li>
+         </#if>
+      </#list>
+      </ul>
+      <#if !isTagged>
+      Aucun.
+      </#if>
+      </#if>
+      <p/>
+      
+      <a class="btn" href="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}/tags?subprojectId=${subprojectId}&visibility=${visibility}">Tagger aussi dans...</a>
+
+      <#-- br/>(autres tags) --><!-- TODO -->
 
       <p/>
 
@@ -358,6 +349,8 @@
 
           <#-- @displayDocShort actualImpl/ -->
           <@displayImplementationDetail serviceimpl/>
+          <p/>
+          <@displayImplementationTools subprojectId visibility/>
           </div>
 		  </#if>
 
@@ -372,6 +365,8 @@
 
              <#-- @displayDocShort actualImpl/ -->
              <@displayImplementationDetail productionImpl/>
+             <p/>
+             <@displayImplementationTools subprojectId visibility/>
              <p/>
           <#else>
              (aucun)
@@ -396,6 +391,8 @@
              <#-- @displayDocShort actualImpl/ -->
              <@displayImplementationDetail userConsumerImpl/>
              <p/>
+             <@displayImplementationTools subprojectId visibility/>
+             <p/>
           </#list>
           </div>
         </#if>
@@ -413,12 +410,12 @@
           <#-- @displayDocShort actualImpl/ -->
           <@displayImplementationDetail actualImpl/>
           <p/>
+          <@displayImplementationTools subprojectId visibility/>
+          <p/>
 
            </#if>
 		</#list>
 		</p>
-		<@displayImplementationTools subprojectId visibility/>
-		<p/>
 		</#if>
 
       <#if mockImpls?has_content && !(isUserConsumer || !isUserProvider)>
@@ -449,12 +446,13 @@
           <div style="margin-bottom:30px;">
           Ce service déployé en <b>${endpoint['env:environment']}</b> à
           <a href="${endpoint['endp:url']}">${endpoint['endp:url']}</a>
+          <br/>
           par <@displayEndpointTitle endpoint subprojectId visibility/>
           <@displayDocumentation endpoint['dc:description']/>
           <p/>
           <@displayEndpointTools endpoint subprojectId visibility/>
           <p/>
-          <@displayInterfaceResource endpoint/>
+          <@displayResources endpoint/>
           <p/>
           <#if endpoint['env:environment'] = 'Production' && productionImpl?has_content>
               <@displayProductionImplementationDetail productionImpl/>
@@ -468,12 +466,13 @@
           Déployé en <b>Production</b> à
           <#if productionEndpoint?has_content>
              <a href="${productionEndpoint['endp:url']}">${productionEndpoint['endp:url']}</a>
+             <br/>
              par <@displayEndpointShort productionEndpoint subprojectId visibility/>
              <@displayDocumentation productionEndpoint['dc:description']/>
              <p/>
              <@displayEndpointTools productionEndpoint subprojectId visibility/>
              <p/>
-             <@displayInterfaceResource productionEndpoint/>
+             <@displayResources productionEndpoint/>
              <p/>
              <#if productionImpl?has_content>
                  <@displayProductionImplementationDetail productionImpl/>
@@ -497,7 +496,7 @@
             &nbsp;&nbsp;-&nbsp;<@displayEndpointShort userConsumerEndpoint subprojectId visibility/>
             <@displayDocumentation userConsumerEndpoint['dc:description']/>
             <p/>
-            <@displayInterfaceResource userConsumerEndpoint/>
+            <@displayResources userConsumerEndpoint/>
             <p/>
             <@displayEndpointTools userConsumerEndpoint subprojectId visibility/>
             <br/>
@@ -514,7 +513,7 @@
                 &nbsp;&nbsp;-&nbsp;<@displayEndpointShort actualEndpoint subprojectId visibility/>
                 <#-- @displayDocumentation actualEndpoint['dc:description']/>
                 <p/>
-                <@displayInterfaceResource service/>
+                <@displayResources actualEndpoint/>
                 <p/>
                 <@displayEndpointTools actualEndpoint subprojectId visibility/ -->
                 <#-- br/>
@@ -533,7 +532,7 @@
                 &nbsp;&nbsp;-&nbsp;<@displayEndpointShort userConsumerEndpoint subprojectId visibility/>
                 <@displayDocumentation userConsumerEndpoint['dc:description']/>
                 <p/>
-                <@displayInterfaceResource userConsumerEndpoint/>
+                <@displayResources userConsumerEndpoint/>
                 <#-- p/>
                 <@displayEndpointTools userConsumerEndpoint subprojectId visibility/ -->
                 <#-- br/>
@@ -548,7 +547,7 @@
                 &nbsp;&nbsp;-&nbsp;<@displayEndpointShort mockEndpoint subprojectId visibility/>
                 <#-- @displayDocumentation userConsumerEndpoint['dc:description']/>
                 <p/>
-                <@displayInterfaceResource mockEndpoint/>
+                <@displayResources mockEndpoint/>
                 <p/>
                 <@displayEndpointTools mockEndpoint subprojectId visibility/ -->
                 <#-- br/>

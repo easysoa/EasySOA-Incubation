@@ -12,13 +12,7 @@
         <#include "/views/EasySOA/docMacros.ftl"><#-- for displayPhase(subprojectId) -->
         <div id="header">
             <div id="headerContents">
-                <div id="logoLink">&nbsp;</div>
-                <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
-                <div id="headerContextBar">
-                    <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
-                    <#assign subprojectId=subprojectId!"">
-                    <@displayContextBar subprojectId contextInfo visibility "true" "false"/>
-                </div>
+                <@headerContentsDefault/>
                 EasySOA Matching dashboard
                 <form action="/nuxeo/site/easysoa/dashboard/samples?subprojectId=${subprojectId}&visibility=${visibility}" method="post" style="position: absolute; right: 20px; top: 20px">
                     <input type="submit" value="Fill with samples" />

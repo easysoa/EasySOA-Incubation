@@ -92,17 +92,20 @@ public class MonitoringController extends EasysoaModuleRoot {
         // Get the deployed services
         List<DocumentModel> services = docService.getInformationServicesInCriteria(session, subprojectCriteria);
 
-        Map<String, List<DocumentModel>> endpoints = new HashMap<String, List<DocumentModel>>();
+        Map<String, List<DocumentModel>> servicePathToEndpoints = new HashMap<String, List<DocumentModel>>();
+        Map<String, DocumentModel> pathToServices = new HashMap<String, DocumentModel>();
 
         for(DocumentModel service : services){
             // Get the endpoints
         	List<DocumentModel> endpointsList = docService.getEndpointsOfServiceInCriteria(service, subprojectCriteria);
-            endpoints.put(service.getName(), endpointsList);
+        	servicePathToEndpoints.put(service.getPathAsString(), endpointsList);
+        	pathToServices.put(service.getPathAsString(), service);
         }
 
         return getView("dashboard")
                 .arg("envs", envs) // TODO later by (sub)project
-                .arg("endpoints", endpoints)
+                .arg("servicePathToEndpoints", servicePathToEndpoints)
+                .arg("pathToServices", pathToServices)
                 .arg("subprojectId", subprojectId)
                 .arg("visibility", visibility)
                 .arg("contextInfo", ContextData.getVersionData(session, subprojectId))

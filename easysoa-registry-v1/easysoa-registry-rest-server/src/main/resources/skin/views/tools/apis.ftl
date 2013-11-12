@@ -13,14 +13,8 @@
 
         <div id="header">
             <div id="headerContents">
-                <div id="logoLink">&nbsp;</div>
-                <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
-                <div id="headerContextBar">
-                    <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
-                    <#assign subprojectId=subprojectId!"">
-                    <@displayContextBar subprojectId contextInfo visibility "true" "false"/>
-                </div>
-                EasySOA - API's
+                <@headerContentsDefault/>
+                EasySOA - APIs
             </div>
         </div>
         <br/>
@@ -35,18 +29,16 @@
                                 avec un modèle plus simple que la Registry API complète et sans devoir écrire des requêtes NXQL.
                                 <br/>
                                 <br/>
-                                Les opérations disponibles sont les suivantes :
-                                <ul>
-                                    <li>queryWSDLInterfaces : Retourne les services enregistrés dans le registry EasySOA.</li>
-                                    <li>queryEndpoints : Retourne les services déployés.</li>
-                                    <li>queryServicesWithEndpoints : Retourne les services ainsi que leurs point de déploiement pour une phase donnée.</li>
-                                </ul>
+                                Les opérations disponibles sont les suivantes :<p/>
+                                    &nbsp;&nbsp;- queryWSDLInterfaces : Retourne les services enregistrés dans le registry EasySOA.<br/>
+                                    &nbsp;&nbsp;- queryEndpoints : Retourne les services déployés.<br/>
+                                    &nbsp;&nbsp;- queryServicesWithEndpoints : Retourne les services ainsi que leurs points de déploiement (endpoints) pour une phase donnée.<br/>
                             </p>
 
                             <p>
                                 <b>Spécifications:</b>
                                 <br/>
-                                Sa définition formelle en JAXRS est ici <a href="https://github.com/easysoa/EasySOA-Incubation/blob/master/easysoa-registry-v1/easysoa-registry-rest-core/src/main/java/org/easysoa/registry/rest/integration/SimpleRegistryService.java" target="_blank">SimpleRegistryService.java</a>
+                                Sa définition formelle en JAXRS est ici : <a href="https://github.com/easysoa/EasySOA-Incubation/blob/master/easysoa-registry-v1/easysoa-registry-rest-core/src/main/java/org/easysoa/registry/rest/integration/SimpleRegistryService.java" target="_blank">SimpleRegistryService.java</a>
                                 <br/>
                                 Elle contient aussi sa documentation détaillée, avec des exemples du format requis (JSON, ou bien XML).
                                 <br/>
@@ -68,19 +60,18 @@
                                 NB : pour faire uniquement des requêtes simples, utilisez le SimpleRegistryService.
                                 <br/>
                                 <br/>
-                                Voila la liste des opérations supportées par l'API :
-                                <ul>
-                                    <li>Création : Création d'objets dans le registry EasySOA.</li>
-                                    <li>Suppression : Suppression d'objets.</li>
-                                    <li>Lecture : Récupération d'objets pour consultation.</li>
-                                    <li>Requète : Permet d'éxécuter une requête NXQL dans le registry EasySOA.</li>
+                                Voila la liste des opérations supportées par l'API :<p/>
+                                    &nbsp;&nbsp;- Création : Création d'objets dans le registry EasySOA.<br/>
+                                    &nbsp;&nbsp;- Suppression : Suppression d'objets.<br/>
+                                    &nbsp;&nbsp;- Lecture : Récupération d'objets pour consultation.<br/>
+                                    &nbsp;&nbsp;- Requète : Permet d'éxécuter une requête NXQL dans le registry EasySOA.<br/>
                                 </ul>
                             </p>
 
                             <p>
                                 <b>Spécifications:</b>
                                 <br/>
-                                Sa définition formelle en JAXRS est ici <a href="https://github.com/easysoa/EasySOA-Incubation/blob/master/easysoa-registry-v1/easysoa-registry-rest-core/src/main/java/org/easysoa/registry/rest/RegistryApi.java"  target="_blank">RegistryApi.java</a>
+                                Sa définition formelle en JAXRS est ici : <a href="https://github.com/easysoa/EasySOA-Incubation/blob/master/easysoa-registry-v1/easysoa-registry-rest-core/src/main/java/org/easysoa/registry/rest/RegistryApi.java"  target="_blank">RegistryApi.java</a>
                                 <br/>
                                 Elle contient aussi sa documentation détaillée, avec des exemples du format requis (JSON, ou bien XML).
                                 <br/>
@@ -88,7 +79,7 @@
                                 <b>S'en servir :</b>
                                 <br/>
                                 <br/>
-                                Des clients basés sur les moteurs de service Jersey, CXF et FraSCAti sont déjà fournis, voir le projet XXX <a href="https://github.com/easysoa/EasySOA-Incubation/tree/master/easysoa-registry-v1/easysoa-registry-integration-base" target="_blank">Intégration base</a>.
+                                Des clients basés sur les moteurs de service Jersey, CXF et FraSCAti sont déjà fournis, voir le projet <a href="https://github.com/easysoa/EasySOA-Incubation/tree/master/easysoa-registry-v1/easysoa-registry-integration-base" target="_blank">Intégration base</a>.
                                 <br/>
                                 Pour appeler la RegistryAPI de son registry EasySOA déployé, voir l'exemple des tests unitaires : <a href="https://github.com/easysoa/EasySOA-Incubation/blob/master/easysoa-registry-v1/easysoa-registry-rest-client/src/test/java/org/easysoa/registry/rest/client/RestClientTest.java" target=_blank">RestClientTest.java</a>.
                                 <br/>

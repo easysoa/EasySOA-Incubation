@@ -12,13 +12,7 @@
     <body>
         <div id="header">
             <div id="headerContents">
-                <div id="logoLink">&nbsp;</div>
-                <div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
-                <div id="headerContextBar">
-                    <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
-                    <#assign subprojectId=subprojectId!"">
-                    <@displayContextBar subprojectId contextInfo visibility "true" "false"/>
-                </div>
+                <@headerContentsDefault/>
                 EasySOA Gouvernance
             </div>
         </div>
@@ -50,7 +44,7 @@
                                     <#assign nuxeoUrl = "/nuxeo/nxpath/default/default-domain@view_documents"/>
                                 </#if>
                                 <a class="btn" href="${nuxeoUrl}">Edition collaborative du modèle SOA</a>
-                                <small> : </small>
+                                <small> : Interface de gestion documentaire collaborative</small>
                             </p>
                         </p>
 

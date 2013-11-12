@@ -246,7 +246,7 @@ nxthemes css is not used in login.jsp */
     <tbody>
       <tr class="topBar">
         <td><img alt="EasySOA Core"
-          src="<%=context%>/img/easysoa/logo-core-100.png" /></td>
+          src="<%=context%>/img/easysoa/EasySOA-100px.png" /></td><!-- logo-core-100.png -->
         <td align="right" class="leftColumn">
           <div class="labelCorp">
             <ul>
@@ -271,13 +271,18 @@ nxthemes css is not used in login.jsp */
               <li><span style="font-size: 11px; font-weight: bold">Nuxeo :</span></li>
               <li><a
                 onclick="window.open(this.href); return false;"
-                href="http://www.easysoa.org/">
-                  Website
+                href="http://www.openwide.fr/Solutions/Expertise-Middleware-SI">
+                  Support
               </a></li>
               <li><a
                 onclick="window.open(this.href); return false;"
                 href="https://github.com/easysoa/EasySOA/wiki">
                   Documentation
+              </a></li>
+              <li><a
+                onclick="window.open(this.href); return false;"
+                href="http://www.easysoa.org/">
+                  Website
               </a></li>
               <li><span style="font-size: 11px; font-weight: bold">EasySOA :</span></li>
             </ul>

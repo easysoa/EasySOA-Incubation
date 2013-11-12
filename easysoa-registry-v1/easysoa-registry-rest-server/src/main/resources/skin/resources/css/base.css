@@ -30,6 +30,44 @@
   margin-bottom: 3px;
 }
 
+#headerLinksBar {
+    font-weight: normal;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 11pt;
+    color: #444;
+    width: 250px;
+    text-align: right;
+    
+  text-decoration: none;
+  font: normal 12px "Lucida Grande", sans-serif;
+  padding-top: 0px;
+}
+
+/* NO overriden by bootstrap's a, so directly above */
+.headerLinksBar a {
+  text-decoration: none;
+  color: #000;
+  font: normal 11px "Lucida Grande", sans-serif;
+  padding-top: 0px;
+}
+
+.headerLinksBar a:hover {
+  text-decoration: underline;
+}
+
+#headerPartnersBar {
+    font-weight: normal;
+    position: absolute;
+    right: 5px;
+    top: 45px;
+    font-size: 11pt;
+    color: #444;
+    width: 300px;
+    text-align: right;
+}
+
 #headerUserBar {
     font-weight: normal;
     position: absolute;
@@ -37,7 +75,7 @@
     top: 20px;
     font-size: 11pt;
     color: #444;
-    width: 850px;
+    width: 500px;
     text-align: right;
 }
 
@@ -48,7 +86,7 @@
     top: 45px;
     font-size: 11pt;
     color: #444;
-    width: 850px;
+    width: 800px;
     text-align: right;
 }
 

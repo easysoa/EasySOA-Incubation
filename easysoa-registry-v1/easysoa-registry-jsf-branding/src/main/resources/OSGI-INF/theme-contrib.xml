@@ -2,6 +2,8 @@
 <component name="org.easysoa.registry.jsf.theme.contrib">
 
   <require>org.nuxeo.theme.nuxeo.default</require>
+  <!-- NB. also allows to override logo xhtml which it defines -->
+  
   <require>org.nuxeo.theme.nuxeo.virtualnavigation</require>
   <require>org.nuxeo.ecm.admin.center.theme</require>
 
@@ -18,9 +20,9 @@
   <extension target="org.nuxeo.theme.styling.service" point="flavors">
     <flavor name="easysoa" extends="default">
       <logo>
-        <path>/img/easysoa/logo-core-50.png</path>
-        <previewPath>/img/easysoa/logo-core-50.png</previewPath>
-        <width>211</width>
+        <path>/img/easysoa/EasySOA-50px.png</path><!-- logo-core-50.png -->
+        <previewPath>/img/easysoa/EasySOA-50px.png</previewPath><!-- logo-core-50.png -->
+        <width>156</width>
         <height>50</height>
         <title>EasySOA Core</title>
       </logo>
@@ -65,5 +67,12 @@
        <defaultFlavor>easysoa</defaultFlavor>
      </themePage>
   </extension>
-
+  
+   <extension target="org.nuxeo.theme.services.ThemeService" point="views">
+      <view name="Nuxeo DM logo (Galaxy Theme)" template-engine="jsf-facelets">
+        <format-type>widget</format-type>
+        <template>incl/logo_DM_galaxy_easysoa.xhtml</template>
+      </view>
+   </extension>
+   
 </component>

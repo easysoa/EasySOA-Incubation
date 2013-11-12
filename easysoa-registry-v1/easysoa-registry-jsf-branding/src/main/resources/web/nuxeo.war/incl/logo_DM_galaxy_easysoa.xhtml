@@ -1,0 +1,44 @@
+<div xmlns:h="http://java.sun.com/jsf/html"
+  xmlns:ui="http://java.sun.com/jsf/facelets"
+  xmlns:f="http://java.sun.com/jsf/core"
+  xmlns:nxh="http://nuxeo.org/nxweb/html"
+  xmlns:nxu="http://nuxeo.org/nxweb/util"
+  xmlns:c="http://java.sun.com/jstl/core" class="menu">
+<div class="siteLogo">
+
+  <a href="/nuxeo/site/easysoa">
+
+      <nxu:set var="flavorLogo" value="#{themeActions.logo}"
+        cache="true">
+        <c:if test="#{empty flavorLogo}">
+          <h:graphicImage
+            value="/img/nuxeo_logo.png"
+            alt="Nuxeo"
+            title="Nuxeo"
+            width="92"
+            height="36" />
+        </c:if>
+        <c:if test="#{not empty flavorLogo}">
+          <nxh:graphicImage
+            value="#{flavorLogo.path}"
+            alt="#{flavorLogo.title}"
+            title="#{flavorLogo.title}"
+            width="#{flavorLogo.width}"
+            height="#{flavorLogo.height}" />
+        </c:if>
+      </nxu:set>
+      
+  </a>
+      
+  <ui:remove>
+      <a href="/nuxeo/site/easysoa"><img src="/nuxeo/icons/fiche.png" alt="EasySOA Home" style="padding-bottom:17px;"/></a>
+      
+  <h:form>
+    <h:commandLink action="#{navigationContext.goHome()}">
+      <img src="/nuxeo/icons/domain.gif" alt="Document Collaboration Home"/>
+    </h:commandLink>
+  </h:form>
+  </ui:remove>
+  
+</div>
+</div>

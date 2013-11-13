@@ -73,11 +73,11 @@
 		   <span title="${mimeType}">${mimeTypePrettyName}</span>
 		</#macro>
 
-        <#macro displayFileFileContent filename file_content doc i>
+        <#macro displayFileFileContent file_content doc i>
             <#if file_content?has_content>
                 <#assign hasAttachedOrChildFile=true/>
                 <tr>
-                    <td colspan="3"><a href="<@urlToLocalNuxeoDownloadAny doc i/>">${filename}
+                    <td colspan="3"><a href="<@urlToLocalNuxeoDownloadAny doc i/>">${file_content['filename']}
                     <#if file_content['mimeType']?has_content && file_content['mimeType']?starts_with('image/')>
                        <img src="<@urlToLocalNuxeoDownloadAny doc i/>" height="35" width="35"/>
                     </#if>
@@ -85,30 +85,41 @@
                     <td><@displayMimeType file_content['mimeType']/></td>
                     <td>${file_content['length']} MB</td>
                     <td><span style="color:grey" title="${file_content['digest']}">digest</span></td><!-- TODO better : copiable !! -->
+                    <td>
+                        <#if !i?is_number>
+                            <@displayDocumentTools doc/>
+                        <#else>
+                            <!-- TODO attached file document tools -->
+                        </#if>
+                    </td>
                 </tr>
             </#if>
         </#macro>
 
-        <#macro displayFileContent doc_file_content doc>
+        <#macro displayFileContent doc>
+            <#assign doc_file_content=doc['file:content']/>
             <#if doc_file_content?has_content>
-            <@displayFileFileContent doc_file_content['filename'] doc_file_content['content'] doc ""/>
+                <@displayFileFileContent doc_file_content doc ""/>
             </#if>
         </#macro>
         
         <#macro displayFileAttachment doc_files_file i doc>
-            <@displayFileFileContent doc_files_file['filename'] doc_files_file['file'] doc i/>
+            <@displayFileFileContent doc_files_file['file'] doc i/>
         </#macro>
         
-      <#macro displayFiles doc>
-          <#assign doc_file_content=doc['file:content']/>
-          <#assign doc_files_files=doc['files:files']/>
-          <@displayFileContent doc_file_content doc/>
-          <#if doc_files_files?has_content>
-              <#list doc_files_files as doc_files_file>
-                  <@displayFileAttachment doc_files_file doc_files_file_index doc/>
-              </#list>
-          </#if>
-      </#macro>
+    <#macro displayFileAttachments doc>
+        <#assign doc_files_files=doc['files:files']/>
+        <#if doc_files_files?has_content>
+            <#list doc_files_files as doc_files_file>
+                <@displayFileAttachment doc_files_file doc_files_file_index doc/>
+            </#list>
+        </#if>
+    </#macro>
+        
+    <#macro displayFiles doc>
+        <@displayFileContent doc/>
+        <@displayFileAttachments doc/>
+    </#macro>
 
 		<#macro displayNonSoaFilesAndDocuments service>
             <#assign service_children=service['children']/>
@@ -116,9 +127,10 @@
             <table style="width: 600px;">
                 <tr><td>
                 <table style="border-spacing: 0px 10px;">
-            <#-- if !service.facets?seq_contains('SoaNode') -->
-                <@displayFiles service/>
-            </#-- if -->
+            <#if !service.facets?seq_contains('SoaNode')>
+                <@displayFileContent service/>
+            </#if>
+            <@displayFileAttachments service/><#-- TODO better : only if not resource, by checking car filled by displayResource --> 
             <#if service_children?has_content>
                 <#list service_children as child>
                     <#if !service.facets?seq_contains('SoaNode')>

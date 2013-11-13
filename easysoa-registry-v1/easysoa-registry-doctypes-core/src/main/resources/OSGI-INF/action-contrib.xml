@@ -1,7 +1,9 @@
 <?xml version="1.0" ?>
 <component name="org.easysoa.registry.core.doctypes.action.contrib">
 
-  <require>org.nuxeo.ecm.platform.actions</require>
+  <require>org.nuxeo.ecm.platform.actions</require><!-- to override its filters contrib -->
+  <require>org.nuxeo.snapshots.actions</require><!-- to override its filters contrib -->
+  <require>studio.extensions.easy-soa-open-wide</require><!-- to override its filters contrib -->
 
   <!-- ======= -->
   <!-- Filters  -->
@@ -20,6 +22,7 @@
         <type>Section</type>
         <type>Folder</type>
         <type>OrderedFolder</type>
+        <type>SnapshotableFolder</type><!- from nuxeo-tree-snapshot ->
         <condition>
           #{typeManager.getAllowedSubTypes(document.getType(),
           document).size()
@@ -32,9 +35,9 @@
       <rule grant="false">
         <type>Repository</type>
       </rule>
-    </filter>
+    <!-- /filter>
 
-    <filter id="create" append="true">
+    <filter id="create" append="true" -->
       <rule grant="true">
         <permission>AddChildren</permission>
         <type>Domain</type><!-- reenabling it, see http://answers.nuxeo.com/questions/1090/how-to-create-document-into-the-default-domain -->
@@ -43,9 +46,9 @@
         <type>Project</type><!-- suppl -->
         <type>Subproject</type><!-- suppl -->
       </rule>
-    </filter>
+    <!-- /filter>
 
-    <filter id="create" append="true">
+    <filter id="create" append="true" -->
       <rule grant="true">
         <permission>AddChildren</permission>
         <facet>SoaNode</facet>

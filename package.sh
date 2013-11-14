@@ -26,6 +26,9 @@ pushd EasySOA-Incubation
 
 echo Building Registry...
 #mvn clean install -Pmarketplace -DskipTests
+pushd easysoa-registry-v1
+#./nuxeo.rb deploy
+popd
 
 echo Copying Registry...
 cp -rf easysoa-registry-v1/easysoa-registry-marketplace/target/nuxeo-cap-* $EASYSOA_PATH/

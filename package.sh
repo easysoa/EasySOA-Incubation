@@ -20,6 +20,9 @@ echo Getting source of $EASYSOA...
 #git checkout $EASYSOA
 ## alt 2 : reuse current local checkout
 pushd EasySOA-Incubation
+## in this case, source tag can be created and shared :
+# git tag $EASYSOA
+# git push origin $EASYSOA
 
 echo Building Registry...
 #mvn clean install -Pmarketplace -DskipTests
@@ -65,6 +68,17 @@ pushd EasySOA
 
 echo Building Proxy...
 #mvn clean install -DskipTests
+
+echo Getting source of $EASYSOA Proxy...
+## alt 1 : clone & checkout
+#git clone https://github.com/easysoa/EasySOA.git
+#pushd EasySOA
+#git checkout $EASYSOA
+## alt 2 : reuse current local checkout
+pushd EasySOA
+## in this case, source tag can be created and shared :
+# git tag $EASYSOA
+# git push origin $EASYSOA
 
 echo Copying Proxy...
 tar xfz $TOMCAT_ARCHIVE -C $EASYSOA_PATH/

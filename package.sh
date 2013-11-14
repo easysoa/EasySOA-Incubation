@@ -20,9 +20,15 @@ echo Getting source of $EASYSOA...
 #git checkout $EASYSOA
 ## alt 2 : reuse current local checkout
 pushd EasySOA-Incubation
+## in this case, source tag can be created and shared :
+# git tag $EASYSOA
+# git push origin $EASYSOA
 
 echo Building Registry...
 #mvn clean install -Pmarketplace -DskipTests
+pushd easysoa-registry-v1
+#./nuxeo.rb deploy
+popd
 
 echo Copying Registry...
 cp -rf easysoa-registry-v1/easysoa-registry-marketplace/target/nuxeo-cap-* $EASYSOA_PATH/
@@ -66,9 +72,21 @@ pushd EasySOA
 echo Building Proxy...
 #mvn clean install -DskipTests
 
+echo Getting source of $EASYSOA Proxy...
+## alt 1 : clone & checkout
+#git clone https://github.com/easysoa/EasySOA.git
+#pushd EasySOA
+#git checkout $EASYSOA
+## alt 2 : reuse current local checkout
+pushd EasySOA
+## in this case, source tag can be created and shared :
+# git tag $EASYSOA
+# git push origin $EASYSOA
+
 echo Copying Proxy...
 tar xfz $TOMCAT_ARCHIVE -C $EASYSOA_PATH/
 mv -f $EASYSOA_PATH/$TOMCAT_VERSION_NAME $EASYSOA_PATH/apache-tomcat7-proxy
+cp -rf easysoa-proxy/easysoa-proxy-core/easysoa-proxy-web/src/main/resources/tomcat7/* $EASYSOA_PATH/apache-tomcat7-proxy
 rm -rf $EASYSOA_PATH/apache-tomcat7-proxy/webapps/easysoa-proxy*
 cp -rf easysoa-proxy/easysoa-proxy-core/easysoa-proxy-war/target/easysoa-proxy $EASYSOA_PATH/apache-tomcat7-proxy/webapps
 rm -rf $EASYSOA_PATH/apache-tomcat7-proxy/webapps/ROOT/*

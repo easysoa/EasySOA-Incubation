@@ -69,6 +69,7 @@ echo Building Proxy...
 echo Copying Proxy...
 tar xfz $TOMCAT_ARCHIVE -C $EASYSOA_PATH/
 mv -f $EASYSOA_PATH/$TOMCAT_VERSION_NAME $EASYSOA_PATH/apache-tomcat7-proxy
+cp -rf easysoa-proxy/easysoa-proxy-core/easysoa-proxy-web/src/main/resources/tomcat7/* $EASYSOA_PATH/apache-tomcat7-proxy
 rm -rf $EASYSOA_PATH/apache-tomcat7-proxy/webapps/easysoa-proxy*
 cp -rf easysoa-proxy/easysoa-proxy-core/easysoa-proxy-war/target/easysoa-proxy $EASYSOA_PATH/apache-tomcat7-proxy/webapps
 rm -rf $EASYSOA_PATH/apache-tomcat7-proxy/webapps/ROOT/*

@@ -233,6 +233,7 @@
 
         <#macro displayTested serviceimpl>
            <#assign deliverable = Root.getDocumentService().getSoaNodeParent(serviceimpl, 'Deliverable')/>
+           <#if deliverable?has_content>
            <#list Root.getDocumentService().getSoaNodeChildren(deliverable, 'ServiceConsumption') as servicecons>
               <#-- ${servicecons['javasc:consumedInterface']} ?= ${serviceimpl['javasi:implementedInterface']}; -->
               <#if servicecons['javasc:consumedInterface'] = serviceimpl['javasi:implementedInterface']
@@ -248,5 +249,6 @@
            <#else>
               <b><span style="color:red;">NON TESTEE</span></b>
            </#if>
+           </#if><#-- else no deliverable, ex. Compliance > Matching Dashboard samples -->
         </#macro>
 		

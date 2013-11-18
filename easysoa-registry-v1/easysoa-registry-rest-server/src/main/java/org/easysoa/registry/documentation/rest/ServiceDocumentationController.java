@@ -364,7 +364,7 @@ public class ServiceDocumentationController extends EasysoaModuleRoot {
             if ((isUserConsumer || !isUserProvider)) {
             	if (serviceimpl != null) {
             		// NB. was not computed before in this case
-            		mockImpls = docService.getMockImplementationsOfServiceInCriteria(service, subprojectCriteria);
+            		mockImpls = docService.getMockImplementationsOfServiceInCriteria(serviceimpl, subprojectCriteria);
             	}
             	if (mockImpls != null && endpoints != null) { // TODO or sub if for endpoints null ??
 	            	userConsumerImpls = new ArrayList<DocumentModel>(mockImpls.size());

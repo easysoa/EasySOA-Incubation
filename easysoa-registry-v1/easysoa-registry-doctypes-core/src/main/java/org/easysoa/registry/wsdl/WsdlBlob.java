@@ -86,6 +86,10 @@ public class WsdlBlob { // TODO implements ResourceBlob ? or better as ResourceA
         return hasWsdlContentChanged;
     }
     
+    /**
+     * (Computes if not yet done and) returns WSDL Blob, if any
+     * @return null if none
+     */
     public Blob getBlob() throws ClientException {
         if (blob == null) {
             getWsdl(); // make sure it's computed

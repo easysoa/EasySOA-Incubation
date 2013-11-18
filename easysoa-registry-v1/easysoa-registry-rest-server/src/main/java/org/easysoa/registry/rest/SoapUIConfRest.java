@@ -41,6 +41,7 @@ import org.easysoa.registry.types.EndpointConsumption;
 import org.easysoa.registry.types.Subproject;
 import org.easysoa.registry.utils.ContextData;
 import org.easysoa.registry.wsdl.WsdlBlob;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.DocumentModelList;
@@ -145,9 +146,12 @@ public class SoapUIConfRest extends EasysoaModuleRoot {
     private void addWdsl(DocumentModel documentModel, SoapUIWSDLFactory wsdlFactory, List<SoapUIWSDL> wsdls) throws Exception {
         WsdlBlob wsdlBlob = new WsdlBlob(documentModel);
         File tmpWsdlFile = File.createTempFile(documentModel.getTitle().replaceAll("/", "_"), "wsdl");
-        wsdlBlob.getBlob().transferTo(tmpWsdlFile);
-        SoapUIWSDL newWSDL = wsdlFactory.create(tmpWsdlFile, (String) documentModel.getPropertyValue(Endpoint.XPATH_URL));
-        wsdls.add(newWSDL);
+        Blob blob = wsdlBlob.getBlob();
+        if (blob != null) {
+            blob.transferTo(tmpWsdlFile);
+            SoapUIWSDL newWSDL = wsdlFactory.create(tmpWsdlFile, (String) documentModel.getPropertyValue(Endpoint.XPATH_URL));
+            wsdls.add(newWSDL);
+        } // else no attached WSDL
     }
 
 }

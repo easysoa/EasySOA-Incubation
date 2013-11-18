@@ -32,16 +32,10 @@
                                     <td width="10%">0 %</td>
                                 </tr>
                                 <tr>
-                                    <#assign indicator = indicators["serviceWithoutComponent"]/>
-                                    <td width="80%" title="${indicator.description}">InformationServices sans architecture (sans composant) :</td>
-                                    <td width="10%" title="${indicator.description}">${indicator.count}</td>
-                                    <td width="10%" title="${indicator.description}">${indicator.percentage} %</td>
+                                    <@displayIndicatorInTable indicators["serviceWithoutComponent"]/>
                                 </tr>
                                 <tr>
-                                    <#assign indicator = indicators["serviceWithDocumentation"]/>
-                                    <td width="80%" title="${indicator.description}">Service documentés :</td>
-                                    <td width="10%" title="${indicator.description}">${indicator.count}</td>
-                                    <td width="10%" title="${indicator.description}">${indicator.percentage} %</td>
+                                    <@displayIndicatorInTable indicators["serviceWithDocumentation"]/>
                                 </tr>
                                 <tr>
                                     <td width="80%">Composant sans contrainte de Plateforme :</td>

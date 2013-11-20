@@ -23,39 +23,38 @@
                 <li class="span6">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>Cartographie des services</h3>
+                        <h3>${Root.msg("serviceCartography")}</h3>
                         <p>
-                            <!-- TODO : Replace this hard coded link by a build in link ? -->
+                            <#-- TODO : Replace these UI hard coded links by macros ? -->
                             <p>
                             <div class="btn-group">
-                                <a class="btn" href="${Root.path}/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte sources</a>
-                                <a class="btn" href="<@urlToWebDiscovery subprojectId visibility/>" target="_blank">Découverte web</a>
-                                <a class="btn" href="${Root.path}/cartography/runDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte à l'éxécution</a>
+                                <a class="btn" href="${Root.path}/cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("sourceDiscovery")}</a>
+                                <a class="btn" href="<@urlToWebDiscovery subprojectId visibility/>" target="_blank">${Root.msg("webDiscovery")}</a>
+                                <a class="btn" href="${Root.path}/cartography/runDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("runtimeDiscovery")}</a>
                             </div>
                             </p>
                             <div class="btn-group">
-                                <!-- a class="btn" href="<@urlToLocalNuxeoDocumentsSoaProject subprojectId/>">Edition collaborative du modèle SOA</a -->
-                                <!-- TODO make it work for versions -->
-                                <a class="btn" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation SOA</a>
+                                <#-- a class="btn" href="<@urlToLocalNuxeoDocumentsSoaProject subprojectId/>">${Root.msg("collaborativeEditionOfSoaModel")}</a -->
+                                <a class="btn" href="${Root.path}/services/?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("serviceBrowsingUI")}</a>
                             </div>
                         </p>
                         <p>
                             <table class="table table-bordered" width="100%">
-                                <@displayIndicatorInTableShort indicators["InformationService"]/>
-                                <@displayIndicatorInTableShort indicators["ServiceImplementation"]/>
-                                <@displayIndicatorInTableShort indicators["Endpoint"]/>
+                                <@displayIndicatorInTableShort indicators["count.InformationService"]/>
+                                <@displayIndicatorInTableShort indicators["count.ServiceImplementation"]/>
+                                <@displayIndicatorInTableShort indicators["count.Endpoint"]/>
                             </table>
                         </p>
-                        <a class="btn btn-primary" href="${Root.path}/cartography/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
+                        <a class="btn btn-primary" href="${Root.path}/cartography/?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("more")}</a>
                     </div>
                 </li>
                 <li class="span6">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>Conformité</h3>
+                        <h3>${Root.msg("compliance")}</h3>
                         <p>
                             <div class="btn-group">
-                                <a class="btn" href="${Root.path}/dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Réconciliation</a>
+                                <a class="btn" href="${Root.path}/dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("matchingDashboard")}</a>
                             </div>
                         </p>
                         <p>
@@ -63,7 +62,7 @@
                                 <@displayIndicatorInTableShort indicators["ServiceImplementationPlaceholders"]/>
                             </table>
                         </p>
-                        <a class="btn btn-primary" href="${Root.path}/services/matchingFull/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
+                        <a class="btn btn-primary" href="${Root.path}/services/matchingFull/?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("more")}</a>
                     </div>
                 </li>
             </ul>
@@ -72,37 +71,36 @@
                 <li class="span6">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>Monitoring</h3>
+                        <h3>${Root.msg("monitoring")}</h3>
                         <p>
                             <div class="btn-group">
-                                <a class="btn" href="${Root.path}/monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">Qualité de service</a>
-                                <a class="btn" href="${Root.path}/monitoring/jasmine/?subprojectId=${subprojectId}&visibility=${visibility}">Statistiques</a>
-                                <!--<a class="btn" href="#">Appropriation du modèle SOA par les utilisateurs de EasySOA</a>-->
+                                <a class="btn" href="${Root.path}/monitoring/?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("serviceLevel")}</a>
+                                <a class="btn" href="${Root.path}/monitoring/jasmine/?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("statistics")}</a>
+                                <#-- a class="btn" href="#">${Root.msg("appropriationOfSoaModelByEasySOAUsers")}</a -->
                             </div>
                         </p>
                         <p>
-                            <!-- Replace by a new indicator showing the the nb or % of services in default -->
+                            <#-- TODO Replace by a new indicator showing the the nb or % of services in default -->
                             <table class="table table-bordered" width="100%">
                                 <@displayIndicatorInTableShort indicators["serviceInViolation"]/>
                             </table>
                         </p>
-                        <a class="btn btn-primary" href="${Root.path}/monitoring/usage/?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a>
+                        <a class="btn btn-primary" href="${Root.path}/monitoring/usage/?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("more")}</a>
                     </div>
                 </li>
                 <li class="span6">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>Gouvernance</h3>
+                        <h3>${Root.msg("governance")}</h3>
                         <p>
                             <div class="btn-group">
-                                <a class="btn" href="${Root.path}/governance/prodPhaseMonitoring?subprojectId=${subprojectId}&visibility=${visibility}">Suivi des Phases de production SOA</a>
-                                <a class="btn" href="${Root.path}/governance/governanceIndicators?subprojectId=${subprojectId}&visibility=${visibility}">Indicateurs de complétion et gouvernance</a>
+                                <a class="btn" href="${Root.path}/governance/prodPhaseMonitoring?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("soaProjectProgress")}</a>
+                                <a class="btn" href="${Root.path}/governance/governanceIndicators?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("governanceAndCompletionIndicators")}</a>
                             </div>
                             <p/>
                             <div class="btn-group">
-                                <a class="btn" href="<@urlToLocalNuxeoDocumentsSoaProject subprojectId/>">Edition collaborative du modèle SOA</a>
-                                <!-- TODO make it work for versions -->
-                                <!-- et / ou Aide à la prise de décisions ? Registry des services, implementations ?? -->
+                                <a class="btn" href="<@urlToLocalNuxeoDocumentsSoaProject subprojectId/>">${Root.msg("collaborativeEditionOfSoaModel")}</a>
+                                <#-- et / ou Aide à la prise de décisions ? Registry des services, implementations ?? -->
                             </div>
                         </p>
                         <p>
@@ -111,33 +109,31 @@
                                 <@displayIndicatorInTableShort indicators["serviceWithoutUserTag"]/>
                             </table>
                         </p>
-                        <a class="btn btn-primary" href="${Root.path}/governance?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a><!-- TODO -->
+                        <a class="btn btn-primary" href="${Root.path}/governance?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("more")}</a>
                     </div>
                 </li>
             </ul>
 
-            <#if Root.isDevModeSet()>
-
-            <!-- 2 categories with a separator -->
-            <hr style="color:black; background-color:black; height:3px;" />
+            <#-- 2 categories with a separator -->
+            <#-- hr style="color:black; background-color:black; height:3px;" / -->
 
             <ul class="thumbnails">
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>Outils</h3>
-                        <!--<p>Statistiques et indicateurs à l'exécution, (?) d'appropiation du modèle SOA par les utilisateurs de EasySOA...</p>-->
+                        <h3>${Root.msg("tools")}</h3>
+                        <#-- p>Statistiques et indicateurs d'appropiation du modèle SOA par les utilisateurs de EasySOA...</p -->
                         <p>
                             <div class="btn-group">
-                                <a class="btn" href="${Root.path}/tools/apis?subprojectId=${subprojectId}&visibility=${visibility}">EasySOA API REST</a>
+                                <a class="btn" href="${Root.path}/tools/apis?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("easysoaRestApi")}</a>
                                 <a class="btn" href="${Root.path}/tools/soapui?subprojectId=${subprojectId}&visibility=${visibility}">SOAPUI</a>
-                                <a class="btn" disabled href="">Scaffolder proxy</a><!-- disabled -->
-                                <a class="btn" disabled href="">Proxy run manager</a><!-- disabled -->
-                                <a class="btn" href="${frascatiStudio_url}">FraSCAti Studio</a>
+                                <a class="btn" <#if !Root.isDevModeSet()>disabled</#if> href="">Scaffolder proxy</a><#-- disabled -->
+                                <a class="btn" <#if !Root.isDevModeSet()>disabled</#if> href="">Proxy run manager</a><#-- disabled -->
+                                <a class="btn" <#if !Root.isDevModeSet()>disabled</#if> href="${frascatiStudio_url}">OW2 FraSCAti Studio</a>
                             </div>
 
-                            <!-- TODO : add links -->
-                            <!--<ul>
+                            <#-- TODO : add links -->
+                            <#--<ul>
                                 <li>Scaffolder proxy
                                     <small> : Take advantage of the services you find, by using them in this secured service scaffolder</<small>
                                 </li>
@@ -146,22 +142,24 @@
                             </ul>-->
                         </p>
                         <br/>
-                        <a class="btn btn-primary" href="${Root.path}/tools?subprojectId=${subprojectId}&visibility=${visibility}">Plus...</a><!-- TODO -->
+                        <a class="btn btn-primary" href="${Root.path}/tools?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("more")}</a><#-- TODO -->
                         <br/>
-                        <h3>Exemples</h3>
+                        <h3>${Root.msg("examples")}</h3>
                         <p>
                             <ul>
                                 <li><a href="<@urlToPureAirFlowers />" target="_blank">Pure Air Flowers</a></li>
                                 <li><a href="<@urlToIntranet />" target="_blank">Intranet</a></li>
+                                <li><a href="${Root.path}/dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("matchingDashboardSamples")}</a></li>
+                                
+                                <#if Root.isDevModeSet()>
                                 <li><a href="<@urlToApvPivotal />" target="_blank">APV Pivotal</a></li>
-                                <li><a href="<@urlToAxxxDpsApv />" target="_blank">AXXX dps apv</a></li>
+                                <li><a href="<@urlToAxxxDpsApv />" target="_blank">AXXX DPS APV</a></li>
+                                </#if>
                             </ul>
                         </p>
                     </div>
                 </li>
             </ul>
-
-            </#if>
 
         </div>
 

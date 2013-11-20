@@ -3,7 +3,7 @@
     
 
     <#macro displayEndpointEnvUrl endpoint subprojectId visibility>
-         Déployé en ${endpoint['env:environment']} à <a href="${Root.path}/envIndicators/${endpoint.id}/1?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint['endp:url']}</a>
+         ${Root.msg("deployedIn")} ${endpoint['env:environment']} ${Root.msg("at")} <a href="${Root.path}/envIndicators/${endpoint.id}/1?subprojectId=${subprojectId}&visibility=${visibility}">${endpoint['endp:url']}</a>
     </#macro>
 
     <#macro displayEndpointsShort servicePathToEndpoints pathToServices subprojectId visibility>
@@ -14,7 +14,7 @@
             <div class="accordion-group">
                 <div class="accordion-heading">
                     <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#${service.name}"><@displayServiceTitle service false subprojectId visibility/></a>
-                    <#-- a href="<@urlToFicheSOA service subprojectId visibility/>" target="_blank"><img src="/nuxeo/icons/fiche.png" alt="Fiche Service"/></a>
+                    <#-- a href="<@urlToFicheSOA service subprojectId visibility/>" target="_blank"><img src="/nuxeo/icons/fiche.png" alt="${Root.msg("serviceBrowsing")}"/></a>
                     <a href="<@urlToLocalNuxeoDocumentsUiPath servicePath/>" target="_blank"><i class="icon-file-alt"></i></a -->
                 </div>
                 <div id="${service.name}" class="accordion-body collapse">
@@ -30,7 +30,7 @@
             </#list>
         </div>
         <#else>
-            Aucun service déployé
+            ${Root.msg("noDeployedService")}
         </#if>
     </#macro>
 
@@ -67,16 +67,10 @@
     <#macro displayIndicatorsShort indicators>
         <table class="table table-bordered">
             <tr>
-            <!--
-            <td>Indicator name</td>
-            <td>Timestamp</td>
-            <td>Service level health</td>
-            <td>Service level violation</td>
-            -->
-            <td>Indicateur</td>
-            <td>Horodatage</td>
-            <td>Niveau de santé du service</td>
-            <td>Niveau de violation du service</td>
+            <td>${Root.msg("IndicatorName")}</td>
+            <td>${Root.msg("Timestamp")}</td>
+            <td>${Root.msg("ServiceLevelHealth")}</td>
+            <td>${Root.msg("ServiceLevelViolation")}</td>
             </tr>
             <#list indicators as indicator><@displayIndicatorShort indicator/></#list>
          </table>

@@ -5,7 +5,7 @@
     <#include "/views/EasySOA/macros.ftl">
 
     <head>
-        <title>EasySOA Tools</title>
+        <title>EasySOA ${Root.msg("tools")}</title>
         <@includeResources/>
     </head>
 
@@ -14,7 +14,7 @@
         <div id="header">
             <div id="headerContents">
                 <@headerContentsDefault/>
-                EasySOA - Outils
+                EasySOA ${Root.msg("tools")}
             </div>
         </div>
         <br/>
@@ -23,26 +23,26 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>Outils</h3>
+                        <h3>${Root.msg("tools")}</h3>
                         <p>
-                            <a class="btn" href="">Scaffolder proxy</a>
-                            <!--<small> : Sources Discovery allows to automatically extract known services, implementations and consumptions from source code (for now, Java) by analyzing it at compilation time.</small>-->
-                            <small> : Le scaffolder proxy est un outil permettant de générer des formulaires html à partir de fichiers WSDL, puis d'envoyer une requète avec les parametres renseignés.</small>
+                            <a class="btn" href="${Root.path}/apis?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("easysoaRestApi")}</a>
+                            <small> : ${Root.msg("easysoaRestApi.doc")}</small>
                         </p>
                         <p>
-                            <a class="btn" href="">Proxy run manager</a>
-                            <!--<small> : Find any useful service from your intranet, or even the web: as you browse pages, informations on services are collected and sent the registry</small>-->
-                            <small> : Interface de pilotage du proxy, permet d'initialiser, arreter et d'enregistrer des runs. un run est un ensenble de requetes / réponses enregistré par le proxy HTTP.</small>
+                            <a class="btn" href="${Root.path}/tools/soapui?subprojectId=${subprojectId}&visibility=${visibility}">SOAPUI</a>
+                            <small> : ${Root.msg("soapui.doc")}</small>
                         </p>
                         <p>
-                            <a class="btn" href="http://owsi-vm-easysoa-axxx-registry.accelance.net:7080/easySoa/index.html" target="_blank">FraSCAti Studio</a>
-                            <!--<small> : Automatic discovery of web services by listenning exchanges between applications.</small>-->
-                            <small> : FraSCAti Studio (Création et déploiement d'applications SCA) basé sur la plate-forme d'éxécution SCA OW2 FraSCAti.</small>
+                            <a class="btn" <#if !Root.isDevModeSet()>disabled</#if> href="">Scaffolder proxy</a><#-- disabled -->
+                            <small> : ${Root.msg("scaffolderProxy.doc")}</small>
                         </p>
                         <p>
-                            <a class="btn" href="${Root.path}/apis?subprojectId=${subprojectId}&visibility=${visibility}">Easysoa API REST</a>
-                            <!--<small> : EasySOA provides an example of a simple "service portal" web user interface. It lists all services, allows to browse them by tags (a.k.a. TaggingFolder) and also to tag them. For each service, an example of a dedicated "service usage" documentation page can be displayed.</small>-->
-                            <small> : API's REST de communication avec le registry EasySOA.</small>
+                            <a class="btn" <#if !Root.isDevModeSet()>disabled</#if> href="">Proxy run manager</a><#-- disabled -->
+                            <small> : ${Root.msg("proxyRunManager.doc")}</small>
+                        </p>
+                        <p>
+                            <a class="btn" <#if !Root.isDevModeSet()>disabled</#if> href="http://owsi-vm-easysoa-axxx-registry.accelance.net:7080/easySoa/index.html" target="_blank">OW2 FraSCAti Studio</a>
+                            <small> : ${Root.msg("frascatiStudio.doc")}</small>
                         </p>
                     </div>
                 </li>

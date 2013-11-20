@@ -36,13 +36,15 @@ import org.nuxeo.ecm.core.api.CoreSession;
  */
 public class PhaseProgressIndicatorProvider extends IndicatorProviderBase {
 
+    private static final String SERVICE_DOCTYPE_INDICATOR = DoctypeCountProvider.buildName(InformationService.DOCTYPE);
+
     PhaseProgressIndicatorProvider(String category){
         super(category);
     }
     
 	@Override
 	public List<String> getRequiredIndicators() {
-        return Arrays.asList(InformationService.DOCTYPE,
+        return Arrays.asList(SERVICE_DOCTYPE_INDICATOR,
         		"serviceWithoutActor", "serviceWithoutInterface", "serviceWithoutComponent",
         		"serviceWithImplementation", "serviceWithoutImplementation",
         		"serviceWithMockImplementation", "serviceWithTestedImplementation",
@@ -58,7 +60,7 @@ public class PhaseProgressIndicatorProvider extends IndicatorProviderBase {
         Map<String, IndicatorValue> indicators = new HashMap<String, IndicatorValue>();
 
         // Count indicators - Service-specific
-        long servicesCount = computedIndicators.get(InformationService.DOCTYPE).getCount();
+        long servicesCount = computedIndicators.get(SERVICE_DOCTYPE_INDICATOR).getCount();
         long serviceWithoutActorNb = computedIndicators.get("serviceWithoutActor").getCount();
         long serviceWithoutInterfaceNb = computedIndicators.get("serviceWithoutInterface").getCount();
         long serviceWithoutComponentNb = computedIndicators.get("serviceWithoutComponent").getCount();

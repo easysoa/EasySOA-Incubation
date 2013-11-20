@@ -23,6 +23,8 @@ package org.easysoa.registry.rest;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.Principal;
+import java.text.MessageFormat;
+import java.util.MissingResourceException;
 import java.util.Properties;
 
 import org.easysoa.registry.DocumentService;
@@ -36,6 +38,7 @@ import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
+import org.nuxeo.ecm.webengine.model.Messages;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 
@@ -47,7 +50,38 @@ import org.nuxeo.runtime.api.Framework;
  * @author jguillemotte, mdutoo
  */
 public class EasysoaModuleRoot extends ModuleRoot {
-
+ 
+    /**
+     * Shortcut inspired by AbstractWebContext.getMessage(key, args), but :
+     * * only wraps missing ones with '!' in dev mode
+     * * allows to override client (request) locale language by language request parameter 
+     * @param args
+     * @param key 
+     * @return
+     * @throws Exception
+     */
+    public String msg(String key, Object ... args) throws Exception {
+        //return ctx.getMessage(key, args);
+        Messages messages = ctx.getModule().getMessages();
+        String language = ctx.getRequest().getParameter("language");
+        if (language == null || language.length() == 0) {
+            language = ctx.getLocale().getLanguage();
+        }
+        try {
+            String msg = messages.getString(key, language);
+            if (args != null && args.length > 0) {
+                // format the string using given args
+                msg = MessageFormat.format(msg, args);
+            }
+            return msg;
+        } catch (MissingResourceException e) {
+            if (!Framework.isDevModeSet()) {
+                return key; // not dev mode : don't display warning
+            }
+            return '!' + key + '!';
+        }
+    }
+    
     /**
      *
      * @return The current user name

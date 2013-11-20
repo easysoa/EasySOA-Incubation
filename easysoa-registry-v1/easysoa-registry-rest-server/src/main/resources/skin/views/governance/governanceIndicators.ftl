@@ -5,7 +5,7 @@
     <#include "/views/EasySOA/macros.ftl">
 
     <head>
-        <title>EasySOA Gouvernance</title>
+        <title>$EasySOA ${Root.msg("governance")} - ${Root.msg("governanceAndCompletionIndicators")}</title>
         <@includeResources/>
     </head>
 
@@ -14,7 +14,7 @@
         <div id="header">
             <div id="headerContents">
                 <@headerContentsDefault/>
-                EasySOA - Indicateurs de complétion et gouvernance
+                ${Root.msg("governanceAndCompletionIndicators")}
             </div>
         </div>
         <br/>
@@ -23,7 +23,7 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h2>Retrouvez ici vos indicateurs :</h2>
+                        <h2>${Root.msg("customIndicators")}</h2>
                         <p>
                             <table class="table table-bordered" width="100%">
                                 <tr>

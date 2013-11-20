@@ -49,8 +49,8 @@ public class ServiceImplStateProvider extends IndicatorProviderBase {
     //private static final String SERVICEIMPL_DOCTYPE_INDICATOR = DoctypeCountProvider.getName(ServiceImplementation.DOCTYPE);
 
     // TODO : Add a key and a name in indicators
-    private static final String SERVICEIMPL_DOCTYPE_INDICATOR = ServiceImplementation.DOCTYPE;
-    private static final String SERVICE_DOCTYPE_INDICATOR = InformationService.DOCTYPE;
+    private static final String SERVICEIMPL_DOCTYPE_INDICATOR = DoctypeCountProvider.buildName(ServiceImplementation.DOCTYPE);
+    private static final String SERVICE_DOCTYPE_INDICATOR = DoctypeCountProvider.buildName(InformationService.DOCTYPE);
 
     /**
      *

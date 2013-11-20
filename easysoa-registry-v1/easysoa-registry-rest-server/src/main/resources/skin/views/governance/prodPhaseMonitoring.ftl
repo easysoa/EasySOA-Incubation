@@ -5,7 +5,7 @@
     <#include "/views/EasySOA/macros.ftl">
 
     <head>
-        <title>EasySOA Gouvernance</title>
+        <title>EasySOA ${Root.msg("governance")} - ${Root.msg("soaProjectProgress")}</title>
         <@includeResources/>
         <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/flot/jquery.flot._js"></script>
         <script type="text/javascript" src="/nuxeo/site/easysoa/skin/js/flot/jquery.flot.categories._js"></script>
@@ -17,7 +17,7 @@
         <div id="header">
             <div id="headerContents">
                 <@headerContentsDefault/>
-                EasySOA - Suivi des phases
+                EasySOA - ${Root.msg("soaProjectProgress")}
             </div>
         </div>
         <br/>
@@ -26,11 +26,11 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h2>Suivi des phases</h2>
+                        <h2>${Root.msg("soaProjectProgress")}</h2>
                         <p>
-                        Ce graphique montre le degré d'avancement (en pourcentage) de chaque phase :
+                        ${Root.msg("soaProjectProgress.graphdoc")} :
                         </p>
-                        <!-- Display a graph with phases state in % -->
+                        <#-- Display a graph with phases state in % -->
                         <table style="border: 0">
                             <tr>
                                 <td style="width: 20%"><div id="legendholder"></div></td>
@@ -38,7 +38,7 @@
                             </tr>
                         </table>
 
-                        <h4>Détails :</h4>
+                        <h4>${Root.msg("details")} :</h4>
                         <p>
                             <table class="table table-bordered" width="100%">
                                 <tr>
@@ -53,7 +53,7 @@
                             </table>
                         </p>
 
-                        <h4>Ces indicateurs globaux d'avancement reposent sur les indicateurs suivants :</h4>
+                        <h4>${Root.msg("theseIndicatorsAreBuiltOn")} :</h4>
                         <p>
                             <table class="table table-bordered" width="100%">
                             <#assign indicatorNames = indicatorsService.getIndicatorProvider("PhaseProgressIndicatorProvider").getRequiredIndicators()/>
@@ -69,7 +69,7 @@
             </ul>
         </div>
     </body>
-    <!-- Phase monitoring graph -->
+    <#-- Phase monitoring graph -->
     <@displayPhaseMonitoringDiagram indicators/>
 
 </html>

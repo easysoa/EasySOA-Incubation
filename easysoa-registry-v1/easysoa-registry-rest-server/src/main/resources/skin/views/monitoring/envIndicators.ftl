@@ -4,7 +4,7 @@
     <#include "/views/EasySOA/macros.ftl">
 
     <head>
-        <title>EasySOA Endpoint indicators dashboard</title>
+        <title>EasySOA ${Root.msg("monitoring")} - ${Root.msg("serviceLevel")}</title>
         <@includeResources/>
     </head>
 
@@ -14,7 +14,7 @@
         <div id="header">
             <div id="headerContents">
                 <@headerContentsDefault/>
-                EasySOA Usage
+                EasySOA ${Root.msg("monitoring")} - ${Root.msg("serviceLevel")}
             </div>
         </div>
         <br/>
@@ -23,11 +23,11 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>Indicateurs pour le service <@displayServiceTitleWithoutPhase service true subprojectId visibility/>
+                        <h3>${Root.msg("indicatorsForService")} <@displayServiceTitleWithoutPhase service true subprojectId visibility/>
                         <a href="<@urlToLocalNuxeoDocumentsUiPath servicePath/>" target="_blank"><i class="icon-file-alt"></i></a></h3>
                         <span><#-- to solve img pb just below Bootstrap .thumbnail (actually display:block) -->
                         <#-- OLD Déployé en <@displayEnvironment endpoint['env:environment']/> à ${endpoint['endp:url']} -->
-                        Déployé à <@displayEndpointTitleWithoutPhase endpoint subprojectId visibility/>
+                        ${Root.msg("deployedAt")} <@displayEndpointTitleWithoutPhase endpoint subprojectId visibility/>
                         </span>
                         <p>
                         <@displayIndicatorsShort indicators/>
@@ -74,7 +74,7 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <a class="btn" href="${Root.path}?subprojectId=${subprojectId}&visibility=${visibility}">Retour à la liste des services déployés</a>
+                        <a class="btn" href="${Root.path}?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("backToDeployedServiceList")}</a>
                     </div>
                 </li>
             </ul>

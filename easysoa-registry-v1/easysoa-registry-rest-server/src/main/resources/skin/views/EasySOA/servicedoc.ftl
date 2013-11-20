@@ -598,18 +598,30 @@
            <#if otherUser_index != otherUsers?size - 1>, </#if>
         </#list>
 
-      <#if service?has_content>
+
+
+      <#if endpoint?has_content>
+          <#assign doc=endpoint/>
+      <#elseif serviceimpl?has_content>
+          <#assign doc=serviceimpl/>
+      <#else>
+          <#assign doc=service/>
+      </#if>
 		<h4>Contenu dans</h4>
-		<#if service['proxies']?has_content><#list service['proxies'] as proxy><@displayDocShort proxy['parent']/> ; </#list><p/></#if>
+		<#if doc['proxies']?has_content><#list doc['proxies'] as proxy><@displayDocShort proxy['parent']/> ; </#list><p/></#if>
 
 		<h3>Contient</h3>
-		<#if service['children']?has_content><@displayDocsShort service['children']/><p/></#if>
+		<#if doc['children']?has_content><@displayDocsShort doc['children']/><p/></#if>
 
 		<h3>log : all props</h3>
 
-		<@displayDoc service/>
+		<@displayDoc doc/>
 		<p/>
 		&nbsp;<p/>
+
+		
+		
+      <#if service?has_content>
 		<b>Information Service:</b>
 		<p/>
 		<@displayPropsAll service informationServicePropNames/>

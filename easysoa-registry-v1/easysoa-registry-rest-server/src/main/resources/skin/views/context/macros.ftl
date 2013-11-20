@@ -9,14 +9,15 @@
                     <#assign lastPhase = liveAndVersions["live"][liveAndVersions["live"]?size-1]/>
 
                     <#if project == "MyProject" >
-                        <#assign projectTag="Projet par défaut">
+                        <#assign projectTag=Root.msg("defaultProject")/>
                     <#else>
-                        <#assign projectTag="Projet">
+                        <#assign projectTag=Root.msg("project")/>
                     </#if>
-                    <!--<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#${project?replace(' ', '_')}">${projectTag} ${project}</a>-->
+                    <#-- a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#${project?replace(' ', '_')}">${projectTag} ${project}</a -->
                     <div class="accordion-toggle">
-                    <a href="${Root.path}/../?subprojectId=${lastPhase['spnode:subproject']}&visibility=deep">${projectTag} <Strong>${project}</Strong>, phase ${lastPhase['dc:title']} - ${lastPhase.versionLabel}</a>&nbsp;<span class="icon-eye-open" style="color:grey" title="Avec phases parentes"></span>
-                    &nbsp;(<a data-toggle="collapse" data-parent="#accordion2" href="#${project?replace(' ', '_')}">Plus de choix...</a>)
+                    <a href="${Root.path}/../?subprojectId=${lastPhase['spnode:subproject']}&visibility=deep">${projectTag} <Strong>${project}</Strong>, 
+                    phase ${lastPhase['dc:title']} - ${lastPhase.versionLabel}</a>&nbsp;<span class="icon-eye-open" style="color:grey" title="${Root.msg("withParentPhases")}"></span>
+                    &nbsp;(<a data-toggle="collapse" data-parent="#accordion2" href="#${project?replace(' ', '_')}">${Root.msg("moreChoice")}</a>)
                     </div>
                 </div>
                 <div id="${project?replace(' ', '_')}" class="accordion-body collapse">
@@ -34,24 +35,30 @@
     </#macro>
 
     <#macro displayLiveShort projectVersionsList project>
-        Versions courantes
+        ${Root.msg("currentVersions")}
         <ul>
         <#assign liveAndVersions = projectVersionsList[project]/>
         <#list liveAndVersions["live"] as live>
             <li>
-                ${live['dc:title']} - ${live.versionLabel} (<span class="icon-eye-open" style="color:grey" title="Avec phases parentes"></span><a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=deep">Avec</a>, <span class="icon-eye-close" style="color:grey" title="Sans phases parentes"></span><a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=strict">Sans</a> les phases parentes)
+                ${live['dc:title']} - ${live.versionLabel} (<span class="icon-eye-open" style="color:grey" title="${Root.msg("withParentPhases")}"></span>
+                <a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=deep">${Root.msg("with")}</a>, 
+                <span class="icon-eye-close" style="color:grey" title="${Root.msg("withoutParentPhases")}"></span>
+                <a href="${Root.path}/../?subprojectId=${live['spnode:subproject']}&visibility=strict">${Root.msg("withoutParentPhasesWithLinkEnding", ["</a>"])})
             </li>
         </#list>
         </ul>
     </#macro>
 
     <#macro displayVersionsShort projectVersionsList project>
-        Anciennes versions
+        ${Root.msg("previousVersions")}
         <ul>
         <#assign liveAndVersions = projectVersionsList[project]/>
         <#list liveAndVersions["versions"] as version>
             <li>
-                ${version['dc:title']} - ${version.versionLabel} (<span class="icon-eye-open" style="color:grey" title="Avec phases parentes"></span><a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=deep">Avec</a>, <span class="icon-eye-close" style="color:grey" title="Sans phases parentes"></span><a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=strict">Sans</a> les phases parentes)
+                ${version['dc:title']} - ${version.versionLabel} (<span class="icon-eye-open" style="color:grey" title="${Root.msg("withParentPhases")}"></span>
+                <a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=deep">${Root.msg("with")}</a>, 
+                <span class="icon-eye-close" style="color:grey" title="S${Root.msg("withoutParentPhases")}"></span>
+                <a href="${Root.path}/../?subprojectId=${version['spnode:subproject']}&visibility=strict">${Root.msg("withoutParentPhasesWithLinkEnding", ["</a>"])})
             </li>
         </#list>
         </ul>
@@ -65,21 +72,27 @@
             <#else>
             (version courante)
             </#if>
-            <!--<span class="label">Visibilité : <#if visibility == "deep">Avec phases parentes<#else>Sans phases parentes</#if></span>-->
+            <#-- span class="label">Visibilité : <#if visibility == "deep">${Root.msg("withParentPhases")}<#else>${Root.msg("withoutParentPhases")}</#if></span -->
             <#if visibility == "deep">
-                <span class="icon-eye-open" style="color:grey" title="Avec phases parentes"></span><#if longDisplay == "true">&nbsp;(Avec phases parente)</#if>
+                <span class="icon-eye-open" style="color:grey" title="${Root.msg("withParentPhases")}"></span>
+                <#if longDisplay == "true">&nbsp;(${Root.msg("withParentPhases")})</#if>
             <#else>
-                <span class="icon-eye-close" style="color:grey" title="Sans phases parentes"></span><#if longDisplay == "true">&nbsp;(Sans phases parente)</#if>
+                <span class="icon-eye-close" style="color:grey" title="${Root.msg("withoutParentPhases")}"></span>
+                <#if longDisplay == "true">&nbsp;(${Root.msg("withoutParentPhases")})</#if>
             </#if>
         <#else>
-            Perspective globale
+            ${Root.msg("globalPerspective")}
         </#if>
     </#macro>
 
     <#-- Display the context bar as a Bootstrap full width thumbnail -->
     <#macro displayContextBar subprojectId contextInfo visibility button longDisplay>
-        <strong>Perspective <#if longDisplay == "true">courante </#if>:</strong>&nbsp<@displayCurrentVersion subprojectId contextInfo visibility longDisplay/>
+        <#assign currentMsg = ""/>
+        <#if longDisplay == "true">
+            <#assign currentMsg = Root.msg("currentPerspectiveCurrent")/>
+        </#if>
+        <strong>${Root.msg("currentPerspectiveLongDisplay", [currentMsg])}:</strong>&nbsp<@displayCurrentVersion subprojectId contextInfo visibility longDisplay/>
         <#if button == "true">
-            (<a href="/nuxeo/site/easysoa/context?subprojectId=${subprojectId}&visibility=${visibility}">Changer</a>)
+            (<a href="/nuxeo/site/easysoa/context?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("change")}</a>)
         </#if>
     </#macro>

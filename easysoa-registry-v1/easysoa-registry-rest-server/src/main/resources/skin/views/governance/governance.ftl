@@ -5,7 +5,7 @@
     <#include "/views/EasySOA/macros.ftl">
 
     <head>
-        <title>EasySOA Gouvernance</title>
+        <title>EasySOA ${Root.msg("governance")}</title>
         <@includeResources/>
     </head>
 
@@ -13,7 +13,7 @@
         <div id="header">
             <div id="headerContents">
                 <@headerContentsDefault/>
-                EasySOA Gouvernance
+                EasySOA ${Root.msg("governance")}
             </div>
         </div>
         <br/>
@@ -22,35 +22,24 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>Gouvernance</h3>
+                        <h3>${Root.msg("governance")}</h3>
                         <p>
                             <p>
-                                <a class="btn" href="${Root.path}/prodPhaseMonitoring?subprojectId=${subprojectId}&visibility=${visibility}">Suivi des Phases de production SOA</a>
-                                <small> : Affiche un graphique présentant l'état d'avancement de chaque phase.</small>
+                                <a class="btn" href="${Root.path}/prodPhaseMonitoring?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("soaProjectProgress")}</a>
+                                <small> : ${Root.msg("soaProjectProgress.doc")}</small>
                             </p>
                             <p>
-                                <a class="btn" href="${Root.path}/governanceIndicators?subprojectId=${subprojectId}&visibility=${visibility}">Indicateurs de complétion et gouvernance</a>
-                                <small> : Indicateurs détaillés de complétion des services</small>
+                                <a class="btn" href="${Root.path}/governanceIndicators?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("governanceAndCompletionIndicators")}</a>
+                                <small> : ${Root.msg("governanceAndCompletionIndicators.doc")}</small>
                             </p>
                             <p>
-                                <#if subprojectId>
-                                    <#assign nuxeoUrl = "/nuxeo/nxdoc/default/"
-                                        + Session.query("select * from Subproject where spnode:subproject='" + subprojectId + "'")[0].id
-                                        + "/view_documents"/>
-                                    <#if !subprojectId?ends_with("_v")>
-                                        <#assign nuxeoUrl = nuxeoUrl + "?version=true" />
-                                    </#if>
-                                <#else>
-                                    <#assign nuxeoUrl = "/nuxeo/nxpath/default/default-domain@view_documents"/>
-                                </#if>
-                                <a class="btn" href="${nuxeoUrl}">Edition collaborative du modèle SOA</a>
-                                <small> : Interface de gestion documentaire collaborative</small>
+                                <a class="btn" href="<@urlToLocalNuxeoDocumentsSoaProject subprojectId/>">${Root.msg("collaborativeEditionOfSoaModel")}</a>
+                                <small> : ${Root.msg("collaborativeEditionOfSoaModel.doc")}</small>
                             </p>
                         </p>
 
-                        <h3>Indicateurs <@displayIndicatorsExport subprojectId visibility "steering"/></h3>
+                        <h3>${Root.msg("indicators")} <@displayIndicatorsExport subprojectId visibility "steering"/></h3>
                         <p>
-                            <!-- TODO : Add table headers ? -->
                             <@displayIndicatorsInTable indicators "steering"/>
                         <p>
                     </div>

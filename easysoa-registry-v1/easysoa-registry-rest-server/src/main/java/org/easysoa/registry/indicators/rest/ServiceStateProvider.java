@@ -49,7 +49,7 @@ import org.nuxeo.runtime.api.Framework;
  */
 public class ServiceStateProvider extends IndicatorProviderBase {
 
-    private static final String SERVICE_DOCTYPE_INDICATOR = InformationService.DOCTYPE;
+    private static final String SERVICE_DOCTYPE_INDICATOR = DoctypeCountProvider.buildName(InformationService.DOCTYPE);
 
     ServiceStateProvider(String category){
        super(category);

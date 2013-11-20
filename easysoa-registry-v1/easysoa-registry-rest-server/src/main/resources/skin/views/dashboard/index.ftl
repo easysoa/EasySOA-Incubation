@@ -4,7 +4,7 @@
     <#include "/views/EasySOA/macros.ftl">
 
     <head>
-        <title>EasySOA Matching dashboard</title>
+        <title>EasySOA ${Root.msg("matchingDashboard")}</title>
         <@includeResources/>
     </head>
 
@@ -13,9 +13,9 @@
         <div id="header">
             <div id="headerContents">
                 <@headerContentsDefault/>
-                EasySOA Matching dashboard
+                EasySOA ${Root.msg("matchingDashboard")}
                 <form action="/nuxeo/site/easysoa/dashboard/samples?subprojectId=${subprojectId}&visibility=${visibility}" method="post" style="position: absolute; right: 20px; top: 20px">
-                    <input type="submit" value="Fill with samples" />
+                    <input type="submit" value="${Root.msg("fillWithSamples")}Fill with samples" />
                 </form>
             </div>
         </div>
@@ -30,38 +30,24 @@
 
                         <div id="selectedServiceImpl" style="display: none">${selectedServiceImpl}</div>
 
-                        <#--
-                        <#assign doctypeTitle = "Endpoint">
-                        <#assign targetDoctypeTitle = "implementation">
-                        -->
-                        <#assign doctypeTitle = "Services déployés">
-                        <#assign targetDoctypeTitle = "implémentation">
+                        <#assign doctypeTitle = Root.msg("Endpoints")>
+                        <#assign targetDoctypeTitle = Root.msg("implementation")>
                         <#assign unmatched = endpointWithoutImpl>
                         <#include "/views/dashboard/matching.ftl">
 
-                        <#--
-                        <#assign doctypeTitle = "Service implementation">
-                        <#assign targetDoctypeTitle = "service">
-                        -->
-                        <#assign doctypeTitle = "Implémentations">
-                        <#assign targetDoctypeTitle = "service">
+                        <#assign doctypeTitle = Root.msg("Implementations")>
+                        <#assign targetDoctypeTitle = Root.msg("service")>
                         <#assign unmatched = servWithoutSpecs>
                         <#include "/views/dashboard/matching.ftl">
 
-                        <!--<h2>My services</h2>-->
-                        <h2>Mes services</h2>
+                        <h2>${Root.msg("myServices")}</h2>
 
                         <table class="table table-bordered" style="border:1px solid black">
                             <tr>
-                                <!--<th>Information service</th>
+                                <th>${Root.msg("Definitions")}</th>
                                 <th></th>
-                                <th>Service implementation</th>
-                                <th>Matching</th>-->
-                                <th>Définitions</th>
-                                <th></th>
-                                <th>Implémentations</th>
-                                <!--<th>Correspondance</th>-->
-                                <th>Liaison</th>
+                                <th>${Root.msg("Implementations")}</th>
+                                <th>${Root.msg("Matching")}</th>
                             </tr>
                             <#list matchedImpls as matchedImpl>
                             <tr>
@@ -98,20 +84,14 @@
                             </#list>
                         </table>
 
-                        <!--<h2>My endpoints</h2>-->
-                        <h2>Mes services implémentés et déployés</h2>
+                        <h2>${Root.msg("myImplementedAndDeployedServices")}</h2>
 
                         <table class="table table-bordered" style="border:1px solid black">
                             <tr>
-                                <!--<th>Service Implementation</th>
+                                <th>${Root.msg("Implementations")}</th>
                                 <th></th>
-                                <th>Endpoint</th>
-                                <th>Matching</th>-->
-                                <th>Implémentations</th>
-                                <th></th>
-                                <th>Déploiements</th>
-                                <!--<th>Correspondance</th>-->
-                                <th>Liaison</th>
+                                <th>${Root.msg("Deployments")}</th>
+                                <th>${Root.msg("Matching")}</th>
                             </tr>
                             <#list matchedEndpoints as matchedEndpoint>
                             <tr>

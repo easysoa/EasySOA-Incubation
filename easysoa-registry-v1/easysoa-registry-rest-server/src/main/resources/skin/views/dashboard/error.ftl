@@ -4,33 +4,33 @@
     <#include "/views/EasySOA/macros.ftl">
 
 <head>
-	<title>EasySOA Matching dashboard</title>
+	<title>EasySOA ${Root.msg("matchingDashboard")}</title>
     <@includeResources/>
 </head>
 
 <body>
 
-<div id="header">
-	<div id="headerContents">
-	<div id="logoLink">&nbsp;</div>
-    	<div id="headerUserBar"><@displayUserInfo Root.currentUser/></div>
-        <div id="headerContextBar">
-            <#assign visibility=visibility!""><!-- Required to set a default value when the query variables are not present -->
-            <#assign subprojectId=subprojectId!"">
-            <@displayContextBar subprojectId contextInfo visibility "true" "false"/>
+        <div id="header">
+            <div id="headerContents">
+                <@headerContentsDefault/>
+                EasySOA ${Root.msg("matchingDashboard")}
+            </div>
         </div>
-		EasySOA Light summary
-    </div>
-</div>
 
-<br />
+        <br/>
+        
 
-<div id="container">
+        <div class="container" id="container">
+            <ul class="thumbnails">
+            
+                <@displayReturnToPreviousPageButtonBar/>
+                
+                <li class="span12">
+                    <div class="thumbnail">
+                        <img data-src="holder.js/300x200" alt="">
 
-    <!--<p>&lt;&lt;&lt; <a href="javascript:history.go(-1)">Go back to previous page</a>-->
-    <p>&lt;&lt;&lt; <a class="btn" href="javascript:history.go(-1)">Retour</a>
 
-    <h1 style="color: red">Erreur<!--ERROR--></h1>
+    <h1 style="color: red">${Root.msg("Error")}</h1>
 
     <p>${error}</p>
 
@@ -45,7 +45,11 @@
     </#list>
     </pre>
 
-</div>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
 
 </body>
 

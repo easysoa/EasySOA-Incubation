@@ -24,9 +24,9 @@
                 },
                 xaxis: {
                     ticks: [
-                        [1,'Spécifications']
-                        ,[2,'Réalisation']
-                        ,[3,'Déploiement']
+                        [1,'${Root.msg("Specifications")}']
+                        ,[2,'${Root.msg("Development")}']
+                        ,[3,'${Root.msg("Deployment")}']
                     ]
                 },
                 yaxis: {

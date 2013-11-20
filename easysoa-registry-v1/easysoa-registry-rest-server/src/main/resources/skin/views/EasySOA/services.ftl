@@ -4,7 +4,7 @@
     <#include "/views/EasySOA/docMacros.ftl">
     
 <head>
-    <title>EasySOA Cartographie - Fiche Service</title>
+    <title>EasySOA ${Root.msg("cartography")} - ${Root.msg("serviceBrowsing")}</title>
     <@includeResources/>
     <style type="text/css">
         .clickable:hover { cursor: pointer; background-color: #FFC; }
@@ -18,7 +18,7 @@
     <div id="header">
       <div id="headerContents">
           <@headerContentsDefault/>
-          EasySOA Cartographie - Documentation
+          EasySOA ${Root.msg("cartography")} - ${Root.msg("serviceBrowsing")}
        </div>
    </div>
    <br/>
@@ -29,7 +29,7 @@
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt="">
 
-               <h3>Fiches Service</h3>
+               <h3>${Root.msg("servicesBrowsing")}</h3>
       <p/>
 
       <@displayServicesShort services subprojectId visibility/>
@@ -44,14 +44,14 @@
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt="">
 
-               <h3>Accès direct à leurs...</h3>
-               <h4>implémentations</h4>
+               <h3>${Root.msg("directAccessToTheir")}</h3>
+               <h4>${Root.msg("implementations")}</h4>
                <p/>
 
                <@displayImplementationsShort impls subprojectId visibility/>
                <p/>
       <p/>
-               <h4>déploiements</h4>
+               <h4>${Root.msg("deployments")}</h4>
                <p/>
 
                <@displayEndpointsShort endpoints subprojectId visibility/>
@@ -65,7 +65,7 @@
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt="">
 
-      <h3>Par tags</h3>
+      <h3>${Root.msg("byTags")}</h3>
       <p/>
 
       <#list tags as tag>

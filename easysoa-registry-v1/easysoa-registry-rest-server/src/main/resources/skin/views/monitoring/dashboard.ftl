@@ -4,7 +4,7 @@
     <#include "/views/EasySOA/macros.ftl">
 
     <head>
-        <title>EasySOA Endpoint indicators dashboard</title>
+        <title>EasySOA ${Root.msg("monitoring")} - ${Root.msg("serviceLevel")}</title>
         <@includeResources/>
     </head>
 
@@ -13,7 +13,7 @@
 	<div id="header">
             <div id="headerContents">
                 <@headerContentsDefault/>
-                EasySOA Usage
+                EasySOA ${Root.msg("monitoring")} - ${Root.msg("serviceLevel")}
 	    </div>
 	</div>
         <br/>
@@ -22,7 +22,7 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h1>Qualité des services déployés</h1>
+                        <h1>${Root.msg("serviceLevelOfDeployedServices")}</h1>
                         <p>
                         <@displayEndpointsShort servicePathToEndpoints pathToServices subprojectId visibility/>
                         </p>

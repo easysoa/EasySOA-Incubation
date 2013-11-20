@@ -31,34 +31,29 @@ import org.easysoa.registry.DocumentService;
  */
 public class DoctypeCountProvider extends QueryCountIndicator {
 
+    public static final String DOCTYPE_COUNT_PREFIX = "count.";
+    
     private final String docType;
     private final String category;
     private final String description;
     private final String name;
+    
+    public static String buildName(String docType) {
+        return DOCTYPE_COUNT_PREFIX + docType;
+    }
 
     /**
      * 
-     * @param name
      * @param description
      * @param doctype
      * @param category 
      */
-    public DoctypeCountProvider(String name, String description, String docType, String category) {
+    public DoctypeCountProvider(String description, String docType, String category) {
         super(DocumentService.NXQL_SELECT_FROM + docType + DocumentService.NXQL_WHERE_NO_PROXY);
         this.docType = docType;
-        this.name = name;
+        this.name = buildName(docType);
         this.description = description;
         this.category = category;
-    }    
-    
-    /**
-     * 
-     * @param name
-     * @param doctype
-     * @param category 
-     */
-    public DoctypeCountProvider(String name, String docType, String category) {
-        this(name, null, docType, category);
     }
 
     /**
@@ -67,7 +62,7 @@ public class DoctypeCountProvider extends QueryCountIndicator {
      * @param category 
      */
     public DoctypeCountProvider(String docType, String category) {
-        this(docType, null, docType, category);
+        this(null, docType, category);
     }
     
     @Override

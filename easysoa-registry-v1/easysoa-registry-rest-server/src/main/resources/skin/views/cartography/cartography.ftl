@@ -5,7 +5,7 @@
     <#include "/views/EasySOA/macros.ftl">
 
     <head>
-        <title>EasySOA Cartographie</title>
+        <title>EasySOA ${Root.msg("cartography")}</title>
         <@includeResources/>
     </head>
 
@@ -14,7 +14,7 @@
         <div id="header">
             <div id="headerContents">
                 <@headerContentsDefault/>
-                EasySOA Cartographie
+                EasySOA ${Root.msg("cartography")}
             </div>
         </div>
         <br/>
@@ -24,33 +24,28 @@
                 <li class="span12">
                     <div class="thumbnail">
                         <img data-src="holder.js/300x200" alt="">
-                        <h3>Cartographie des services</h3>
+                        <h3>${Root.msg("sourceDiscovery")}</h3>
                         <p>
                             <p>
-                                <a class="btn" href="${Root.path}/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte sources</a>
-                                <!--<small> : Sources Discovery allows to automatically extract known services, implementations and consumptions from source code (for now, Java) by analyzing it at compilation time.</small>-->
-                                <small> : La découverte source permet d'extraire automatiquement des services, des implementations et des clients depuis le code source (Java pour le moment) en l'analysant lors de la compilation.</small>
+                                <a class="btn" href="${Root.path}/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("sourceDiscovery")}</a>
+                                <small> : ${Root.msg("sourceDiscovery.doc")}</small>
                             </p>
                             <p>
-                                <a class="btn" href="${web_discovery_url}?subprojectId=${subprojectId}&visibility=${visibility}&serverName=${serverName}" target="_blank">Découverte web</a>
-                                <!--<small> : Find any useful service from your intranet, or even the web: as you browse pages, informations on services are collected and sent the registry</small>-->
-                                <small> : Trouvez des services utiles à partir de votre intranet, ou même sur le web : Pendant que vous naviguez, les informations sur les services sont collectées et envoyées dans le registre EasySOA</small>
+                                <a class="btn" href="${web_discovery_url}?subprojectId=${subprojectId}&visibility=${visibility}&serverName=${serverName}" target="_blank">${Root.msg("webDiscovery")}</a>
+                                <small> : ${Root.msg("webDiscovery.doc")}</small>
                             </p>
                             <p>
-                                <a class="btn" href="${Root.path}/runDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte à l'exécution</a>
-                                <!--<small> : Automatic discovery of web services by listenning exchanges between applications.</small>-->
-                                <small> : Découverte automatique de web services par écoute des échanges entre applications.</small>
+                                <a class="btn" href="${Root.path}/runDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("runtimeDiscovery")}</a>
+                                <small> : ${Root.msg("runtimeDiscovery.doc")}</small>
                             </p>
                             <p>
-                                <a class="btn" href="${Root.path}/../services/?subprojectId=${subprojectId}&visibility=${visibility}">IHM de consultation du modèle SOA</a>
-                                <!--<small> : EasySOA provides an example of a simple "service portal" web user interface. It lists all services, allows to browse them by tags (a.k.a. TaggingFolder) and also to tag them. For each service, an example of a dedicated "service usage" documentation page can be displayed.</small>-->
-                                <small> : EasySOA fournit un exemple d'une interface web simple pour un "portail service". Cette interface liste tous les services, permet de parcourir ces services via des étiquettes (ou TaggingFolder) et de les étiquetter. Pour chaque service, un exemple d'une page de documention dédiée à l'utilisation du service peut etre affichée.</small>
+                                <a class="btn" href="${Root.path}/../services/?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("serviceBrowsingUI")}</a>
+                                <small> : ${Root.msg("serviceBrowsing.doc")}</small>
                             </p>
                         </p>
 
-                        <h3>Indicateurs <@displayIndicatorsExport subprojectId visibility "cartography"/></h3>
+                        <h3>${Root.msg("indicators")} <@displayIndicatorsExport subprojectId visibility "cartography"/></h3>
                         <p>
-                            <!-- TODO : Add table headers ? -->
                             <@displayIndicatorsInTable indicators "cartography"/>
                         <p>
                     </div>

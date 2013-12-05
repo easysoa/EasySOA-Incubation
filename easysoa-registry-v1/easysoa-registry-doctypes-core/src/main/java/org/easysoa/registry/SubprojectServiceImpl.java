@@ -29,11 +29,8 @@ import org.nuxeo.snapshot.Snapshotable;
 
 public class SubprojectServiceImpl {
 
-    public static final String  SUBPROJECT_ID_VERSION_SEPARATOR = "_v";
-
     public static final PathRef defaultProjectPathRef = new PathRef(Project.DEFAULT_PROJECT_PATH);
     ///public static final PathRef defaultSubprojectPathRef = new PathRef(Subproject.DEFAULT_SUBPROJECT_PATH);
-    public static final String defaultSubprojectId = Subproject.DEFAULT_SUBPROJECT_PATH + SUBPROJECT_ID_VERSION_SEPARATOR;
 
 
     private static Logger logger = Logger.getLogger(SubprojectServiceImpl.class);
@@ -130,7 +127,7 @@ public class SubprojectServiceImpl {
             sbuf.append('/');
             sbuf.append(subprojectName);
         }
-        sbuf.append(SUBPROJECT_ID_VERSION_SEPARATOR);
+        sbuf.append(Subproject.SUBPROJECT_ID_VERSION_SEPARATOR);
         if (version != null) {
             sbuf.append(version);
         } // else live : Phase / subproject id ends with _v
@@ -156,7 +153,7 @@ public class SubprojectServiceImpl {
     }
 
     public static String getPathFromId(String subprojectId) {
-        int lastVersionSeparatorId = subprojectId.lastIndexOf(SUBPROJECT_ID_VERSION_SEPARATOR);
+        int lastVersionSeparatorId = subprojectId.lastIndexOf(Subproject.SUBPROJECT_ID_VERSION_SEPARATOR);
         if (lastVersionSeparatorId < 0) {
             logger.warn("getPathFromId() called on badly formatted subprojectId " + subprojectId);
             return null;
@@ -174,11 +171,11 @@ public class SubprojectServiceImpl {
         return subprojectInDatabase == null; // subproject ID about to change & being propagated but not yet saved
         /*
         String subprojectId = (String) context.getPropertyValue(SubprojectNode.XPATH_SUBPROJECT);
-        int lastVersionSeparatorId = subprojectId.lastIndexOf(SUBPROJECT_ID_VERSION_SEPARATOR);
+        int lastVersionSeparatorId = subprojectId.lastIndexOf(Subproject.SUBPROJECT_ID_VERSION_SEPARATOR);
         if (lastVersionSeparatorId < 0) {
             logger.warn("isBeingVersionedSubprojectNode() called on badly formatted subprojectId " + subprojectId);
         }
-        return lastVersionSeparatorId != subprojectId.length() - SUBPROJECT_ID_VERSION_SEPARATOR.length();
+        return lastVersionSeparatorId != subprojectId.length() - Subproject.SUBPROJECT_ID_VERSION_SEPARATOR.length();
         */
     }
 
@@ -199,7 +196,7 @@ public class SubprojectServiceImpl {
         // NB. three differents ways :
 
         // 1. looking in db using path : NO doesn't work for versioned Phase / subproject because their Path is relative
-        /*int lastVersionSeparatorId = subprojectId.lastIndexOf(SUBPROJECT_ID_VERSION_SEPARATOR);
+        /*int lastVersionSeparatorId = subprojectId.lastIndexOf(Subproject.SUBPROJECT_ID_VERSION_SEPARATOR);
         if (lastVersionSeparatorId < 0) {
             logger.warn("getSubprojectById() called on badly formatted subprojectId " + subprojectId);
             return null;
@@ -207,10 +204,10 @@ public class SubprojectServiceImpl {
 
         String path = subprojectId.substring(0, lastVersionSeparatorId);
         String versionLabelCriteria;
-        if (lastVersionSeparatorId == subprojectId.length() - SUBPROJECT_ID_VERSION_SEPARATOR.length()) {
+        if (lastVersionSeparatorId == subprojectId.length() - Subproject.SUBPROJECT_ID_VERSION_SEPARATOR.length()) {
             versionLabelCriteria = "";
         } else {
-            String versionLabel = subprojectId.substring(lastVersionSeparatorId + SUBPROJECT_ID_VERSION_SEPARATOR.length());
+            String versionLabel = subprojectId.substring(lastVersionSeparatorId + Subproject.SUBPROJECT_ID_VERSION_SEPARATOR.length());
             versionLabelCriteria = " AND ecm:versionLabel='" + versionLabel + "'";
         }
         DocumentModelList res = documentManager.query(DocumentService.NXQL_SELECT_FROM
@@ -420,7 +417,7 @@ public class SubprojectServiceImpl {
             String subprojectId) throws ClientException {
         DocumentModel foundSubproject = getSubprojectById(documentManager, subprojectId);
         if (foundSubproject == null && (subprojectId == null || subprojectId.length() == 0
-                || subprojectId.equals(defaultSubprojectId))) {
+                || subprojectId.equals(Subproject.DEFAULT_SUBPROJECT_ID))) {
             // default subproject mode (TODO rather create it at startup ? or explode ?? by query or path ?)
             return getOrCreateDefaultSubproject(documentManager);
         }
@@ -441,7 +438,7 @@ public class SubprojectServiceImpl {
         ///DocumentModelList subprojectResults = documentManager.query(DocumentService.NXQL_SELECT_FROM
         ///        + "Subproject WHERE ecm:path='" + SubprojectServiceImpl.defaultSubprojectPathRef + "'");
         // however rather querying it by id (more regular) :
-        DocumentModel subprojectDocModel = getSubprojectByIdInternal(documentManager, defaultSubprojectId);
+        DocumentModel subprojectDocModel = getSubprojectByIdInternal(documentManager, Subproject.DEFAULT_SUBPROJECT_ID);
         if (subprojectDocModel == null) {
             DocumentModel project = getOrCreateDefaultProject(documentManager);
             subprojectDocModel = SubprojectServiceImpl.createSubproject(documentManager,

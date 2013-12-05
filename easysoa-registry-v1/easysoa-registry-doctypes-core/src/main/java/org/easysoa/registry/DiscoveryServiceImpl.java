@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.easysoa.registry.types.InformationService;
 import org.easysoa.registry.types.ServiceImplementation;
 import org.easysoa.registry.types.SoaNode;
+import org.easysoa.registry.types.Subproject;
 import org.easysoa.registry.types.SubprojectNode;
 import org.easysoa.registry.types.ids.SoaNodeId;
 import org.easysoa.registry.utils.NuxeoListUtils;
@@ -59,6 +60,12 @@ public class DiscoveryServiceImpl implements DiscoveryService {
         String subproject = identifier.getSubprojectId();
         if ((subproject == null || subproject.trim().length() == 0) && properties != null) {
             subproject = (String) properties.get(SubprojectNode.XPATH_SUBPROJECT);
+            if (subproject == null || subproject.trim().length() == 0) {
+                // default subproject case
+                subproject = Subproject.DEFAULT_SUBPROJECT_ID;
+                properties.put(SubprojectNode.XPATH_SUBPROJECT, subproject); // else same nodes
+                // can't be merged, ex. several identical endpoints created by dbb !
+            }
             identifier.setSubprojectId(subproject);
         } // else don't create properties, otherwise when called with null to create links
         // (EndpointMatchingService.linkServiceImplementation()), will be saved which triggers loop

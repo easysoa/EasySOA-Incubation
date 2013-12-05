@@ -5,6 +5,17 @@
 //
 // Contact : easysoa-dev@googlegroups.com
 
+/* ==============
+ * Proxy settings
+ * ==============
+ */
+
+exports.PROXY_PORT = '8081';
+
+// to enable forward proxying to your company's proxy, uncomment and adapt :
+//exports.FORWARD_PROXY_HOST = 'myCompanyProxy.com'
+//exports.FORWARD_PROXY_PORT = 80
+
 /* ===================
  * Web server settings
  * ===================
@@ -27,11 +38,9 @@ exports.NO_AUTH_NEEDED = [
 exports.SCAFFOLDING_SERVER_URL = "http://127.0.0.1:18000";
 
 /* ==============
- * Proxy settings
+ * Nuxeo settings
  * ==============
  */
-
-exports.PROXY_PORT = '8081';
 
 exports.NUXEO_URL = NUXEO_URL               = 'http://127.0.0.1:8080/nuxeo';
 exports.NUXEO_REST_URL                      = NUXEO_URL + '/site';
@@ -44,7 +53,7 @@ exports.SERVICE_FINDER_IGNORE = [
   '\\.jpg',
   '\\.gif',
   '\\.png',
-  '\\.js',
+  '\\.js$', // and not .jsp !
   '\\.ico',
   'localhost:7001', // FraSCAti (part of EasySOA Light)
   '127.0.0.1:7001',

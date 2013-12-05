@@ -26,6 +26,7 @@ proxy.on('proxyError', function(error, request, result) {
 
 // Proxy handler
 
+// if null host & port, defaults to request URL's (default proxy behaviour)
 exports.forwardTo = forwardTo = function(request, response, host, port, path) {
 	var parsedUrl = null;
 	if (host == null || port == null) {
@@ -38,6 +39,7 @@ exports.forwardTo = forwardTo = function(request, response, host, port, path) {
 		request.headers['Authorization'] = utils.encodeAuthorization(request.session.username, request.session.password);
 	}
 	try {
+		///console.log("proxying to " + (host || parsedUrl.hostname) + ":" + (port || parsedUrl.port || 80) + " for " + request.url);
 	  proxy.proxyRequest(request, response, {
 	      'host': host || parsedUrl.hostname,
 	      'port': port || parsedUrl.port || 80 // default http url port
@@ -49,9 +51,19 @@ exports.forwardTo = forwardTo = function(request, response, host, port, path) {
 	}
 };
 
-exports.handleProxyRequest = function(request, response) {
+exports.handleProxyRequest = function(request, response, settings) {
 	var parsedUrl = url.parse(request.url);
-	forwardTo(request, response, parsedUrl.hostname, parsedUrl.port, parsedUrl.path);
+	var host, port;
+	if (settings.clientHost // else not yet inited, can't check if easysoa itself
+			&& settings.FORWARD_PROXY_HOST && parsedUrl.hostname != settings.clientHost) {
+		host = settings.FORWARD_PROXY_HOST;
+		port = settings.FORWARD_PROXY_PORT || 80;
+	} else {
+		// no forward proxy, or easysoa target
+		host = parsedUrl.hostname;
+		port = parsedUrl.port || 80;
+	}
+	forwardTo(request, response, host, port, parsedUrl.path);
 };
 
 

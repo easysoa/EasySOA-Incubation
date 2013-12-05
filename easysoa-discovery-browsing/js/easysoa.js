@@ -19,6 +19,9 @@ var lightComponent = require('./light');
 var nuxeoComponent = require('./nuxeo');
 var utils = require('./utils');
 
+//var settings.networkIPAddress;
+//var settings.clientHost;
+
 dbbComponent.setClientAddressToSessionMap(authComponent.clientAddressToSessionMap);
 
 /**
@@ -33,7 +36,6 @@ dbbComponent.setClientAddressToSessionMap(authComponent.clientAddressToSessionMa
  */
 var app = express();
 var webServer = http.createServer(app);
-var networkIPAddress;
 
 // Gets network (non local 0.0.0.0) IP
 // TODO BETTER USE request.headers.host ex. 192.168.2.163:8083 OK!!!
@@ -68,7 +70,7 @@ app.configure(function(){
     // Set the network IP address
     getNetworkIP(function (error, ip) {
         console.log(ip);
-        networkIPAddress = ip;
+        settings.networkIPAddress = ip;
         if (error) {
             console.log('error:', error);
         }
@@ -98,9 +100,10 @@ app.configure(function(){
     var context = unescape(req.param('subprojectId', ''));
     var visibility = unescape(req.param('visibility', ''));
     var registryServerName = unescape(req.param('registryServerName', ''));
+    settings.clientHost = getClientHost(req)
     var jsFile = fs.readFileSync("../www/js/bookmarklet/bookmarklet-min.js","utf8");
     //jsFile = jsFile.replace("#{host}", webServer.address().address); // this method webServer.address().address is useless, return always local loopback 0.0.0.0
-    jsFile = jsFile.replace("#{host}", getClientHost(req)); // better than networkIPAddress because works offline
+    jsFile = jsFile.replace("#{host}", settings.clientHost); // better than networkIPAddress because works offline
     jsFile = jsFile.replace("#{port}", webServer.address().port);
     jsFile = jsFile.replace("#{context}", context);
     jsFile = jsFile.replace("#{visibility}", visibility);
@@ -115,12 +118,13 @@ app.configure(function(){
     var context = unescape(req.param('subprojectId', ''));
     var visibility = unescape(req.param('visibility', ''));
     var registryServerName = unescape(req.param('registryServerName', ''));
+    settings.clientHost = getClientHost(req)
     var jsFile = fs.readFileSync("../www/js/bookmarklet/discovery.js","utf8");
 
     // replacing variables of our poor man's template script :
     // NB. /g regex flag allows to do a replaceAll, see http://stackoverflow.com/questions/1144783/replacing-all-occurrences-of-a-string-in-javascript
     //jsFile = jsFile.replace("#{host}", webServer.address().address); // this method webServer.address().address is useless, return always local loopback 0.0.0.0
-    jsFile = jsFile.replace(/#{webDiscoveryUrl}/g, "http://" + getClientHost(req) + ":" + webServer.address().port);// better than networkIPAddress because works offline
+    jsFile = jsFile.replace(/#{webDiscoveryUrl}/g, "http://" + settings.clientHost+ ":" + webServer.address().port);// better than networkIPAddress because works offline
     jsFile = jsFile.replace(/#{context-escaped}/g, escape(context)); // For input field, escape required to avoid encoding problem
     jsFile = jsFile.replace(/#{context-display}/g, escape(utils.formatPhaseForDisplay(context))); // For display, idem
     // 3 following replace for matching dashboard link
@@ -159,7 +163,7 @@ var proxyServer = http.createServer(function(request, response) {
   request.headers['X-EasySOA-Orig-IP'] = request.connection.remoteAddress;
 
   // Proxy
-  proxyComponent.handleProxyRequest(request, response);
+  proxyComponent.handleProxyRequest(request, response, settings);
 
 });
 proxyServer.listen(settings.PROXY_PORT);

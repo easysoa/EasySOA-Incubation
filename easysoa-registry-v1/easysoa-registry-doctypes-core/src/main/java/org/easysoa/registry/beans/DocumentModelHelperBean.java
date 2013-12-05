@@ -134,7 +134,7 @@ public class DocumentModelHelperBean {
 		
 		StringBuffer sbuf = new StringBuffer();
 
-        int lastVersionSeparatorId = phaseId.lastIndexOf(SubprojectServiceImpl.SUBPROJECT_ID_VERSION_SEPARATOR);
+        int lastVersionSeparatorId = phaseId.lastIndexOf(Subproject.SUBPROJECT_ID_VERSION_SEPARATOR);
         if (lastVersionSeparatorId < 0) {
         	String msg = "getPathFromId() called on badly formatted subprojectId " + phaseId;
         	log.warn(msg);

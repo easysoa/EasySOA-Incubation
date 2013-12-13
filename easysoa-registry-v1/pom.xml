@@ -166,6 +166,7 @@
   <!--  Profiles   -->
   <!-- ============ -->
   <profiles>
+  
     <profile>
       <id>sample-axxx</id>
       <activation>
@@ -186,6 +187,7 @@
         </dependencies>
       </dependencyManagement>
     </profile>
+    
     <profile>
       <id>marketplace</id>
 	  <activation>
@@ -196,6 +198,29 @@
       <modules>
         <module>easysoa-registry-marketplace</module>
       </modules>
+    </profile>
+    
+    <!-- TODO release profile, rather than package.sh ? -->
+    
+    <profile>
+      <id>sonar</id>
+      <!-- For code coverage with Sonar and cobertura
+      requires a "main" build :
+      -U -Dtest=false -DfailIfNoTests=false -Psonar clean install -s "/home/openwide/.m2/settings.xml.easysoa"
+      and a post-build sonar action with its own build :
+      -Psonar -DargLine=""
+      and enough memory :
+      -Xmx512m -XX:MaxPermSize=256m
+      -->
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>cobertura-maven-plugin</artifactId>
+            <version>2.6</version>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
   

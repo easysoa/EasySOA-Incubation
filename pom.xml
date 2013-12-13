@@ -13,6 +13,16 @@
     <module>easysoa-discovery-code-mavenplugin</module>
   </modules>
 
+  <profiles>
+    <profile>
+      <id>samples</id>
+      <modules>
+        <!-- beware, some samples (AXXX apps) require installing databases
+        (so don't use it on CI)-->
+        <module>easysoa-samples</module>
+      </modules>
+    </profile>
+  </profiles>
 
 </project>
 

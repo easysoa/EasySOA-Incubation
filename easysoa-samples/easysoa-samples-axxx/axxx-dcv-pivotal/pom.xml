@@ -329,7 +329,28 @@
         </plugins>
       </build>
     </profile>
-
+      
+    <profile>
+      <id>sonar</id>
+      <!-- For code coverage with Sonar and cobertura
+      requires a "main" build :
+      -U -Dtest=false -DfailIfNoTests=false -Psonar clean install -s "/home/openwide/.m2/settings.xml.easysoa"
+      and a post-build sonar action with its own build :
+      -Psonar -DargLine=""
+      and enough memory :
+      -Xmx512m -XX:MaxPermSize=256m
+      -->
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>cobertura-maven-plugin</artifactId>
+            <version>2.6</version>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
     <!-- to build classes from wsdl: mvn -Pbuild:wsdl -->
     <profile>
       <id>build:wsdl</id>

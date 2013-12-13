@@ -12,7 +12,7 @@
     <module>easysoa-discovery-rest-mock</module>
     <module>easysoa-discovery-code-sample-itf</module>
     <module>easysoa-discovery-code-sample</module>
-    <module>easysoa-samples-axxx</module>
+    <module>easysoa-samples-axxx</module><!-- beware, AXXX apps require installing databases -->
   </modules>
 
 </project>

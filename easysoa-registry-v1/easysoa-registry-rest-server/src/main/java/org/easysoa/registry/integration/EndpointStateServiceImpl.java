@@ -337,10 +337,8 @@ public class EndpointStateServiceImpl implements EndpointStateService {
             // If periodStart is null, set to current day start
             else {
                 calendarFrom.clear();
-                // TODO : previous setting was to fix the from date to the current day
-                // But cause some problems to test the UI when the model is not reloaded daily
-                // Remove the "-1" when finished
-                calendarFrom.set(currentDate.get(Calendar.YEAR) - 1, currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH));
+                // NB. to ease testing, temporarily replace by : currentDate.get(Calendar.YEAR) - 1
+                calendarFrom.set(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH), currentDate.get(Calendar.DAY_OF_MONTH));
             }
             SQLBetweenFilter dateRangeFilter = new SQLBetweenFilter(calendarFrom, calendarTo);
             parameters.put("timestamp", dateRangeFilter);

@@ -119,7 +119,9 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
     
 
     private void doInitDirectory(Session session) throws Exception {
-        // Create a first SlaOrOlaIndicator
+        Calendar currentDate = new GregorianCalendar();
+        
+        // Create a first SlaOrOlaIndicator (now)
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("endpointId", ENDPOINT_ID);
         properties.put("slaOrOlaName", INDICATOR_NAME);
@@ -129,14 +131,16 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         properties.put("timestamp", calendar);
         session.createEntry(properties);
 
-        // Create a second SlaOrOlaIndicator                
+        // Create a second SlaOrOlaIndicator (still today)  
         properties = new HashMap<String, Object>();
         properties.put("endpointId", ENDPOINT_ID);
         properties.put("slaOrOlaName", ANOTHER_INDICATOR_NAME);
         properties.put("serviceLeveHealth", SERVICE_LEVEL_HEALTH);
         properties.put("serviceLevelViolation", true);
         calendar = new GregorianCalendar();
-        calendar.set(2012, 11, 25, 8, 24, 37);
+        calendar.clear();
+        calendar.set(currentDate.get(Calendar.YEAR), currentDate.get(Calendar.MONTH),
+                currentDate.get(Calendar.DAY_OF_MONTH), 8, 24, 37);
         properties.put("timestamp", calendar);                
         session.createEntry(properties);
 
@@ -187,9 +191,10 @@ public class EndpointStateServiceTest extends AbstractRestApiTest {
         SlaOrOlaIndicators slaOrOlaIndicators = discoveryRequest.get(SlaOrOlaIndicators.class);        
         
         Assert.assertNotNull(slaOrOlaIndicators);
-        // TODO : To avoid to have to reload each time the model. To remove when finished
+        // Was to avoid to have to reload each time the model. To remove when finished
         //Assert.assertEquals(1, slaOrOlaIndicators.getSlaOrOlaIndicatorList().size());
-        Assert.assertEquals(5, slaOrOlaIndicators.getSlaOrOlaIndicatorList().size());
+        // returns only the current day's indicators :
+        Assert.assertEquals(2, slaOrOlaIndicators.getSlaOrOlaIndicatorList().size());
         SlaOrOlaIndicator indicator = slaOrOlaIndicators.getSlaOrOlaIndicatorList().get(0);
 
         Assert.assertEquals(ENDPOINT_ID, indicator.getEndpointId());

@@ -1,9 +1,6 @@
 package org.easysoa.samples.axxx.dps;
 
 import javax.inject.Inject;
-import javax.jws.WebMethod;
-import javax.jws.WebParam;
-import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.xml.ws.WebServiceRef;
 
@@ -22,7 +19,7 @@ public class TdrServiceImpl implements TdrService {
     @Inject
     ClientServiceClient clientServiceClient;
 
-    @WebServiceRef(ClientService.class)
+    @WebServiceRef
     ClientService jaxwsInjectedClientService;
 
     @Inject

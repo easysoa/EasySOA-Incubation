@@ -17,7 +17,7 @@
     <profile>
       <id>samples</id>
       <modules>
-        <!-- beware, some samples (AXXX apps) require installing databases
+        <!-- beware, samples run on JDK6 and some (AXXX apps) require installing databases
         (so don't use it on CI)-->
         <module>easysoa-samples</module>
       </modules>

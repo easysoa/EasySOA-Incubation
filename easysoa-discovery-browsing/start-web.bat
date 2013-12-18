@@ -11,5 +11,5 @@ echo %LINE%
 
 rem Default port: 8083
 cd js
-"node.exe" -v
-"node.exe" easysoa.js
+"../node.exe" -v
+"../node.exe" easysoa.js

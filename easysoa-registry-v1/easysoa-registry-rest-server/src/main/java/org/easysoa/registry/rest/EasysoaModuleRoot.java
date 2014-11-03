@@ -27,7 +27,6 @@ import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.Properties;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.easysoa.registry.DocumentService;
@@ -42,6 +41,9 @@ import org.nuxeo.ecm.core.api.model.PropertyException;
 import org.nuxeo.ecm.platform.usermanager.UserManager;
 import org.nuxeo.ecm.platform.web.common.vh.VirtualHostHelper;
 import org.nuxeo.ecm.webengine.model.Messages;
+import org.nuxeo.ecm.webengine.model.Resource;
+import org.nuxeo.ecm.webengine.model.ResourceType;
+import org.nuxeo.ecm.webengine.model.WebContext;
 import org.nuxeo.ecm.webengine.model.impl.ModuleRoot;
 import org.nuxeo.runtime.api.Framework;
 
@@ -53,7 +55,45 @@ import org.nuxeo.runtime.api.Framework;
  * @author jguillemotte, mdutoo
  */
 public class EasysoaModuleRoot extends ModuleRoot {
+    
+    public final static String LANGUAGE_SESSION_ATTR_NAME = "org.easysoa.registry.rest.language";
+    
+    private String language = null;
  
+    @Override
+    public Resource initialize(WebContext ctx, ResourceType type, Object... args) {
+        Resource resource = super.initialize(ctx, type, args);
+        if (this.language == null) {
+            this.language = computeLanguage();
+        }
+        return resource;
+    }
+
+    protected String computeLanguage() {
+        HttpSession session = request.getSession(false);
+        String sessionLanguage = null;
+        if (session != null) {
+            sessionLanguage = (String) session.getAttribute(LANGUAGE_SESSION_ATTR_NAME);
+        }
+
+        String language = request.getParameter("language");
+        if (language == null || language.length() == 0) {
+            language = sessionLanguage;
+            if (language == null) {
+                language = ctx.getLocale().getLanguage();
+            }
+        } else {
+            if (session != null && !language.equals(sessionLanguage)) {
+                session.setAttribute(LANGUAGE_SESSION_ATTR_NAME, language);
+            }
+        }
+        return language;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
     /**
      * Shortcut inspired by AbstractWebContext.getMessage(key, args), but :
      * * only wraps missing ones with '!' in dev mode
@@ -67,26 +107,8 @@ public class EasysoaModuleRoot extends ModuleRoot {
         //return ctx.getMessage(key, args);
         Messages messages = ctx.getModule().getMessages();
         
-        HttpSession session = request.getSession(false);
-        String sessionLanguage = null;
-        if (session != null) {
-            sessionLanguage = (String) session.getAttribute("org.easysoa.registry.rest.language");
-        }
-
-        HttpServletRequest request = ctx.getRequest();
-        String language = ctx.getRequest().getParameter("language");
-        if (language == null || language.length() == 0) {
-            language = sessionLanguage;
-            if (language == null) {
-                language = ctx.getLocale().getLanguage();
-            }
-        } else {
-            if (session != null && !language.equals(sessionLanguage)) {
-                session.setAttribute("org.easysoa.registry.rest.language", language);
-            }
-        }
         try {
-            String msg = messages.getString(key, language);
+            String msg = messages.getString(key, this.getLanguage()); // NB. language inited in initialize()
             if (args != null && args.length > 0) {
                 // format the string using given args
                 msg = MessageFormat.format(msg, args);

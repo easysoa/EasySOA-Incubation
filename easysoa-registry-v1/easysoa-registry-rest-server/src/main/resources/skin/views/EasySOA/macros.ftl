@@ -182,7 +182,7 @@ normal variable type, like an empty string if it should be an object (see above)
             <img src="/nuxeo/site/easysoa/skin/img/user.png" /> ${Root.msg("notLogged")} (<a href="/login.html">${Root.msg("logIn")}</a>)
         <#else>
             <img src="/nuxeo/site/easysoa/skin/img/user.png" /> ${Root.msg("welcome")} 
-            <span id="username">${user}</span> (<a href="/nuxeo/logout">${Root.msg("logout")}</a>)
+            <span id="username">${user}</span> (<a href="/nuxeo/logout?requestedUrl=site%2Feasysoa">${Root.msg("logout")}</a>)
         </#if>
     </#macro>
 

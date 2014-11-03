@@ -27,6 +27,9 @@ import java.text.MessageFormat;
 import java.util.MissingResourceException;
 import java.util.Properties;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.easysoa.registry.DocumentService;
 import org.easysoa.registry.EndpointMatchingService;
 import org.easysoa.registry.ServiceMatchingService;
@@ -63,9 +66,24 @@ public class EasysoaModuleRoot extends ModuleRoot {
     public String msg(String key, Object ... args) throws Exception {
         //return ctx.getMessage(key, args);
         Messages messages = ctx.getModule().getMessages();
+        
+        HttpSession session = request.getSession(false);
+        String sessionLanguage = null;
+        if (session != null) {
+            sessionLanguage = (String) session.getAttribute("org.easysoa.registry.rest.language");
+        }
+
+        HttpServletRequest request = ctx.getRequest();
         String language = ctx.getRequest().getParameter("language");
         if (language == null || language.length() == 0) {
-            language = ctx.getLocale().getLanguage();
+            language = sessionLanguage;
+            if (language == null) {
+                language = ctx.getLocale().getLanguage();
+            }
+        } else {
+            if (session != null && !language.equals(sessionLanguage)) {
+                session.setAttribute("org.easysoa.registry.rest.language", language);
+            }
         }
         try {
             String msg = messages.getString(key, language);

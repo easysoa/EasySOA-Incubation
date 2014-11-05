@@ -3,7 +3,7 @@ div.easysoa-frame {
 	padding: 10px;
 	left: 20px;
 	top: 20px;
-	width: 300px;
+	width: 330px;
 	border: 2px solid darkblue;
 	background-color: white;
 	font-family: Helvetica, Arial, sans-serif;
@@ -28,7 +28,7 @@ div.easysoa-frame {
 }
 
 .easysoa-frame input {
-	width: 150px;
+	width: 180px;
 	font-size: 12pt;
 	margin: 3px;
 	background-color: #EEE;
@@ -38,7 +38,7 @@ div.easysoa-frame {
 }
 
 .easysoa-frame input[type=submit] {
-	width: 200px;
+	width: 230px;
 	border: 2px solid grey;
 	border-style: outset;
 }
@@ -58,7 +58,7 @@ div#easysoa-login-error {
 div.easysoa-wsdl-result {
 	font-size: 10pt;
 	float: left;
-	width: 282px;
+	width: 312px;
 	display: block;
 	border: 1px solid grey;
 	margin: 5px;
@@ -93,7 +93,7 @@ div.easysoa-title {
 	background-color: #F0F0FA;
 	border-left-width: 5px;
 	padding: 5px;
-	width: 288px;
+	width: 318px;
 	cursor: move;
 	margin-bottom: 5px;
 }

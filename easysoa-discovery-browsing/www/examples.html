@@ -7,20 +7,38 @@ and open the template in the editor.
     <head>
         <title></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    </head>
-    <body>
+        <script type="text/javascript" src="/lib/jquery.js"></script>
+        <script type="text/javascript" src="/lib/i18next-1.7.1.js"></script><!-- .min -->
+        <script type="text/javascript">
 
-<!-- TODO : translate, rename this section "examples" -->
-<p>Welcome to the discovery by browsing tool! Why not beginning by browsing through your intranet ?</p>
+        $(document).ready(function() {
+           // i18n using i18next.js
+           i18n.init({ fallbackLng: 'en_US' }, // else default fallback language is dev
+               function() {
+                   ///$("#defaultFrameBody").i18n();
+                   $(document.body).i18n();
+               }
+           );
+        });
+        
+        </script>
+    </head>
+<body style="font-family: Arial, sans-serif; color: #002244;">
+
+<h2 data-i18n="examples.Discovery by Browsing Examples">Discovery by Browsing Examples</h2>
+
+<p data-i18n="examples.welcome">Welcome to the discovery by browsing tool examples!</p>
+
+<p data-i18n="examples.demoIntranet">Why not beginning by browsing through the demo intranet ?</p>
 <ul>
   <li><a href="http://localhost:8083/demo-intranet/index.html">http://localhost:8083/demo-intranet/</a></li>
 </ul>
 
-<p>FraSCAti on the cloud examples:</p>
+<p data-i18n="examples.FraSCAti on the cloud examples">FraSCAti on the cloud examples:</p>
 <ul>
-	<li><a href="http://frascati.elasticbeanstalk.com/services/">FraSCAti services deployed on Amazon Web Services</a></li>
-	<li><a href="http://frascati.bitnamiapp.com:8080/services/">FraSCAti services deployed on Bitnami</a></li>
-	<li><a href="http://frascati.cloudfoundry.com/services/">FraSCAti services deployed on Cloud Foundry</a></li>
+	<li><a href="http://frascati.elasticbeanstalk.com/services/"><span data-i18n="examples.FraSCAti services deployed on">FraSCAti services deployed on</span> Amazon Web Services</a></li>
+	<li><a href="http://frascati.bitnamiapp.com:8080/services/"><span data-i18n="examples.FraSCAti services deployed on">FraSCAti services deployed on</span> Bitnami</a></li>
+	<li><a href="http://frascati.cloudfoundry.com/services/"><span data-i18n="examples.FraSCAti services deployed on">FraSCAti services deployed on</span> Cloud Foundry</a></li>
 
 	<!--The following services doesn't works due to a problem in Discovery proxy-->
 	<!--<li><a href="http://ec2-79-125-45-33.eu-west-1.compute.amazonaws.com:8080/services/">FraSCAti services deployed on Amazon Web Services Elastic Beanstalk</a></li>-->
@@ -28,14 +46,14 @@ and open the template in the editor.
 	<!--<li><a href="http://ow2-frascati.appspot.com/services/">FraSCAti services deployed on Google App Engine</a></li>-->
 </ul>
 
-<p>Other examples:</p>
+<p data-i18n="examples.Other examples">Other examples:</p>
 <ul>
   <li><a href="http://www.ebi.ac.uk/Tools/webservices/wsdl/list">http://www.ebi.ac.uk/Tools/webservices/wsdl/list</a></li>
   <li><a href="http://www.actionscript.org/forums/showthread.php3?t=70742">http://www.actionscript.org/forums/showthread.php3?t=70742</a></li>
   <li><a href="https://predic8.com/svn/membrane/registry/trunk/servicelist.text">https://predic8.com/svn/membrane/registry/trunk/servicelist.text</a></li>
         <li><a href="http://footballpool.dataaccess.eu/data/info.wso">Daehosting Web Services</a></li>
         <li><a href="http://services.unitedplanet.de/blz/BlzService.asmx">United Planet Web Services</a></li>
-        <li> Some W3 Web Services: http://www.w3.org/2002/ws/ra/ </li>
+        <li><span data-i18n="examples.Some W3C Web Services">Some W3C Web Services</span>: <a href="http://www.w3.org/2002/ws/ra/">http://www.w3.org/2002/ws/ra/</a> </li>
 </ul>        
         
     </body>

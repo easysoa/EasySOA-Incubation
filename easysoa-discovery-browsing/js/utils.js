@@ -35,6 +35,7 @@ exports.strToRegexp = function(strings) {
 
 /**
  * Format the phase received from the nuxeo registry service for display in the UI
+ * TODO i18n using i18next-node and reusing i18next js translations
  */
 exports.formatPhaseForDisplay = function(context){
     

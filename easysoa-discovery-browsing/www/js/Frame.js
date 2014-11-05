@@ -36,6 +36,7 @@ $(function() {
 		
 		render: function() {
 			this.el.attr("src", Frame.getSource());
+	        $(this.el).i18n(); // (not required ?)
 		}
 	
 	});

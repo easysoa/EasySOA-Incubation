@@ -15,11 +15,12 @@ $(function() {
 		},
 		
 		render: function() {
+	        $(this.el).i18n();
 			return this;
 		},
   
 		clear: function() {
-			if (confirm("Clear all found services?")) {
+			if (confirm(i18n.t("app.Clear all found services?"))) {
 				// TODO Use socket.io (doesn't work through the proxy atm)
 				jQuery.ajax({
 					url: '/dbb/clear',

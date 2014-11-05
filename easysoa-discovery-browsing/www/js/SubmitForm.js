@@ -27,7 +27,7 @@ $(function() {
 
 		submit: function() {
 			if (this.getURL() != '') {
-          this.view.info("Sending request...");
+          this.view.info(i18n.t("app.Sending request"));
           var environmentName = $('#environmentSelect option').filter(":selected").attr('value');
           var context = $('#easysoa-context').attr('value');
 
@@ -37,6 +37,7 @@ $(function() {
           
 			    jQuery.ajax({
 			        url: '/dbb/send?token=' + Math.random(), // avoids caching
+			        dataType: 'text', // else XML parsing error "Erreur d'analyse XML : erreur de syntaxe Emplacement : http://192.168.2.118:8083/dbb/send?token=0.248946927326698&id%5BsubprojectId%5D=%2Fdefault-domain%2FInt%C3%A9grati..."
 			        data: {
 			            'id': {
                                       'subprojectId' : context,
@@ -120,6 +121,7 @@ $(function() {
 			this.selectedWSDL.html(SubmitForm.getURL());
 			this.submitApp.attr("value", SubmitForm.getApplicationName());
 			this.submitService.attr("value", SubmitForm.getServiceName());
+	        $(this.el).i18n();
 			return this;
 		},
 
@@ -145,7 +147,7 @@ $(function() {
 
 		success: function() {
 			this.hideAllMessages();
-			this.messageSuccess.html('<img src="img/ok.png" height="15" /> WSDL registered');
+			this.messageSuccess.html('<img src="img/ok.png" height="15" /> ' + i18n.t("app.WSDL registered"));
 			this.messageSuccess.fadeIn(500, function() {
 					setTimeout(function() {
 						$('#messageSuccess').fadeOut(500);
@@ -155,7 +157,7 @@ $(function() {
 
 		failure: function(error) {
 			this.hideAllMessages();
-			this.messageFailure.html(error);
+			this.messageFailure.html("" + error);
 			this.messageFailure.fadeIn(500, function() {
 					setTimeout(function() {
 						$('#messageFailure').fadeOut(500);
@@ -164,7 +166,7 @@ $(function() {
 		},
 
 		newEnvironment: function() {
-		  var newEnvName = prompt('New environment name');
+		  var newEnvName = prompt(i18n.t("app.New environment name"));
 		  if (newEnvName != null) {
 		    this.environmentSelect.append('<option value="' + newEnvName + '">'
 		      + newEnvName + '</option>');

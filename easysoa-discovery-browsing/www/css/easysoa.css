@@ -107,7 +107,7 @@ li {
     font-size: 11pt;
     color: #444;
     display: none;
-    width: 250px;
+    width: 350px;
 }
 
 #username {
@@ -170,7 +170,7 @@ input[disabled] {
 
 input[type=submit] {
   padding: 3px;
-  width: 150px;
+  width: 180px;
   font-size: 12pt;
 }
 

@@ -100,6 +100,7 @@ app.configure(function(){
     var context = unescape(req.param('subprojectId', ''));
     var visibility = unescape(req.param('visibility', ''));
     var registryServerName = unescape(req.param('registryServerName', ''));
+    var setLng = unescape(req.param('setLng', ''));
     settings.clientHost = getClientHost(req)
     var jsFile = fs.readFileSync("../www/js/bookmarklet/bookmarklet-min.js","utf8");
     //jsFile = jsFile.replace("#{host}", webServer.address().address); // this method webServer.address().address is useless, return always local loopback 0.0.0.0
@@ -108,6 +109,7 @@ app.configure(function(){
     jsFile = jsFile.replace("#{context}", context);
     jsFile = jsFile.replace("#{visibility}", visibility);
     jsFile = jsFile.replace("#{registryServerName}", registryServerName);
+    jsFile = jsFile.replace("#{setLng}", setLng);
     res.writeHead(200);
     res.end(jsFile);
   });
@@ -118,6 +120,16 @@ app.configure(function(){
     var context = unescape(req.param('subprojectId', ''));
     var visibility = unescape(req.param('visibility', ''));
     var registryServerName = unescape(req.param('registryServerName', ''));
+    var setLng = unescape(req.param('setLng', ''));
+    if (!setLng || setLng === "" || setLng === "undefined") {
+    	setLng = "en"; // default language for bookmarklet
+    }
+    ///console.log("[DEBUG] ", "setLng", setLng);
+    var translation = fs.readFileSync("../www/locales/" + setLng + "/translation.json","utf8");
+    if (!translation) {
+    	translation = "{}";
+    }
+    ///console.log("[DEBUG] ", "translation", translation);
     settings.clientHost = getClientHost(req)
     var jsFile = fs.readFileSync("../www/js/bookmarklet/discovery.js","utf8");
 
@@ -132,9 +144,12 @@ app.configure(function(){
     jsFile = jsFile.replace(/#{context}/g, context); // Escape not required in this case (link to matching)
     jsFile = jsFile.replace(/#{visibility}/g, visibility);
     jsFile = jsFile.replace(/#{registryServerName}/g, registryServerName);
+    jsFile = jsFile.replace(/#{setLng}/g, setLng);
+    jsFile = jsFile.replace(/#{translation}/g, translation);
 
     res.writeHead(200);
     console.log("[DEBUG] ", "End of discovery.js template function");
+    ///console.log("[DEBUG] ", "jsFile", jsFile);
     res.end(jsFile);
   });
 

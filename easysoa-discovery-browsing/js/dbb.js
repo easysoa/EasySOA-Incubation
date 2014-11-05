@@ -81,6 +81,7 @@ function getNuxeoSession(request) {
     // 1. by per-user proxy instance ; but none yet for now, will have to be done in FStudio on-demand HTTProxy LATER
     // 2. by client OS i.e. IP :
     var clientAddress = request.connection.remoteAddress;
+    ///console.log("clientAddress & ToSessionMap", clientAddress, clientAddressToSessionMap);
     return clientAddressToSessionMap[clientAddress];
 }
 

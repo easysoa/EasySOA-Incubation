@@ -7,7 +7,8 @@
 	<meta charset="utf-8" />
 	<link href="/css/easysoa.css" type="text/css" media="all" rel="stylesheet" />
 	<link href="/css/dbb.css" type="text/css" media="all" rel="stylesheet" />
-	<script type="text/javascript" src="/lib/jquery.js"></script>
+   <script type="text/javascript" src="/lib/jquery.js"></script>
+   <script type="text/javascript" src="/lib/i18next-1.7.1.js"></script><!-- .min ; must be dl'd after jquery -->
 	<script type="text/javascript" src="/lib/json2.js"></script>
 	<script type="text/javascript" src="/lib/underscore.js"></script>
 	<script type="text/javascript" src="/lib/backbone.js"></script>
@@ -39,12 +40,15 @@ function getUrlVars()
     return vars;
 }
 
-   $(window).load(function () {
+
+// called in backbone App.js, also inits i18next
+function initIndex() {
+       initCommon();
+	   
        var serverName = getUrlVars()['serverName'];
        
-       $('#nothingProxied').html('<u>Warning</u>: Are you sure you have enabled your browser\'s proxy?'
-    	     + 'Please make sure it is set to <b><a href="http://' + serverName + ':8081">http://'
-    	     + serverName + ':8081</a></b>.');
+       $('#nothingProxied').html('<u>' + i18n.t("index.Warning") + '</u>: ' + i18n.t("index.checkProxy")
+    	     + ' <b><a href="http://' + serverName + ':8081">http://' + serverName + ':8081</a></b>.');
        
 	    var visibility = getUrlVars()['visibility'];
 
@@ -53,7 +57,9 @@ function getUrlVars()
 	      this.height = this.contentWindow.document.body.scrollHeight + 35;
 	    });
 	    
-       $('#frame').attr('src', "default.html?subprojectId=" + getUrlVars()['subprojectId'] + "&visibility=" + visibility + "&registryServerName=" + serverName);
+       $('#frame').attr('src', "default.html?subprojectId=" + getUrlVars()['subprojectId']
+           + "&visibility=" + visibility + "&registryServerName=" + serverName
+           + "&setLng=" + i18n.lng());
         
         // Display the current context
         if(typeof getUrlVars()["subprojectId"] != "undefined"){
@@ -64,13 +70,11 @@ function getUrlVars()
                 var link = "http://localhost:8080/nuxeo/site/easysoa/dashboard/?subprojectId=" + subprojectId + "&visibility=" + visibility;
                 $('#matchingLink').attr("href", link);
         	} catch (e) {
-        		alert("Projet erroné, fermez et réouvrez la page de découverte web.\n\n"
-        				+ "Détails :\nerreur de décodage de subprojectId (" + getUrlVars()["subprojectId"]
+        		alert(i18n.t("index.badProject") + " (" + getUrlVars()["subprojectId"]
         				+ ")\n" + e.message);
         	}
         }
-    });
-
+    }
 
 </script>
 
@@ -79,19 +83,19 @@ function getUrlVars()
     <div id="headerCore">
 	    <a href="/" id="logoLink">&nbsp;</a>
       <div id="headerCoreContents">
-        <div id="headerUserBar"></div>
-        <div id="headerBreadcrumbs"><a href="/">EasySOA</a> > <b>Core</b> > <b>Discovery by browsing</b></div>
-        Service discovery by browsing
+        <div id="headerUserBar"></div><!-- NB. filled in common.js -->
+        <div id="headerBreadcrumbs"><a href="/">EasySOA</a> > <b>Core</b> > <b data-i18n="index.Discovery by browsing">Discovery by browsing</b></div>
+        <span data-i18n="index.Service discovery by browsing">Service discovery by browsing</span>
       </div>
     </div>
 
-  	<div id="header">Service discovery by browsing</div>
+  	<div id="header" data-i18n="index.Service discovery by browsing">Service discovery by browsing</div>
 
   	<div id="content">
   		<div id="nothingProxied"></div>
 	  	<div id="navBar">
     			<div id="messages">
-    				<div id="messageInfo"><img src="img/loading.gif" /> Connecting...</div>
+    				<div id="messageInfo"><img src="img/loading.gif" /> <span data-i18n="index.Connecting">Connecting</span>...</div>
     				<div id="messageSuccess" style="display: none"></div>
     				<div id="messageFailure" style="display: none"></div>
     			</div>
@@ -101,32 +105,32 @@ function getUrlVars()
 	  	</div>
   		<div id="menu">
   			<div id="menuSubmitForm">
-  				<h2>Export WSDL to the <a href="http://localhost:8080/nuxeo" target="_blank">Service Registry</a></h2>
+  				<h2><span data-i18n="index.Export WSDL to the">Export WSDL to the</span> <a href="http://localhost:8080/nuxeo" target="_blank" data-i18n="index.Service Registry">Service Registry</a></h2>
   				<div id="submitForm">
   					<!-- Fake form -->
-  					<h3>Selected WSDL</h3>
-  					<p id="submitSelectedWSDL">None.</p>
+  					<h3 data-i18n="index.Selected WSDL">NOT TRANSLATED Selected WSDL</h3>
+  					<p id="submitSelectedWSDL" data-i18n="index.None">None.</p>
 
-  					<h3>Service details</h3>
-                    <div class="inputLabel">Perspective:</div>
+  					<h3 data-i18n="index.Service details">Service details</h3>
+                    <div class="inputLabel" data-i18n="index.Perspective">Perspective:</div>
                     <i><span id="context"></span></i><input type="hidden" id="easysoa-context" value=""/><br />
                     <br />
-  					<div class="inputLabel">Service Name:</div>
+  					<div class="inputLabel" data-i18n="index.Service Name">Service Name:</div>
   					<input id="submitService" type="text" /><br />
-  					<div class="inputLabel">Environment:</div>
+  					<div class="inputLabel" data-i18n="index.Environment">Environment:</div>
   					<select id="environmentSelect"></select> <input type="image" id="newEnvironment" src="img/add.png" alt="New env." /><br />
-  					<input id="submit" type="submit" value="Save service" /><br />
-                                        <a id="matchingLink" href="" target="_blank" title="Une fois enregistrés, vous pouvez regler la correspondance entre les services et leurs implémentations et définitions dans l'outil de réconciliation">Mise en correspondance</a>
-                                        <!-- Once registered, how these endpoints match to their implementation and service definition can be tuned in the Matching Dashboard -->
+  					<input id="submit" type="submit" value="Save service" data-i18n="[value]index.Save service" /><br />
+               <a id="matchingLink" href="" target="_blank" style="text-decoration: underline;" data-i18n="[title]index.onceRegistered;index.matchingDashboard"
+                   title="Une fois enregistrés, vous pouvez regler la correspondance entre les services et leurs implémentations et définitions dans l'outil de réconciliation">Mise en correspondance</a>
   				</div>
   			</div>
   			<div id="menuFoundList">
-  				<h2><a href="#" id="trash"></a>Found services</h2>
+  				<h2><a href="#" id="trash"></a><span data-i18n="index.Found services">Found services</span></h2>
   				<div id="foundList"></div>
   			</div>
   		</div>
   		<div id="frameContainer">
-	  			<iframe id="frame" src="default.html"></iframe>
+	  			<iframe id="frame"></iframe><!--  src="default.html" -->
 	  	</div>
   	</div>
   </div>

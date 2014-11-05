@@ -7,6 +7,7 @@
 	<meta charset="utf-8" />
 	<link href="/css/easysoa.css" type="text/css" media="all" rel="stylesheet" />
 	<script type="text/javascript" src="/lib/jquery.js"></script>
+   <script type="text/javascript" src="/lib/i18next-1.7.1.js"></script><!-- .min -->
 	<script type="text/javascript">
 
 	function getURLParameter(name) {
@@ -15,7 +16,19 @@
             );
         }
 
-        $(window).load(function () {
+        $(document).ready(function() {
+           // i18n using i18next.js
+           i18n.init({ fallbackLng: 'en_US' }, // else default fallback language is dev
+               function() {
+                   ///$("#defaultFrameBody").i18n();
+                   $(document.body).i18n();
+                   
+                   initLogin();
+               }
+           );
+        });
+
+        function initLogin() {
              if (getURLParameter('error') == 'true') {
                  $('#error').show();
              }
@@ -23,7 +36,7 @@
                 $('#nuxeoNotReady').show();
              }
              $('#prev').attr('value', encodeURIComponent(getURLParameter('prev')));
-         });
+         }
 
 	</script>
 </head>
@@ -32,8 +45,8 @@
 
 <div id="headerWelcome">
     <a href="/" id="logoLink">&nbsp;</a>
-    <div id="headerWelcomeContents">
-      Formulaire de connexion <!--Authentication form-->
+    <div id="headerWelcomeContents" data-i18n="login.Authentication form">
+      Formulaire de connexion
     </div>
 </div>
 
@@ -43,18 +56,16 @@
 
         <input type="hidden" id="prev" name="prev" value="" />
 
-        <!--<p>User name<br />-->
-        <p>Utilisateur<br />
+        <p><span data-i18n="login.User name">Utilisateur</span><br />
         <input type="text" name="username" value="" style="width: 300px" /></p>
 
-        <!--<p>Password<br />-->
-        <p>Mot de passe<br />
+        <p><span data-i18n="login.Password">Mot de passe</span><br />
         <input type="password" name="password" value="" style="width: 300px" /></p>
 
-        <p><input type="submit" value="Log in" /></p>
+        <p><input type="submit" data-i18n="[value]login.Log in" value="Log in" /></p>
 
-        <div id="error" style="display: none; border: 2px solid red; float: left; color: darkred; background-color: #FDD; padding: 5px">Invalid username or password.</div>
-        <div id="nuxeoNotReady" style="display: none; border: 2px solid grey; float: left; color: #333; background-color: #EEE; padding: 5px">The <a href="http://localhost:8080">service registry</a> is not ready yet. Please wait a few seconds and retry.</div>
+        <div id="error" style="display: none; border: 2px solid red; float: left; color: darkred; background-color: #FDD; padding: 5px" data-i18n="login.Invalid username or password">Invalid username or password.</div>
+        <div id="nuxeoNotReady" style="display: none; border: 2px solid grey; float: left; color: #333; background-color: #EEE; padding: 5px">The <a href="http://localhost:8080" data-i18n="login.service registry">service registry</a> <span data-i18n="login.notReadyYet">is not ready yet. Please wait a few seconds and retry.</span></div>
 
     </form>
 

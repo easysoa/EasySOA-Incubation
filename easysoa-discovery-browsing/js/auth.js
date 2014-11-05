@@ -27,6 +27,7 @@ exports.clientAddressToSessionMap = clientAddressToSessionMap;
 
 noAuthNeeded.push(LOGIN_FORM_PATH);
 noAuthNeeded.push('/login');
+noAuthNeeded.push('/locales');
 noAuthNeeded.push('/userdata');
 NO_AUTH_NEEDED_REGEXP = utils.strToRegexp(noAuthNeeded);
 
@@ -83,7 +84,7 @@ login = function(request, response, next) {
 								response.end(params.callback + '({result: "ok"})');
 							} else {
                                                                 console.log("[DEBUG] prev : " + params.prev + " - decoded : " + decodeURIComponent(params.prev));
-								response.redirect(decodeURIComponent(params.prev));
+								response.redirect(decodeURIComponent(params.prev)); // NB. prev should also contain setLng for i18n using i18next
 							}
 						} else {
 							redirectToLoginForm(request, response, true);
@@ -181,11 +182,13 @@ redirectToLoginForm = function(request, response, error, nuxeoNotReady) {
 		}
 	} else {
 		var prevPage = request.body.prev || request.query.prev || encodeURIComponent(request.url);
+		var setLng = request.body.setLng || request.query.setLng;
 		var destinationUrl = LOGIN_FORM_PATH + '?'
-				//+ ((prevPage) ? 'prev=' + prevPage + '&' : '')
-                                + ((prevPage) ? 'prev=' + prevPage : '')
 				+ ((error) ? 'error=true&' : '')
-				+ ((nuxeoNotReady) ? 'nuxeoNotReady=true' : '');
+				+ ((nuxeoNotReady) ? 'nuxeoNotReady=true&' : '')
+				+ ((setLng) ? 'setLng=' + setLng + '&' : '')
+				//+ ((prevPage) ? 'prev=' + prevPage + '&' : '')
+				+ ((prevPage) ? 'prev=' + prevPage + '&' : ''); // NB. it's for prevPage to be at the end
 		response.redirect(destinationUrl);
 	}
 };

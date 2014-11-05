@@ -19,6 +19,8 @@ var frameDragged = false;
 var LIBS_POLLING_INTERVAL = 20;
 //var EASYSOA_WEB = 'http://localhost:8083';
 var EASYSOA_WEB = '#{webDiscoveryUrl}';
+var SET_LNG = '#{setLng}';
+var TRANSLATION = #{translation};
 
 /**
  * Load libs
@@ -40,8 +42,89 @@ function loadCSS(url) {
 }
 
 loadJS(EASYSOA_WEB + '/lib/jquery.js');
+loadJS(EASYSOA_WEB + '/lib/i18next-1.7.1.js'); // .min
 loadJS(EASYSOA_WEB + '/lib/underscore.js');
 loadCSS(EASYSOA_WEB + '/js/bookmarklet/bookmarklet.css');
+
+// i18next jQuery fn (inspired by i18n.addJqueryFunct())
+function addJqueryI18nextFunct(jQuery) {
+    // $.t shortcut
+	jQuery.t = jQuery.t || i18n.translate;
+	var o = i18n.options;
+
+    function parse(ele, key, options) {
+        if (key.length === 0) return;
+
+        var attr = 'text';
+
+        if (key.indexOf('[') === 0) {
+            var parts = key.split(']');
+            key = parts[1];
+            attr = parts[0].substr(1, parts[0].length-1);
+        }
+
+        if (key.indexOf(';') === key.length-1) {
+            key = key.substr(0, key.length-2);
+        }
+
+        var optionsToUse;
+        if (attr === 'html') {
+            optionsToUse = o.defaultValueFromContent ? jQuery.extend({ defaultValue: ele.html() }, options) : options;
+            ele.html(jQuery.t(key, optionsToUse));
+        } 
+        else if (attr === 'text') {
+            optionsToUse = o.defaultValueFromContent ? jQuery.extend({ defaultValue: ele.text() }, options) : options;
+            ele.text(jQuery.t(key, optionsToUse));
+        } else {
+            optionsToUse = o.defaultValueFromContent ? jQuery.extend({ defaultValue: ele.attr(attr) }, options) : options;
+            ele.attr(attr, jQuery.t(key, optionsToUse));
+        }
+    }
+
+    function localize(ele, options) {
+        var key = ele.attr(o.selectorAttr);
+        if (!key && typeof key !== 'undefined' && key !== false) key = ele.text() || ele.val();
+        if (!key) return;
+
+        var target = ele
+          , targetSelector = ele.data("i18n-target");
+        if (targetSelector) {
+            target = ele.find(targetSelector) || ele;
+        }
+
+        if (!options && o.useDataAttrOptions === true) {
+            options = ele.data("i18n-options");
+        }
+        options = options || {};
+
+        if (key.indexOf(';') >= 0) {
+            var keys = key.split(';');
+
+            jQuery.each(keys, function(m, k) {
+                if (k !== '') parse(target, k, options);
+            });
+
+        } else {
+            parse(target, key, options);
+        }
+
+        if (o.useDataAttrOptions === true) ele.data("i18n-options", options);
+    }
+
+    // fn
+    jQuery.fn.i18n = function (options) {
+        return this.each(function() {
+            // localize element itself
+            localize(jQuery(this), options);
+
+            // localize childs
+            var elements =  jQuery(this).find('[' + o.selectorAttr + ']');
+            elements.each(function() { 
+                localize(jQuery(this), options);
+            });
+        });
+    };
+}
 
 /**
  * Core functions
@@ -51,6 +134,25 @@ function load() {
 	if (window._ && window.jQuery) {
 		underscore = window._.noConflict();
 		jQuery = window.jQuery.noConflict();
+		
+		// i18n using i18next.js
+		i18n.init({
+			customLoad: function(lngValue, nsValue, options, loadComplete) {
+				if (SET_LNG === lngValue) {
+					loadComplete(null, TRANSLATION);
+				} else {
+					loadComplete("Unsupported language " + SET_LNG, null);
+				}
+			},
+			lng: SET_LNG, debug: true, setJqueryExt: false, fallbackLng: 'en_US' }); // else default fallback language is dev
+		// DONT load using resGetPath: EASYSOA_WEB + '/locales/__lng__/__ns__.json' else CORS failure
+		// DONT useLocalStorage: true because means only caching
+		/*console.log("window.localStorage" + window.localStorage);
+		if (window.localStorage) {
+ 	    	window.localStorage.setItem("res_" + SET_LNG, JSON.stringify(TRANSLATION));
+		}*/
+		addJqueryI18nextFunct(jQuery);
+		
 		initTemplates();
 		start();
 	} else {
@@ -170,6 +272,7 @@ function appendWSDLs(data) {
 			wsdlMap[newWSDL.serviceURL] = newWSDL;
 			$resultsDiv.append(templates['wsdl'](newWSDL));
 			$resultsDiv.append(templates['afterWsdls'](null));
+			$resultsDiv.i18n();
 		}
 	}
 }
@@ -274,22 +377,22 @@ function initTemplates() {
     var registryServerName = "#{registryServerName}";
     var serverDiv = "";
     if("" !== registryServerName){
-       serverDiv = '<div class="easysoa-doc">Serveur: ' + registryServerName + '</div>';
+       serverDiv = '<div class="easysoa-doc"><span data-i18n="notify.Server">Serveur</span>: ' + registryServerName + '</div>';
     }
 
 	templates['results'] = underscore.template(
 	'<div class="easysoa-frame" id="easysoa-tpl-results">\
 	  <div class="easysoa-exit" onclick="exit()"></div>\
-	  <div class="easysoa-title">Found WSDLs:</div>\
-	  <span class="easysoa-doc">(click on those you want to submit)</span>\
+	  <div class="easysoa-title" data-i18n="notify.Found WSDLs">NOT TRANSLATED Found WSDLs:</div>\
+	  <span class="easysoa-doc" data-i18n="notify.clickToSubmit">(click on those you want to submit)</span>\
     </div>');
 
 	templates['login'] = underscore.template(
 	'<div class="easysoa-frame" id="easysoa-tpl-login">\
 	  <div class="easysoa-exit" onclick="exit()"></div>\
-	  <div class="easysoa-title">Login:</div>\
-	  <div class="easysoa-form-label">User </div><input type="text" id="easysoa-username" value="Administrator" /><br />\
-      <div class="easysoa-form-label">Password </div><input type="password" id="easysoa-password" value="Administrator" /><br />\
+	  <div class="easysoa-title" data-i18n="notify.Login">Login:</div>\
+	  <span class="easysoa-form-label" data-i18n="notify.User">User</span> <input type="text" id="easysoa-username" value="Administrator" /><br />\
+      <span class="easysoa-form-label" data-i18n="notify.Password">Password</span> <input type="password" id="easysoa-password" value="Administrator" /><br />\
       <input type="submit" id="easysoa-submit" />\
 	  <div id="easysoa-login-error"></div>\
     </div>');
@@ -301,11 +404,12 @@ function initTemplates() {
     </div>');
 
 	templates['afterWsdls'] = underscore.template(
-	'<div class="easysoa-doc">Environment name: <input type="text" id="easysoa-environment" value="Production" /></div>' +
+	'<div class="easysoa-doc"><span data-i18n="notify.Environment name">Environment name:</span> <input type="text" id="easysoa-environment" value="Production" /></div>' +
         serverDiv +
-        '<div class="easysoa-doc">Phase: <%= unescape(\'#{context-display}\') %><input type="hidden" id="easysoa-context" value="<%= unescape(\'#{context-escaped}\') %>"/></div>' +
-        '<div class="easysoa-doc"><a href="#{nuxeoUrl}/site/easysoa/dashboard/?subprojectId=<%= unescape(\'#{context}\') %>&visibility=#{visibility}" target="_blank" title="Une fois enregistrés, vous pouvez regler la correspondance entre les services et leurs implémentations et définitions dans l\'outil de réconciliation">Mise en correspondance</a></div>'
+        '<div class="easysoa-doc"><span data-i18n="notify.Phase">Phase:</span> <%= unescape(\'#{context-display}\') %><input type="hidden" id="easysoa-context" value="<%= unescape(\'#{context-escaped}\') %>"/></div>' +
+        '<div class="easysoa-doc"><a href="#{nuxeoUrl}/site/easysoa/dashboard/?subprojectId=<%= unescape(\'#{context}\') %>&visibility=#{visibility}" target="_blank" data-i18n="[title]index.onceRegistered;index.matchingDashboard" title="Une fois enregistrés, vous pouvez regler la correspondance entre les services et leurs implémentations et définitions dans l\'outil de réconciliation">Mise en correspondance</a></div>'
 	);
+	// TODO i18n context-display in node.js easysoa.js using i18next-node and reusing i18next js translations
 	// NB. the more in depth following code also works for display :
 	// '<% if (\'é\'.length==2) print(unescape(\'#{context}\')); else print(decodeURIComponent(\'#{context}\')); %>'
 	// i.e. if not utf8 unescape (which actually works also in the second case), else if utf8 decode
@@ -313,7 +417,9 @@ function initTemplates() {
 }
 
 function runTemplate(name, data) {
-	jQuery('body').append(templates[name](data));
+	var renderedTemplate = templates[name](data);
+	jQuery('body').append(renderedTemplate);
+	jQuery('body').i18n();
 	jQuery('#easysoa-tpl-' + name).show('fast');
 
 	// Make frames draggables

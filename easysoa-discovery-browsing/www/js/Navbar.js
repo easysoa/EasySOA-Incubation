@@ -63,6 +63,7 @@ $(function() {
 			var url = Navbar.getURL();
 			if (!this.navUrl === document.activeElement)
 				this.navUrl.attr("value", url);
+	        $(this.el).i18n();
 		},
 		
 		// Change URL through keyboard

@@ -1,0 +1,116 @@
+{
+   "login" : {
+"Authentication form" : "Authentication form",
+"User name" : "User name",
+"Password" : "Password",
+"Log in" : "Log in",
+"Invalid username or password" : "Invalid username or password.",
+"service registry" : "service registry",
+"notReadyYet" : "is not ready yet. Please wait a few seconds and retry."
+   },
+   
+   "common" : {
+"Not logged in" : "Not logged in",
+"log in" : "log in",
+"Logged as" : "Logged as",
+"logout" : "logout"
+   },
+
+   "index" : {
+"Warning" : "Warning",
+"checkProxy" : "Are you sure you have enabled your browser's proxy ? Please make sure it is set to",
+"badProject" : [ "Bad project, please close and reopen the web discovery page.\n",
+  "Details:\nerror decoding subprojectId" ],
+"Selected WSDL" : "Selected WSDL",
+"Discovery by browsing" : "Discovery by browsing",
+"Service discovery by browsing" : "Service discovery by browsing",
+"Connecting" : "Connecting",
+"Export WSDL to the" : "Export WSDL to the",
+"Service Registry" : "Service Registry",
+"None" : "None.",
+"Service details" : "Service details" ,
+"Perspective" : "Perspective:",
+"current" : "current",
+"version" : "version:",
+"Service Name" : "Service Name:",
+"Environment" : "Environment:",
+"Save service" : "Save service",
+"onceRegistered" : "Once registered, how these endpoints match to their implementation and service definition can be tuned in the Matching Dashboard",
+"matchingDashboard" : "Matching Dashboard",
+"Found services" : "Found services"
+   },
+   
+   "app" : {
+"Error while handling 'wsdl' message" : "Error while handling 'wsdl' message",
+"Ready" : "Ready.",
+"Clear all found services?" : "Clear all found services?",
+"Sending request" : "Sending request...",
+"WSDL registered" : "WSDL registered",
+"New environment name" : "New environment name",
+"en cours" : "en cours",
+"version" : "version"
+   },
+   
+   "default" : {
+"NotifyEasySOA_tooltip" : "Drag and drop me among your web browser's bookmarks",
+"NotifyEasySOA" : "Notify EasySOA",
+"in" : "in",
+"Quickstart" : "Quickstart",
+"intro" : "Discovery by Browsing allows you, while browsing, to discover web services that are linked from visited web pages.",
+"confProxy" : "configure the web proxy",
+"url" : "enter web page URLs in the address bar",
+"warning" : "WARNING !",
+"warningSecure" : "Does not work with secure websites (https protocol), where notification mode has to be used instead",
+"withNotify" : "with the Notify EasySOA button",
+"goal" : "Goal",
+"goalText" : [ "The goal is to help business users find and tag services that are interesting to them, ",
+  "by simply letting them browse the place they know best, where such services are most likely ",
+  "to be : their usual business applications and intranet." ],
+"how" : "How it works",
+"howText1" : [ "It takes the form of a 'browser in the browser'. It automatically finds WSDL files while ",
+  "the user navigates, extracts business information about it such as the business application ",
+  "where it was found (taken from the title of the browsed page), then makes him check all of it ",
+  "before sending the files to the Nuxeo repository." ],
+"howText2" : [ "To browse, just enter an URL in the white bar and it the \"enter\" key of your keyboard. ",
+  "This target web site is displayed above the barand the services are automatically discovered ",
+  "and displayed at in the left frame." ],
+"howToConf" : "How to configure your browser to use the discovery by browsing tool",
+"howToConfText1" : "Discovery by browsing works using a proxy that is started at address,",
+"loading" : "(loading)",
+"howToConfText2" : [ "so you will have to edit your ",
+  "browser's options to set the proxy to this address. Please make sure to remove any proxy ",
+  "exceptions (like localhost/127.0.0.1 if the proxy address is http://localhost:8081 or http://127.0.0.1:8081)." ],
+"howToConfChrome1" : [ "If you are in Chrome browser and you don't discover any services or have some authentication",
+  "problems because of proxy configuration problems, run :" ],
+"howToConfChrome2" : "It will launch the browser with the good configuration.",
+"examples" : "Examples",
+"here" : "Here",
+"youCanFindSamples" : "you can find some sample pages or web sites containing services to browse.",
+"notify" : "Notification",
+"notifyText" : [ "If you need to browse to HTTPS places, our proxy will not work. Instead, try to drag this bookmarklet ",
+  "to your favorites: when you're on a page of interest (e.g. that contains links to WSDLs), click then ",
+  "on the bookmark to make EasySOA explore the page." ],
+"alsoVideo" : "A video providing detailed explanations is also available"
+   },
+   
+   "notify" : {
+ "Server" : "Server",
+ "Found WSDLs" : "Found WSDLs:",
+ "clickToSubmit" : "(click on those you want to submit)",
+ "Login" : "Login:",
+ "User" : "User",
+ "Password" : "Password",
+ "Environment name" : "Environment name:",
+ "notify.Phase" : "Phase:"
+   },
+   
+   "examples" : {
+"Discovery by Browsing Examples" : "Discovery by Browsing Examples",
+"welcome" : "Welcome to the discovery by browsing tool examples!",
+"demoIntranet" : "Why not beginning by browsing through the demo intranet ?",
+"FraSCAti on the cloud examples" : "FraSCAti on the cloud examples:",
+"FraSCAti services deployed on" : "FraSCAti services deployed on",
+"Other examples" : "Other examples:",
+"Some W3C Web Services" : "Some W3C Web Services"
+   }
+}

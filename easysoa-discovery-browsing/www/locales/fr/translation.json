@@ -1,0 +1,120 @@
+{
+   "login" : {
+"Authentication form" : "Formulaire de connexion",
+"User name" : "Utilisateur",
+"Password" : "Mot de passe",
+"Log in" : "Connexion",
+"Invalid username or password" : "Invalid username or password.",
+"service registry" : "le registre de services",
+"notReadyYet" : "n'est pas encore prêt. Veuillez attendre quelques secondes puis réessayer."
+   },
+   
+   "common" : {
+"Not logged in" : "Pas connecté",
+"log in" : "connexion",
+"Logged as" : "Bonjour",
+"logout" : "Déconnexion"
+   },
+   
+   "index" : {
+"Warning" : "Attention",
+"checkProxy" : "Êtes-vous certain d'avoir activé le proxy de votre navigateur ? Veuillez vérifier qu'il est mis à",
+"badProject" : [ "Projet erroné, fermez et réouvrez la page de découverte web.\n",
+  "Détails :\nerreur de décodage de subprojectId" ],
+"Selected WSDL" : "WSDL sélectionné",
+"Discovery by browsing" : "Découverte par navigation web",
+"Service discovery by browsing" : "Découverte de services par navigation web",
+"Connecting" : "Connection",
+"Export WSDL to the" : "Exporter le WSDL vers le",
+"Service Registry" : "Registre de services",
+"None" : "Aucun.",
+"Service details" : "Détails du service" ,
+"Perspective" : "Perspective:",
+"current" : "current",
+"version" : "version:",
+"Service Name" : "Nom du service :",
+"Environment" : "Environnement :",
+"Save service" : "Enregistrer le service",
+"onceRegistered" : "Une fois enregistrés, vous pouvez regler la correspondance entre les services et leurs implémentations et définitions dans l'outil de réconciliation",
+"matchingDashboard" : "Mise en correspondance",
+"Found services" : "Services trouvés"
+   },
+   
+   "app" : {
+"Error while handling 'wsdl' message" : "Erreur lors du traitement du message 'wsdl'",
+"Ready" : "Prêt.",
+"Clear all found services?" : "Effacer tous les services trouvés ?",
+"Sending request" : "Envoi de la requête...",
+"WSDL registered" : "WSDL enregistré",
+"New environment name" : "Nom du nouvel environnement",
+"en cours" : "en cours",
+"version" : "version"
+   },
+   
+   "default" : {
+"NotifyEasySOA_tooltip" : "Glissez moi dans les favoris de votre navigateur",
+"NotifyEasySOA" : "Notifier EasySOA",
+"in" : "dans",
+"Quickstart" : "Démarrage rapide",
+"intro" : [ "La découverte web vous permet, tout en naviguant, de découvrir les services Web liés depuis les pages web visitées.",
+  "Pour l'utiliser :" ],
+"confProxy" : "configurez le proxy",
+"url" : "tapez l'URL dans la barre",
+"warning" : "ATTENTION !",
+"warningSecure" : "Ne s'applique pas aux sites sécurisés (protocole https), pour lesquels il est nécessaire de passer en mode notification",
+"withNotify" : "avec le bouton Notifier EasySOA",
+"goal" : "Objectif",
+"goalText" : [ "L'objectif de la découverte web est d'aider les utilisateurs à trouver et marquer les",
+  "services qui sont interressant pour eux, en leur permettant simplement de naviguer sur les",
+  "sites qu'ils connaissent le mieux et où de tels services sont les plus susceptibles d'être :",
+  "leurs applications business habituelles et leur Intranet." ],
+"how" : "Fonctionnement",
+"howText1" : [ "La découverte web prend la forme d'un navigateur dans le navigateur. Il trouve automatiquement",
+  "les fichiers WSDL pendant la navigation, en extrait les informations business telles que les",
+  "applications metier ou ces fichiers ont été trouvés (tirée du titre de la page) et permet à",
+  "l'utilisateur de vérifier les informations découvertes avant de les envoyer dans le registre Nuxeo." ],
+"howText2" : [ "Pour naviguer, entrez simplement une adresse (correspondant avotre application métier ou votre",
+  "Intranet) dans le champ de saisie blanc et appuyez sur \"entrée\". le site ciblé s'affiche en",
+  "dessous du champs et les services sont automatiquement découverts et affichés dans la partie",
+  "gauche de l'écran." ],
+"howToConf" : "Comment configurer votre navigateur pour utiliser la découverte web ?",
+"howToConfText1" : "La découverte web fonctionne avec un proxy démarré à l'adresse,",
+"loading" : "(chargement)",
+"howToConfText2" : [ "vous devez donc configurer votre navigateur pour qu'il utilise ce proxy. Veuillez à ce",
+  "que toutes les exceptions soit retirées (par exemple localhost/127.0.0.1 si l'adresse",
+  "du proxy est http://localhost:8081 ou http://127.0.0.1:8081)." ],
+"howToConfChrome1" : [ "Si vous utilisez le navigateur Google Chrome et que vous ne découvrez aucun service",
+  "ou avez des problèmes d'authentification à cause du proxy, lancez :" ],
+"howToConfChrome2" : "Cela démarrera le navigateur avec la bonne configuration.",
+"examples" : "Exemples",
+"here" : "Ici",
+"youCanFindSamples" : "vous pourrez trouver quelques pages d'exemples ou des sites contenant des services à découvrir.",
+"notify" : "Notification",
+"notifyText" : [ "Si vous avez besoin de naviguer sur des sites HTTPS, le proxy de découverte EasySOA ne va pas fonctionner.",
+  "A la place, essayez d'ajouter ce bookmarklet dans les favoris de votre navigateur. Puis ouvrez une",
+  "autre fenêtre et naviguez sur une page contenant des liens vers des fichiers WSDL, cliquez sur le favori",
+  "pour déclencher l'exploration de la page et la découverte des services." ],
+"alsoVideo" : "Une vidéo d'explication détaillée est aussi disponible"
+   },
+   
+   "notify" : {
+ "Server" : "Serveur",
+ "Found WSDLs" : "WSDLs trouvés :",
+ "clickToSubmit" : "(cliquez sur ceux que vous voulez enregistrer)",
+ "Login" : "Connexion :",
+ "User" : "Utilisateur",
+ "Password" : "Mot de passe",
+ "Environment name" : "Nom de l'environnement :",
+ "notify.Phase" : "Phase :"
+   },
+   
+   "examples" : {
+"Discovery by Browsing Examples" : "Exemples de découverte par navigation Web",
+"welcome" : "Bienvenue sur les exemples de l'outil de découverte par navigation Web !",
+"demoIntranet" : "Pourquoi ne pas commencer par naviguer sur l'intranet de démonstration ?",
+"FraSCAti on the cloud examples" : "Exemples FraSCAti dans le Cloud :",
+"FraSCAti services deployed on" : "services FraSCAti déployés sur",
+"Other examples" : "Autres exemples :",
+"Some W3C Web Services" : "Quelques services Web W3C"
+   }
+}

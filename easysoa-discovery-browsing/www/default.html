@@ -1,6 +1,8 @@
 <html>
 <head>
 <script type="text/javascript" src="/lib/jquery.js"></script>
+<script type="text/javascript" src="/lib/i18next-1.7.1.js"></script><!-- .min -->
+<script type="text/javascript" src="/js/common.js"></script>
 <script type="text/javascript" src="js/utils.js"></script>
 
 <!-- Special style for Easysoa notification button -->
@@ -54,6 +56,24 @@ div.image {
 </script>-->
 
 <script type="text/javascript">
+/*
+// i18n using polyglot.js NO DOESN'T FEATURE REPLACING KEYS IN HTML
+var polyglot = new Polyglot();
+var detectedLanguage = navigator.language || navigator.userLanguage;
+var languageFilePrefix = "messages.";
+var defaultLanguageFile = languageFilePrefix + "en_US.js";
+var supportedLanguages = [ "en", "fr" ];
+var language = supportedLanguages[0];
+if (language != null && language.length >= 2
+		&& supportedLanguages.indexOf(detectedLanguage.substring(0, 2) > -1){
+	language = detectedLanguage.substring(0, 2);
+   file = languageFilePrefix + language + ".js";
+   //polyglot.locale('US');  // useful for pluralization
+}
+var url = "<script type=\"text/javascript\" src=\"js/i18n/" + file + "\"></"
+    + "script>";  //directory with your translation files
+$('head').append(url);
+*/
 
 function getUrlVars() {
     var vars = [], hash;
@@ -67,7 +87,19 @@ function getUrlVars() {
 }
 
 $(document).ready(function() {
+	// i18n using i18next.js
+	i18n.init({ fallbackLng: 'en_US' }, // else default fallback language is dev
+	    function() {
+           $(document.body).i18n();
+           
+           initDefault();
+	    }
+	);
+});
 
+function initDefault() {
+	initLinksI18n(); // i18n links
+	
   // Display the current context
   /*if(typeof getUrlVars()["subprojectId"] != "undefined"){
     $('#context').html(decodeURIComponent(getUrlVars()["subprojectId"]));
@@ -81,11 +113,13 @@ $(document).ready(function() {
   $.ajax({
     url: '/js/bookmarklet/bookmarklet-min.js?subprojectId=' + decodeURIComponent(getUrlVars()["subprojectId"])
     		+ "&visibility=" + getUrlVars()["visibility"]
-         + "&registryServerName=" + getUrlVars()['registryServerName'],
+         + "&registryServerName=" + getUrlVars()['registryServerName']
+         + "&setLng=" + i18n.lng(),
     dataType: 'text', // Prevents JS execution
     invokedata: {
         host: getUrlVars()['registryServerName'],
-        subprojectId: decodeURIComponent(getUrlVars()["subprojectId"])
+        subprojectId: decodeURIComponent(getUrlVars()["subprojectId"]),
+        setLng: i18n.lng(),
     },
     success: function(data, status, xhr) {
       ///alert('ajax response : ' + xhr.responseText); // OK
@@ -97,13 +131,16 @@ $(document).ready(function() {
       }
       //alert('encoded : ' + encodeURI(xhr.responseText));
 
-      var bookmarkletLink = '<a class="button" href="' + js + '" title="Glissez moi '
-         + 'dans les favoris de votre navigateur">Notifier EasySOA';
+      //var bookmarkletLink = '<a class="button" href="' + js + '" title="'
+      //   + polyglot.t("NotifyEasySOA.tooltip") + '>' + polyglot.t("NotifyEasySOA");
+      var bookmarkletLink = '<a class="button" href="' + js + '" title="'
+         + i18n.t("default.NotifyEasySOA_tooltip") + '">' + i18n.t("default.NotifyEasySOA");
       if("" !== this.invokedata.host){
           bookmarkletLink = bookmarkletLink + ' (' + this.invokedata.host + ')';
       }
       if("" !== this.invokedata.subprojectId){
-        $('#bookmarklet').html(bookmarkletLink + ' dans ' + formatPhaseForDisplay(this.invokedata.subprojectId) +'</a>');
+        $('#bookmarklet').html(bookmarkletLink + ' ' + i18n.t("default.in") + ' '
+        		+ formatPhaseForDisplay(this.invokedata.subprojectId) +'</a>');
       } else {
         $('#bookmarklet').html(bookmarkletLink + '</a>');
       }
@@ -115,7 +152,7 @@ $(document).ready(function() {
     }
   });
 
-});
+}
 
 </script>
 
@@ -124,53 +161,49 @@ $(document).ready(function() {
 
 <!--Perspective : <span id="context"></span>-->
 
-<h2>Démarrage rapide</h2>
+<!-- a href="./?setLng=en-US">en-US</a> | <a href="./?setLng=fr-FR">fr-FR</a -->
+
+<h2 data-i18n="default.Quickstart">NOT TRANSLATED Démarrage rapide</h2>
 <p>
+    <span data-i18n="default.intro">
     La découverte web vous permet, tout en naviguant, de découvrir les services Web liés
     depuis les pages web visitées.
 
     Pour l'utiliser :
+    </span>
     <ol>
-        <li><a href="#proxyConfig">configurez le proxy</a></li>
-        <li>tapez l'url dans la barre <img src="/img/easysoa_url_bar.png" alt="Discovery url bar"/></li>
+        <li><a href="#proxyConfig" data-i18n="default.confProxy">NOT TRANSLATED configurez le proxy</a></li>
+        <li><span data-i18n="default.url">tapez l'URL dans la barre</span>
+            <img src="/img/easysoa_url_bar.png" alt="Discovery url bar"/></li>
     </ol>
 
-    <strong>ATTENTION !</strong> Ne s'applique pas aux sites sécurisés (protocole https),
-    pour lesquels il est nécessaire de passer en mode notification <a href="#notifier">avec
-    le bouton Notifier EasySOA</a>.
+    <strong data-i18n="default.warning">ATTENTION !</strong>
+    <span data-i18n="default.warningSecure">
+    Ne s'applique pas aux sites sécurisés (protocole https),
+    pour lesquels il est nécessaire de passer en mode notification
+    </span>
+    <a href="#notifier" data-i18n="default.withNotify">avec le bouton Notifier EasySOA</a>.
 </p>
 
 <hr/>
 <hr/>
 
-<!--<h2>Goal</h2>-->
-<!--The goal is to help business users find and tag services that are interesting to them,
-by simply letting them browse the place they know best, where such services are most likely
-to be : their usual business applications and intranet.-->
-
-<h2>Objectif</h2>
+<h2 data-i18n="default.goal">Objectif</h2>
+<span data-i18n="default.goalText">
 L'objectif de la découverte web est d'aider les utilisateurs à trouver et marquer les
 services qui sont interressant pour eux, en leur permettant simplement de naviguer sur les
 sites qu'ils connaissent le mieux et où de tels services sont les plus susceptibles d'être :
 leurs applications business habituelles et leur Intranet.
+</span>
 
-<!--<h2>How it works</h2>-->
-<!--It takes the form of a 'browser in the browser'. It automatically finds WSDL files while
-the user navigates, extracts business information about it such as the business application
-where it was found (taken from the title of the browsed page), then makes him check all of it
-before sending the files to the Nuxeo repository.-->
-<!-- To browse, just enter an URL in the white bar and it the "enter" key of your keyboard.
-This target web site is displayed above the barand the services are autommatically discovered
-and displayed at in the left frame. -->
-
-<h2>Fonctionnement</h2>
-<p>
+<h2 data-i18n="default.how">Fonctionnement</h2>
+<p data-i18n="default.howText1">
 La découverte web prend la forme d'un navigateur dans le navigateur. Il trouve automatiquement
 les fichiers WSDL pendant la navigation, en extrait les informations business telles que les
 applications metier ou ces fichiers ont été trouvés (tirée du titre de la page) et permet à
 l'utilisateur de vérifier les informations découvertes avant de les envoyer dans le registre Nuxeo.
 </p>
-<p>
+<p data-i18n="default.howText2">
 Pour naviguer, entrez simplement une adresse (correspondant avotre application métier ou votre
 Intranet) dans le champ de saisie blanc et appuyez sur "entrée". le site ciblé s'affiche en
 dessous du champs et les services sont automatiquement découverts et affichés dans la partie
@@ -178,53 +211,48 @@ gauche de l'écran.
 </p>
 <!--<img src="/img/easysoa_discovery_browsing.png" alt="Discovery browsing screenshot"/>-->
 
-<!--<h2>How to configure your browser to use the discovery by browsing tool</h2>-->
-<h2><a id="proxyConfig">Comment configurer votre navigateur pour utiliser la découverte web ?</a></h2>
+<h2><a id="proxyConfig" data-i18n="default.howToConf">Comment configurer votre navigateur pour utiliser la découverte web ?</a></h2>
 
-    <!--The proxy will be launched on http://localhost:8081, so you will have to edit your
-    browser's options to set the proxy to this address. Please make sure to remove any proxy
-    exceptions (like localhost/127.0.0.1).
-
-    If you are in Chrome browser and you don't discover any services or some authentication
-    problems because of proxy configuration problems. Run :
-
-    chromium-browser --proxy-server="127.0.0.1:8081" --proxy-bypass-list=""
-
-    It will launch the browser with the good configuration.-->
-
+    <span data-i18n="default.howToConfText1">
     La découverte web fonctionne avec un proxy démarré à l'adresse,
-    <span id="proxyAddress"><i>(loading)</i></span>,
+    </span>
+    <span id="proxyAddress"><i data-i18n="default.loading">(loading)</i></span>,
+    <span data-i18n="default.howToConfText2">
     vous devez donc configurer votre navigateur pour qu'il utilise ce proxy. Veuillez à ce
     que toutes les exceptions soit retirées (par exemple localhost/127.0.0.1 si l'adresse
     du proxy est http://localhost:8081 ou http://127.0.0.1:8081).
+    </span>
     <br/>
     <br/>
     <img src="/img/firefoxProxy.png" alt="Firefox proxy configuration"/>
-    <!--Si vous utilisez le navigateur Google Chrome et que vous ne découvrez aucun service
-    or some authentication problems because of proxy configuration problems. Run :
+    <br/>
+    <br/>
+    <span data-i18n="default.howToConfChrome1">
+    Si vous utilisez le navigateur Google Chrome et que vous ne découvrez aucun service
+    ou avez des problèmes d'authentification à cause du proxy, lancez :
+    </span>
+    
+    <pre>chromium-browser --proxy-server="127.0.0.1:8081" --proxy-bypass-list=""</pre>
+    
+    <span data-i18n="default.howToConfChrome2">
+    Cela démarrera le navigateur avec la bonne configuration.
+    </span>
 
-    chromium-browser --proxy-server="127.0.0.1:8081" --proxy-bypass-list=""
-
-    It will launch the browser with the good configuration.-->
-
-<!--<h2>Getting started</h2>-->
-<h2>Exemples</h2>
-<!--<h2>Examples</h2>-->
-<!--<a href="/examples.html">Here</a> you can find some sample pages or web sites
-containing services to browse.-->
-<a href="/examples.html">Ici</a> vous pourrez trouver quelques pages d'exemples ou des
+<h2 data-i18n="default.examples">Exemples</h2>
+<a href="/examples.html" class="i18n" data-i18n="default.here">Ici</a><!-- NB. i18n'd in common.js -->
+<span data-i18n="default.youCanFindSamples">
+vous pourrez trouver quelques pages d'exemples ou des
 sites contenant des services à découvrir.
+</span>
 
-<!--<h2>Bookmarklet</h2>-->
-<h2><a id="notifier">Notification</a></h2>
+<h2><a id="notifier" data-i18n="default.notify">Notification</a></h2>
 
-<!--<p>If you need to browse to HTTPS places, our proxy will not work. Instead, try to drag this bookmarklet
-to your favorites: when you're on a page of interest (e.g. that contains links to WSDLs), click then
-on the bookmark to make EasySOA explore the page.</p>-->
-<p>Si vous avez besoin de naviguer sur des sites HTTPS, Le proxy de découverte EasySOA ne va pas fonctionner.
+<p data-i18n="default.notifyText">
+Si vous avez besoin de naviguer sur des sites HTTPS, le proxy de découverte EasySOA ne va pas fonctionner.
 A la place, essayez d'ajouter ce bookmarklet dans les favoris de votre navigateur. Puis ouvrez une
 autre fenêtre et naviguez sur une page contenant des liens vers des fichiers WSDL, cliquez sur le favori
-pour déclencher l'exploration de la page et la découverte des services.</p>
+pour déclencher l'exploration de la page et la découverte des services.
+</p>
 
 
 <!-- TODO set a button for notification -->
@@ -235,10 +263,13 @@ pour déclencher l'exploration de la page et la découverte des services.</p>
     </tr>
 </table>-->
 
-<p id="bookmarklet" style="font-size: 15pt"><i>(loading)</i></p>
+<p id="bookmarklet" style="font-size: 15pt"><i data-i18n="default.loading">(loading)</i></p>
 <img src="/img/dragAndDropNotificationButton.png" alt="Glisser/Déposer"/>
 <p>
-Une vidéo d'explication détaillée est aussi disponible <a href="/img/dragAndDropNotificationButton.gif">ici</a>.
+<span data-i18n="default.alsoVideo">
+Une vidéo d'explication détaillée est aussi disponible
+</span>
+<a href="/img/dragAndDropNotificationButton.gif" data-i18n="default.here">ici</a>.
 </p>
 
 </body>

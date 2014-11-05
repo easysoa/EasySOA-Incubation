@@ -65,7 +65,7 @@
     <#macro linkToLocalNuxeoExportAsPdf doc><a href="<@urlToLocalNuxeoExportAsPdf doc/>"><img src="/nuxeo/icons/contextual_menu/export_pdf.png" alt="export PDF"/></a></#macro>
 
     <#-- EasySOA tool URLs -->
-    <#macro urlToWebDiscovery subprojectId visibility>${web_discovery_url}?subprojectId=${subprojectId}&visibility=${visibility}&serverName=${Root.getServerHost()}</#macro>
+    <#macro urlToWebDiscovery subprojectId visibility>${web_discovery_url}?subprojectId=${subprojectId}&visibility=${visibility}&serverName=${Root.getServerHost()}&setLng=${Root.getLanguage()}</#macro>
     <#macro urlToFicheSOA soaNode subprojectId visibility>${Root.path}/../services/path${soaNode['spnode:subproject']?xml}:${soaNode.type}:${soaNode['soan:name']?xml}?subprojectId=${subprojectId}&visibility=${visibility}</#macro>
     <#macro urlToEndpointState endpoint subprojectId visibility>${Root.path}/../monitoring/envIndicators/${endpoint.id}/1?subprojectId=${subprojectId}&visibility=${visibility}</#macro>
     <#macro urlToProxyManagementGetInstance subprojectId environment>${proxy_management_url}/management/getInstance.html?projectId=${subprojectId?url('ISO-8859-1')}&userLogin=${Root.currentUser?url('ISO-8859-1')}&environment=${environment?url('ISO-8859-1')}</#macro>

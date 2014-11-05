@@ -70,11 +70,11 @@
 
       <#list tags as tag>
       <#if tagId2Services?keys?seq_contains(tag.id)>
-      <h4>Eléments SOA (${tagId2Services[tag.id]?size}) taggés dans <@displayTagShort tag subprojectId visibility/></h4>
+      <h4>${Root.msg("soaElements")} (${tagId2Services[tag.id]?size}) ${Root.msg("taggedIn")} <@displayTagShort tag subprojectId visibility/></h4>
         <#-- Inlining to handle non-service cases. TODO LATER more generic ?? -->
           <#-- @displayServicesShort tagId2Services[tag.id] subprojectId visibility/ -->
          <#if services?size = 0>
-              Pas de services.
+              ${Root.msg("noServices")}.
           <#else>
           <ul>
               <#list tagId2Services[tag.id] as service>
@@ -93,13 +93,13 @@
       </#list>
       <p/>
 
-      <h3>Eléments SOA sans tag (${untaggedServices?size})</h3>
+      <h3>${Root.msg("soaElements")} ${Root.msg("withoutTag")} (${untaggedServices?size})</h3>
       <p/>
 
       <@displayServicesShort untaggedServices subprojectId visibility/>
       <p/>
 
-      <h3>Tags non utilisés (${tags?size - tagId2Services?keys?size})</h3>
+      <h3>${Root.msg("unusedTags")} (${tags?size - tagId2Services?keys?size})</h3>
       <p/>
 
       <ul>

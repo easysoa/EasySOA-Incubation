@@ -9,7 +9,7 @@
            <#assign phaseShortId = subprojectIdToDisplay?replace('/default-domain/', '')/>
            <#assign phaseShortIdVersionIndex = phaseShortId?last_index_of('_v')/>
            ${phaseShortId?substring(0, phaseShortIdVersionIndex)?replace('/', ' / ')}
-           (version <#if phaseShortId?ends_with('_v')>en cours<#else>${phaseShortId?substring(phaseShortIdVersionIndex + 2, phaseShortId?length)}</#if>)
+           (${Root.msg("version")} <#if phaseShortId?ends_with('_v')>${Root.msg("current")}<#else>${phaseShortId?substring(phaseShortIdVersionIndex + 2, phaseShortId?length)}</#if>)
         </#if><#-- else no perspective / context -->
     </#macro>
     
@@ -21,8 +21,8 @@
                ${parsedSubprojectIdToDisplay.getProjectName()} /
                ${parsedSubprojectIdToDisplay.getSubprojectName()}
                <#assign version = parsedSubprojectIdToDisplay.getVersion()/>
-               <#-- (version <#if version?length == 0>en cours<#else>${version}</#if>) -->
-               <#if version?length == 0>en cours<#else>${version}</#if>
+               <#-- (${Root.msg("version")} <#if version?length == 0>${Root.msg("current")}<#else>${version}</#if>) -->
+               <#if version?length == 0>${Root.msg("current")}<#else>${version}</#if>
            <#-- elseif subprojectIdToDisplay == subprojectId --><#-- choice : display Phase name even is the current one-->
            <#else>
                <#assign parsedSubprojectId = Root.parseSubprojectId(subprojectId)/>
@@ -31,8 +31,8 @@
                </#if> 
                ${parsedSubprojectIdToDisplay.getSubprojectName()}
                <#assign version = parsedSubprojectIdToDisplay.getVersion()/>
-               <#-- (version <#if version?length == 0>en cours<#else>${version}</#if>) -->
-               <#if version?length == 0>en cours<#else>${version}</#if>
+               <#-- (${Root.msg("version")} <#if version?length == 0>${Root.msg("current")}<#else>${version}</#if>) -->
+               <#if version?length == 0>${Root.msg("current")}<#else>${version}</#if>
            </#if>
         </#if><#-- else no perspective / context TODO passing subprojectIdToDisplay param to displayPhaseIfOutsideContext doesn't work -->
     </#macro>
@@ -69,7 +69,7 @@
     </#macro>
     
     <#macro displayServiceTitleWithoutPhase service withLink subprojectId visibility>
-        <span title="Phase : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">
+        <span title="${Root.msg("Phase")} : <@displayPhase service['spnode:subproject']/>" style="color:grey; font-style: italic;">
         
         <#assign phaseName =  Root.parseSubprojectId(service['spnode:subproject']).getSubprojectName()/>
         <#if phaseName == 'Specifications'>
@@ -84,20 +84,20 @@
                 </#if>
             </#if>
             <#if !applicationName?has_content>
-               <#assign applicationName = '(inconnu)'/>
+               <#assign applicationName = '(${Root.msg("unknown")})'/>
             </#if>
             <@displayApplication applicationName/>
         <#else><#-- if phaseName == 'Deploiement' -->
             <img src="/nuxeo/icons/server.png" alt="serveur"/>
             <!-- TODO -->
-            (inconnu)
+            (${Root.msg("unknown")})
         </#if>
         
         / </span>
         <#if withLink><a href="<@urlToFicheSOA service subprojectId visibility/>"></#if>
         <span title="SOA ID: ${service['soan:name']}"><@displaySoaNodeTitle service ""/></span>
         <#if withLink></a></#if>
-        <#if service['soan:isplaceholder'] = 'true'> (inconnu)<#elseif phaseName != 'Specifications'> (technique)</#if>
+        <#if service['soan:isplaceholder'] = 'true'> (${Root.msg("unknown")})<#elseif phaseName != 'Specifications'> (${Root.msg("technical")})</#if>
         </span>
     </#macro>
     
@@ -129,32 +129,32 @@
                 && deliverable['del:application']?length != 0>
             <@displayApplication deliverable['del:application']/>
         <#else>
-            <@displayApplication '(inconnu)'/>
+            <@displayApplication '(${Root.msg("unknown")})'/>
         </#if>
         / <@displaySoaNodeTitle deliverable 'Deliverable'/>
     </#macro>
     
     <#macro displayApplication application>
-         <img src="/nuxeo/icons/application.png" alt="Application"/> ${application}
+         <img src="/nuxeo/icons/application.png" alt="${Root.msg("Application")}"/> ${application}
     </#macro>
     
     <#macro displayEnvironment environment>
-         <img src="/nuxeo/icons/environment.png" alt="Environment"/>${environment}
+         <img src="/nuxeo/icons/environment.png" alt="${Root.msg("Environment")}"/>${environment}
     </#macro>
     
     <#macro displaySoaNodeLink soaNode type>
        <#if !soaNode?is_hash>
-         (inconnu)
+         (${Root.msg("unknown")})
        <#else>
          <a href="<@urlToLocalNuxeoDocumentsUi soaNode/>"/><@displaySoaNodeTitle soaNode type/></a>
-         <#-- a href="<@urlToLocalNuxeoDocumentsUi soaNode/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a --><#-- too much in pathes -->
+         <#-- a href="<@urlToLocalNuxeoDocumentsUi soaNode/>"/><img src="/nuxeo/icons/edition.png" alt="${Root.msg("edit")}"/></a --><#-- too much in pathes -->
        </#if>
     </#macro>
     
     <#macro displaySoaNodeTitle soaNode iconType>
        <#if !soaNode?is_hash>
-          <img src="/nuxeo/icons/${iconType?lower_case}.png" alt="${iconType}"/>
-          (inconnu)
+          <img src="/nuxeo/icons/${iconType?lower_case}.png" alt="${Root.msg(iconType)}"/>
+          (${Root.msg("unknown")})
        <#else>
            <@displaySoaNodeText soaNode iconType soaNode.title/>
        </#if>
@@ -166,7 +166,7 @@
           <#else>
               <#assign actualIconType = iconType?lower_case/>
           </#if>
-          <img src="/nuxeo/icons/${actualIconType}.png" alt="${soaNode.type}"/>
+          <img src="/nuxeo/icons/${actualIconType}.png" alt="${Root.msg(soaNode.type)}"/>
           <span title="<@displayPhaseIfOutsideContext soaNode['spnode:subproject']/>">
           ${text}
           </span>
@@ -178,20 +178,20 @@
        <#else>
            <#assign type = iconType/>
        </#if>
-       <img src="/nuxeo/icons/${type?lower_case}.png" alt="${type}"/>
+       <img src="/nuxeo/icons/${type?lower_case}.png" alt="${Root.msg(type)}"/>
        <#if !soaNode?is_hash>
-          (inconnu)
+          (${Root.msg("unknown")})
        <#else>
           <#if soaNode?has_content>
              ${soaNode['soan:name']}
           <#else>
-             (inconnu)
+             (${Root.msg("unknown")})
           </#if>
        </#if>
     </#macro>
 
     <#macro displayImplementationTitleWithoutPhase serviceimpl subprojectId visibility>
-        <span title="Phase : <@displayPhase serviceimpl['spnode:subproject']/>" style="color:grey; font-style: italic;">
+        <span title="${Root.msg("Phase")} : <@displayPhase serviceimpl['spnode:subproject']/>" style="color:grey; font-style: italic;">
         <#assign deliverable = Root.getDocumentService().getSoaNodeParent(serviceimpl, 'Deliverable')/>
         <#if deliverable?has_content && deliverable['del:application']?has_content && deliverable['del:application']?length != 0>
             <@displayApplication deliverable['del:application']/>
@@ -204,7 +204,7 @@
         <a href="<@urlToFicheSOA serviceimpl subprojectId visibility/>">
         <span title="SOA ID: ${serviceimpl['soan:name']}"><@displaySoaNodeTitle serviceimpl "ServiceImplementation"/></span>
         </a>
-        <#if serviceimpl['soan:isplaceholder'] = 'true'> (inconnue)</#if>
+        <#if serviceimpl['soan:isplaceholder'] = 'true'> (${Root.msg("unknown")})</#if>
         <#if serviceimpl['impl:ismock'] = 'true'> (test)</#if>
     </#macro>
     
@@ -216,7 +216,7 @@
     </#macro>
 
     <#macro displayEndpointTitleWithoutPhase endpoint subprojectId visibility>
-        <span title="Phase : <@displayPhase endpoint['spnode:subproject']/>" style="color:grey; font-style: italic;">
+        <span title="${Root.msg("Phase")} : <@displayPhase endpoint['spnode:subproject']/>" style="color:grey; font-style: italic;">
         <@displayEnvironment endpoint['env:environment']/> /
         <#-- @displayHost endpoint['endp:host']/> / --><#-- NO already in endp:url -->  
         
@@ -236,7 +236,7 @@
         <#-- @displaySoaNodeTitle endpoint ""/ --><@displaySoaNodeText endpoint "" endpoint['endp:url']/>
         </span>
         </a>
-        <#if endpoint['soan:isplaceholder'] = 'true'> (inconnu)</#if>
+        <#if endpoint['soan:isplaceholder'] = 'true'> (${Root.msg("unknown")})</#if>
         <#if endpoint['impl:ismock'] = 'true'> (test)</#if>
     </#macro>
     
@@ -249,22 +249,22 @@
     
     <#macro displayServiceShort service subprojectId visibility>
         <a href="<@urlToFicheSOA service subprojectId visibility/>"><@displayServiceTitle service true subprojectId visibility/></a>
-        <a href="<@urlToLocalNuxeoDocumentsUi service/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
+        <a href="<@urlToLocalNuxeoDocumentsUi service/>"/><img src="/nuxeo/icons/edition.png" alt="${Root.msg("edit")}"/></a>
     </#macro>
     
     <#macro displayImplementationShort serviceimpl subprojectId visibility>
         <a href="<@urlToFicheSOA serviceimpl subprojectId visibility/>"><@displayImplementationTitle serviceimpl subprojectId visibility/></a>
-        <a href="<@urlToLocalNuxeoDocumentsUi serviceimpl/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
+        <a href="<@urlToLocalNuxeoDocumentsUi serviceimpl/>"/><img src="/nuxeo/icons/edition.png" alt="${Root.msg("edit")}"/></a>
     </#macro>
     
     <#macro displayEndpointShort endpoint subprojectId visibility>
         <a href="<@urlToFicheSOA endpoint subprojectId visibility/>"><@displayEndpointTitle endpoint subprojectId visibility/></a>
-        <a href="<@urlToLocalNuxeoDocumentsUi endpoint/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
+        <a href="<@urlToLocalNuxeoDocumentsUi endpoint/>"/><img src="/nuxeo/icons/edition.png" alt="${Root.msg("edit")}"/></a>
     </#macro>
 
     <#macro displayServicesShort services subprojectId visibility>
     <#if services?size = 0>
-    Pas de services.
+    ${Root.msg("noServices")}.
     <#else>
     <ul>
         <#list services as service>
@@ -276,7 +276,7 @@
 
     <#macro displayImplementationsShort impls subprojectId visibility>
     <#if impls?size = 0>
-    Pas d'implémentations de services.
+    ${Root.msg("NoServiceImplementations")}.
     <#else>
     <ul>
         <#list impls as impl>
@@ -288,7 +288,7 @@
 
     <#macro displayEndpointsShort endpoints subprojectId visibility>
     <#if endpoints?size = 0>
-    Pas de services déployés.
+    ${Root.msg("NoServiceDeployments")}.
     <#else>
     <ul>
         <#list endpoints as endpoint>
@@ -301,19 +301,19 @@
 
     <#macro displayImplementationDetail actualImpl>
         <#if actualImpl['soan:isplaceholder'] = 'true'>
-        est <b>inconnue</b>
+        ${Root.msg("is")} <b>${Root.msg("unknown")}</b>
         <#else>
         <#-- @displayDoc actualImpl shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/>
         <br/ -->
-        écrite en ${actualImpl['impl:language']} expose le service par ${actualImpl['impl:technology']}
-        et est <@displayTested actualImpl/>
+        ${Root.msg("writtenIn")} ${actualImpl['impl:language']} ${Root.msg("exposesTheServiceThrough")} ${actualImpl['impl:technology']}
+        ${Root.msg("and")} ${Root.msg("is")} <@displayTested actualImpl/>
         <p/>
          
          <#assign deliverable = Root.getDocumentService().getSoaNodeParent(actualImpl, 'Deliverable')/>
-         <b>Son délivrable</b>
+         <b>${Root.msg("ItsDeliverable")}</b>
          <#if deliverable?has_content && deliverable['soan:isplaceholder'] != 'true'>
          ${deliverable.title}
-         a <span title="<#list deliverable['del:dependencies'] as dependency>${dependency}, </#list>" style="color:grey;">${deliverable['del:dependencies']?size} dépendances (détail)</span>
+         ${Root.msg("has")} <span title="<#list deliverable['del:dependencies'] as dependency>${dependency}, </#list>" style="color:grey;">${deliverable['del:dependencies']?size} ${Root.msg("dependencies")} (${Root.msg("details")})</span>
          <!-- br/ -->
          <!-- TODO consumptions of : separate internal impls from external services -->
          <#assign delConsumptions = Root.getDocumentService().getDeliverableConsumptions(deliverable)/>
@@ -323,45 +323,45 @@
               <#if delConsumption_index != delConsumptions?size - 1> ;</#if>
          </#list>))
          <br/ -->
-           et consomme les services (hors test) :
+           ${Root.msg("andConsumesServicesBesidesTest")} :
            <#list delConsumptions as delConsumption>
               <#if delConsumption['sc:isTest'] != 'true'>
                  <#assign delPossibleConsumedServices = Root.getDocumentService().getPossibleConsumedJavaInterfaceServices(delConsumption, subprojectId)/>
                  <br/>&nbsp;-&nbsp;&nbsp;interface <span style="color:grey;">${delConsumption['wsdlinfo:wsdlPortTypeName']}</span>
                  (java <span style="color:grey;">${delConsumption['javasc:consumedInterface']}</span>)
                  <#if delPossibleConsumedServices?size != 0>
-                    avec les services web Java correspondant possibles
+                    ${Root.msg("withCorrespondingPossibleJavaWebServices")}
                     <#list delPossibleConsumedServices as delPossibleConsumedService>
                        <@displayServiceShort delPossibleConsumedService subprojectId visibility/>
                        <#if service?has_content && delPossibleConsumedService['soan:name'] = service['soan:name']>
-                       (lui-même)
+                       (${Root.msg("itself")})
                        </#if> 
                        <#if delPossibleConsumedService_index != delPossibleConsumedServices?size - 1> ;</#if>
                     </#list>
-                    et les autres services web correspondant possibles <i>(à venir)</i>
+                    ${Root.msg("andOtherCorrespondingPossibleWebServices")} <i>(${Root.msg("upcoming")})</i>
                  </#if>
                  <#if delConsumption_index != delConsumptions?size - 1> ;</#if>
               </#if>
            </#list>
          <#else>
-             est inconnu.
+             ${Root.msg("is")} ${Root.msg("unknown")}.
          </#if>
         </#if>
     </#macro>
     
     <#macro displayProductionImplementationDetail productionImpl>
         <#if productionImpl['soan:isplaceholder'] = 'true'>
-        est <b>inconnue</b> et
+        ${Root.msg("is")} <b>${Root.msg("unknown")}</b> et
         </#if>
-        fournie par l'<b>Application</b> :
-        ${actorTitle} / ${componentTitle}
+        ${Root.msg("providedByThe")} <b>${Root.msg("Application")}</b> :
+        <@displayProviderActorOfService productionImpl ""/> / <@displayComponentOfService productionImpl ""/>
         <#assign productionDeliverable = Root.getDocumentService().getSoaNodeParent(productionImpl, 'Deliverable')/>
         <#if !productionDeliverable?has_content>
-           (délivrable inconnu)
+           (${Root.msg("deliverable")} ${Root.msg("unknown")})
         <#else>
            (${productionDeliverable['del:application']})<#-- (TODO jars) -->
         
-        nécessitant les services :
+        ${Root.msg("thatRequiresServices")} :
          <!-- TODO list deliverables by application -->
          <#assign productionDelConsumptions = Root.getDocumentService().getDeliverableConsumptions(productionDeliverable)/>
          <#list productionDelConsumptions as servicecons>
@@ -374,11 +374,11 @@
                   </#if>
                </#list>
                <#if !foundLocalNonMockConsumedServiceImpl?has_content>
-                    <br/>&nbsp;-&nbsp;&nbsp;externe au délivrable <span style="color:grey;">${servicecons['title']}</span>
-                    (par l'interface <span style="color:grey;">${servicecons['javasc:consumedInterface']}</span>)
+                    <br/>&nbsp;-&nbsp;&nbsp;${Root.msg("outsideDeliverable")} <span style="color:grey;">${servicecons['title']}</span>
+                    (${Root.msg("troughInterface")} <span style="color:grey;">${servicecons['javasc:consumedInterface']}</span>)
                  <#else>
-                    <br/>&nbsp;-&nbsp;&nbsp;(interne au délivrable <span style="color:grey;">${servicecons['title']}</span>,
-                    par l'implémentation ${foundLocalNonMockConsumedServiceImpl['title']} d'interface <span style="color:grey;">${servicecons['javasc:consumedInterface']}</span>)
+                    <br/>&nbsp;-&nbsp;&nbsp;(${Root.msg("withinDeliverable")} <span style="color:grey;">${servicecons['title']}</span>,
+                    ${Root.msg("throughImplementation")} ${foundLocalNonMockConsumedServiceImpl['title']} ${Root.msg("havingInterface")} <span style="color:grey;">${servicecons['javasc:consumedInterface']}</span>)
                  </#if>
               </#if>
          </#list>
@@ -399,7 +399,7 @@
     </#macro>
     
     <#macro displayHost host>
-         <img src="/nuxeo/icons/server.png" alt="Host"/>${host}
+         <img src="/nuxeo/icons/server.png" alt="${Root.msg("Host")}"/>${host}
     </#macro>
     
 
@@ -434,16 +434,16 @@
             <#if soaNodePropValue?has_content && soaNodePropValue?is_hash>
                 <@displaySoaNodeLink soaNodePropValue ""/>
             <#else>
-                <span style="color: red;">MANQUANT</span> (<a href="<@urlToLocalNuxeoDocumentsUi parentObject/>">résoudre</a>)
+                <span style="color: red;">${Root.msg("MISSING")}</span> (<a href="<@urlToLocalNuxeoDocumentsUi parentObject/>">${Root.msg("resolve")}</a>)
             </#if>
     </#macro>
     
     
     <#macro displaySoaNodeChildrenShort soaNode childType iconType>
-           <span style="font-weight: bold;">${childType}s :</span>
+           <span style="font-weight: bold;">${Root.msg(childType)}s :</span>
            <#assign soaNodeChildren = Root.getDocumentService().getSoaNodeChildren(soaNode, childType)/>
            <#if soaNodeChildren?size = 0>
-               aucun
+               ${Root.msg("none")}
            <#else>
                <#if iconType?length == 0>
                    <#assign iconType = childType/>
@@ -459,7 +459,7 @@
            <#assign businessServiceRef = new_f('org.nuxeo.ecm.core.api.IdRef', businessService.ref)/>
            <#assign specDocs = Session.getChildren(businessServiceRef, childType)/>
            <#if specDocs?size = 0>
-               aucun
+               ${Root.msg("none")}
            <#else>
                <#list specDocs as specDoc>
                    <a href="<@urlToLocalNuxeoDocumentsUi ola/>">${specDoc.title}</a>
@@ -475,7 +475,7 @@
         <#else>
          ${doc['title']} - ${doc['path']} (${doc.versionLabel})
         </#if>
-        <a href="<@urlToLocalNuxeoDocumentsUi doc/>"/><img src="/nuxeo/icons/edition.png" alt="edition"/></a>
+        <a href="<@urlToLocalNuxeoDocumentsUi doc/>"/><img src="/nuxeo/icons/edition.png" alt="${Root.msg("edit")}"/></a>
     </#macro>
 		
     <#macro displayDocsShort docs>
@@ -606,13 +606,13 @@
     
     <#macro displayDocumentation textOrHtml>
         <div style="margin-top:4px;margin-bottom:12px;">
-           <b>Documentation :</b>
+           <b>${Root.msg("Documentation")} :</b>
            <#if textOrHtml?has_content && textOrHtml?length != 0>
               <table style="width: 600px;">
                   <tr><td><@formatTextToHtml textOrHtml/></td></tr>
               </table>
            <#else>
-              (aucune)
+              (${Root.msg("none")})
            </#if>
         </div>
     </#macro>

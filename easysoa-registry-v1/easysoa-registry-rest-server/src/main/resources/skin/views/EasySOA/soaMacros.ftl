@@ -58,7 +58,7 @@
                     </#list>
                 <#else>
                     <tr>
-                        <td colspan="3" style="text-align: center">No operations.</td>
+                        <td colspan="3" style="text-align: center">${Root.msg("NoOperations")}.</td>
                     </tr>
                 </#if>
             </table>
@@ -143,26 +143,26 @@
             
             <#if !hasAttachedOrChildFile>
                 <tr>
-                    <td colspan="3" style="text-align: center">Pas de fichiers (joints ou fils)</td>
+                    <td colspan="3" style="text-align: center">${Root.msg("NoFileAttachedOrChildren")}</td>
                 </tr>
             </#if>
             </table>
 		</#macro>
 		
     <#macro displayResourceInfo resourceInfo>
-        Resource 
+        ${Root.msg("Resource")} 
         <#if resourceInfo['rdi:url']?has_content>
-           externe
-           <span title="par <#if resourceInfo['rdi:probeType']?has_content>${resourceInfo['rdi:probeType']}<#else>IHM</#if>
-           (<#if resourceInfo['rdi:timestamp']?has_content>${resourceInfo['rdi:timestamp']}</#if>)" style="color:grey;">prise</span>
-           de <@linkEnd resourceInfo['rdi:url']/>
+           ${Root.msg("thatIsExternal")} 
+           <span title="par <#if resourceInfo['rdi:probeType']?has_content>${resourceInfo['rdi:probeType']}<#else>${Root.msg("GUI")}</#if>
+           (<#if resourceInfo['rdi:timestamp']?has_content>${resourceInfo['rdi:timestamp']}</#if>)" style="color:grey;">${Root.msg("taken")}</span>
+           ${Root.msg("from")} <@linkEnd resourceInfo['rdi:url']/>
         <#else>
-           <span title="mise à jour par un utilisateur avec l'IHM" style="color:grey;">embarquée</span>. 
+           <span title="${Root.msg("updatedByAnUserFromGUI")}" style="color:grey;">${Root.msg("embedded")}</span>. 
         </#if>
     </#macro>
     
     <#macro displayResources service>
-        <span style="font-weight: bold;">Resources SOA :</span> (embarquées ou externes) :<br/>
+        <span style="font-weight: bold;">${Root.msg("SOAResources")} :</span> (${Root.msg("embeddedOrExternal")}) :<br/>
         <#assign hasInterfaceResource=false/>
         <#-- assign hasSecurityPolicyResource=false/ -->
         
@@ -182,7 +182,7 @@
             &nbsp;&nbsp;- <@displayResource soaNodeResourceChild/>
         </#list>
         <#if !hasInterfaceResource>
-            Pas de définition d'interface <span title="SOAP, REST JAXRS" style="color:grey;">reconnue</span>.
+            ${Root.msg("NoInterfaceDefinition")} <span title="SOAP, REST JAXRS" style="color:grey;">${Root.msg("thatIsUnderstood")}</span>.
         </#if>
     </#macro>
     
@@ -193,40 +193,40 @@
         
         <#if resource.facets?seq_contains('WsdlInfo') && resource['wsdlinfo:wsdlPortTypeName']?has_content>
             <#assign hasInterfaceResource=true/>
-            <span style="font-weight: bold;">Interface :</span> spécifie un service
-            <b>SOAP</b> ${resource['wsdlinfo:transport']} d'interface
-            <span title="nom : ${resource['wsdlinfo:wsdlServiceName']}" style="color:grey;">${resource['wsdlinfo:wsdlPortTypeName']}</span>
-            <br/>&nbsp;&nbsp;&nbsp;dans une définition
+            <span style="font-weight: bold;">${Root.msg("Interface")} :</span> ${Root.msg("specifiesAService")}
+            <b>SOAP</b> ${resource['wsdlinfo:transport']} ${Root.msg("whoseInterfaceIs")}
+            <span title="${Root.msg("name")} : ${resource['wsdlinfo:wsdlServiceName']}" style="color:grey;">${resource['wsdlinfo:wsdlPortTypeName']}</span>
+            <br/>&nbsp;&nbsp;&nbsp;${Root.msg("inADefinitionThatIs")}
             <#if resourceFile?has_content && resourceFile['filename']?has_content
                     && resourceFile['filename']?ends_with('.wsdl')>
-                <b>WSDL</b> (fichier XML <@stringEndWithTooltip resourceFile['filename']/> <@displayDocumentTools resource/>)
+                <b>WSDL</b> (${Root.msg("XMLFile")} <@stringEndWithTooltip resourceFile['filename']/> <@displayDocumentTools resource/>)
             <#else>
-                de type inconnu (JAR JAXWS...)
+                ${Root.msg("ofUnknownType")} (JAR JAXWS...)
             </#if>
         </#if>
         <#if resource.facets?seq_contains('RestInfo') && resource['restinfo:path']?has_content>
             <#assign hasInterfaceResource=true/>
-            <span style="font-weight: bold;">Interface :</span> spécifie un service
-            <b>REST</b> de chemin
+            <span style="font-weight: bold;">${Root.msg("Interface")} :</span> ${Root.msg("specifiesAService")}
+            <b>REST</b> ${Root.msg("withPath")}
             <span title="${resource['restinfo:accepts']} => ${resource['restinfo:contentType']}" style="color:grey;">${resource['restinfo:path']}</span>
-            <br/>&nbsp;&nbsp;&nbsp;dans une définition
+            <br/>&nbsp;&nbsp;&nbsp;${Root.msg("inADefinitionThatIs")}
             <#if resourceFile?has_content && resourceFile['filename']?has_content
                     && resourceFile['filename']?ends_with('.jar')>
-                <b>JAXRS</b> (fichier JAR <@stringEndWithTooltip resourceFile['filename']/> <@displayDocumentTools resource/>)
+                <b>JAXRS</b> (${Root.msg("JARFile")} <@stringEndWithTooltip resourceFile['filename']/> <@displayDocumentTools resource/>)
             <#else>
-                de type inconnu (Swagger...)
+                ${Root.msg("ofUnknownType")} (Swagger...)
             </#if>
         </#if>
         <#-- @displayResourceTools resource/>
         <#if fstudio_enabled>
             - Outils : <a href="">Mock impl client in FraSCAti Studio</a>
         </#if -->
-        en <@displayResourceInfo resource/>
+        ${Root.msg("in")} <@displayResourceInfo resource/>
         
         <#elseif resource['rdi:url']?has_content>
-            Pas de définition d'interface <span title="SOAP, REST JAXRS" style="color:grey;">reconnue</span>, mais une <@displayResourceInfo resource/>
+            ${Root.msg("NoInterfaceDefinition")} <span title="SOAP, REST JAXRS" style="color:grey;">${Root.msg("thatIsUnderstood")}</span>, ${Root.msg("butA")} <@displayResourceInfo resource/>
         <#else>
-            Pas de définition d'interface présente.
+            ${Root.msg("NoInterfaceDefinition")}.
         </#if>
     </#macro>
 
@@ -244,10 +244,10 @@
               </#if>
            </#list>
            <#if foundTestServiceCons?has_content>
-              <span title="${deliverable['title']} / ${foundTestServiceCons['javasc:consumerClass']}" style="color:green;"><b>testée</b></span>
+              <span title="${deliverable['title']} / ${foundTestServiceCons['javasc:consumerClass']}" style="color:green;"><b>${Root.msg("tested")}</b></span>
               <span style="color:gray;">(${foundTestServiceCons['javasc:consumerClass']?substring(foundTestServiceCons['javasc:consumerClass']?last_index_of('.') + 1, foundTestServiceCons['javasc:consumerClass']?length)})</span> 
            <#else>
-              <b><span style="color:red;">NON TESTEE</span></b>
+              <b><span style="color:red;">${Root.msg("NOTTESTED")}</span></b>
            </#if>
            </#if><#-- else no deliverable, ex. Compliance > Matching Dashboard samples -->
         </#macro>

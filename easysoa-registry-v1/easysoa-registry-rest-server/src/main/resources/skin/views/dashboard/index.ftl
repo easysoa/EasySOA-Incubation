@@ -14,8 +14,8 @@
             <div id="headerContents">
                 <@headerContentsDefault/>
                 EasySOA ${Root.msg("matchingDashboard")}
-                <form action="/nuxeo/site/easysoa/dashboard/samples?subprojectId=${subprojectId}&visibility=${visibility}" method="post" style="position: absolute; right: 20px; top: 20px">
-                    <input type="submit" value="${Root.msg("fillWithSamples")}Fill with samples" />
+                <form style="position:absolute; right:80px; top:110px" action="/nuxeo/site/easysoa/dashboard/samples?subprojectId=${subprojectId}&visibility=${visibility}" method="post" style="position: absolute; right: 20px; top: 20px">
+                    <input type="submit" value="${Root.msg("fillWithSamples")}" />
                 </form>
             </div>
         </div>

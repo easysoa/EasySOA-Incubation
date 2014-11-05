@@ -4,7 +4,7 @@
     <#include "/views/EasySOA/macros.ftl">
 
     <head>
-        <title>EasySOA REST Services Documentation</title>
+        <title>EasySOA ${Root.msg("cartography")} - ${Root.msg("serviceBrowsing")}</title>
         <@includeResources/>
         <style type="text/css">
           .clickable:hover { cursor: pointer; background-color: #FFC; }
@@ -19,7 +19,7 @@
         <div id="header">
 		<div id="headerContents">
          <@headerContentsDefault/>
-			EasySOA REST Services Documentation
+			EasySOA ${Root.msg("cartography")} - ${Root.msg("serviceBrowsing")}
 	    </div>
 	</div>
 

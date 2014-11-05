@@ -3,7 +3,7 @@
 
     <#include "/views/EasySOA/macros.ftl">
 <head>
-   <title>EasySOA Cartographie - Fiche Service</title>
+   <title>EasySOA ${Root.msg("cartography")} - ${Root.msg("serviceBrowsing")}</title>
     <@includeResources/>
 	<style type="text/css">
 	  .clickable:hover { cursor: pointer; background-color: #FFC; }
@@ -19,7 +19,7 @@
     <div id="header">
         <div id="headerContents">
             <@headerContentsDefault/>
-            EasySOA Cartographie - Documentation
+            EasySOA ${Root.msg("cartography")} - ${Root.msg("Documentation")}
         </div>
     </div>
     <br/>
@@ -30,15 +30,15 @@
                <img data-src="holder.js/300x200" alt=""></img>
 
       <#if endpoint?has_content>
-          <h3>Déploiement <@displayEndpointTitle endpoint subprojectId visibility/>
+          <h3>${Root.msg("Endpoint")} <@displayEndpointTitle endpoint subprojectId visibility/>
           <@linkToLocalNuxeoDocumentsUi endpoint/>
           </h3>
       <#elseif serviceimpl?has_content>
-          <h3>Implémentation <@displayImplementationTitle serviceimpl subprojectId visibility/>
+          <h3>${Root.msg("Implementation")} <@displayImplementationTitle serviceimpl subprojectId visibility/>
           <@linkToLocalNuxeoDocumentsUi serviceimpl/>
           </h3>
       <#else>
-		    <h3>Définition <@displayServiceTitle service true subprojectId visibility/>
+		    <h3>${Root.msg("Definition")} <@displayServiceTitle service true subprojectId visibility/>
           <@linkToLocalNuxeoDocumentsUi service/>
 		    </h3>
 		</#if>
@@ -72,13 +72,13 @@
                <img data-src="holder.js/300x200" alt=""></img>
 
 
-		<h3>Métier</h3><!-- ((sert à)) -->
+		<h3>${Root.msg("Business")}</h3><!-- ((sert à)) -->
 
 		<#if businessService?has_content>
           <#-- if businessService['businessservice:consumerActor']?has_content>
             <#assign bsConsumerActor = Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', businessService['businessservice:consumerActor']))/>
           </#if -->
-		    Fournit le service business <@displaySoaNodeLink businessService ""/> :
+		    ${Root.msg("ProvidesBusinessService")} <@displaySoaNodeLink businessService ""/> :
 
           <#if !serviceimpl?has_content && !endpoint?has_content || isUserBusinessAnalyst>
           <br/>
@@ -90,12 +90,12 @@
            <br/>
            &nbsp;&nbsp;&nbsp;<@displaySoaNodeChildrenShort businessService, 'OLA', 'RequirementsDocument'/>
            <br/>
-           &nbsp;&nbsp;&nbsp;Documents de spécification métier :
+           &nbsp;&nbsp;&nbsp;${Root.msg("BusinessSpecificationDocuments")} :
            <#-- assign businessServiceRef = new_f('org.nuxeo.ecm.core.api.IdRef', service['iserv:linkedBusinessService'])/ -->
            <@displayChildrenShort businessService 'Document'/>
            </#if>
 		<#else>
-		   Service intermédiaire (ne fournit pas de service business)
+		   ${Root.msg("IntermediateServiceNotBusiness")}
 		   <!-- ((TODO sert à = consumptions ??)) -->
 		</#if>
 		<p/>
@@ -112,19 +112,19 @@
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt=""></img>
 
-		<h3>Service</h3>
+		<h3>${Root.msg("Service")}</h3>
 		<p/>
 
 
       <#if !service?has_content>
-          Pas de service reliée.
+          ${Root.msg("NoLinkedService")}.
       <#else>
 
 
       <#if serviceimpl?has_content || endpoint?has_content>
-          La définition de service reliée est <@displayServiceShort service subprojectId visibility/>.
+          ${Root.msg("LinkedServiceDefinitionIs")} <@displayServiceShort service subprojectId visibility/>.
       <#else>
-          Ce service est <@displayServiceTitle service false subprojectId visibility/>.
+          ${Root.msg("ThisServiceIs")} <@displayServiceTitle service false subprojectId visibility/>.
       </#if>
       <p/>
 
@@ -135,7 +135,7 @@
 		<#if parsedSubprojectIdToDisplay.getSubprojectName() = 'Specifications'>
 
           <!-- TODO CONFIGURATION & LISTALL -->
-          Définitions d'exigences formelles opérationnelles i.e.
+          ${Root.msg("OperationalRequirementsFormalDefinitions")}
           <@displaySoaNodeChildrenShort service, 'OLA', 'RequirementsDocument'/>
           <p/>
 
@@ -148,7 +148,7 @@
           <p/>
 
       <#else>
-          Service technique (ayant émergé lors de la phase de réalisation)
+          ${Root.msg("TechnicalServiceOutOfDevelopment")}
       </#if>
 
             </div>
@@ -159,10 +159,10 @@
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt=""></img>
 
-		<h3>Documentation</h3>
+		<h3>${Root.msg("Documentation")}</h3>
 
-		<h4>Documentation - extraite :</h4>
-		(de la définition et de l'implémentation réelle)
+		<h4>${Root.msg("Documentation")} - ${Root.msg("extracted")} :</h4>
+		(${Root.msg("outOfDefinitionAndActualImplementation")})
 		<#--
 		du WSDL :
 		<p/>
@@ -195,9 +195,9 @@
 		<!-- TODO LATER OPT du WSDL de l'endpoint OR BELOW ON ENDPOINT :<p/ -->
 
 
-		<h4>Documentation - manuelle :</h4>
+		<h4>${Root.msg("Documentation")} - ${Root.msg("manual")} :</h4>
 		<!-- lister les non-Resources (or SoaNodes) joints ou fils du InformationService, ou sinon du BusinessService -->
-		Documents (joints et fils) :<br/>
+		${Root.msg("Documents")} (${Root.msg("attachedAndChildren")}) :<br/>
       <@displayNonSoaFilesAndDocuments service/>
 		<#-- OBSOLETE
 		@displayFiles service['files:files']/>
@@ -205,8 +205,8 @@
       <@displayChildrenShort service 'Document'/ -->
       <p/>
 
-      <h4>Exemples d'appel :</h4>
-      (aucun)
+      <h4>${Root.msg("ExamplesOfCallingIt")} :</h4>
+      (${Root.msg("none")})
       <!-- TODO -->
 
             </div>
@@ -217,33 +217,33 @@
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt=""></img>
 
-		<h3>Usages</h3>
+		<h3>${Root.msg("Uses")}</h3>
 		<!-- (applications : le déployant ; architecture : le consommant)<p/ -->
 
-      <b>Utilisé par :</b>
+      <b>${Root.msg("UsedBy")} :</b>
       <p/>
       <!-- bsConsumerActor (ses Components et evt leurs Applications) -->
-      <i>par les acteurs consommateurs et leurs composants :</i>
+      <i>${Root.msg("byConsumingActorsAndTheirComponents")} :</i>
       <br/>
       <#if consumerActor?has_content>
-          &nbsp;&nbsp;-&nbsp;L'acteur <@displayActorLink consumerActor/>
-          qui fournit les Composants
+          &nbsp;&nbsp;-&nbsp;${Root.msg("TheActor")} <@displayActorLink consumerActor/>
+          ${Root.msg("thatProvidesComponents")}
           <#assign consumerServices = Root.getDocumentService().getInformationServicesProvidedBy(consumerActor, subprojectId)/>
           <#if consumerServices?size = 0>
-              (aucun)
+              (${Root.msg("none")})
           <#else>
               <#list consumerServices as consumerService>
                  <#if consumerService['acomp:componentId']?has_content>
                      <@displayComponentLink Session.getDocument(new_f('org.nuxeo.ecm.core.api.IdRef', service['acomp:componentId']))/>
                  <#else>
-                     inconnu du service <@displayServiceTitle consumerService true subprojectId visibility/>
+                     ${Root.msg("notKnownByService")} <@displayServiceTitle consumerService true subprojectId visibility/>
                  </#if>
                  <#if consumerService_index != consumerServices?size - 1>, </#if>
               </#list>
           </#if>
       </#if>
       <p/>
-      <i>par les déploiements et leurs serveurs :</i>
+      <i>${Root.msg("byDeploymentsAndTheirServers")} :</i>
       <br/>
       <!-- EndpointConsumptions (son host voire l'application des endpoints déployés dessus / son providerActor) consommant son endpoint Production (sinon Staging...) et sinon un non mock -->
       <#if productionEndpoint?has_content><!-- TODO if endpoint != null -->
@@ -259,10 +259,10 @@
               <br/>
           </#list>
       <#else>
-          (aucun)
+          (${Root.msg("none")})
       </#if>
       <p/>
-      <i>enfin, un service compatible est consommé par les implémentations et leurs applications :</i>
+      <i>${Root.msg("lastACompatibleServiceIsConsumedByImplementationsAndTheirApplications")} :</i>
       <br/>
       <!-- candidats JavaServiceConsumptions non de test (sa classe / délivérable / application / providerActor matchant) consommant son interface -->
       <#assign javaSCs = Root.getDocumentService().getJavaServiceConsumptions(service, subprojectId)/>
@@ -271,19 +271,19 @@
               <#if javaSC['sc:isTest'] != 'true'>
               <#assign javaSCDel = Root.getDocumentService().getSoaNodeParent(javaSC, 'Deliverable')/>
               &nbsp;&nbsp;-&nbsp;<a href="<@urlToLocalNuxeoDocumentsUi javaSCDel/>"/><@displayDeliverableTitle javaSCDel subprojectId visibility/></a>
-              (par <a href="<@urlToLocalNuxeoDocumentsUi javaSC/>">injection dans la classe ${javaSC['javasc:consumerClass']}</a>)
+              (${Root.msg("by")} <a href="<@urlToLocalNuxeoDocumentsUi javaSC/>">${Root.msg("injectionInClass")} ${javaSC['javasc:consumerClass']}</a>)
               <br/>
               </#if>
           </#list>
       <#else>
-          (aucun)
+          (${Root.msg("none")})
       </#if>
       <p/>
       &nbsp;<p/>
       
       <#-- IntelligentSystems tagging it, since only Applications from now NOOO ALSO Folders : -->
       <#-- b>Applications :</b><br/ -->
-      <b>Rangé dans les classifications :</b><br/>
+      <b>${Root.msg("FiledInClassifications")} :</b><br/>
       <#if service['proxies']?has_content && service['proxies']?size != 0>
       <ul>
       <#list service['proxies'] as serviceProxy>
@@ -293,12 +293,12 @@
       </#list>
       </ul>
       <#else>
-      Aucune.
+      (${Root.msg("none")}).
       </#if>
 
       <#-- TaggingFolder tagging it, since only Applications from now : -->
       <#-- br/><b>Business Processes :</b><br/ -->
-      <br/><b>Taggé dans :</b><br/>
+      <br/><b>${Root.msg("TaggedIn")} :</b><br/>
       <#assign isTagged=false/> 
       <#if service['proxies']?has_content>
       <ul>
@@ -310,12 +310,12 @@
       </#list>
       </ul>
       <#if !isTagged>
-      Aucun.
+      ${Root.msg("none")}.
       </#if>
       </#if>
       <p/>
       
-      <a class="btn" href="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}/tags?subprojectId=${subprojectId}&visibility=${visibility}">Tagger aussi dans...</a>
+      <a class="btn" href="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}/tags?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("TagAlsoIn")}...</a>
 
       <#-- br/>(autres tags) --><!-- TODO -->
 
@@ -334,15 +334,15 @@
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt=""></img>
 
-		<h3>Implémentations de service<#-- (y compris de test) --></h3>
+		<h3>${Root.msg("ServiceImplementations")}<#-- (y compris de test) --></h3>
 		<#-- et consomme, dépend de (en mode non test) <br/ -->
 
         <#if serviceimpl?has_content>
           <div style="margin-bottom:30px;">
-          Cette implémentation
+          ${Root.msg("ThisImplementation")}
           <#if serviceimpl['impl:ismock'] = 'true'><b>de test</b></#if>
-          <#if productionImpl?has_content && productionImpl.id = serviceimpl.id><b>de Production</b></#if>
-          est
+          <#if productionImpl?has_content && productionImpl.id = serviceimpl.id><b>${Root.msg("in")} Production</b></#if>
+          ${Root.msg("is")}
           <@displayImplementationShort serviceimpl subprojectId visibility/>
           <@displayDocumentation serviceimpl['impl:documentation']/>
           <p/>
@@ -357,7 +357,7 @@
 		  <#-- Production as default preferred deployment ; TODO others according to role -->
         <#if !serviceimpl?has_content || productionImpl?has_content && productionImpl.id != serviceimpl.id>
           <div style="margin-bottom:30px;">
-          Implémenté en <b>Production</b> par
+          ${Root.msg("ImplementedIn")} <b>Production</b> par
           <#if productionImpl?has_content>
              <@displayImplementationShort productionImpl subprojectId visibility/>
              <@displayDocumentation productionImpl['impl:documentation']/>
@@ -369,7 +369,7 @@
              <@displayImplementationTools subprojectId visibility/>
              <p/>
           <#else>
-             (aucun)
+             (${Root.msg("none")})
           </#if>
           </div>
         </#if>
@@ -378,9 +378,9 @@
         <#if (isUserConsumer || !isUserProvider) && !(serviceimpl?has_content && serviceimpl['impl:ismock'] = 'true')>
           <div style="margin-bottom:30px;">
           <#if isUserConsumer>
-          <b>En tant que consommateur</b>, vos implémentations de test sont :
+          <b>${Root.msg("AsAConsumer")}</b>, ${Root.msg("yourTestImplementationsAre")} :
           <#elseif !isUserProvider>
-          <b>N'étant pas fournisseur</b>, vous pouvez utiliser des implémentations de test :
+          <b>${Root.msg("SinceYoureNotProvider")}</b>, ${Root.msg("youMayUseTestImplementations")} :
           </#if>
           <br/>
           <#list userConsumerImpls as userConsumerImpl>
@@ -399,7 +399,7 @@
         <p/>
 
 		<#if actualImpls?has_content && actualImpls?size != 0>
-		<b>Autres implémentations :</b><br/>
+		<b>${Root.msg("OtherImplementations")} :</b><br/>
 		<#list actualImpls as actualImpl>
 		   <#if (!productionImpl?has_content || productionImpl.id != actualImpl.id) && (!serviceimpl?has_content || serviceimpl.id != actualImpl.id)>
 
@@ -419,7 +419,7 @@
 		</#if>
 
       <#if mockImpls?has_content && !(isUserConsumer || !isUserProvider)>
-		<br/><b>Autres implémentations de test (mocks) :</b><br/>
+		<br/><b>${Root.msg("OtherTestMockImplementations")} :</b><br/>
       <#-- @displayDocs mockImpls shortDocumentPropNames + serviceImplementationPropNames + deliverableTypePropNames/ -->
       <#-- @displayDocsShort mockImpls/ -->
 		<#list mockImpls as mockImpl>
@@ -440,14 +440,14 @@
             <div class="thumbnail">
                <img data-src="holder.js/300x200" alt=""></img>
 
-		<h3>Services déployés<#-- (endpoints) --></h3>
+		<h3>${Root.msg("Endpoints")}<#-- (endpoints) --></h3>
 
         <#if endpoint?has_content>
           <div style="margin-bottom:30px;">
-          Ce service déployé en <b>${endpoint['env:environment']}</b> à
+          ${Root.msg("ThisDeployedServiceIn")} <b>${endpoint['env:environment']}</b> à
           <a href="${endpoint['endp:url']}">${endpoint['endp:url']}</a>
           <br/>
-          par <@displayEndpointTitle endpoint subprojectId visibility/>
+          ${Root.msg("by")} <@displayEndpointTitle endpoint subprojectId visibility/>
           <@displayDocumentation endpoint['dc:description']/>
           <p/>
           <@displayEndpointTools endpoint subprojectId visibility/>
@@ -463,11 +463,11 @@
 
         <#if !endpoint?has_content || endpoint['env:environment'] != 'Production'>
           <div style="margin-bottom:30px;">
-          Déployé en <b>Production</b> à
+          ${Root.msg("deployedIn")} <b>Production</b> à
           <#if productionEndpoint?has_content>
              <a href="${productionEndpoint['endp:url']}">${productionEndpoint['endp:url']}</a>
              <br/>
-             par <@displayEndpointShort productionEndpoint subprojectId visibility/>
+             ${Root.msg("by")} <@displayEndpointShort productionEndpoint subprojectId visibility/>
              <@displayDocumentation productionEndpoint['dc:description']/>
              <p/>
              <@displayEndpointTools productionEndpoint subprojectId visibility/>
@@ -479,7 +479,7 @@
                  <p/>
              </#if>
           <#else>
-             (aucun)
+             (${Root.msg("none")})
           </#if>
           </div>
         </#if>
@@ -487,9 +487,9 @@
         <#if (isUserConsumer || !isUserProvider) && !(serviceimpl?has_content && serviceimpl['impl:ismock'] = 'true')>
           <div style="margin-bottom:30px;">
           <#if isUserConsumer>
-          En tant que <b>consommateur</b>, vos déploiements de test sont :
+          ${Root.msg("AsA")} <b>${Root.msg("consumer")}</b>, ${Root.msg("yourTestDeploymentsAre")} :
           <#elseif !isUserProvider>
-          N'étant <b>pas fournisseur</b>, vous pouvez utiliser des déploiements de test :
+          ${Root.msg("SinceYoureNot")} <b>${Root.msg("notProvider")}</b>, ${Root.msg("youMayUseTestDeployments")} :
           </#if>
           <br/>
           <#list userConsumerEndpoints as userConsumerEndpoint>
@@ -505,7 +505,7 @@
         </#if>
 
         <#if actualEndpoints?has_content>
-        <b>Autres déploiements :</b><p/>
+        <b>${Root.msg("OtherDeployments")} :</b><p/>
 		  <#-- @displayDocsShort actualEndpoints/ -->
         <#-- @displayDocs actualEndpoints shortDocumentPropNames + endpointPropNames/ -->
 		  <#list actualEndpoints as actualEndpoint>
@@ -526,7 +526,7 @@
 
         <#if userConsumerEndpoints?has_content && !(serviceimpl?has_content && serviceimpl['impl:ismock'] = 'true')>
             <div style="margin-bottom:30px;">
-            <b>Vos déploiements de test en tant que consommateur :</b><br/>
+            <b>${Root.msg("YourTestDeploymentsAsAConsumer")} :</b><br/>
             <#-- @displayDocsShort userConsumerEndpoints/ -->
             <#list userConsumerEndpoints as userConsumerEndpoint>
                 &nbsp;&nbsp;-&nbsp;<@displayEndpointShort userConsumerEndpoint subprojectId visibility/>
@@ -542,7 +542,7 @@
             </div>
         <#elseif mockEndpoints?has_content && !(isUserConsumer || !isUserProvider)>
             <div style="margin-bottom:30px;">
-            <b>Déploiements de test :</b><br/>
+            <b>${Root.msg("TestDeployments")} :</b><br/>
             <#list mockEndpoints as mockEndpoint>
                 &nbsp;&nbsp;-&nbsp;<@displayEndpointShort mockEndpoint subprojectId visibility/>
                 <#-- @displayDocumentation userConsumerEndpoint['dc:description']/>

@@ -6,7 +6,7 @@
     <#include "/views/EasySOA/urlMacros.ftl">
 
     <head>
-        <title>EasySOA Accueil</title>
+        <title>EasySOA ${Root.msg("Home")}</title>
         <@includeResources/>
     </head>
 

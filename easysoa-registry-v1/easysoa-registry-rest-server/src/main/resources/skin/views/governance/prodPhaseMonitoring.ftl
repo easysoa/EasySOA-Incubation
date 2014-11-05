@@ -38,7 +38,7 @@
                             </tr>
                         </table>
 
-                        <h4>${Root.msg("details")} :</h4>
+                        <h4>${Root.msg("Details")} :</h4>
                         <p>
                             <table class="table table-bordered" width="100%">
                                 <tr>

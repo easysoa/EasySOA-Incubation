@@ -69,6 +69,10 @@ public class EasysoaModuleRoot extends ModuleRoot {
         return resource;
     }
 
+    /**
+     * TODO when upgrading beyond 5.7.3 replace by https://jira.nuxeo.com/browse/NXP-9887
+     * @return
+     */
     protected String computeLanguage() {
         HttpSession session = request.getSession(false);
         String sessionLanguage = null;
@@ -90,6 +94,10 @@ public class EasysoaModuleRoot extends ModuleRoot {
         return language;
     }
 
+    /**
+     * TODO when upgrading beyond 5.7.3 replace by https://jira.nuxeo.com/browse/NXP-9887
+     * @return
+     */
     public String getLanguage() {
         return language;
     }

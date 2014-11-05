@@ -4,7 +4,7 @@
     <#include "/views/EasySOA/macros.ftl">
 
     <head>
-        <title>EasySOA Cartographie - Fiche Service</title>
+        <title>EasySOA ${Root.msg("cartography")} - ${Root.msg("serviceBrowsing")}</title>
         <@includeResources/>
         <style type="text/css">
           .clickable:hover { cursor: pointer; background-color: #FFC; }
@@ -18,16 +18,16 @@
         <div id="header">
 		<div id="headerContents">
          <@headerContentsDefault/>
-			EasySOA Services Documentation
+			EasySOA ${Root.msg("cartography")} - ${Root.msg("serviceBrowsing")}
 	    </div>
 	</div>
 
 	<div id="container">
 
-      <h3>Services (${tagServices?size}) du tag <@displayTagShort tag subprojectId visibility/></h3>
+      <h3>${Root.msg("Services")} (${tagServices?size}) ${Root.msg("ofTag")} <@displayTagShort tag subprojectId visibility/></h3>
       <@displayServicesShort tagServices subprojectId visibility/>
 
-      <h3>Détails du tag</h3>
+      <h3>${Root.msg("Details")} ${Root.msg("ofTag")}</h3>
       <@displayDoc tag/>
 
 	</div>

@@ -81,34 +81,34 @@
     </#macro>
 
     <#macro displayImplementationTools subprojectId visibility>
-      <b>Outils : </b><br/>
+      <b>${Root.msg("tools")} : </b><br/>
       <span class="btn-group"><!-- span else additional p -->
-         <a class="btn" href="${Root.path}/../cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">Découverte Source</a> 
-         <a class="btn" href="${Root.path}/../dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">Mise en correspondance</a>
+         <a class="btn" href="${Root.path}/../cartography/sourceDiscovery?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("sourceDiscovery")}</a> 
+         <a class="btn" href="${Root.path}/../dashboard/?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("matchingDashboard")}</a>
       </span>
     </#macro>
 
     <#macro displayEndpointTools productionEndpoint subprojectId visibility>
-      <b>Outils :</b><br/>
-      Découverte :
+      <b>${Root.msg("tools")} :</b><br/>
+      ${Root.msg("Discovery")} :
       <span class="btn-group"><!-- span else additional p -->
           <a class="btn" href="${web_discovery_url}?subprojectId=${subprojectId}&visibility=${visibility}">Web</a> <!-- TODO pass as probe params : Environment (, iserv/endpoint (, user, component)) -->
-          <a class="btn" href="<@urlToProxyManagementGetInstance subprojectId 'Production'/>">Monitoring</a>  <!-- TODO HTTP Proxy host prop, url to probe IHM, pass as probe params : subproject / Phase, Environment (, iserv/endpoint (, component)) -->
+          <a class="btn" href="<@urlToProxyManagementGetInstance subprojectId 'Production'/>">${Root.msg("monitoring")}</a>  <!-- TODO HTTP Proxy host prop, url to probe IHM, pass as probe params : subproject / Phase, Environment (, iserv/endpoint (, component)) -->
       </span>
       <br/>
-      Monitoring :
+      ${Root.msg("monitoring")} :
       <span class="btn-group"><!-- span else additional p -->
-          <a class="btn" href="<@urlToEndpointState productionEndpoint subprojectId visibility/>">Usage</a> 
-          <a class="btn" href="${Root.path}/../monitoring/jasmine/?subprojectId=${subprojectId}&visibility=${visibility}">Statistiques</a>
+          <a class="btn" href="<@urlToEndpointState productionEndpoint subprojectId visibility/>">${Root.msg("Use")}</a> 
+          <a class="btn" href="${Root.path}/../monitoring/jasmine/?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("statistics")}</a>
       </span>
       <br/>
-      Tester avec :
+      ${Root.msg("TestUsing")} :
       <span class="btn-group"><!-- span else additional p -->
           <a class="btn" href="<@urlToSoapUIProjectConf productionEndpoint/>">SOAPUI</a> 
           <a class="btn" disabled href="<@urlToServiceScaffolder productionEndpoint/>">Service Scaffolder</a> <!-- TODO light.js, or function, rather endpointUrl?wsdl ?? -->
           <a class="btn" href="${frascatiStudio_url}">FraSCAti Studio</a> 
           <#-- a class="btn" <#if fstudio_enabled>href="${frascatiStudio_url}"<#else>style="color:grey;"</#if>>FraSCAti Studio</a> -->
-          <a class="btn" <#if fstudio_enabled>href="${frascatiStudio_url}easySoa/GeneratedAppService"<#else>style="color:grey;"</#if>>FraSCAti Studio new application</a>
+          <a class="btn" <#if fstudio_enabled>href="${frascatiStudio_url}easySoa/GeneratedAppService"<#else>style="color:grey;"</#if>>${Root.msg("newFraSCAtiStudioApplication")}</a>
           <#-- a class="btn" href="">FraSCAti Studio application A</a -->
       </span>
     </#macro>

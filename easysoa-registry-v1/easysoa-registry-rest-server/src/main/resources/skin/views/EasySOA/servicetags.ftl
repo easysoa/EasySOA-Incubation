@@ -4,7 +4,7 @@
     <#include "/views/EasySOA/macros.ftl">
 
     <head>
-        <title>EasySOA Cartographie - Fiche Service</title>
+        <title>EasySOA ${Root.msg("cartography")} - ${Root.msg("serviceBrowsing")}</title>
         <@includeResources/>
         <style type="text/css">
           .clickable:hover { cursor: pointer; background-color: #FFC; }
@@ -19,7 +19,7 @@
 	<div id="header">
 		<div id="headerContents">
          <@headerContentsDefault/>
-			EasySOA REST Services Documentation
+			EasySOA ${Root.msg("cartography")} - ${Root.msg("serviceBrowsing")}
 	    </div>
 	</div>
 
@@ -30,10 +30,10 @@
                 <div class="thumbnail">
                <img data-src="holder.js/300x200" alt=""></img>
 
-		<h3>Service</h3>
+		<h3>${Root.msg("Service")}</h3>
 		<@displayServiceShort service subprojectId visibility/>
 
-		<h3>Taggé dans</h3>
+		<h3>${Root.msg("TaggedIn")}</h3>
 
 		<#-- compute currentTagIds for later "not yet used tags" display : -->
 		<#assign currentTagIds=[]/>
@@ -56,14 +56,14 @@
 		  </#list>
 		</#if>
 
-		<h3>Tagger aussi dans...</h3>
+		<h3>${Root.msg("TagAlsoIn")}...</h3>
 
 		<#list tags as tag>
 			<#if !currentTagIds?seq_contains(tag.id)>
 			&nbsp;&nbsp;-
 			<form style="display:inline;" method="POST" action="${Root.path}/path${service['spnode:subproject']?xml}:${service['soan:name']?xml}/tags?subprojectId=${subprojectId}&visibility=${visibility}">
 				<input name="tagId" type="hidden" value="${tag.id}"/>
-				<a href="##" onClick="this.parentNode.submit();">Tagger</a> dans <@displayTagShort tag subprojectId visibility/>
+				<a href="##" onClick="this.parentNode.submit();">${Root.msg("Tag")}</a> ${Root.msg("in")} <@displayTagShort tag subprojectId visibility/>
 			</form>
 		   <br/>
 			</#if>

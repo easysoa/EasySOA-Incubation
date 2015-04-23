@@ -7,13 +7,21 @@ function loadJS(url) {
 	document.getElementsByTagName("head")[0].appendChild(newScript);
 }
 
-//loadJS("http://localhost:8083/js/bookmarklet/discovery.js");
-loadJS(escape("http://#{host}:#{port}/js/bookmarklet/discovery.js?subprojectId=#{context}&visibility=#{visibility}&registryServerName=#{registryServerName}&setLng=#{setLng}"));
+//loadJS("//localhost:8083/js/bookmarklet/discovery.js");
+var jsUrl = "http://#{host}:#{port}/js/bookmarklet/discovery.js?" + escape("subprojectId=#{context}&visibility=#{visibility}&registryServerName=#{registryServerName}&setLng=#{setLng}");
+console.log("Trying to load bookmarklet from URL", jsUrl);
+// NB. WARNING should leave protocol out so it can adapt to the visited page's,
+// but requires serving easysoa also in https
+try {
+	loadJS(jsUrl);
+} catch (e) {
+	alert("Unknown error while loading URL", jsURL, e);
+}
 
 
 setTimeout(function() {
 	if (!window.EASYSOA_WEB) {
-		alert("Error: EasySOA seems unreachable");
+		alert("Error: EasySOA seems unreachable.\n\nDetails:\nFailed to load URL " + jsUrl);
 	}
 }, 500);
 

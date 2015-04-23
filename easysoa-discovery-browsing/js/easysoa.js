@@ -122,10 +122,25 @@ app.configure(function(){
     var registryServerName = unescape(req.param('registryServerName', ''));
     var setLng = unescape(req.param('setLng', ''));
     if (!setLng || setLng === "" || setLng === "undefined") {
-    	setLng = "en"; // default language for bookmarklet
+    	setLng = "en_US"; // default language for bookmarklet
+        console.log("language undefined (setLng parameter), using default one", setLng);
     }
     ///console.log("[DEBUG] ", "setLng", setLng);
-    var translation = fs.readFileSync("../www/locales/" + setLng + "/translation.json","utf8");
+    var translation;
+    var translationFilePath = "../www/locales/" + setLng + "/translation.json";
+    try {
+        translation = fs.readFileSync(translationFilePath, "utf8");
+    } catch (e) {
+        if (e.code === 'ENOENT') {
+            console.log("translation file not found for language (setLng parameter) %s at %s, using default",
+                    setLng, translationFilePath);
+            setLng = 'en_US';
+            translationFilePath = "../www/locales/" + setLng + "/translation.json";
+            translation = fs.readFileSync(translationFilePath, "utf8");
+        } else {
+            throw e;
+        }
+    }
     if (!translation) {
     	translation = "{}";
     }

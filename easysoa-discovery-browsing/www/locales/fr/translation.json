@@ -94,6 +94,22 @@
   "A la place, essayez d'ajouter ce bookmarklet dans les favoris de votre navigateur. Puis ouvrez une",
   "autre fenêtre et naviguez sur une page contenant des liens vers des fichiers WSDL, cliquez sur le favori",
   "pour déclencher l'exploration de la page et la découverte des services." ],
+"Warning" : "Attention",
+"notifyTextWarningCSP" : [
+  "ce bookmarklet (comme de nombreux bookmarklets) télécharge et embarque dans la page du code Javascript, ce qui doit donc ",
+  "être autorisé par les politiques de sécurité (Content Security Policy ou CSP) en place sur la page et ",
+  "dans le navigateur. Si celles du navigateur bloquent, changez-en la configuration le temps d'utiliser ",
+  "le bookmarklet. Par exemple pour Firefox (qui à partir de la version 23 l'interdit par défaut), une solution immédiate est ",
+  "(avec les précautions d'usage) de taper \"about:config\" ",
+  "dans la barre d'URL et changer la valeur de \"security.mixed_content.block_active_content\", et ",
+  "une solution encore plus simple est " ],
+"notifyTextWarningCSPBrowserAddOnLink" : "d'installer un add-on dédié",
+"notifyTextWarningCSPPage" : [ "Enfin, si les CSPs d'une page visitée bloquent, si elle est servie par vos serveurs, configurez les CSPs ",
+  "de ceux-ci (header HTTP Content-Security-Policy) pour l'autoriser. Et si elle est servie par des ",
+  "serveurs extérieurs, elle a peu de chances d'être utile (rappelons qu'EasySOA Discovery By Browsing est avant tout un outil de découverte ",
+  "de VOS services et de ceux de vos applications), mais si nécessaire configurez ses CSPs propres ",
+  "côté client à l'aide d'un outil pour développeurs tel " ],
+"notifyTextWarningCSPUserAddOnLink" : "l'add-on UserCSP",
 "alsoVideo" : "Une vidéo d'explication détaillée est aussi disponible"
    },
    

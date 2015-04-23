@@ -9,6 +9,8 @@
  * Globals & constants
  */
 
+console.log("loading bookmarklet");
+
 var jQuery, underscore;
 var templates = new Object();
 var wsdls = new Array();

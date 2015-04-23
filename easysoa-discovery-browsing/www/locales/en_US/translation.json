@@ -90,6 +90,22 @@
 "notifyText" : [ "If you need to browse to HTTPS places, our proxy will not work. Instead, try to drag this bookmarklet ",
   "to your favorites: when you're on a page of interest (e.g. that contains links to WSDLs), click then ",
   "on the bookmark to make EasySOA explore the page." ],
+"Warning" : "Warning",
+"notifyTextWarningCSP" : [
+  "this bookmarklet also downloads and embeds javascript code within the page (like a lot of bookmarklets do), which must ",
+  "therefore be allowed by CSPs (Content Security Policy) configured on the page and in the browser. ",
+  "If the browser's CSPs are blocking, change its configuration while using the bookmarklet. For instance ",
+  "with Firefox (which starting from version 23 blocks it by default), a quick solution is ",
+  "(with due caution) to enter \"about:config\" ",
+  "in the URL address bar and change the value of \"security.mixed_content.block_active_content\", ",
+  "and an even simpler one is to " ],
+"notifyTextWarningCSPBrowserAddOnLink" : "install a dedicated add-on",
+"notifyTextWarningCSPPage" : [ "Finally, if a visited page's CSPs are blocking, if it's served by your own servers, configure their CSPs ",
+  "(Content-Security-Policy HTTP header) so it's allowed. And if it's served by outside servers, it is ",
+  "probably not useful (let's remember that EasySOA Discovery By Browsing is first and foremost a tool for ",
+  "discovering your OWN services and those of your applications), but if required you can configure its own CSPs ",
+  "on client side by using a developer tool such as " ],
+"notifyTextWarningCSPUserAddOnLink" : "the UserCSP add-on",
 "alsoVideo" : "A video providing detailed explanations is also available"
    },
    

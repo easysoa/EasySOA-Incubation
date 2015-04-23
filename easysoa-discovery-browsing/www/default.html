@@ -253,6 +253,27 @@ A la place, essayez d'ajouter ce bookmarklet dans les favoris de votre navigateu
 autre fenêtre et naviguez sur une page contenant des liens vers des fichiers WSDL, cliquez sur le favori
 pour déclencher l'exploration de la page et la découverte des services.
 </p>
+<b><span data-i18n="default.Warning">Attention</span></b>,
+<span data-i18n="default.notifyTextWarningCSP">
+le bookmarklet télécharge et embarque dans la page du code Javascript, ce qui doit donc
+être autorisé par les politiques de sécurité (Content Security Policy ou CSP) en place sur la page
+et dans le navigateur. Si celles du navigateur bloquent, changez-en la configuration le temps
+d'utiliser le bookmarklet, par exemple pour Firefox (qui à partir de la version 23 l'interdit
+par défaut) : installez un add-on ou (avec les précautions d'usage) tapez "about:config"
+dans la barre d'URL et changez la valeur de "security.mixed_content.block_active_content".
+</span>
+<a href="https://addons.mozilla.org/en-uS/firefox/addon/toggle-mixed-active-content/" target="_blank">
+<span data-i18n="default.notifyTextWarningCSPBrowserAddOnLink">d'installer un add-on dédié</span></a>.
+<p/>
+<span data-i18n="default.notifyTextWarningCSPPage">
+Si les CSPs d'une page visitée bloquent, si elle est servie par vos serveurs, configurez les CSPs
+de ceux-ci (header HTTP Content-Security-Policy) pour l'autoriser. Et si elle est servie par des
+serveurs extérieurs, elle a de toutes façons peu de chances d'être utile : rappelons que
+EasySOA est avant tout un outil de découverte de VOS services et de ceux de vos applications.
+</span>
+<a href="https://blog.mozilla.org/tanvi/2012/09/18/user-specified-content-security-policy/" target="_blank">
+<span data-i18n="default.notifyTextWarningCSPUserAddOnLink">l'add-on UserCSP</span></a>.
+<p/>
 
 
 <!-- TODO set a button for notification -->

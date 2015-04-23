@@ -127,9 +127,9 @@
                             <div class="btn-group">
                                 <a class="btn" href="${Root.path}/tools/apis?subprojectId=${subprojectId}&visibility=${visibility}">${Root.msg("easysoaRestApi")}</a>
                                 <a class="btn" href="${Root.path}/tools/soapui?subprojectId=${subprojectId}&visibility=${visibility}">SOAPUI</a>
-                                <a class="btn" <#if !Root.isDevModeSet()>disabled</#if> href="">Scaffolder proxy</a><#-- disabled -->
-                                <a class="btn" <#if !Root.isDevModeSet()>disabled</#if> href="">Proxy run manager</a><#-- disabled -->
-                                <a class="btn" <#if !Root.isDevModeSet()>disabled</#if> href="${frascatiStudio_url}">OW2 FraSCAti Studio</a>
+                                <a class="btn" href="${Root.path}/tools/serviceScaffolder?subprojectId=${subprojectId}&visibility=${visibility}">Scaffolder proxy</a><#-- <#if !Root.isDevModeSet()>disabled</#if> -->
+                                <a class="btn" href="">Proxy run manager</a><#-- <#if !Root.isDevModeSet()>disabled</#if> -->
+                                <a class="btn" href="${frascatiStudio_url}">OW2 FraSCAti Studio</a><#-- <#if !Root.isDevModeSet()>disabled</#if> -->
                             </div>
 
                             <#-- TODO : add links -->

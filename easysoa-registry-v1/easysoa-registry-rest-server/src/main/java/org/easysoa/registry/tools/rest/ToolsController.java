@@ -81,4 +81,17 @@ public class ToolsController extends EasysoaModuleRoot {
             .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
     }
 
+    @GET
+    @Path("serviceScaffolder") // TODO encoding
+    @Produces(MediaType.TEXT_HTML)
+    public Object doGetServiceScaffolderPageHTML(@QueryParam("subprojectId") String subprojectId,
+        @QueryParam("visibility") String visibility) throws Exception {
+
+        CoreSession session = SessionFactory.getSession(request);
+        return getView("serviceScaffolder")
+            .arg("subprojectId", subprojectId)
+            .arg("visibility", visibility)
+            .arg("contextInfo", ContextData.getVersionData(session, subprojectId));
+    }
+
 }

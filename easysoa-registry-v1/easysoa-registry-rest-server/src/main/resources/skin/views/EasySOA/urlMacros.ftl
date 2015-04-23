@@ -8,6 +8,9 @@
     <#assign jasmine_url = Root.getJasmineUrl() /><!-- http://host:9100/jasmine/ ; VM : owsi-vm-easysoa-axxx-pivotal -->
     <#assign frascatiStudio_url = 'http://' + Root.getServerHost() + ':7080/easySoa/' /><!-- VM : owsi-vm-easysoa-axxx-registry -->
     <#assign pureAirFlowers_intranet_url = 'http://' + Root.getServerHost() + ':8083/demo-intranet/index.html' />
+    <#assign service_scaffolder_url = Root.getServiceScaffolderUrl() /><!-- http://host:8090/ ; VM : owsi-vm-easysoa-axxx-registry -->
+    
+    <#-- URL Constants - AXXX use case : -->
     <#assign apvPivotal_url = Root.getApvPivotal_url() />
     <#assign axxxDpsApv_url = Root.getAxxxDpsApv_url() />
 
@@ -69,7 +72,7 @@
     <#macro urlToFicheSOA soaNode subprojectId visibility>${Root.path}/../services/path${soaNode['spnode:subproject']?xml}:${soaNode.type}:${soaNode['soan:name']?xml}?subprojectId=${subprojectId}&visibility=${visibility}</#macro>
     <#macro urlToEndpointState endpoint subprojectId visibility>${Root.path}/../monitoring/envIndicators/${endpoint.id}/1?subprojectId=${subprojectId}&visibility=${visibility}</#macro>
     <#macro urlToProxyManagementGetInstance subprojectId environment>${proxy_management_url}/management/getInstance.html?projectId=${subprojectId?url('ISO-8859-1')}&userLogin=${Root.currentUser?url('ISO-8859-1')}&environment=${environment?url('ISO-8859-1')}</#macro>
-    <#macro urlToServiceScaffolder endpoint>${web_discovery_url + '/scaffoldingProxy/?wsdlUrl=' + endpoint['rdi:url']}</#macro>
+    <#macro urlToServiceScaffolder endpoint>${service_scaffolder_url + 'scaffoldingProxy/?wsdlUrl=' + endpoint['rdi:url']}</#macro>
     <#macro urlToSoapUIProjectConf endpoint>${Root.path}/../soapui/${endpoint.id}.xml</#macro>
 
     <#macro displayDocumentTools doc>
@@ -105,7 +108,7 @@
       ${Root.msg("TestUsing")} :
       <span class="btn-group"><!-- span else additional p -->
           <a class="btn" href="<@urlToSoapUIProjectConf productionEndpoint/>">SOAPUI</a> 
-          <a class="btn" disabled href="<@urlToServiceScaffolder productionEndpoint/>">Service Scaffolder</a> <!-- TODO light.js, or function, rather endpointUrl?wsdl ?? -->
+          <a class="btn" href="<@urlToServiceScaffolder productionEndpoint/>">Service Scaffolder</a> <!-- disabled ; TODO light.js, or function, rather endpointUrl?wsdl ?? -->
           <a class="btn" href="${frascatiStudio_url}">FraSCAti Studio</a> 
           <#-- a class="btn" <#if fstudio_enabled>href="${frascatiStudio_url}"<#else>style="color:grey;"</#if>>FraSCAti Studio</a> -->
           <a class="btn" <#if fstudio_enabled>href="${frascatiStudio_url}easySoa/GeneratedAppService"<#else>style="color:grey;"</#if>>${Root.msg("newFraSCAtiStudioApplication")}</a>

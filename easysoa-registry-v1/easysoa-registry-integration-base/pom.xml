@@ -21,7 +21,7 @@
      <java.version>1.7</java.version><!-- nuxeo's -->
      <frascati.version>1.6-SNAPSHOT</frascati.version>
      <cxf.version>2.7.5</cxf.version><!-- frascati's -->
-     <jettison.version>1.3.3</jettison.version><!-- cxf's -->
+     <jettison.version>1.5.2</jettison.version><!-- cxf's -->
      <spring.version>3.0.7.RELEASE</spring.version><!-- (same as frascati-implementation-spring's) -->
      <jackson.version>1.8.1</jackson.version><!-- compatible with jackson core brought by RegistryAPI -->
      <junit.version>4.8.1</junit.version>
